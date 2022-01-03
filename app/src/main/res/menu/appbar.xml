@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+        <item
+            android:id="@+id/eventRunningToggleBtn"
+            android:title="Start"
+            app:showAsAction="ifRoom"/>
+
+        <item android:id="@+id/trackMacroButton"
+            android:title="trate podle pravidel"
+            app:showAsAction="never"/>
+
+        <item android:id="@+id/settingsBtn"
+            android:title="@string/global_settings"
+            app:showAsAction="never"/>
+
+        <item android:id="@+id/helpBtn"
+            android:title="@string/help"
+            app:showAsAction="never"/>
+
+</menu>

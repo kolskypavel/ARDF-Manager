@@ -1,0 +1,129 @@
+<resources>
+    <string name="app_name" translatable="false">ARDFManager</string>
+    <string name="title_tracks">Tratě</string>
+    <string name="title_competitors">Závodníci</string>
+    <string name="title_readouts">Vyčítání</string>
+    <string name="title_results">Výsledky</string>
+    <string name="confirm_button">Potvrdit</string>
+    <string name="name">Jméno</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_track">Přidat trať</string>
+    <string name="global_settings">Nastavení</string>
+    <string name="events">Správa závodů</string>
+    <string name="help">Nápověda a dokumentace</string>
+    <string name="errFileRead">Chyba při čtení ze souboru!</string>
+    <string name="length">Délka</string>
+    <string name="track_length">Délka tratě</string>
+    <string name="control_points">Kontroly</string>
+    <string name="addPunchButtonText">Přidat kontrolu</string>
+    <string name="ok" translatable="false">OK</string>
+    <string name="cancel">Zavřít</string>
+    <string name="new_control_point">Nová kontrola</string>
+    <string name="beacon">Maják</string>
+    <string name="obligatory">Povinná</string>
+    <string name="number">Číslo</string>
+    <string name="code">Kód</string>
+    <string name="non_obligatory">Nepovinná</string>
+    <string name="required">Požadováno</string>
+    <string name="obligation">Povinnost</string>
+    <string name="competitor_count">Počet závodníků</string>
+    <string name="control_point_count">Počet kontrol</string>
+    <string name="edit_control_point">Upravit kontrolu</string>
+    <string name="delete">Smazat</string>
+    <string name="track_count">Počet tratí</string>
+    <string name="event_level_0">Národní</string>
+    <string name="event_level_1">Regionální</string>
+    <string name="event_level_2">Okresní</string>
+    <string name="event_level_3">Nešampionát?</string>
+    <string name="event_band_0">Kombinované</string>
+    <string name="event_band_1" translatable="false">80m</string>
+    <string name="event_band_2" translatable="false">2m</string>
+    <string name="event_type_0">Klasický</string>
+    <string name="event_type_1" translatable="false">Foxoring</string>
+    <string name="event_type_2" translatable="false">Sprint</string>
+    <string name="event_type_3">Dlouhý</string>
+    <string name="title">Název</string>
+    <string name="level">Úroveň</string>
+    <string name="band">Pásmo</string>
+    <string name="type">Typ</string>
+
+
+    <string-array name="levels">
+        <item>@string/event_level_0</item>
+        <item>@string/event_level_1</item>
+        <item>@string/event_level_2</item>
+        <item>@string/event_level_3</item>
+    </string-array>
+
+    <string-array name="bands">
+        <item>@string/event_band_0</item>
+        <item>@string/event_band_1</item>
+        <item>@string/event_band_2</item>
+    </string-array>
+
+    <string-array name="types">
+        <item>@string/event_type_0</item>
+        <item>@string/event_type_1</item>
+        <item>@string/event_type_2</item>
+        <item>@string/event_type_3</item>
+    </string-array>
+
+    <string-array name="categories">
+        <item>Mercury</item>
+        <item>Venus</item>
+        <item>Earth</item>
+        <item>Mars</item>
+        <item>Jupiter</item>
+        <item>Saturn</item>
+        <item>Uranus</item>
+        <item>Neptune</item>
+    </string-array>
+
+    <string name="new_event">Nová akce</string>
+    <string name="storage_permission_not_granted">Oprávnění k přístupu do úložistě nebylo uděleno</string>
+
+    <string name="ardf_running">ARFD Manager je spuštěn</string>
+    <string name="last_read_si">Poslední vyčtený čip</string>
+    <string name="si_disconnected">SI čtečka odpojena</string>
+    <string name="start" translatable="false">Start</string>
+    <string name="stop" translatable="false">Stop</string>
+    <string name="running">" spuštěn"</string>
+    <string name="select_event">Vyberte závod</string>
+    <string name="surname">Příjmení</string>
+    <string name="gender">Pohlaví</string>
+    <string name="male">Muž</string>
+    <string name="female">Žena</string>
+    <string name="year_of_birth">Rok narození</string>
+    <string name="call_sign">Volačka</string>
+    <string name="country">Země</string>
+    <string name="start_number">Startovní číslo</string>
+    <string name="index_club">Index/Klub</string>
+    <string name="start_time">Startovní čas</string>
+    <string name="tag_number">Číslo čipu</string>
+    <string name="not_in_database">Není v databázi</string>
+    <string name="control_type">Typ kontroly</string>
+    <string name="add_competitor">Přidat závodníka</string>
+    <string name="controlpoint_type_0">Kontrola</string>
+    <string name="controlpoint_type_1">Maják</string>
+    <string name="controlpoint_type_2">Divácká kontrola</string>
+    <string name="spectator">Divácká</string>
+    <string name="control_point">Kontrola</string>
+    <string name="add_category">Přidat kategorii</string>
+    <string name="min_birthyear">Minimální\nročník</string>
+    <string name="max_birthyear">Maximální\nročník</string>
+    <string name="title_categories">Kategorie</string>
+    <string name="max_min_birthyear">Min/max ročník</string>
+    <string name="edit_category">Upravit kategorii</string>
+    <string name="select_category">Vyberte kategorii</string>
+    <string name="splits">Splits</string>
+    <string name="finish">Finish</string>
+    <string name="cp_number">CP number</string>
+    <string name="time_on_track">Time on track</string>
+    <string name="time_from_last_split">Time from last split</string>
+    <string name="daytime">Daytime</string>
+    <string name="cp_status">CP status</string>
+    <string name="time_from_start">Time from start</string>
+    <string name="split_time">Split time</string>
+    <string name="title_control_points">Control points</string>
+
+</resources>
