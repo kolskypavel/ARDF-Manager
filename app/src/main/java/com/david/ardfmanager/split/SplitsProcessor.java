@@ -63,7 +63,9 @@ public class SplitsProcessor {
             } else {
                 punchOneTime = startTime;
             }
+
             long split = calculateSplit(punchOneTime, p.time); // Gets the split value
+
             relTimeCounter = relTimeCounter + split; //Adds the split Time to the relTime
             Split s = new Split(p.code, p.time, relTimeCounter, split); // creates and adds the new split to the Array list
             splits.add(s);
@@ -72,6 +74,9 @@ public class SplitsProcessor {
 
     // This method calculates the split time between two punches.
     public long calculateSplit(long punchOneTime, long punchTwoTime) {
+        if (punchOneTime < 0 || punchTwoTime < 0) {
+            return -1;
+        }
         return punchTwoTime - punchOneTime;
     }
 

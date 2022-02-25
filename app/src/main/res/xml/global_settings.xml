@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="@string/general">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="sete_keep_display_alive"
+            android:summary="@string/settings_keep_string_alive_summary"
+            android:title="@string/settings_keep_screen_active" />
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/settings_languages"
+            android:entryValues="@array/settings_languages"
+            android:key="list_preference_1"
+            android:title="@string/settings_app_language" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="switch_preference_1"
+            android:switchTextOff="tmavý"
+            android:switchTextOn="světlý"
+            android:title="@string/settings_dark_mode" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_category_si_settings">
+
+        <ListPreference
+            android:defaultValue="false"
+            android:entries="@array/settings_si_baudrate"
+            android:key="si_baudrate"
+            android:summary="@string/settings_si_baudrate_summary"
+            android:title="@string/settings_si_baudrate" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/settings_print_tickets">
+
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/results">
+
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/settings_results_timeformat"
+            android:entryValues="@array/settings_results_timeformat"
+            android:key="list_preference_1"
+            android:summary="@string/settings_time_format_summary"
+            android:title="@string/settings_time_format" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="Preference category">
+        </PreferenceCategory>
+
+
+</PreferenceScreen>

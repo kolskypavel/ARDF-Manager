@@ -79,6 +79,23 @@
         <item>Neptune</item>
     </string-array>
 
+    <string-array name="settings_si_baudrate">
+        <item>Auto</item>
+        <item>4800</item>
+        <item>38400</item>
+    </string-array>
+
+    <string-array name="settings_languages">
+        <item>Czech</item>
+        <item>English</item>
+    </string-array>
+
+    <string-array name="settings_results_timeformat">
+        <item>HH:MM:SS</item>
+        <item>MM:SS</item>
+    </string-array>
+
+
     <string name="new_event">Nová akce</string>
     <string name="storage_permission_not_granted">Oprávnění k přístupu do úložistě nebylo uděleno</string>
 
@@ -115,15 +132,31 @@
     <string name="max_min_birthyear">Min/max ročník</string>
     <string name="edit_category">Upravit kategorii</string>
     <string name="select_category">Vyberte kategorii</string>
-    <string name="splits">Splits</string>
-    <string name="finish">Finish</string>
-    <string name="cp_number">CP number</string>
-    <string name="time_on_track">Time on track</string>
-    <string name="time_from_last_split">Time from last split</string>
-    <string name="daytime">Daytime</string>
-    <string name="cp_status">CP status</string>
-    <string name="time_from_start">Time from start</string>
-    <string name="split_time">Split time</string>
-    <string name="title_control_points">Control points</string>
+    <string name="splits">Mezičasy</string>
+    <string name="finish">Cíl</string>
+    <string name="cp_number">Číslo kontroly</string>
+    <string name="time_on_track">Čas na trati</string>
+    <string name="time_from_last_split">Poslední mezičas</string>
+    <string name="daytime">Část dne</string>
+    <string name="cp_status">Status kontroly</string>
+    <string name="time_from_start">Čas od startu</string>
+    <string name="split_time">Mezičas</string>
+    <string name="title_control_points">Kontroly</string>
+    <string name="event_settings">Vlastnosti závodu</string>
+    <string name="general">Obecné</string>
+    <string name="settings_keep_screen_active">Nechat zapnutý displej</string>
+    <string name="settings_app_language">Jazyk aplikace</string>
+    <string name="results">Výsledky</string>
+    <string name="settings_print_tickets">Tisk lístečků</string>
+    <string name="settings_keep_string_alive_summary">Nevypíná displej do ukončení aplikace.</string>
+    <string name="settings_category_si_settings">Nastavení SI jednotky</string>
+    <string name="settings_si_baudrate">Rychlost přenosu SI jednotky</string>
+    <string name="settings_si_data_source">Vyberte zdroj dat pro vyčítání.</string>
+    <string name="settings_si_data_source_summary">Data mohou být přenášena přímo z SI jednotky, či z csv souboru. Formát je specifikován v nápovědě. V případě zvolení souboru nefunguje vyčítání přes krabičku!</string>
+    <string name="settings_time_format">Formát času ve výsledcích</string>
+    <string name="settings_time_format_summary">Požadovaný formát času se zobrazí na lístečcích i ve výsledkové listině.</string>
+    <string name="settings_si_baudrate_summary">Ve výchozím stavu je \"auto\", pokud máte problémy s připojením jednotky, zkuste změnit rychlost.</string>
+    <string name="settings_dark_mode">Tmavý motiv aplikace</string>
+
 
 </resources>
