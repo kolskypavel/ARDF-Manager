@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import com.david.ardfmanager.SI.Punch;
 import com.david.ardfmanager.split.Split;
+import com.david.ardfmanager.split.SplitsProcessor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -12,11 +13,13 @@ import java.util.ArrayList;
 public class SIReadout implements Serializable {
 
     private long cardId;
-    private long startTime ;
+    private long startTime;
     private long finishTime;
     private long checkTime;
     private ArrayList<Punch> punches;
     private ArrayList<Split> splits;
+
+    public SIReadout(){}
 
 
     public SIReadout(long cardId, long startTime, long finishTime, long checkTime, ArrayList<Punch> punches) { //ArrayList<CardReader.CardEntry.Punch> punches
@@ -26,7 +29,6 @@ public class SIReadout implements Serializable {
         this.checkTime = checkTime;
         this.punches = punches;
     }
-
 
     public long getCardId() {
         return cardId;

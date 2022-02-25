@@ -8,36 +8,13 @@ import com.david.ardfmanager.readouts.SIReadout;
 import java.sql.Time;
 import java.util.ArrayList;
 
-public class SplitsProcessor {
+public class SplitsProcessor extends SIReadout {
 
+    private SIReadout siReadout;
 
-    //TODO: Reference to the actual arrayList
-    private ArrayList<Split> splits = new ArrayList<Split>();
-
-    private long startTime;
-    private long finishTime;
-
-    public long setStartTime() {
-        //This method either gets the time from the SI or sets the time based on the Competitor preset
-
-        return 0;
+    public SplitsProcessor(SIReadout siReadout){
+        this.siReadout=siReadout;
     }
-
-    public long setFinishTime() {
-
-        return 0;
-    }
-    //THE IMPORTANT SHIT
-
-    public ArrayList<Split> readoutToSplits(SIReadout siReadout) {
-        startTime = siReadout.getStartTime();
-        finishTime = siReadout.getFinishTime();
-
-        splitConventor(siReadout.getPunches());
-
-        return splits;
-    }
-
 
     public long calculateRunTime(long startTime, long finishTime) {
         if (finishTime != 0 && finishTime > startTime) {
@@ -47,7 +24,13 @@ public class SplitsProcessor {
         }
     }
 
-    public void splitConventor(ArrayList<Punch> punches) {
+    // Converts the ArrayList of punches into ArrayList of splits
+   public ArrayList<Split> Convertor(ArrayList<Punch> punches ) {
+
+        ArrayList<Split>  splits = new ArrayList<Split>();
+
+      long startTime = super.getStartTime();
+        long finishTime = super.getFinishTime();
 
         long relTimeCounter = 0;
 
@@ -70,6 +53,7 @@ public class SplitsProcessor {
             Split s = new Split(p.code, p.time, relTimeCounter, split); // creates and adds the new split to the Array list
             splits.add(s);
         }
+        return splits;
     }
 
     // This method calculates the split time between two punches.

@@ -3,11 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Users/Pavel/AndroidStudioProjects/ARDF-Manager/app/src/main/res/xml/global_settings.xml" value="0.4" />
+        <entry key="..\:/Moje/elektronika/Programovani/KOLSKY ARDF/jehogit/app/src/main/res/xml/global_settings.xml" value="0.26222826086956524" />
       </map>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_15" project-jdk-name="16" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>

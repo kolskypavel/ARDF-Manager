@@ -27,9 +27,6 @@ public class Competitor implements Serializable {
     private long startTime;
     private long finishTime;
 
-    //The arrayList of splits of each competitor - gonna be assigned by the readout component
-    private ArrayList<Split> splits = new ArrayList<Split>();
-
     public Competitor(String name) {
         this.name = name;
     }

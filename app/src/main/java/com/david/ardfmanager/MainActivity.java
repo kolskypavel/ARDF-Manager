@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
                     punches.add(new Punch(3,6000));
                     punches.add(new Punch(4,9000));
                     punches.add(new Punch(5,18000));
-                    SIReadout siReadout = new SIReadout(1234, 10,100000, 5, punches);
+                    SIReadout siReadout = new SIReadout(1234, 0,100000, 5, punches);
                     siReadoutList.add(siReadout);
                 }else if(currentFragment == getResources().getString(R.string.title_control_points)){
                     showAddControlPointDialog();
@@ -339,9 +339,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void setAllAdaptersAndSave() {
+    public static void setAllAdaptersAndSave() { //ToDo: change adapter refresh
         if (Categories_fragment.mListView != null) {
             Categories_fragment.mListView.setAdapter(categoryListAdapter);
+            //categoryListAdapter.notifyDataSetChanged();
         }else{
             Log.d("fragments", "Categories fragment object is null");
         }

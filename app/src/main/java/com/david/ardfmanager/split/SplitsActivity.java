@@ -14,8 +14,6 @@ import com.david.ardfmanager.competitors.Competitor;
 import com.david.ardfmanager.competitors.Competitors_fragment;
 import com.david.ardfmanager.readouts.SIReadout;
 
-import java.util.ArrayList;
-
 public class SplitsActivity extends AppCompatActivity {
 
     Intent intent;
@@ -33,12 +31,12 @@ public class SplitsActivity extends AppCompatActivity {
         intent = getIntent();
         SIReadout siReadout = (SIReadout)intent.getSerializableExtra("readout");
 
+        splitsProcessor=new SplitsProcessor(siReadout);
 
         toolbar = (Toolbar)findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.splits);
         setSupportActionBar(toolbar);
 
-        splitsProcessor = new SplitsProcessor();
 
         name_text = findViewById(R.id.text_name);
         number_text = findViewById(R.id.text_number);
@@ -54,12 +52,12 @@ public class SplitsActivity extends AppCompatActivity {
         number_text.setText(String.valueOf(siReadout.getCardId()));
 
         ////////////////////
+       siReadout.setSplits( splitsProcessor.Convertor(siReadout.getPunches()));
 
-        ArrayList<Split> splits = splitsProcessor.readoutToSplits(siReadout);
-        if(splits.isEmpty()){
+        if(siReadout.getSplits().isEmpty()){
             Toast.makeText(SplitsActivity.this, "splits returned empty!", Toast.LENGTH_SHORT).show();
         }
-        SplitListAdapter splitListAdapter = new SplitListAdapter(this, R.layout.split_view_layout, splits);
+        SplitListAdapter splitListAdapter = new SplitListAdapter(this, R.layout.split_view_layout,siReadout.getSplits());
         splits_list_view.setAdapter(splitListAdapter);
 
 

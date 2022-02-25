@@ -25,6 +25,7 @@ import com.david.ardfmanager.category.Category;
 
 import java.util.ArrayList;
 
+
 public class Competitors_fragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -85,6 +86,11 @@ public class Competitors_fragment extends Fragment {
         return view;
     }
 
+    /**
+     *
+     * @param SINumber
+     * @return
+     */
     public static Competitor findCompBySI(long SINumber){
         ArrayList<Competitor> arrayList = MainActivity.event.getCompetitorsList();
         for(Competitor competitor : arrayList) {
