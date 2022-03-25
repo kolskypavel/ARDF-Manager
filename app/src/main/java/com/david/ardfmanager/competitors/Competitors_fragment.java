@@ -191,7 +191,7 @@ public class Competitors_fragment extends Fragment {
 
                     Competitor competitor = new Competitor(ID, SINumber, name, surname, category, gender, yearOfBirth, callsign, country, startNumber, index);
                     MainActivity.event.addCompetitor(competitor);
-                    MainActivity.setAllAdaptersAndSave();
+                    MainActivity.refreshAndSave();
                     alertDialog.dismiss();
                 }
             }

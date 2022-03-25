@@ -1,24 +1,22 @@
 package com.david.ardfmanager.SI;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.widget.Toast;
 
 import com.david.ardfmanager.MainActivity;
+import com.david.ardfmanager.competitors.Competitor;
 import com.david.ardfmanager.readouts.SIReadout;
-import com.david.ardfmanager.split.SplitsActivity;
 
 
 public class CardReaderBroadcastReceiver extends BroadcastReceiver {
 
     Activity activity;
     private long deviceId = 0;
-    boolean flag = false;
+    int readoutIDCounter = 0;
 
     public CardReaderBroadcastReceiver(Activity activity) {
         this.activity = activity;
@@ -41,44 +39,22 @@ public class CardReaderBroadcastReceiver extends BroadcastReceiver {
                 break;
             case Readout:
                 CardReader.CardEntry cardEntry = (CardReader.CardEntry)intent.getParcelableExtra("Entry");
-                SIReadout siReadout = new SIReadout(cardEntry.cardId, cardEntry.startTime, cardEntry.finishTime, cardEntry.checkTime, cardEntry.punches);
-                flag = false;
+                SIReadout siReadout = new SIReadout(readoutIDCounter++, cardEntry.cardId, cardEntry.startTime, cardEntry.finishTime, cardEntry.checkTime, cardEntry.punches);
+                //todo: binary include
                 for(SIReadout sir : MainActivity.siReadoutList){
                     if(siReadout.getCardId() == sir.getCardId() && siReadout.getStartTime() == sir.getStartTime()){
-                        flag = true;
-                        System.out.println("stejny");
-                        Toast.makeText(activity.getApplicationContext(), "tohle uz je vycteny!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity.getApplicationContext(), "This readout already exists!", Toast.LENGTH_SHORT).show();
                     }else{
-                        System.out.println("jiny");
+                        MainActivity.siReadoutList.add(siReadout);
+                        MainActivity.refreshAndSave();
+                        for(Competitor competitor : MainActivity.event.getCompetitorsList()){
+                            if(competitor.getSINumber() == siReadout.getCardId()){
+                                competitor.setReadoutID(siReadout.getID());
+                                break;
+                            }
+                        }
                     }
-
                 }
-
-                if(!flag){
-                    MainActivity.siReadoutList.add(siReadout);
-                    MainActivity.setAllAdaptersAndSave();
-                }else{
-                    Toast.makeText(MainActivity.context, "Uz vycteno", Toast.LENGTH_SHORT).show();
-                }
-
-                /*if (cardEntry.startTime != 0) {
-                    long timeDiff = cardEntry.finishTime - cardEntry.startTime;
-                    long minutes = timeDiff / (60*1000);
-                    long seconds = (timeDiff - minutes * 60 * 1000) / 1000;
-                    long hundreds = (timeDiff - minutes * 60 * 1000 - seconds * 1000);
-                    StringBuilder tmpPunches = new StringBuilder();
-                    for (int i=0; i<cardEntry.punches.size(); i++) {
-                        if (i > 0)
-                            tmpPunches.append(", ");
-                        tmpPunches.append(cardEntry.punches.get(i).code);
-                    }
-                    alertDialog.setTitle("Vyčteno: " + String.format("%d:%02d.%02d", minutes, seconds, hundreds));
-                    alertDialog.setMessage(tmpPunches);
-                }else{
-                    alertDialog.setTitle("Lol nejde neni cas");
-                    alertDialog.setMessage("");
-                }*/
-                //Toast.makeText(context, String.valueOf(cardEntry.cardId), Toast.LENGTH_SHORT).show();
                 MainActivity.SIStatusText.setText(String.format("Device (%d) card %d read", deviceId, cardEntry.cardId));
                 break;
         }

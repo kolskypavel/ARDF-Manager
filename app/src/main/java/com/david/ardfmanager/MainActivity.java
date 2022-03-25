@@ -13,7 +13,6 @@ import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,12 +32,10 @@ import com.david.ardfmanager.competitors.CompetitorsListAdapter;
 import com.david.ardfmanager.competitors.Competitors_fragment;
 import com.david.ardfmanager.controlpoint.ControlPoint;
 import com.david.ardfmanager.controlpoint.ControlPointAdapter;
-import com.david.ardfmanager.controlpoint.ControlPoints_Fragment;
 import com.david.ardfmanager.event.Event;
 import com.david.ardfmanager.event.EventsManagerActivity;
 import com.david.ardfmanager.readouts.SIReadout;
 import com.david.ardfmanager.readouts.SIReadoutListAdapter;
-import com.david.ardfmanager.readouts.Readouts_fragment;
 import com.david.ardfmanager.category.Categories_fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -195,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
         competitorsListAdapter = new CompetitorsListAdapter(this, R.layout.competitor_view_layout, event.getCompetitorsList());
         siReadoutList.clear();
         siReadoutListAdapter = new SIReadoutListAdapter(this, R.layout.sireadout_view_layout, siReadoutList);
-        setAllAdaptersAndSave();
+        refreshAndSave();
 
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -215,12 +212,12 @@ public class MainActivity extends AppCompatActivity {
                     punches.add(new Punch(3,6000));
                     punches.add(new Punch(4,9000));
                     punches.add(new Punch(5,18000));
-                    SIReadout siReadout = new SIReadout(1234, 0,100000, 5, punches);
+                    SIReadout siReadout = new SIReadout(-1, 1234, 0,100000, 5, punches);
                     siReadoutList.add(siReadout);
                 }else if(currentFragment == getResources().getString(R.string.title_control_points)){
                     showAddControlPointDialog();
                 }
-                setAllAdaptersAndSave();
+                refreshAndSave();
             }
         });
 
@@ -241,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
                         event.addControlPoint(new ControlPoint(String.valueOf(i), i, new Random().nextInt(2)));
                     }
                 }
-                setAllAdaptersAndSave();
+                refreshAndSave();
                 return false;
             }
         });
@@ -320,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.trackMacroButton:
 
                 //EventsManagerActivity.saveEventToFile(event);
-                setAllAdaptersAndSave();
+                refreshAndSave();
                 return true;
 
             case R.id.settingsBtn:
@@ -339,32 +336,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static void setAllAdaptersAndSave() { //ToDo: change adapter refresh
-        if (Categories_fragment.mListView != null) {
-            Categories_fragment.mListView.setAdapter(categoryListAdapter);
-            //categoryListAdapter.notifyDataSetChanged();
-        }else{
-            Log.d("fragments", "Categories fragment object is null");
-        }
-
-        if (Competitors_fragment.mListView != null) {
-            Competitors_fragment.mListView.setAdapter(competitorsListAdapter);
-        }else{
-            Log.d("fragments", "Competitors fragment object is null");
-        }
-
-        if (Readouts_fragment.mListView != null) {
-            Readouts_fragment.mListView.setAdapter(siReadoutListAdapter);
-        }else{
-            Log.d("fragments", "Readout fragment object is null");
-        }
-
-        if (ControlPoints_Fragment.mListView != null) {
-            ControlPoints_Fragment.mListView.setAdapter(controlPointAdapter);
-        }else{
-            Log.d("fragments", "Control points fragment object is null");
-        }
-        Log.d("SAVING", "BY se ulozilo");
+    public static void refreshAndSave() {
+        categoryListAdapter.notifyDataSetChanged();
+        competitorsListAdapter.notifyDataSetChanged();
+        siReadoutListAdapter.notifyDataSetChanged();
+        controlPointAdapter.notifyDataSetChanged();
         EventsManagerActivity.saveEventToFile(event);
     }
 
@@ -446,7 +422,7 @@ public class MainActivity extends AppCompatActivity {
 
                 ControlPoint cp = new ControlPoint(number, code, type);
                 event.addControlPoint(cp);
-                setAllAdaptersAndSave();
+                refreshAndSave();
                 alert.dismiss();
             }
 

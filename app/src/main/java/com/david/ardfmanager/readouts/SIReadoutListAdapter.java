@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.david.ardfmanager.MainActivity;
 import com.david.ardfmanager.R;
 import com.david.ardfmanager.competitors.Competitor;
 import com.david.ardfmanager.competitors.Competitors_fragment;
@@ -52,13 +53,12 @@ public class SIReadoutListAdapter extends ArrayAdapter<SIReadout> {
         timeTextView = (TextView) convertView.findViewById(R.id.timeTextView);
         readoutTimeTextView = (TextView) convertView.findViewById(R.id.readoutTimeTextView);
 
+        nameTextView.setText(R.string.not_in_database);
 
-
-        Competitor competitor = Competitors_fragment.findCompBySI(cardId);
-        if(competitor != null){
-            nameTextView.setText(competitor.getFullName());
-        }else{
-            nameTextView.setText(R.string.not_in_database);
+        for(Competitor competitor : MainActivity.event.getCompetitorsList()){
+            if(competitor.getReadoutID() == getItem(position).getID()){
+                nameTextView.setText(competitor.getName());
+            }
         }
 
         siNumberTextView.setText(String.valueOf(cardId));

@@ -2,8 +2,6 @@ package com.david.ardfmanager.category;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -20,8 +18,6 @@ import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.NumberPicker;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 
 import com.david.ardfmanager.DecimalDigitsInputFilter;
 import com.david.ardfmanager.MainActivity;
@@ -218,7 +214,7 @@ public class Categories_fragment extends Fragment {
                             MainActivity.event.editCategory(MainActivity.event.getCategoriesList().get(MainActivity.event.getCategoriesList().indexOf(category)), newCategory);
                         }
 
-                        MainActivity.setAllAdaptersAndSave();
+                        MainActivity.refreshAndSave();
                         alertDialog.dismiss();
                 }
             }

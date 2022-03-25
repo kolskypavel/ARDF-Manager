@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 public class SIReadout implements Serializable {
 
+    private int ID;
     private long cardId;
     private long startTime;
     private long finishTime;
@@ -21,8 +22,8 @@ public class SIReadout implements Serializable {
 
     public SIReadout(){}
 
-
-    public SIReadout(long cardId, long startTime, long finishTime, long checkTime, ArrayList<Punch> punches) { //ArrayList<CardReader.CardEntry.Punch> punches
+    public SIReadout(int ID, long cardId, long startTime, long finishTime, long checkTime, ArrayList<Punch> punches) { //ArrayList<CardReader.CardEntry.Punch> punches
+        this.ID = ID;
         this.cardId = cardId;
         this.startTime = startTime;
         this.finishTime = finishTime;
@@ -76,6 +77,14 @@ public class SIReadout implements Serializable {
 
     public void setSplits(ArrayList<Split> splits) {
         this.splits = splits;
+    }
+
+    public int getID() {
+        return ID;
+    }
+
+    public void setID(int ID) {
+        this.ID = ID;
     }
 }
 

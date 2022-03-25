@@ -1,17 +1,14 @@
 package com.david.ardfmanager.competitors;
 
-import com.david.ardfmanager.split.Split;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-import java.sql.Time;
-import java.util.ArrayList;
 
 public class Competitor implements Serializable {
 
-    private int ID;
+    //todo: kolecko na zobrazeni stavu
+
     private long SINumber;
     private String name;
     private String surname;
@@ -22,7 +19,7 @@ public class Competitor implements Serializable {
     private String country;
     private int startNumber;
     private String index;
-
+    private int readoutID;
     //The times are get from the SI readout
     private long startTime;
     private long finishTime;
@@ -31,8 +28,8 @@ public class Competitor implements Serializable {
         this.name = name;
     }
 
-    public Competitor(int ID, long SINumber, String name, String surname, String category, int gender, int yearOfBirth, String callsign, String country, int startNumber, String index) {
-        this.ID = ID;
+    public Competitor(int readoutID, long SINumber, String name, String surname, String category, int gender, int yearOfBirth, String callsign, String country, int startNumber, String index) {
+        this.readoutID = readoutID;
         this.SINumber = SINumber;
         this.name = name;
         this.surname = surname;
@@ -140,5 +137,13 @@ public class Competitor implements Serializable {
         json.put("sinumber", this.SINumber);
         json.put("gender", this.gender);
         return json;
+    }
+
+    public int getReadoutID() {
+        return readoutID;
+    }
+
+    public void setReadoutID(int readoutID) {
+        this.readoutID = readoutID;
     }
 }
