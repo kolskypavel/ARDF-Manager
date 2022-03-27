@@ -13,6 +13,7 @@ import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -58,6 +59,8 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 public class MainActivity extends AppCompatActivity {
+
+    String TAG = "main_activity";
 
     //ToDo: edit dialogs, saving right after object is created, readout time is broken af, trate somewhere, controlpointlist refactor
     //ToDo: predelat control point string jmeno, cislo input klavesnice misto pickeru
@@ -200,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 String currentFragment = navController.getCurrentDestination().getLabel().toString();
-                System.out.println(currentFragment);
+                Log.i(TAG, "onClick: fab button clicked on destination: " + currentFragment);
                 if(currentFragment == getResources().getString(R.string.title_tracks)){
                     Categories_fragment.showCategoryAddDialog(MainActivity.this, null);
                 }else if(currentFragment == getResources().getString(R.string.title_competitors)){
@@ -212,8 +215,9 @@ public class MainActivity extends AppCompatActivity {
                     punches.add(new Punch(3,6000));
                     punches.add(new Punch(4,9000));
                     punches.add(new Punch(5,18000));
-                    SIReadout siReadout = new SIReadout(-1, 1234, 0,100000, 5, punches);
-                    siReadoutList.add(siReadout);
+                    SIReadout siReadout = new SIReadout(-1, 1234, new Random().nextInt(1000),100000, 5, punches);
+                    mMessageReceiver.checkAndAddReadout(siReadout);
+                    Log.i(TAG, "onClick: manually added a readout");
                 }else if(currentFragment == getResources().getString(R.string.title_control_points)){
                     showAddControlPointDialog();
                 }

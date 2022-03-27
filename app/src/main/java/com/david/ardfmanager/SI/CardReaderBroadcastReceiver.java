@@ -5,14 +5,19 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.david.ardfmanager.MainActivity;
 import com.david.ardfmanager.competitors.Competitor;
 import com.david.ardfmanager.readouts.SIReadout;
 
+import static android.content.ContentValues.TAG;
+
 
 public class CardReaderBroadcastReceiver extends BroadcastReceiver {
+    
+    String TAG = "card_reader_broadcast_receiver";
 
     Activity activity;
     private long deviceId = 0;
@@ -41,22 +46,42 @@ public class CardReaderBroadcastReceiver extends BroadcastReceiver {
                 CardReader.CardEntry cardEntry = (CardReader.CardEntry)intent.getParcelableExtra("Entry");
                 SIReadout siReadout = new SIReadout(readoutIDCounter++, cardEntry.cardId, cardEntry.startTime, cardEntry.finishTime, cardEntry.checkTime, cardEntry.punches);
                 //todo: binary include
-                for(SIReadout sir : MainActivity.siReadoutList){
-                    if(siReadout.getCardId() == sir.getCardId() && siReadout.getStartTime() == sir.getStartTime()){
-                        Toast.makeText(activity.getApplicationContext(), "This readout already exists!", Toast.LENGTH_SHORT).show();
-                    }else{
-                        MainActivity.siReadoutList.add(siReadout);
-                        MainActivity.refreshAndSave();
-                        for(Competitor competitor : MainActivity.event.getCompetitorsList()){
-                            if(competitor.getSINumber() == siReadout.getCardId()){
-                                competitor.setReadoutID(siReadout.getID());
-                                break;
-                            }
-                        }
-                    }
-                }
+                checkAndAddReadout(siReadout);
                 MainActivity.SIStatusText.setText(String.format("Device (%d) card %d read", deviceId, cardEntry.cardId));
                 break;
+        }
+    }
+
+    public void checkAndAddReadout(SIReadout siReadout){
+        Log.i(TAG, "checkAndAddReadout: started");
+        if(MainActivity.siReadoutList.isEmpty()){
+            MainActivity.siReadoutList.add(siReadout);
+            MainActivity.refreshAndSave();
+        }
+            for (SIReadout sir : MainActivity.siReadoutList) {
+                if (siReadout.getCardId() == sir.getCardId() && siReadout.getStartTime() == sir.getStartTime()) {
+                    Toast.makeText(activity.getApplicationContext(), "This readout already exists!", Toast.LENGTH_SHORT).show();
+                    Log.e(TAG, "checkAndAddReadout: a same readout exists!");
+                } else {
+                    MainActivity.siReadoutList.add(siReadout);
+                    MainActivity.refreshAndSave();
+                    Log.i(TAG, "checkAndAddReadout: readout added");
+                    if(MainActivity.event.getCategoriesList().isEmpty()){
+                        Log.e(TAG, "checkAndAddReadout: no competitors");
+                    }else {
+                        for (Competitor competitor : MainActivity.event.getCompetitorsList()) {
+                            Log.i(TAG, "checkAndAddReadout: competitor num: " + competitor.getSINumber());
+                            Log.i(TAG, "checkAndAddReadout: readout num: " + siReadout.getCardId());
+                            if (competitor.getSINumber() == siReadout.getCardId()) {
+                                competitor.setReadoutID(siReadout.getID());
+                                MainActivity.refreshAndSave();
+                                Log.i(TAG, "checkAndAddReadout: assigned readout id to competitor");
+                                return;
+                            }
+                        }
+                        Log.e(TAG, "checkAndAddReadout: did not assign id to competitor");
+                    }
+                }
         }
     }
 }
