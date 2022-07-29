@@ -1,4 +1,4 @@
-package com.david.ardfmanager.SI;
+package com.david.ardfmanager.readouts.SI;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -9,10 +9,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.david.ardfmanager.MainActivity;
-import com.david.ardfmanager.competitors.Competitor;
+import com.david.ardfmanager.event.competitors.Competitor;
 import com.david.ardfmanager.readouts.SIReadout;
-
-import static android.content.ContentValues.TAG;
 
 
 public class CardReaderBroadcastReceiver extends BroadcastReceiver {

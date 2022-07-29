@@ -1,4 +1,4 @@
-package com.david.ardfmanager.SI;
+package com.david.ardfmanager.readouts.SI;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;

@@ -1,11 +1,7 @@
 package com.david.ardfmanager.readouts;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import com.david.ardfmanager.SI.Punch;
-import com.david.ardfmanager.split.Split;
-import com.david.ardfmanager.split.SplitsProcessor;
+import com.david.ardfmanager.readouts.SI.Punch;
+import com.david.ardfmanager.readouts.split.Split;
 
 import java.io.Serializable;
 import java.util.ArrayList;

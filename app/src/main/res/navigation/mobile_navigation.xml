@@ -6,12 +6,12 @@
     app:startDestination="@id/categories">
     <fragment
         android:id="@+id/categories"
-        android:name="com.david.ardfmanager.category.Categories_fragment"
+        android:name="com.david.ardfmanager.event.category.Categories_fragment"
         android:label="@string/title_tracks"
         tools:layout="@layout/fragment_categories" />
     <fragment
         android:id="@+id/competitors"
-        android:name="com.david.ardfmanager.competitors.Competitors_fragment"
+        android:name="com.david.ardfmanager.event.competitors.Competitors_fragment"
         android:label="@string/title_competitors"
         tools:layout="@layout/fragment_competitors" />
     <fragment
@@ -26,7 +26,7 @@
         tools:layout="@layout/fragment_results" />
     <fragment
         android:id="@+id/controlPointsFragment"
-        android:name="com.david.ardfmanager.controlpoint.ControlPoints_Fragment"
+        android:name="com.david.ardfmanager.event.controlpoint.ControlPoints_Fragment"
         android:label="@string/title_control_points"
         tools:layout="@layout/fragment_control_points" />
 </navigation>

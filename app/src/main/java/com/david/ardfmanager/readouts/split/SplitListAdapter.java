@@ -1,4 +1,4 @@
-package com.david.ardfmanager.split;
+package com.david.ardfmanager.readouts.split;
 
 import android.content.Context;
 import android.view.LayoutInflater;

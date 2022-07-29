@@ -1,11 +1,8 @@
-package com.david.ardfmanager.split;
+package com.david.ardfmanager.readouts.split;
 
-import com.david.ardfmanager.MainActivity;
-import com.david.ardfmanager.SI.Punch;
-import com.david.ardfmanager.competitors.Competitor;
+import com.david.ardfmanager.readouts.SI.Punch;
 import com.david.ardfmanager.readouts.SIReadout;
 
-import java.sql.Time;
 import java.util.ArrayList;
 
 public class SplitsProcessor extends SIReadout {

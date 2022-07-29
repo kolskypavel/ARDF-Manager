@@ -1,6 +1,6 @@
 package com.david.ardfmanager.ticketsPrintout;
 
-import com.david.ardfmanager.competitors.Competitor;
+import com.david.ardfmanager.event.competitors.Competitor;
 
 public class Ticket extends Competitor {
 

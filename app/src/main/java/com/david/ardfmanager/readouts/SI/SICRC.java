@@ -1,4 +1,4 @@
-package com.david.ardfmanager.SI;
+package com.david.ardfmanager.readouts.SI;
 
 class SICRC {
     private static final int POLYNOM = 0x8005;

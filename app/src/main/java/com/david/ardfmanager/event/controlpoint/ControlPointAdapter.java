@@ -1,4 +1,4 @@
-package com.david.ardfmanager.controlpoint;
+package com.david.ardfmanager.event.controlpoint;
 
 import android.content.Context;
 import android.view.LayoutInflater;

@@ -1,4 +1,4 @@
-package com.david.ardfmanager.competitors;
+package com.david.ardfmanager.event.competitors;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -21,7 +21,7 @@ import android.widget.Switch;
 
 import com.david.ardfmanager.MainActivity;
 import com.david.ardfmanager.R;
-import com.david.ardfmanager.category.Category;
+import com.david.ardfmanager.event.category.Category;
 
 import java.util.ArrayList;
 

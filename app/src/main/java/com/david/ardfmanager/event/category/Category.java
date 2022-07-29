@@ -1,6 +1,6 @@
-package com.david.ardfmanager.category;
+package com.david.ardfmanager.event.category;
 
-import com.david.ardfmanager.controlpoint.ControlPoint;
+import com.david.ardfmanager.event.controlpoint.ControlPoint;
 
 import org.json.JSONArray;
 import org.json.JSONException;

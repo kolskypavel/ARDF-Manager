@@ -1,9 +1,7 @@
-package com.david.ardfmanager.SI;
+package com.david.ardfmanager.readouts.SI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import android.util.Log;
 
 import com.felhr.usbserial.UsbSerialDevice;
 

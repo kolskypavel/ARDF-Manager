@@ -25,19 +25,19 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.david.ardfmanager.SI.CardReader;
-import com.david.ardfmanager.SI.CardReaderBroadcastReceiver;
-import com.david.ardfmanager.SI.Punch;
-import com.david.ardfmanager.category.CategoryListAdapter;
-import com.david.ardfmanager.competitors.CompetitorsListAdapter;
-import com.david.ardfmanager.competitors.Competitors_fragment;
-import com.david.ardfmanager.controlpoint.ControlPoint;
-import com.david.ardfmanager.controlpoint.ControlPointAdapter;
+import com.david.ardfmanager.readouts.SI.CardReader;
+import com.david.ardfmanager.readouts.SI.CardReaderBroadcastReceiver;
+import com.david.ardfmanager.readouts.SI.Punch;
+import com.david.ardfmanager.event.category.CategoryListAdapter;
+import com.david.ardfmanager.event.competitors.CompetitorsListAdapter;
+import com.david.ardfmanager.event.competitors.Competitors_fragment;
+import com.david.ardfmanager.event.controlpoint.ControlPoint;
+import com.david.ardfmanager.event.controlpoint.ControlPointAdapter;
 import com.david.ardfmanager.event.Event;
 import com.david.ardfmanager.event.EventsManagerActivity;
 import com.david.ardfmanager.readouts.SIReadout;
 import com.david.ardfmanager.readouts.SIReadoutListAdapter;
-import com.david.ardfmanager.category.Categories_fragment;
+import com.david.ardfmanager.event.category.Categories_fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 

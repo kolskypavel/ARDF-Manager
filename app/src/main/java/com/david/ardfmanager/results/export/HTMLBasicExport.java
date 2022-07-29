@@ -1,4 +1,4 @@
-package com.david.ardfmanager.export;
+package com.david.ardfmanager.results.export;
 
 public class HTMLBasicExport {
     public static final String LOCATION = "";

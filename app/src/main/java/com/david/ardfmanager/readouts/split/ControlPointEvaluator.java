@@ -1,7 +1,7 @@
-package com.david.ardfmanager.split;
+package com.david.ardfmanager.readouts.split;
 
 import com.david.ardfmanager.MainActivity;
-import com.david.ardfmanager.controlpoint.ControlPoint;
+import com.david.ardfmanager.event.controlpoint.ControlPoint;
 
 import java.util.ArrayList;
 

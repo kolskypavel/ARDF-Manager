@@ -1,4 +1,4 @@
-package com.david.ardfmanager.split;
+package com.david.ardfmanager.readouts.split;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -10,8 +10,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.david.ardfmanager.R;
-import com.david.ardfmanager.competitors.Competitor;
-import com.david.ardfmanager.competitors.Competitors_fragment;
+import com.david.ardfmanager.event.competitors.Competitor;
+import com.david.ardfmanager.event.competitors.Competitors_fragment;
 import com.david.ardfmanager.readouts.SIReadout;
 
 public class SplitsActivity extends AppCompatActivity {

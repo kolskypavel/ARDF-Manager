@@ -9,8 +9,7 @@ import android.widget.TextView;
 
 import com.david.ardfmanager.MainActivity;
 import com.david.ardfmanager.R;
-import com.david.ardfmanager.competitors.Competitor;
-import com.david.ardfmanager.competitors.Competitors_fragment;
+import com.david.ardfmanager.event.competitors.Competitor;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

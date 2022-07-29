@@ -20,9 +20,9 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.david.ardfmanager.MainActivity;
 import com.david.ardfmanager.R;
-import com.david.ardfmanager.category.Category;
-import com.david.ardfmanager.competitors.Competitor;
-import com.david.ardfmanager.controlpoint.ControlPoint;
+import com.david.ardfmanager.event.category.Category;
+import com.david.ardfmanager.event.competitors.Competitor;
+import com.david.ardfmanager.event.controlpoint.ControlPoint;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import org.json.JSONArray;

@@ -1,16 +1,12 @@
 package com.david.ardfmanager.event;
 
-import android.content.res.Resources;
-
-import com.david.ardfmanager.R;
-import com.david.ardfmanager.category.Category;
-import com.david.ardfmanager.competitors.Competitor;
-import com.david.ardfmanager.controlpoint.ControlPoint;
+import com.david.ardfmanager.event.category.Category;
+import com.david.ardfmanager.event.competitors.Competitor;
+import com.david.ardfmanager.event.controlpoint.ControlPoint;
 import com.david.ardfmanager.readouts.SIReadout;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Calendar;
 
 public class Event implements Serializable {
 

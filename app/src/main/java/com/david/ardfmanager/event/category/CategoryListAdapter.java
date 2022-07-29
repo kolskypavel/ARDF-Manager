@@ -1,4 +1,4 @@
-package com.david.ardfmanager.category;
+package com.david.ardfmanager.event.category;
 
 import android.content.Context;
 import android.view.LayoutInflater;

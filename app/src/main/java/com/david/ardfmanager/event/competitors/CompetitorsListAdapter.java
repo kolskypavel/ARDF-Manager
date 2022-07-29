@@ -1,4 +1,4 @@
-package com.david.ardfmanager.competitors;
+package com.david.ardfmanager.event.competitors;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,7 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.david.ardfmanager.R;
-import com.david.ardfmanager.competitors.Competitor;
 
 import java.util.ArrayList;
 

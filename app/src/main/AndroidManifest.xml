@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_phone"
         android:supportsRtl="false"
         android:theme="@style/AppTheme">
-        <activity android:name=".split.SplitsActivity"></activity>
+        <activity android:name=".readouts.split.SplitsActivity"></activity>
         <activity android:name=".MainActivity" />
         <activity
             android:name=".event.EventsManagerActivity"

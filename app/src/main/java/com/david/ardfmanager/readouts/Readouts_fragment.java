@@ -14,7 +14,7 @@ import android.widget.ListView;
 
 import com.david.ardfmanager.MainActivity;
 import com.david.ardfmanager.R;
-import com.david.ardfmanager.split.SplitsActivity;
+import com.david.ardfmanager.readouts.split.SplitsActivity;
 
 
 /**

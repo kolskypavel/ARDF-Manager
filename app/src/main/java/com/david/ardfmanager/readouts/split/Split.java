@@ -1,4 +1,4 @@
-package com.david.ardfmanager.split;
+package com.david.ardfmanager.readouts.split;
 
 public class Split {
     private int code; // the SI code number

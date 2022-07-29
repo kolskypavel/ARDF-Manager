@@ -1,4 +1,4 @@
-package com.david.ardfmanager.category;
+package com.david.ardfmanager.event.category;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -22,8 +22,8 @@ import android.widget.NumberPicker;
 import com.david.ardfmanager.DecimalDigitsInputFilter;
 import com.david.ardfmanager.MainActivity;
 import com.david.ardfmanager.R;
-import com.david.ardfmanager.controlpoint.ControlPoint;
-import com.david.ardfmanager.controlpoint.ControlPointAdapter;
+import com.david.ardfmanager.event.controlpoint.ControlPoint;
+import com.david.ardfmanager.event.controlpoint.ControlPointAdapter;
 
 import java.util.ArrayList;
 import java.util.Collections;

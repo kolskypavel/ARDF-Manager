@@ -1,4 +1,4 @@
-package com.david.ardfmanager.competitors;
+package com.david.ardfmanager.event.competitors;
 
 import org.json.JSONException;
 import org.json.JSONObject;
