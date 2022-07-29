@@ -10,7 +10,6 @@ public class Punch implements Parcelable, Serializable {
         public Punch createFromParcel(Parcel in) {
             return new Punch(in);
         }
-
         public Punch[] newArray(int size) {
             return new Punch[size];
         }

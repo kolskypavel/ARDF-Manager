@@ -6,6 +6,7 @@ import com.david.ardfmanager.R;
 import com.david.ardfmanager.category.Category;
 import com.david.ardfmanager.competitors.Competitor;
 import com.david.ardfmanager.controlpoint.ControlPoint;
+import com.david.ardfmanager.readouts.SIReadout;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class Event implements Serializable {
     private ArrayList<ControlPoint> controlPointList = new ArrayList<ControlPoint>();
     private ArrayList<Category> categoriesList = new ArrayList<Category>();
     private ArrayList<Competitor> competitorsList = new ArrayList<Competitor>();
+    private ArrayList<SIReadout> siReadoutList = new ArrayList<>();
 
 
     public Event(String title, int level, int band, int type) {
@@ -113,4 +115,11 @@ public class Event implements Serializable {
     }
 
 
+    public ArrayList<SIReadout> getSiReadoutList() {
+        return siReadoutList;
+    }
+
+    public void setSiReadoutList(ArrayList<SIReadout> siReadoutList) {
+        this.siReadoutList = siReadoutList;
+    }
 }

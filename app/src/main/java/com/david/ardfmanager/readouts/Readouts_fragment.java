@@ -77,7 +77,7 @@ public class Readouts_fragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 //ToDO: details activity
                 Intent intent = new Intent(getActivity(), SplitsActivity.class);
-                intent.putExtra("readout", MainActivity.siReadoutList.get(i));
+                intent.putExtra("readout", MainActivity.event.getSiReadoutList().get(i));
                 startActivity(intent);
             }
         });

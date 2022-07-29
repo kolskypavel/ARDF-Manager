@@ -16,18 +16,16 @@ public class SIReadout implements Serializable {
     private long cardId;
     private long startTime;
     private long finishTime;
-    private long checkTime;
     private ArrayList<Punch> punches;
     private ArrayList<Split> splits;
 
     public SIReadout(){}
 
-    public SIReadout(int ID, long cardId, long startTime, long finishTime, long checkTime, ArrayList<Punch> punches) { //ArrayList<CardReader.CardEntry.Punch> punches
+    public SIReadout(int ID, long cardId, long startTime, long finishTime, ArrayList<Punch> punches) { //ArrayList<CardReader.CardEntry.Punch> punches
         this.ID = ID;
         this.cardId = cardId;
         this.startTime = startTime;
         this.finishTime = finishTime;
-        this.checkTime = checkTime;
         this.punches = punches;
     }
 
@@ -53,14 +51,6 @@ public class SIReadout implements Serializable {
 
     public void setFinishTime(long finishTime) {
         this.finishTime = finishTime;
-    }
-
-    public long getCheckTime() {
-        return checkTime;
-    }
-
-    public void setCheckTime(long checkTime) {
-        this.checkTime = checkTime;
     }
 
     public ArrayList<Punch> getPunches() {

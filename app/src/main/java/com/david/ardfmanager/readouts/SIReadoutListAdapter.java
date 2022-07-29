@@ -34,7 +34,7 @@ public class SIReadoutListAdapter extends ArrayAdapter<SIReadout> {
         long cardId = getItem(position).getCardId();
         long startTime = getItem(position).getStartTime();
         long finishTime = getItem(position).getFinishTime();
-        long checkTime = getItem(position).getCheckTime();
+        //long checkTime = getItem(position).getCheckTime();
 
         long timeDiff = finishTime - startTime;
         long minutes = timeDiff / (60*1000);

@@ -44,7 +44,7 @@ public class CardReaderBroadcastReceiver extends BroadcastReceiver {
                 break;
             case Readout:
                 CardReader.CardEntry cardEntry = (CardReader.CardEntry)intent.getParcelableExtra("Entry");
-                SIReadout siReadout = new SIReadout(readoutIDCounter++, cardEntry.cardId, cardEntry.startTime, cardEntry.finishTime, cardEntry.checkTime, cardEntry.punches);
+                SIReadout siReadout = new SIReadout(readoutIDCounter++, cardEntry.cardId, cardEntry.startTime, cardEntry.finishTime, cardEntry.punches);
                 //todo: binary include
                 checkAndAddReadout(siReadout);
                 MainActivity.SIStatusText.setText(String.format("Device (%d) card %d read", deviceId, cardEntry.cardId));
@@ -52,36 +52,65 @@ public class CardReaderBroadcastReceiver extends BroadcastReceiver {
         }
     }
 
+    /**
+     * @brief Checks ...
+     * @param siReadout
+     */
     public void checkAndAddReadout(SIReadout siReadout){
         Log.i(TAG, "checkAndAddReadout: started");
-        if(MainActivity.siReadoutList.isEmpty()){
-            MainActivity.siReadoutList.add(siReadout);
+        if(MainActivity.event.getSiReadoutList().isEmpty()){
+            MainActivity.event.getSiReadoutList().add(siReadout);
             MainActivity.refreshAndSave();
+        }else{
+            if(!sameReadoutAlreadyPresent(siReadout)){
+            MainActivity.event.getSiReadoutList().add(siReadout);
+            MainActivity.refreshAndSave();
+            Log.i(TAG, "checkAndAddReadout: readout added");
+            }
         }
-            for (SIReadout sir : MainActivity.siReadoutList) {
-                if (siReadout.getCardId() == sir.getCardId() && siReadout.getStartTime() == sir.getStartTime()) {
-                    Toast.makeText(activity.getApplicationContext(), "This readout already exists!", Toast.LENGTH_SHORT).show();
-                    Log.e(TAG, "checkAndAddReadout: a same readout exists!");
-                } else {
-                    MainActivity.siReadoutList.add(siReadout);
-                    MainActivity.refreshAndSave();
-                    Log.i(TAG, "checkAndAddReadout: readout added");
-                    if(MainActivity.event.getCategoriesList().isEmpty()){
-                        Log.e(TAG, "checkAndAddReadout: no competitors");
-                    }else {
-                        for (Competitor competitor : MainActivity.event.getCompetitorsList()) {
-                            Log.i(TAG, "checkAndAddReadout: competitor num: " + competitor.getSINumber());
-                            Log.i(TAG, "checkAndAddReadout: readout num: " + siReadout.getCardId());
-                            if (competitor.getSINumber() == siReadout.getCardId()) {
-                                competitor.setReadoutID(siReadout.getID());
-                                MainActivity.refreshAndSave();
-                                Log.i(TAG, "checkAndAddReadout: assigned readout id to competitor");
-                                return;
-                            }
-                        }
-                        Log.e(TAG, "checkAndAddReadout: did not assign id to competitor");
+        if(!competitorIsInDatabase(siReadout.getCardId())){
+            Log.e(TAG, "checkAndAddReadout: competitor not in database"); //ToDo: add dialog
+        }
+        scanAndLinkReadouts();
+    }
+
+    private boolean sameReadoutAlreadyPresent(SIReadout siReadout) {
+        for (SIReadout sir : MainActivity.event.getSiReadoutList()) {
+            if (siReadout.getCardId() == sir.getCardId() && siReadout.getStartTime() == sir.getStartTime()) {
+                Toast.makeText(activity.getApplicationContext(), "This readout already exists!", Toast.LENGTH_SHORT).show(); //ToDo: replace with dialog
+                Log.e(TAG, "sameReadoutAlreadyPresent: a same readout exists!");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void scanAndLinkReadouts(){
+        if(MainActivity.event.getCompetitorsList().isEmpty() || MainActivity.event.getSiReadoutList().isEmpty()){
+            Log.e(TAG, "checkAndAddReadout: no competitors or readouts");
+        }else {
+            for (Competitor competitor : MainActivity.event.getCompetitorsList()) {
+                Log.i(TAG, "checkAndAddReadout: competitor num: " + competitor.getSINumber());
+                for(SIReadout siReadout : MainActivity.event.getSiReadoutList()){
+                    Log.i(TAG, "checkAndAddReadout: readout num: " + siReadout.getCardId());
+                    if (competitor.getSINumber() == siReadout.getCardId()) {
+                        competitor.setReadoutID(siReadout.getID());
+                        MainActivity.refreshAndSave();
+                        Log.i(TAG, "checkAndAddReadout: assigned readout id to competitor");
+                        return;
                     }
                 }
+            }
+            Log.e(TAG, "checkAndAddReadout: did not assign id to competitor"); //ToDo: add dialog warning
         }
+    }
+
+    private boolean competitorIsInDatabase(long siNumber){
+        for (Competitor competitor : MainActivity.event.getCompetitorsList()) {
+            if(competitor.getSINumber() == siNumber){
+                return true;
+            }
+        }
+        return false;
     }
 }

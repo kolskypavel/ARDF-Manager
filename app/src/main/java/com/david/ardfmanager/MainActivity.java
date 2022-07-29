@@ -69,13 +69,10 @@ public class MainActivity extends AppCompatActivity {
     public static ControlPointAdapter controlPointAdapter;
     public static CategoryListAdapter categoryListAdapter;
     public static CompetitorsListAdapter competitorsListAdapter;
-
-    public static ArrayList<SIReadout> siReadoutList = new ArrayList<>();
     public static SIReadoutListAdapter siReadoutListAdapter;
 
     public static Event event;
     public static boolean EVENT_RUNNING = false;
-
 
     public static final int INTENT_ADD_TRACK = 1000;
     public static final int INTENT_ADD_COMPETITOR = 1001;
@@ -176,6 +173,9 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_add));
                 }
+                if(label == getResources().getString(R.string.title_readouts)){
+                    mMessageReceiver.scanAndLinkReadouts();
+                }
             }
         });
 
@@ -193,8 +193,7 @@ public class MainActivity extends AppCompatActivity {
         categoryListAdapter = new CategoryListAdapter(this, R.layout.category_view_layout, event.getCategoriesList());
         //tracksListAdapter = new TracksListAdapter(this, R.layout.track_view_layout, event.getTracksList());
         competitorsListAdapter = new CompetitorsListAdapter(this, R.layout.competitor_view_layout, event.getCompetitorsList());
-        siReadoutList.clear();
-        siReadoutListAdapter = new SIReadoutListAdapter(this, R.layout.sireadout_view_layout, siReadoutList);
+        siReadoutListAdapter = new SIReadoutListAdapter(this, R.layout.sireadout_view_layout, event.getSiReadoutList());
         refreshAndSave();
 
 
@@ -215,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
                     punches.add(new Punch(3,6000));
                     punches.add(new Punch(4,9000));
                     punches.add(new Punch(5,18000));
-                    SIReadout siReadout = new SIReadout(-1, 1234, new Random().nextInt(1000),100000, 5, punches);
+                    SIReadout siReadout = new SIReadout(-1, 1234, new Random().nextInt(500), 25000, punches);
                     mMessageReceiver.checkAndAddReadout(siReadout);
                     Log.i(TAG, "onClick: manually added a readout");
                 }else if(currentFragment == getResources().getString(R.string.title_control_points)){
