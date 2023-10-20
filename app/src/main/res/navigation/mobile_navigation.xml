@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/eventSelectionFragment">
+    <fragment
+        android:id="@+id/eventSelectionFragment"
+        android:name="kolskypavel.ardfmanager.ui.event.EventSelectionFragment"
+        android:label="fragment_event_selection_list"
+        tools:layout="@layout/fragment_event_selection" >
+        <action
+            android:id="@+id/action_eventSelectionFragment_to_navigation"
+            app:destination="@id/navigation" />
+    </fragment>
+
+    <navigation
+        android:id="@+id/navigation"
+        app:startDestination="@id/menu_item_about_app">
+
+        <fragment
+            android:id="@+id/menu_item_about_app"
+            android:name="kolskypavel.ardfmanager.ui.competitors.CompetitorsFragment"
+            android:label="@string/title_competitors"
+            tools:layout="@layout/fragment_competitors" />
+
+        <fragment
+            android:id="@+id/menu_item_global_settings"
+            android:name="kolskypavel.ardfmanager.ui.categories.CategoriesFragment"
+            android:label="@string/title_categories"
+            tools:layout="@layout/fragment_categories" />
+
+        <fragment
+            android:id="@+id/navigation_readouts"
+            android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutsFragment"
+            android:label="@string/title_readouts"
+            tools:layout="@layout/fragment_readouts" />
+        <fragment
+            android:id="@+id/navigation_results"
+            android:name="kolskypavel.ardfmanager.ui.readouts.ResultsFragment"
+            android:label="fragment_results"
+            tools:layout="@layout/fragment_results" />
+    </navigation>
+</navigation>

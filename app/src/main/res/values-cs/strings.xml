@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ARDFManager</string>
+    <string name="title_competitors">Závodníci</string>
+    <string name="title_categories">Kategorie</string>
+    <string name="title_readouts">Vyčítání</string>
+    <string name="title_results">Výsledky</string>
+    <string name="global_settings">Globální nastavení</string>
+    <string name="event_import_text">Importovat událost ze souboru</string>
+    <string name="event_toolbar_title">Přehled závodů</string>
+    <string name="about_the_app">O aplikaci</string>
+    <string name="description_file_import">Importovat soubor</string>
+    <string name="event_level_0">Národní</string>
+    <string name="event_level_1">Krajský</string>
+    <string name="event_level_2">Okresní</string>
+    <string name="event_level_3">Trénink</string>
+</resources>

@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">ARDFManager</string>
+    <string name="title_competitors">Competitors</string>
+    <string name="title_categories">Categories</string>
+    <string name="title_readouts">Readouts</string>
+    <string name="title_results">Results</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="global_settings">Global settings</string>
+    <string name="event_import_text">Import event from a file</string>
+    <string name="event_toolbar_title">Events overview</string>
+    <string name="about_the_app">About the app</string>
+    <string name="description_file_import">Import a file</string>
+    <string name="event_level_0">National</string>
+    <string name="event_level_1">Regional</string>
+    <string name="event_level_2">District</string>
+    <string name="event_level_3">Practice</string>
+
+
+    <string-array name="levels">
+        <item>@string/event_level_0</item>
+        <item>@string/event_level_1</item>
+        <item>@string/event_level_2</item>
+        <item>@string/event_level_3</item>
+    </string-array>
+
+    <string-array name="bands">
+
+    </string-array>
+
+    <string-array name="event_types">
+
+    </string-array>
+</resources>
