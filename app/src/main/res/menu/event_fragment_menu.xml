@@ -9,14 +9,14 @@
         android:title="@string/event_import_text"
         app:showAsAction="always|withText" />
     <item
-        android:id="@+id/menu_item_global_settings"
+        android:id="@+id/navigation_categories"
         android:icon="@drawable/ic_settings"
         android:title="@string/global_settings"
 
         />
 
     <item
-        android:id="@+id/menu_item_about_app"
+        android:id="@+id/navigation_competitors"
         android:title="@string/about_the_app" />
 
 </menu>

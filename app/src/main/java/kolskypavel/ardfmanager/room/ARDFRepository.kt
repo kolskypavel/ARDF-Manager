@@ -8,6 +8,9 @@ import kolskypavel.ardfmanager.room.database.ControlPointDatabase
 import kolskypavel.ardfmanager.room.database.EventDatabase
 import kolskypavel.ardfmanager.room.database.PunchDatabase
 import kolskypavel.ardfmanager.room.database.ReadoutDatabase
+import kolskypavel.ardfmanager.room.entitity.Event
+import kotlinx.coroutines.flow.Flow
+import java.util.UUID
 
 class ARDFRepository private constructor(context: Context) {
 
@@ -58,6 +61,14 @@ class ARDFRepository private constructor(context: Context) {
             "punch-database"
         )
         .build()
+
+    //Events
+    suspend fun getEvents(): Flow<List<Event>> = eventDatabase.eventDao().getEvents()
+    suspend fun getEvent(id: UUID): Event = eventDatabase.eventDao().getEvent(id)
+    suspend fun createEvent(event: Event) = eventDatabase.eventDao().createEvent(event)
+    suspend fun updateEvent(event: Event) = eventDatabase.eventDao().updateEvent(event)
+    suspend fun deleteEvent(id: UUID) = eventDatabase.eventDao().deleteEvent(id)
+
 
     //Singleton instantiation
     companion object {

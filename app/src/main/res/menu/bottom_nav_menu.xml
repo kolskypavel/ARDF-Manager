@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_item_about_app"
+        android:id="@+id/navigation_competitors"
         android:icon="@drawable/ic_runner"
         android:title="@string/title_competitors" />
 
     <item
-        android:id="@+id/menu_item_global_settings"
+        android:id="@+id/navigation_categories"
         android:icon="@drawable/ic_category"
         android:title="@string/title_categories" />
 

@@ -1,36 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/event_dialog"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingHorizontal="10dp">
 
-    <EditText
-        android:id="@+id/EtTitle"
+    <com.google.android.material.textfield.TextInputLayout
+
+        style="@style/dialog_textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="text" />
+        android:layout_marginTop="10dp"
+        android:hint="@string/name">
 
-    <Spinner
-        android:id="@+id/spinner_level"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/event_dialog_name"
+            style="@style/dialog_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_margin="4dp"
-        android:entries="@array/levels" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-    <Spinner
-        android:id="@+id/spinner_band"
+        <com.google.android.material.textfield.TextInputLayout
+
+            style="@style/dialog_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="0.9"
+            android:hint="@string/date"
+            app:endIconDrawable="@drawable/ic_calendar"
+            app:endIconMode="custom">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/event_dialog_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/dialog_text"
+                android:clickable="true"
+                android:focusable="false" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/dialog_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/start_time_00"
+            app:endIconDrawable="@drawable/ic_clock"
+            app:endIconMode="custom">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/event_dialog_start_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                style="@style/dialog_text"
+                android:focusable="false" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/dialog_dropdown"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_margin="4dp"
-        android:entries="@array/bands" />
+        android:layout_height="wrap_content"
+        android:hint="@string/type"
+        android:textColor="@color/black">
 
-    <Spinner
-        android:id="@+id/spinner_type"
+        <AutoCompleteTextView
+            android:id="@+id/event_dialog_type"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            style="@style/dialog_text"
+            app:simpleItems="@array/event_types" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_margin="4dp"
-        android:entries="@array/event_types" />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/dialog_dropdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:layout_weight="0.9"
+            android:hint="@string/level">
+
+            <AutoCompleteTextView
+                android:id="@+id/event_dialog_level"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                style="@style/dialog_text"
+                app:simpleItems="@array/levels" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/dialog_dropdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/band">
+
+            <AutoCompleteTextView
+                android:id="@+id/event_dialog_band"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                style="@style/dialog_text"
+                app:simpleItems="@array/bands" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/event_dialog_cancel"
+            style="@style/dialog_ok_cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:layout_weight="1"
+            android:text="@string/cancel" />
+
+        <Button
+            android:id="@+id/event_dialog_ok"
+            style="@style/dialog_ok_cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/ok" />
+    </LinearLayout>
 
 </LinearLayout>

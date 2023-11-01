@@ -1,6 +1,7 @@
 package kolskypavel.ardfmanager.room.database
 
 import androidx.room.TypeConverter
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
@@ -23,5 +24,15 @@ class DateTypeConverter {
     @TypeConverter
     fun toLocalTime(time: LocalTime): String {
         return time.toString()
+    }
+
+    @TypeConverter
+    fun fromDate(date: LocalDate): String {
+        return date.toString()
+    }
+
+    @TypeConverter
+    fun toDate(stringDate: String): LocalDate {
+        return LocalDate.parse(stringDate);
     }
 }

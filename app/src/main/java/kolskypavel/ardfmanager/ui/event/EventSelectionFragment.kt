@@ -1,39 +1,45 @@
 package kolskypavel.ardfmanager.ui.event
 
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.room.entitity.EventBand
+import kolskypavel.ardfmanager.room.entitity.EventLevel
+import kolskypavel.ardfmanager.room.entitity.EventType
+import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalTime
 
 /**
  * A fragment representing a list of Items.
  */
 class EventSelectionFragment : Fragment() {
 
-    private var columnCount = 1
     private lateinit var toolbar: Toolbar
     private lateinit var eventAddFAB: FloatingActionButton
+    private lateinit var recyclerView: RecyclerView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
-        }
-    }
+    private val eventsViewModel: EventsViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_event_selection, container, false)
-
-        // Set the adapter
-
+        recyclerView = view.findViewById(R.id.event_recycler_view)
         return view
     }
 
@@ -44,9 +50,17 @@ class EventSelectionFragment : Fragment() {
         eventAddFAB = view.findViewById(R.id.btn_event_add)
 
         toolbar.setTitle(R.string.event_toolbar_title)
-        toolbar.inflateMenu(R.menu.event_menu)
+        toolbar.inflateMenu(R.menu.event_fragment_menu)
+
+        eventAddFAB.setOnClickListener {
+            findNavController().navigate(
+                EventSelectionFragmentDirections.eventModification(-1, null, null)
+            )
+        }
+
         setMenuListener()
-        setFABListener()
+        setRecyclerAdapter()
+        setFragmentListener()
     }
 
     private fun setMenuListener() {
@@ -56,12 +70,12 @@ class EventSelectionFragment : Fragment() {
                     true
                 }
 
-                R.id.menu_item_global_settings -> {
+                R.id.navigation_categories -> {
                     // Navigate to settings screen.
                     true
                 }
 
-                R.id.menu_item_about_app -> {
+                R.id.navigation_competitors -> {
                     // Display about app dialog
                     true
                 }
@@ -71,24 +85,92 @@ class EventSelectionFragment : Fragment() {
         }
     }
 
-    private fun setFABListener() {
-        eventAddFAB.setOnClickListener {
+    private fun setFragmentListener() {
+        setFragmentResultListener(EventCreateDialogFragment.REQUEST_EVENT_MODIFICATION) { _, bundle ->
+            val create = bundle.getBoolean(EventCreateDialogFragment.BUNDLE_KEY_CREATE)
+            val position = bundle.getInt(EventCreateDialogFragment.BUNDLE_KEY_POSITION)
+            val eventName = bundle.getString(EventCreateDialogFragment.BUNDLE_KEY_EVENT_NAME)!!
+            val eventDate =
+                LocalDate.parse(bundle.getString(EventCreateDialogFragment.BUNDLE_KEY_EVENT_DATE))
+            val eventTime =
+                LocalTime.parse(bundle.getString(EventCreateDialogFragment.BUNDLE_KEY_EVENT_START_TIME))
+            val eventType: EventType
+            val eventLevel: EventLevel
+            val eventBand: EventBand
 
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                eventType =
+                    bundle.getSerializable(
+                        EventCreateDialogFragment.BUNDLE_KEY_EVENT_TYPE,
+                        EventType::class.java
+                    )!!
+                eventLevel = bundle.getSerializable(
+                    EventCreateDialogFragment.BUNDLE_KEY_EVENT_LEVEL,
+                    EventLevel::class.java
+                )!!
+                eventBand = bundle.getSerializable(
+                    EventCreateDialogFragment.BUNDLE_KEY_EVENT_BAND,
+                    EventBand::class.java
+                )!!
+
+            } else {
+                eventType =
+                    bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT_TYPE) as EventType
+                eventLevel =
+                    bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT_LEVEL) as EventLevel
+                eventBand =
+                    bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT_BAND) as EventBand
+            }
+
+            //create new event
+            if (create) {
+                eventsViewModel.createEvent(
+                    eventName,
+                    eventDate,
+                    eventTime,
+                    eventType,
+                    eventLevel,
+                    eventBand
+                )
+            }
+            //Edit an existing event
+            else {
+                eventsViewModel.modifyEvent(
+                    position, eventName,
+                    eventDate,
+                    eventTime,
+                    eventType,
+                    eventLevel,
+                    eventBand
+                )
+            }
         }
     }
 
-    companion object {
+    private fun setRecyclerAdapter() {
 
-        // TODO: Customize parameter argument names
-        const val ARG_COLUMN_COUNT = "column-count"
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
-        // TODO: Customize parameter initialization
-        @JvmStatic
-        fun newInstance(columnCount: Int) =
-            EventSelectionFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_COLUMN_COUNT, columnCount)
+                eventsViewModel.events.collect { events ->
+                    recyclerView.adapter = EventRecyclerViewAdapter(events, { eventId ->
+                        findNavController().navigate(
+                            EventSelectionFragmentDirections.openEvent(
+                                eventId
+                            )
+                        )
+                    }) { position, name, date, time, eventType, eventLevel, eventBand ->
+                        findNavController().navigate(
+                            EventSelectionFragmentDirections.eventModification(
+                                position,
+                                date,
+                                time,
+                            )
+                        )
+                    }
                 }
             }
+        }
     }
 }

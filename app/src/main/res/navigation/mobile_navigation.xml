@@ -8,24 +8,27 @@
         android:id="@+id/eventSelectionFragment"
         android:name="kolskypavel.ardfmanager.ui.event.EventSelectionFragment"
         android:label="fragment_event_selection_list"
-        tools:layout="@layout/fragment_event_selection" >
+        tools:layout="@layout/fragment_event_selection">
         <action
-            android:id="@+id/action_eventSelectionFragment_to_navigation"
+            android:id="@+id/openEvent"
             app:destination="@id/navigation" />
+        <action
+            android:id="@+id/eventModification"
+            app:destination="@id/eventCreateDialogFragment" />
     </fragment>
 
     <navigation
         android:id="@+id/navigation"
-        app:startDestination="@id/menu_item_about_app">
+        app:startDestination="@id/navigation_competitors">
 
         <fragment
-            android:id="@+id/menu_item_about_app"
+            android:id="@+id/navigation_competitors"
             android:name="kolskypavel.ardfmanager.ui.competitors.CompetitorsFragment"
             android:label="@string/title_competitors"
             tools:layout="@layout/fragment_competitors" />
 
         <fragment
-            android:id="@+id/menu_item_global_settings"
+            android:id="@+id/navigation_categories"
             android:name="kolskypavel.ardfmanager.ui.categories.CategoriesFragment"
             android:label="@string/title_categories"
             tools:layout="@layout/fragment_categories" />
@@ -40,5 +43,71 @@
             android:name="kolskypavel.ardfmanager.ui.readouts.ResultsFragment"
             android:label="fragment_results"
             tools:layout="@layout/fragment_results" />
+        <argument
+            android:name="eventId"
+            app:argType="java.util.UUID" />
     </navigation>
+    <dialog
+        android:id="@+id/eventCreateDialogFragment"
+        android:name="kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment"
+        android:label="EventCreateDialogFragment">
+
+        <argument
+            android:name="create"
+            android:defaultValue="true"
+            app:argType="boolean" />
+        <argument
+            android:name="position"
+            app:argType="integer" />
+        <argument
+            android:name="eventName"
+            android:defaultValue='""'
+            app:argType="string" />
+        <argument
+            android:name="eventDate"
+            app:argType="java.time.LocalDate"
+            app:nullable="true" />
+        <argument
+            android:name="eventLevel"
+            android:defaultValue="TRAINING"
+            app:argType="kolskypavel.ardfmanager.room.entitity.EventLevel" />
+        <argument
+            android:name="eventType"
+            android:defaultValue="CLASSICS"
+            app:argType="kolskypavel.ardfmanager.room.entitity.EventType" />
+        <action
+            android:id="@+id/action_eventCreateDialogFragment_to_eventSelectionFragment"
+            app:destination="@id/eventSelectionFragment" />
+        <argument
+            android:name="eventStartTime"
+            app:argType="java.time.LocalTime"
+            app:nullable="true" />
+        <argument
+            android:name="eventBand"
+            android:defaultValue="M80"
+            app:argType="kolskypavel.ardfmanager.room.entitity.EventBand" />
+        <action
+            android:id="@+id/select_date"
+            app:destination="@id/datePickerFragment" />
+        <action
+            android:id="@+id/select_time"
+            app:destination="@id/timePickerFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/datePickerFragment"
+        android:name="kolskypavel.ardfmanager.ui.pickers.DatePickerFragment"
+        android:label="DatePickerFragment">
+        <argument
+            android:name="curDate"
+            app:argType="java.time.LocalDate" />
+    </dialog>
+    <dialog
+        android:id="@+id/timePickerFragment"
+        android:name="kolskypavel.ardfmanager.ui.pickers.TimePickerFragment"
+        android:label="TimePickerFragment">
+        <argument
+            android:name="curTime"
+            app:argType="java.time.LocalTime" />
+    </dialog>
+
 </navigation>
