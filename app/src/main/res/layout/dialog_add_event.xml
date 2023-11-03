@@ -104,7 +104,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="none"
                 style="@style/dialog_text"
-                app:simpleItems="@array/levels" />
+                app:simpleItems="@array/event_levels" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -120,7 +120,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="none"
                 style="@style/dialog_text"
-                app:simpleItems="@array/bands" />
+                app:simpleItems="@array/event_bands" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 

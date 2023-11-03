@@ -51,47 +51,27 @@
         android:id="@+id/eventCreateDialogFragment"
         android:name="kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment"
         android:label="EventCreateDialogFragment">
-
         <argument
             android:name="create"
-            android:defaultValue="true"
             app:argType="boolean" />
         <argument
             android:name="position"
             app:argType="integer" />
         <argument
-            android:name="eventName"
-            android:defaultValue='""'
-            app:argType="string" />
-        <argument
-            android:name="eventDate"
-            app:argType="java.time.LocalDate"
+            android:name="event"
+            app:argType="kolskypavel.ardfmanager.room.entitity.Event"
             app:nullable="true" />
-        <argument
-            android:name="eventLevel"
-            android:defaultValue="TRAINING"
-            app:argType="kolskypavel.ardfmanager.room.entitity.EventLevel" />
-        <argument
-            android:name="eventType"
-            android:defaultValue="CLASSICS"
-            app:argType="kolskypavel.ardfmanager.room.entitity.EventType" />
         <action
             android:id="@+id/action_eventCreateDialogFragment_to_eventSelectionFragment"
             app:destination="@id/eventSelectionFragment" />
-        <argument
-            android:name="eventStartTime"
-            app:argType="java.time.LocalTime"
-            app:nullable="true" />
-        <argument
-            android:name="eventBand"
-            android:defaultValue="M80"
-            app:argType="kolskypavel.ardfmanager.room.entitity.EventBand" />
         <action
             android:id="@+id/select_date"
             app:destination="@id/datePickerFragment" />
         <action
             android:id="@+id/select_time"
             app:destination="@id/timePickerFragment" />
+
+
     </dialog>
     <dialog
         android:id="@+id/datePickerFragment"

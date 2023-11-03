@@ -11,16 +11,16 @@
     <string name="about_the_app">O aplikaci</string>
     <string name="description_file_import">Importovat soubor</string>
     <string name="event_level_0">Národní</string>
-    <string name="event_level_1">Krajský</string>
-    <string name="event_level_2">Okresní</string>
-    <string name="event_level_3">Trénink</string>
+    <string name="event_level_1">Národní</string>
+    <string name="event_level_2">Krajský</string>
+    <string name="event_level_3">Okresní</string>
     <string name="band_combined">Kombinované</string>
     <string name="name">Jméno</string>
     <string name="date">Datum</string>
     <string name="level">Úroveň</string>
     <string name="type">Typ</string>
     <string name="export_event">Exportovat závod</string>
-    <string name="remove_event">Odstranit závod</string>
+    <string name="delete_event">Odstranit závod</string>
     <string name="edit_event">Upravit závod</string>
     <string name="cancel">Zrušit</string>
     <string name="create_event">Vytvořit událost</string>
@@ -30,4 +30,6 @@
     <string name="event_type_3">Orientační běh</string>
     <string name="event_type_4">Vlastní</string>
     <string name="required">Požadováno</string>
+    <string name="event_level_4">Trénink</string>
+    <string name="delete_confirmation">Opravdu chcete smazat závod?</string>
 </resources>

@@ -7,9 +7,11 @@ import android.widget.DatePicker
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.navArgs
 import java.time.LocalDate
 
 class DatePickerFragment : DialogFragment() {
+    private val args: DatePickerFragmentArgs by navArgs()
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         val dateListener =
@@ -21,7 +23,7 @@ class DatePickerFragment : DialogFragment() {
                 )
             }
 
-        val dateNow = LocalDate.now()
+        val dateNow = args.curDate
         val initialYear = dateNow.year
         val initialMonth = dateNow.month.value - 1 //Zero based conversion
         val initialDay = dateNow.dayOfMonth

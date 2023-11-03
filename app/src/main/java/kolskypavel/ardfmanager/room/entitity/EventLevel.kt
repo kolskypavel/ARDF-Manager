@@ -5,7 +5,7 @@ enum class EventLevel(val value: Int) {
     NATIONAL(1),
     REGIONAL(2),
     DISTRICT(3),
-    TRAINING(4);
+    PRACTICE(4);
 
     companion object {
         fun getByValue(value: Int) = EventLevel.values().firstOrNull { it.value == value }

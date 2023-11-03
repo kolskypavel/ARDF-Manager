@@ -83,6 +83,4 @@ class ARDFRepository private constructor(context: Context) {
             return INSTANCE ?: throw IllegalStateException("ARDFRepository must be initialized")
         }
     }
-
-
 }

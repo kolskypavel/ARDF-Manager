@@ -2,15 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/menu_item_edit_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="@string/edit_event" />
     <item
+        android:id="@+id/menu_item_export_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="@string/export_event" />
     <item
+        android:id="@+id/menu_item_delete_event"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/remove_event" />
+        android:title="@string/delete_event" />
 </menu>

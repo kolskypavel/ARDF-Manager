@@ -18,7 +18,7 @@
 
     <string name="create_event">Create event</string>
     <string name="edit_event">Edit event</string>
-    <string name="remove_event">Remove event</string>
+    <string name="delete_event">Delete event</string>
     <string name="export_event">Export event</string>
 
     <string name="event_type_0">Classics</string>
@@ -27,10 +27,11 @@
     <string name="event_type_3">Orienteering</string>
     <string name="event_type_4">Custom</string>
 
-    <string name="event_level_0">National</string>
-    <string name="event_level_1">Regional</string>
-    <string name="event_level_2">District</string>
-    <string name="event_level_3">Practice</string>
+    <string name="event_level_0">International</string>
+    <string name="event_level_1">National</string>
+    <string name="event_level_2">Regional</string>
+    <string name="event_level_3">District</string>
+    <string name="event_level_4">Practice</string>
 
     <string name="band_80m" translatable="false">80m</string>
     <string name="band_2m" translatable="false">2m</string>
@@ -44,14 +45,15 @@
         <item>@string/event_type_4</item>
     </string-array>
 
-    <string-array name="levels">
+    <string-array name="event_levels">
         <item>@string/event_level_0</item>
         <item>@string/event_level_1</item>
         <item>@string/event_level_2</item>
         <item>@string/event_level_3</item>
+        <item>@string/event_level_4</item>
     </string-array>
 
-    <string-array name="bands">
+    <string-array name="event_bands">
         <item>@string/band_80m</item>
         <item>@string/band_2m</item>
         <item>@string/band_combined</item>
@@ -61,4 +63,5 @@
     <string name="cancel">Cancel</string>
     <string name="start_time_00">Start time</string>
     <string name="required">Required</string>
+    <string name="delete_confirmation">Do you really want to delete this event?</string>
 </resources>

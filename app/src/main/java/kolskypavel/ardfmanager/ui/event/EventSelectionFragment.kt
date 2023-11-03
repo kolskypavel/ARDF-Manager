@@ -1,5 +1,6 @@
 package kolskypavel.ardfmanager.ui.event
 
+import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,12 +17,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kolskypavel.ardfmanager.R
-import kolskypavel.ardfmanager.room.entitity.EventBand
-import kolskypavel.ardfmanager.room.entitity.EventLevel
-import kolskypavel.ardfmanager.room.entitity.EventType
+import kolskypavel.ardfmanager.room.entitity.Event
 import kotlinx.coroutines.launch
-import java.time.LocalDate
-import java.time.LocalTime
 
 /**
  * A fragment representing a list of Items.
@@ -54,7 +51,7 @@ class EventSelectionFragment : Fragment() {
 
         eventAddFAB.setOnClickListener {
             findNavController().navigate(
-                EventSelectionFragmentDirections.eventModification(-1, null, null)
+                EventSelectionFragmentDirections.eventModification(true, -1, null)
             )
         }
 
@@ -88,64 +85,60 @@ class EventSelectionFragment : Fragment() {
     private fun setFragmentListener() {
         setFragmentResultListener(EventCreateDialogFragment.REQUEST_EVENT_MODIFICATION) { _, bundle ->
             val create = bundle.getBoolean(EventCreateDialogFragment.BUNDLE_KEY_CREATE)
+            val event: Event
             val position = bundle.getInt(EventCreateDialogFragment.BUNDLE_KEY_POSITION)
-            val eventName = bundle.getString(EventCreateDialogFragment.BUNDLE_KEY_EVENT_NAME)!!
-            val eventDate =
-                LocalDate.parse(bundle.getString(EventCreateDialogFragment.BUNDLE_KEY_EVENT_DATE))
-            val eventTime =
-                LocalTime.parse(bundle.getString(EventCreateDialogFragment.BUNDLE_KEY_EVENT_START_TIME))
-            val eventType: EventType
-            val eventLevel: EventLevel
-            val eventBand: EventBand
-
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                eventType =
-                    bundle.getSerializable(
-                        EventCreateDialogFragment.BUNDLE_KEY_EVENT_TYPE,
-                        EventType::class.java
-                    )!!
-                eventLevel = bundle.getSerializable(
-                    EventCreateDialogFragment.BUNDLE_KEY_EVENT_LEVEL,
-                    EventLevel::class.java
+                event = bundle.getSerializable(
+                    EventCreateDialogFragment.BUNDLE_KEY_EVENT,
+                    Event::class.java
                 )!!
-                eventBand = bundle.getSerializable(
-                    EventCreateDialogFragment.BUNDLE_KEY_EVENT_BAND,
-                    EventBand::class.java
-                )!!
-
             } else {
-                eventType =
-                    bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT_TYPE) as EventType
-                eventLevel =
-                    bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT_LEVEL) as EventLevel
-                eventBand =
-                    bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT_BAND) as EventBand
+                event = bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT) as Event
             }
 
             //create new event
             if (create) {
-                eventsViewModel.createEvent(
-                    eventName,
-                    eventDate,
-                    eventTime,
-                    eventType,
-                    eventLevel,
-                    eventBand
-                )
+                eventsViewModel.createEvent(event)
             }
             //Edit an existing event
             else {
-                eventsViewModel.modifyEvent(
-                    position, eventName,
-                    eventDate,
-                    eventTime,
-                    eventType,
-                    eventLevel,
-                    eventBand
-                )
+                eventsViewModel.modifyEvent(event)
+                recyclerView.adapter?.notifyDataSetChanged()
             }
         }
+    }
+
+    private fun contextMenuActions(action: Int, position: Int, event: Event) {
+        when (action) {
+            0 -> findNavController().navigate(
+                EventSelectionFragmentDirections.eventModification(
+                    false, position, event
+                )
+            )
+
+            1 -> confirmEventDeletion(event)
+        }
+    }
+
+    /**
+     * Displays alert dialog to confirm the deletion of the event
+     */
+    private fun confirmEventDeletion(event: Event) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(getString(R.string.delete_event))
+        val message = getString(R.string.delete_confirmation) +" " + event.name
+        builder.setMessage(message)
+
+        builder.setPositiveButton(R.string.ok) { dialog, _ ->
+            eventsViewModel.deleteEvent(event.id)
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton(R.string.cancel) { dialog, _ ->
+            dialog.cancel()
+        }
+        builder.show()
     }
 
     private fun setRecyclerAdapter() {
@@ -154,19 +147,23 @@ class EventSelectionFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
                 eventsViewModel.events.collect { events ->
-                    recyclerView.adapter = EventRecyclerViewAdapter(events, { eventId ->
-                        findNavController().navigate(
-                            EventSelectionFragmentDirections.openEvent(
-                                eventId
-                            )
-                        )
-                    }) { position, name, date, time, eventType, eventLevel, eventBand ->
-                        findNavController().navigate(
-                            EventSelectionFragmentDirections.eventModification(
-                                position,
-                                date,
-                                time,
-                            )
+                    recyclerView.adapter = context?.let {
+                        EventRecyclerViewAdapter(
+                            events, { eventId ->
+                                findNavController().navigate(
+                                    EventSelectionFragmentDirections.openEvent(
+                                        eventId
+                                    )
+                                )
+                            },
+                            //Context menu action setup
+                            { action, position, event ->
+                                contextMenuActions(
+                                    action,
+                                    position,
+                                    event
+                                )
+                            }, it
                         )
                     }
                 }

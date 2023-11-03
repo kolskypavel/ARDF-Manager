@@ -36,8 +36,13 @@
         <item name="android:textColor">@color/black</item>
     </style>
 
-    <style name="dialog_text" >
+    <style name="dialog_text">
         <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="si_status_disconnected">
+        <item name="android:background">@color/red_disconnected</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
 </resources>

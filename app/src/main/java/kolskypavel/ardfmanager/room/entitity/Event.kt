@@ -3,6 +3,7 @@ package kolskypavel.ardfmanager.room.entitity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.io.Serializable
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
@@ -14,6 +15,6 @@ data class Event(
     @ColumnInfo(name = "date") var date: LocalDate,
     @ColumnInfo(name = "start_time") var startTime: LocalTime,
     @ColumnInfo(name = "event_type") var eventType: EventType,
-    @ColumnInfo(name = "event_level") var level: EventLevel,
+    @ColumnInfo(name = "event_level") var eventLevel: EventLevel,
     @ColumnInfo(name = "event_band") var eventBand: EventBand
-)
+) : Serializable

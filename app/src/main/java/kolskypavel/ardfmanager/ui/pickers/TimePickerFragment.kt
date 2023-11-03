@@ -7,9 +7,11 @@ import android.widget.TimePicker
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
+import androidx.navigation.fragment.navArgs
 import java.time.LocalTime
 
 class TimePickerFragment : DialogFragment() {
+    private val args: TimePickerFragmentArgs by navArgs()
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         val timeListener =
@@ -20,7 +22,7 @@ class TimePickerFragment : DialogFragment() {
                     bundleOf(BUNDLE_KEY_TIME to resTime)
                 )
             }
-        val localTime = LocalTime.now()
+        val localTime = args.curTime
         val hour: Int = localTime.hour
         val minute: Int = localTime.minute
 

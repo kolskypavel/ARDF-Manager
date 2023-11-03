@@ -10,6 +10,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.databinding.ActivityMainBinding
+import kolskypavel.ardfmanager.dataprocessor.DataProcessor
 import kolskypavel.ardfmanager.room.ARDFRepository
 import kolskypavel.ardfmanager.ui.event.EventsViewModel
 
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         ARDFRepository.initialize(this)
+        DataProcessor.initialize(this)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
