@@ -9,8 +9,8 @@ import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
-import kolskypavel.ardfmanager.dataprocessor.DataProcessor
-import kolskypavel.ardfmanager.room.entitity.Event
+import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.room.entitity.Event
 import java.util.UUID
 
 /**

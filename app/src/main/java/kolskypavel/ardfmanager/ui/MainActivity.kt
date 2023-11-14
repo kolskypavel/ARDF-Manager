@@ -1,5 +1,10 @@
 package kolskypavel.ardfmanager.ui
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.hardware.usb.UsbDevice
+import android.hardware.usb.UsbManager
 import android.os.Bundle
 import android.view.View
 import androidx.activity.viewModels
@@ -10,18 +15,40 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.databinding.ActivityMainBinding
-import kolskypavel.ardfmanager.dataprocessor.DataProcessor
-import kolskypavel.ardfmanager.room.ARDFRepository
+import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.ui.event.EventsViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val eventsViewModel: EventsViewModel by viewModels()
+    private val ACTION_USB_PERMISSION = "kolskypavel.ardfmanager.USB_PERMISSION"
+
+    private val usbReceiver = object : BroadcastReceiver() {
+
+        override fun onReceive(context: Context, intent: Intent) {
+            if (ACTION_USB_PERMISSION == intent.action) {
+                synchronized(this) {
+                    val accessory =
+                        intent.getParcelableExtra<UsbDevice>(UsbManager.EXTRA_ACCESSORY)
+
+                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
+                        accessory?.apply {
+                            //call method to set up accessory communication
+                        }
+                    } else {
+
+                    }
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
+
+        requestUSBPermissions()
         ARDFRepository.initialize(this)
         DataProcessor.initialize(this)
 
@@ -35,8 +62,8 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_competitors,
-                R.id.navigation_categories,
+                R.id.event_menu_competitors,
+                R.id.event_menu_categories,
                 R.id.navigation_readouts,
                 R.id.navigation_results
             )
@@ -45,12 +72,30 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.navigation_competitors, R.id.navigation_categories, R.id.navigation_readouts, R.id.navigation_results -> navView.visibility =
+                R.id.event_menu_competitors, R.id.event_menu_categories, R.id.navigation_readouts, R.id.navigation_results, R.id.categoryCreateDialogFragment -> navView.visibility =
                     View.VISIBLE
 
                 else -> navView.visibility = View.GONE
             }
         }
 
+    }
+
+    /**
+     * Request USB permissions
+     */
+    private fun requestUSBPermissions() {
+
+
+//        val manager = getSystemService(Context.USB_SERVICE) as UsbManager
+//        val permissionIntent = PendingIntent.getBroadcast(
+//            this, 0, Intent(ACTION_USB_PERMISSION),
+//            PendingIntent.FLAG_IMMUTABLE
+//        )
+//
+//        val filter = IntentFilter(ACTION_USB_PERMISSION)
+//        registerReceiver(usbReceiver, filter)
+//
+//        manager.requestPermission(manager.deviceList[0], permissionIntent)
     }
 }

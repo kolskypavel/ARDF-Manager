@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.ARDFManager" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Primary brand color. -->
+         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
@@ -13,10 +13,10 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
 
         <!-- Customize your theme here. -->
-        <item name="android:dialogTheme">@style/event_dialog</item>
+        <item name="android:dialogTheme">@style/add_dialog</item>
     </style>
 
-    <style name="event_dialog" parent="@style/Theme.AppCompat.Dialog">
+    <style name="add_dialog" parent="@style/Theme.AppCompat.Dialog">
         <item name="android:windowNoTitle">false</item>
         <item name="android:textColor">@color/black</item>
 
@@ -43,6 +43,11 @@
     <style name="si_status_disconnected">
         <item name="android:background">@color/red_disconnected</item>
         <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="dialog_checkbox" parent="Widget.AppCompat.CompoundButton.CheckBox">
+        <item name="android:textColor">@color/black</item>
+        <item name="buttonTint">@color/black</item>
     </style>
 
 </resources>

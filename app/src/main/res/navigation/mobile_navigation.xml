@@ -11,27 +11,47 @@
         tools:layout="@layout/fragment_event_selection">
         <action
             android:id="@+id/openEvent"
-            app:destination="@id/navigation" />
+            app:destination="@id/bottomNav" />
         <action
             android:id="@+id/eventModification"
             app:destination="@id/eventCreateDialogFragment" />
     </fragment>
 
     <navigation
-        android:id="@+id/navigation"
-        app:startDestination="@id/navigation_competitors">
+        android:id="@+id/bottomNav"
+        app:startDestination="@id/event_menu_categories">
 
+        <dialog
+            android:id="@+id/competitorCreateDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.competitors.CompetitorCreateDialogFragment"
+            android:label="CompetitorCreateDialogFragment" >
+            <argument
+                android:name="create"
+                app:argType="boolean" />
+            <argument
+                android:name="competitor"
+                app:argType="kolskypavel.ardfmanager.backend.room.entitity.Competitor"
+                app:nullable="true" />
+        </dialog>
         <fragment
-            android:id="@+id/navigation_competitors"
+            android:id="@+id/event_menu_competitors"
             android:name="kolskypavel.ardfmanager.ui.competitors.CompetitorsFragment"
             android:label="@string/title_competitors"
-            tools:layout="@layout/fragment_competitors" />
+            tools:layout="@layout/fragment_competitors" >
+            <action
+                android:id="@+id/modifyCompetitor"
+                app:destination="@id/competitorCreateDialogFragment" />
+        </fragment>
 
         <fragment
-            android:id="@+id/navigation_categories"
+            android:id="@+id/event_menu_categories"
             android:name="kolskypavel.ardfmanager.ui.categories.CategoriesFragment"
             android:label="@string/title_categories"
-            tools:layout="@layout/fragment_categories" />
+            tools:layout="@layout/fragment_categories" >
+            <action
+                android:id="@+id/modifyCategory"
+                app:destination="@id/categoryCreateDialogFragment" />
+        </fragment>
 
         <fragment
             android:id="@+id/navigation_readouts"
@@ -43,10 +63,28 @@
             android:name="kolskypavel.ardfmanager.ui.readouts.ResultsFragment"
             android:label="fragment_results"
             tools:layout="@layout/fragment_results" />
-        <argument
-            android:name="eventId"
-            app:argType="java.util.UUID" />
+
+        <dialog
+            android:id="@+id/categoryCreateDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.categories.CategoryCreateDialogFragment"
+            android:label="CategoryCreateDialogFragment" >
+            <argument
+                android:name="create"
+                app:argType="boolean" />
+            <argument
+                android:name="position"
+                app:argType="integer" />
+            <argument
+                android:name="category"
+                app:argType="kolskypavel.ardfmanager.backend.room.entitity.Category"
+                app:nullable="true" />
+            <argument
+                android:name="event"
+                app:argType="kolskypavel.ardfmanager.backend.room.entitity.Event" />
+
+        </dialog>
     </navigation>
+
     <dialog
         android:id="@+id/eventCreateDialogFragment"
         android:name="kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment"
@@ -59,7 +97,7 @@
             app:argType="integer" />
         <argument
             android:name="event"
-            app:argType="kolskypavel.ardfmanager.room.entitity.Event"
+            app:argType="kolskypavel.ardfmanager.backend.room.entitity.Event"
             app:nullable="true" />
         <action
             android:id="@+id/action_eventCreateDialogFragment_to_eventSelectionFragment"

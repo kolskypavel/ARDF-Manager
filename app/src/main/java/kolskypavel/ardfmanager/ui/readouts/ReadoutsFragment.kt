@@ -4,13 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.databinding.FragmentReadoutsBinding
+import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 
 class ReadoutsFragment : Fragment() {
 
     private var _binding: FragmentReadoutsBinding? = null
+    private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
+    private val dataProcessor = DataProcessor.get()
+
+    private lateinit var readoutToolbar: Toolbar
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -23,12 +31,19 @@ class ReadoutsFragment : Fragment() {
     ): View {
 
         _binding = FragmentReadoutsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
 
-        val textView: TextView = binding.textNotifications
-
-        return root
+        return binding.root
     }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        readoutToolbar = view.findViewById(R.id.readouts_toolbar)
+
+        selectedEventViewModel.event.observe(viewLifecycleOwner) { event ->
+            readoutToolbar.title = event.name
+            readoutToolbar.subtitle = dataProcessor.eventTypeToString(event.eventType)
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

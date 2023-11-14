@@ -2,8 +2,8 @@ package kolskypavel.ardfmanager.ui.event
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kolskypavel.ardfmanager.dataprocessor.DataProcessor
-import kolskypavel.ardfmanager.room.entitity.Event
+import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

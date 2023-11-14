@@ -14,11 +14,11 @@ import androidx.navigation.fragment.navArgs
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import kolskypavel.ardfmanager.R
-import kolskypavel.ardfmanager.dataprocessor.DataProcessor
-import kolskypavel.ardfmanager.room.entitity.Event
-import kolskypavel.ardfmanager.room.entitity.EventBand
-import kolskypavel.ardfmanager.room.entitity.EventLevel
-import kolskypavel.ardfmanager.room.entitity.EventType
+import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.enums.EventBand
+import kolskypavel.ardfmanager.backend.room.enums.EventLevel
+import kolskypavel.ardfmanager.backend.room.enums.EventType
 import kolskypavel.ardfmanager.ui.pickers.DatePickerFragment
 import kolskypavel.ardfmanager.ui.pickers.TimePickerFragment
 import java.time.LocalDate
@@ -51,12 +51,12 @@ class EventCreateDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setStyle(STYLE_NORMAL, R.style.event_dialog)
+        setStyle(STYLE_NORMAL, R.style.add_dialog)
 
-        nameEditText = view.findViewById(R.id.event_dialog_name)
+        nameEditText = view.findViewById(R.id.category_dialog_codes)
         dateView = view.findViewById(R.id.event_dialog_date)
         startTimeView = view.findViewById(R.id.event_dialog_start_time)
-        eventTypePicker = view.findViewById(R.id.event_dialog_type)
+        eventTypePicker = view.findViewById(R.id.category_dialog_type)
         eventLevelPicker = view.findViewById(R.id.event_dialog_level)
         eventBandPicker = view.findViewById(R.id.event_dialog_band)
         cancelButton = view.findViewById(R.id.event_dialog_cancel)
@@ -72,6 +72,9 @@ class EventCreateDialogFragment : DialogFragment() {
         setPickers()
     }
 
+    /**
+     * Set the date and time picker in an external dialog
+     */
     private fun setPickers() {
         dateView.setOnClickListener {
             findNavController().navigate(EventCreateDialogFragmentDirections.selectDate(event.date))
@@ -97,7 +100,7 @@ class EventCreateDialogFragment : DialogFragment() {
 
         //Create new event
         if (args.create) {
-            dialog?.setTitle(R.string.create_event)
+            dialog?.setTitle(R.string.event_create)
             event = Event(
                 UUID.randomUUID(),
                 "",
@@ -109,7 +112,7 @@ class EventCreateDialogFragment : DialogFragment() {
             )
         } else {
             event = args.event!!
-            dialog?.setTitle(R.string.edit_event)
+            dialog?.setTitle(R.string.event_edit)
             nameEditText.setText(event.name)
         }
 

@@ -3,13 +3,14 @@ package kolskypavel.ardfmanager.ui.event
 import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -17,7 +18,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kolskypavel.ardfmanager.R
-import kolskypavel.ardfmanager.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
@@ -28,8 +32,10 @@ class EventSelectionFragment : Fragment() {
     private lateinit var toolbar: Toolbar
     private lateinit var eventAddFAB: FloatingActionButton
     private lateinit var recyclerView: RecyclerView
+    private var mLastClickTime: Long = 0
 
-    private val eventsViewModel: EventsViewModel by viewModels()
+    private val eventsViewModel: EventsViewModel by activityViewModels()
+    private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,15 +50,20 @@ class EventSelectionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         toolbar = view.findViewById(R.id.event_toolbar)
-        eventAddFAB = view.findViewById(R.id.btn_event_add)
+        eventAddFAB = view.findViewById(R.id.event_btn_add)
 
         toolbar.setTitle(R.string.event_toolbar_title)
         toolbar.inflateMenu(R.menu.event_fragment_menu)
 
         eventAddFAB.setOnClickListener {
-            findNavController().navigate(
-                EventSelectionFragmentDirections.eventModification(true, -1, null)
-            )
+
+            //Prevent accidental double click
+            if (SystemClock.elapsedRealtime() - mLastClickTime > 1500) {
+                findNavController().navigate(
+                    EventSelectionFragmentDirections.eventModification(true, -1, null)
+                )
+            }
+            mLastClickTime = SystemClock.elapsedRealtime()
         }
 
         setMenuListener()
@@ -63,16 +74,16 @@ class EventSelectionFragment : Fragment() {
     private fun setMenuListener() {
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.menu_item_import_file -> {
+                R.id.event_menu_import_file -> {
                     true
                 }
 
-                R.id.navigation_categories -> {
+                R.id.event_menu_categories -> {
                     // Navigate to settings screen.
                     true
                 }
 
-                R.id.navigation_competitors -> {
+                R.id.event_menu_competitors -> {
                     // Display about app dialog
                     true
                 }
@@ -104,12 +115,12 @@ class EventSelectionFragment : Fragment() {
             //Edit an existing event
             else {
                 eventsViewModel.modifyEvent(event)
-                recyclerView.adapter?.notifyDataSetChanged()
+                recyclerView.adapter?.notifyItemChanged(position)
             }
         }
     }
 
-    private fun contextMenuActions(action: Int, position: Int, event: Event) {
+    private fun recyclerViewContextMenuActions(action: Int, position: Int, event: Event) {
         when (action) {
             0 -> findNavController().navigate(
                 EventSelectionFragmentDirections.eventModification(
@@ -126,8 +137,8 @@ class EventSelectionFragment : Fragment() {
      */
     private fun confirmEventDeletion(event: Event) {
         val builder = AlertDialog.Builder(context)
-        builder.setTitle(getString(R.string.delete_event))
-        val message = getString(R.string.delete_confirmation) +" " + event.name
+        builder.setTitle(getString(R.string.event_delete))
+        val message = getString(R.string.delete_confirmation) + " " + event.name
         builder.setMessage(message)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
@@ -150,15 +161,19 @@ class EventSelectionFragment : Fragment() {
                     recyclerView.adapter = context?.let {
                         EventRecyclerViewAdapter(
                             events, { eventId ->
+
+                                // Pass the event id into view Model
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    selectedEventViewModel.setEvent(eventId)
+                                }
+
                                 findNavController().navigate(
-                                    EventSelectionFragmentDirections.openEvent(
-                                        eventId
-                                    )
+                                    EventSelectionFragmentDirections.openEvent()
                                 )
                             },
                             //Context menu action setup
                             { action, position, event ->
-                                contextMenuActions(
+                                recyclerViewContextMenuActions(
                                     action,
                                     position,
                                     event
