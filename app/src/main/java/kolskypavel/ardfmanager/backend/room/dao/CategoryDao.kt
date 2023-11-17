@@ -10,10 +10,10 @@ import java.util.UUID
 
 @Dao
 interface CategoryDao {
-    @Query("SELECT * FROM category WHERE event_id=(:id)")
-    fun getCategoriesForEvent(id: UUID): Flow<List<Category>>
+    @Query("SELECT * FROM category WHERE event_id=(:eventId)")
+    fun getCategoriesForEvent(eventId: UUID): Flow<List<Category>>
 
-    @Query("SELECT * FROM category WHERE id=(:id)")
+    @Query("SELECT * FROM category WHERE id=(:id) LIMIT 1")
     fun getCategory(id: UUID): Flow<List<Category>>
 
     @Insert
@@ -23,5 +23,5 @@ interface CategoryDao {
     suspend fun updateCategory(category: Category)
 
     @Query("DELETE FROM category WHERE id=(:id) ")
-    fun deleteCategory(id: UUID)
+    suspend fun deleteCategory(id: UUID)
 }

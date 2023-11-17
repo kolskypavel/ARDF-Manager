@@ -34,7 +34,7 @@ class EventSelectionFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private var mLastClickTime: Long = 0
 
-    private val eventsViewModel: EventsViewModel by activityViewModels()
+    private val eventViewModel: EventViewModel by activityViewModels()
     private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -83,7 +83,7 @@ class EventSelectionFragment : Fragment() {
                     true
                 }
 
-                R.id.event_menu_competitors -> {
+                R.id.event_menu_about_the_app -> {
                     // Display about app dialog
                     true
                 }
@@ -96,25 +96,24 @@ class EventSelectionFragment : Fragment() {
     private fun setFragmentListener() {
         setFragmentResultListener(EventCreateDialogFragment.REQUEST_EVENT_MODIFICATION) { _, bundle ->
             val create = bundle.getBoolean(EventCreateDialogFragment.BUNDLE_KEY_CREATE)
-            val event: Event
             val position = bundle.getInt(EventCreateDialogFragment.BUNDLE_KEY_POSITION)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                event = bundle.getSerializable(
+            val event: Event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                bundle.getSerializable(
                     EventCreateDialogFragment.BUNDLE_KEY_EVENT,
                     Event::class.java
                 )!!
             } else {
-                event = bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT) as Event
+                bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT) as Event
             }
 
             //create new event
             if (create) {
-                eventsViewModel.createEvent(event)
+                eventViewModel.createEvent(event)
             }
             //Edit an existing event
             else {
-                eventsViewModel.modifyEvent(event)
+                eventViewModel.modifyEvent(event)
                 recyclerView.adapter?.notifyItemChanged(position)
             }
         }
@@ -138,11 +137,11 @@ class EventSelectionFragment : Fragment() {
     private fun confirmEventDeletion(event: Event) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(getString(R.string.event_delete))
-        val message = getString(R.string.delete_confirmation) + " " + event.name
+        val message = getString(R.string.event_delete_confirmation) + " " + event.name
         builder.setMessage(message)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            eventsViewModel.deleteEvent(event.id)
+            eventViewModel.deleteEvent(event.id)
             dialog.dismiss()
         }
 
@@ -157,8 +156,8 @@ class EventSelectionFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
-                eventsViewModel.events.collect { events ->
-                    recyclerView.adapter = context?.let {
+                eventViewModel.events.collect { events ->
+                    recyclerView.adapter =
                         EventRecyclerViewAdapter(
                             events, { eventId ->
 
@@ -178,9 +177,8 @@ class EventSelectionFragment : Fragment() {
                                     position,
                                     event
                                 )
-                            }, it
+                            }, requireContext()
                         )
-                    }
                 }
             }
         }

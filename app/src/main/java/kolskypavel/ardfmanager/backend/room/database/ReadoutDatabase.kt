@@ -7,7 +7,7 @@ import kolskypavel.ardfmanager.backend.room.dao.ReadoutDao
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 
 @Database(entities = [Readout::class], version = 1, exportSchema = false)
-@TypeConverters(DateTypeConverter::class)
+@TypeConverters(DateTimeTypeConverter::class)
 abstract class ReadoutDatabase : RoomDatabase() {
     abstract fun ReadoutDao(): ReadoutDao
 }

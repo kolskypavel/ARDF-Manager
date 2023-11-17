@@ -6,7 +6,7 @@
         android:icon="@drawable/ic_category"
         android:title="@string/title_categories" />
     <item
-        android:id="@+id/event_menu_competitors"
+        android:id="@+id/event_menu_about_the_app"
         android:icon="@drawable/ic_runner"
         android:title="@string/title_competitors" />
 

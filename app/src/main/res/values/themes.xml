@@ -16,6 +16,10 @@
         <item name="android:dialogTheme">@style/add_dialog</item>
     </style>
 
+    <style name="ThemeOverlay.BottomNavView" parent="">
+        <item name="motionDurationLong1">0</item>
+    </style>
+
     <style name="add_dialog" parent="@style/Theme.AppCompat.Dialog">
         <item name="android:windowNoTitle">false</item>
         <item name="android:textColor">@color/black</item>

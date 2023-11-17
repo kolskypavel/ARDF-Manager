@@ -64,7 +64,8 @@
     <string name="cancel">Cancel</string>
     <string name="start_time_00">Start time</string>
     <string name="required">Required</string>
-    <string name="delete_confirmation">Do you really want to delete this event?</string>
+    <string name="invalid">Invalid</string>
+    <string name="event_delete_confirmation">Do you really want to delete this event?</string>
     <string name="same_category_type">Same type as event</string>
 
     <!--Categories-->
@@ -75,9 +76,11 @@
     <string name="year_of_birth">Year of birth</string>
     <string name="si_codes">SI codes</string>
     <string name="category_import_text">Import category from a file</string>
+    <string name="no_category">No category</string>
     <string name="category_create">Create category</string>
     <string name="category_edit">Edit category</string>
     <string name="category_delete">Delete category</string>
+    <string name="category_delete_confirmation">Do you really want to delete this category?</string>
     <string name="last_name">Last name</string>
     <string name="length">Length (km)</string>
     <string name="climb">Climb (m)</string>
@@ -92,13 +95,16 @@
     <string name="competitor_create">Create competitor</string>
     <string name="competitor_edit">Edit competitor</string>
     <string name="competitor_delete">Delete competitor</string>
+    <string name="competitor_delete_confirmation">Do you really want to delete this competitor?</string>
     <string name="index_callsign">Index/Callsign</string>
     <string name="si_number">SI number</string>
-    <string name="automatic">Automatically</string>
+    <string name="automatic">Automatic</string>
     <string name="rent_chip">Rent chip</string>
     <string name="edit_punches">Edit punches</string>
 
     <string name="man">Man</string>
     <string name="woman">Woman</string>
+
+    <string name="si_disconnected">SI station disconnected</string>
 
 </resources>

@@ -3,6 +3,7 @@ package kolskypavel.ardfmanager.backend
 import android.content.Context
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.Category
+import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.enums.EventBand
@@ -80,14 +81,46 @@ class DataProcessor private constructor(context: Context) {
     }
 
     fun updateCategory(category: Category, siCodes: String) {
+        //TODO: Finish the update of category
+    }
 
+    fun deleteCategory(id: UUID) {
+        runBlocking {
+            ardfRepository.deleteCategory(id)
+            ardfRepository.deleteControlPointsForCategory(id)
+        }
     }
 
     //COMPETITORS
-
     fun getCompetitorsForEvent(eventId: UUID) =
         ardfRepository.getCompetitorsForEvent(eventId)
 
+    fun checkIfSINumberExists(siNumber: Int): Boolean {
+        return runBlocking {
+            return@runBlocking ardfRepository.checkIfSINumberExists(siNumber) > 0
+        }
+    }
+
+    fun createCompetitor(competitor: Competitor) {
+        runBlocking {
+            ardfRepository.createCompetitor(competitor)
+            //TODO:add punches
+        }
+    }
+
+    fun updateCompetitor(competitor: Competitor) {
+        runBlocking {
+            ardfRepository.updateCompetitor(competitor)
+            //TODO:update punches
+        }
+    }
+
+    fun deleteCompetitor(id: UUID) {
+        runBlocking {
+            ardfRepository.deleteCompetitor(id)
+            //TODO:delete punches
+        }
+    }
 
     //READOUTS
 

@@ -53,7 +53,7 @@ class EventCreateDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.add_dialog)
 
-        nameEditText = view.findViewById(R.id.category_dialog_codes)
+        nameEditText = view.findViewById(R.id.event_dialog_name)
         dateView = view.findViewById(R.id.event_dialog_date)
         startTimeView = view.findViewById(R.id.event_dialog_start_time)
         eventTypePicker = view.findViewById(R.id.category_dialog_type)

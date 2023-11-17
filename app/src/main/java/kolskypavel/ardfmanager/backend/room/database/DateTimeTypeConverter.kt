@@ -1,11 +1,12 @@
 package kolskypavel.ardfmanager.backend.room.database
 
 import androidx.room.TypeConverter
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-class DateTypeConverter {
+class DateTimeTypeConverter {
     @TypeConverter
     fun fromDateTime(date: LocalDateTime): String {
         return date.toString()
@@ -34,5 +35,15 @@ class DateTypeConverter {
     @TypeConverter
     fun toDate(stringDate: String): LocalDate {
         return LocalDate.parse(stringDate)
+    }
+
+    @TypeConverter
+    fun fromDuration(duration: Duration): String {
+        return duration.toString()
+    }
+
+    @TypeConverter
+    fun toDuration(stringDuration: String): Duration {
+        return Duration.parse(stringDuration)
     }
 }

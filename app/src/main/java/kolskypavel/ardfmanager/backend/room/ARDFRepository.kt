@@ -85,10 +85,16 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun deleteCategory(id: UUID) = categoryDatabase.categoryDao().deleteCategory(id)
 
-    //Competitors
+    //Control point
+    suspend fun getControlPointsForCategory(categoryId: UUID) =
+        controlPointDatabase.controlPointDao().getControlPointsForCategory(categoryId)
 
+    suspend fun deleteControlPointsForCategory(categoryId: UUID) =
+        controlPointDatabase.controlPointDao().getControlPointsForCategory(categoryId)
+
+    //Competitors
     fun getCompetitor(id: UUID) = competitorDatabase.CompetitorDao().getCompetitor(id)
-    fun getCompetitorsForEvent(eventId: UUID) =
+    fun getCompetitorsForEvent(eventId: UUID): Flow<List<Competitor>> =
         competitorDatabase.CompetitorDao().getCompetitorsForEvent(eventId)
 
     suspend fun createCompetitor(competitor: Competitor) =
@@ -98,6 +104,9 @@ class ARDFRepository private constructor(context: Context) {
         competitorDatabase.CompetitorDao().updateCompetitor(competitor)
 
     suspend fun deleteCompetitor(id: UUID) = competitorDatabase.CompetitorDao().deleteCompetitor(id)
+
+    suspend fun checkIfSINumberExists(siNumber: Int): Int =
+        competitorDatabase.CompetitorDao().checkIfSINumberExists(siNumber)
 
     //Readouts
     fun getReadoutsForEvent(eventId: UUID) =

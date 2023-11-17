@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 
 class CategoryRecyclerViewAdapter(
@@ -18,6 +19,7 @@ class CategoryRecyclerViewAdapter(
 ) :
     RecyclerView.Adapter<CategoryRecyclerViewAdapter.CategoryViewHolder>() {
 
+    private val dataProcessor = DataProcessor.get()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CategoryViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
             .inflate(R.layout.recycler_item_category, parent, false)
@@ -33,7 +35,7 @@ class CategoryRecyclerViewAdapter(
         val item = values[position]
         holder.title.text = item.name
         holder.competitors.text = "TODO"
-        holder.type.text = "TODO"
+        holder.type.text = dataProcessor.eventTypeToString(item.eventType)
 
         holder.moreBtn.setOnClickListener {
 
@@ -53,7 +55,7 @@ class CategoryRecyclerViewAdapter(
                     }
 
                     R.id.menu_item_delete_category -> {
-                        //TODO: Removal of category
+                        onMoreClicked(2, position, item)
                         true
                     }
 

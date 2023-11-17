@@ -7,7 +7,7 @@ import kolskypavel.ardfmanager.backend.room.dao.EventDao
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 
 @Database(entities = [Event::class], version = 1, exportSchema = false)
-@TypeConverters(DateTypeConverter::class)
+@TypeConverters(DateTimeTypeConverter::class)
 abstract class EventDatabase : RoomDatabase() {
     abstract fun eventDao(): EventDao
 }

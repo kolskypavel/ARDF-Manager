@@ -31,7 +31,8 @@
     <string name="event_type_4">Vlastní</string>
     <string name="required">Požadováno</string>
     <string name="event_level_4">Trénink</string>
-    <string name="delete_confirmation">Opravdu chcete smazat závod?</string>
+    <string name="invalid">Neplatný</string>
+    <string name="event_delete_confirmation">Opravdu chcete smazat závod?</string>
     <string name="same_category_type">Stejný typ jako závod</string>
     <string name="category">Kategorie</string>
     <string name="categories_age_based">Podle věku</string>
@@ -40,8 +41,10 @@
     <string name="year_of_birth">Ročník</string>
     <string name="si_codes">SI kódy</string>
     <string name="category_import_text">Importovat kategorii ze souboru</string>
+    <string name="no_category">Bez kategorie</string>
     <string name="category_create">Vytvořit kategorii</string>
     <string name="category_edit">Upravit kategorii</string>
+    <string name="category_delete_confirmation">Opravdu chcete smazat tuto kategorii?</string>
     <string name="last_name">Příjmení</string>
     <string name="competitor_import_file">Importovat závodníky ze souboru</string>
     <string name="club">Klub</string>
@@ -49,6 +52,7 @@
     <string name="woman">Žena</string>
     <string name="competitor_create">Vytvořit závodníka</string>
     <string name="competitor_edit">Upravit závodníka</string>
+    <string name="competitor_delete_confirmation">Opravdu chcete smazat tohoto závodníka?</string>
     <string name="index_callsign">Index/Volačka</string>
     <string name="si_number">Číslo SI</string>
     <string name="automatic">Automaticky</string>
@@ -61,4 +65,5 @@
     <string name="edit_punches">Upravit ražení</string>
     <string name="competitor_delete">Smazat závodníka</string>
     <string name="category_delete">Smazat kategorii</string>
+    <string name="si_disconnected">SI čtečka nepřipojena</string>
 </resources>

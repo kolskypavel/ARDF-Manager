@@ -7,6 +7,7 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -14,15 +15,16 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kolskypavel.ardfmanager.R
-import kolskypavel.ardfmanager.databinding.ActivityMainBinding
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
-import kolskypavel.ardfmanager.ui.event.EventsViewModel
+import kolskypavel.ardfmanager.databinding.ActivityMainBinding
+import kolskypavel.ardfmanager.ui.event.EventViewModel
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val eventsViewModel: EventsViewModel by viewModels()
+    private val eventViewModel: EventViewModel by viewModels()
+    private lateinit var siStatusTextView: TextView
     private val ACTION_USB_PERMISSION = "kolskypavel.ardfmanager.USB_PERMISSION"
 
     private val usbReceiver = object : BroadcastReceiver() {
@@ -56,13 +58,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val navView: BottomNavigationView = binding.navView
+        siStatusTextView = binding.siStatusView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.event_menu_competitors,
+                R.id.event_menu_about_the_app,
                 R.id.event_menu_categories,
                 R.id.navigation_readouts,
                 R.id.navigation_results
@@ -72,10 +75,17 @@ class MainActivity : AppCompatActivity() {
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.event_menu_competitors, R.id.event_menu_categories, R.id.navigation_readouts, R.id.navigation_results, R.id.categoryCreateDialogFragment -> navView.visibility =
-                    View.VISIBLE
+                R.id.event_menu_about_the_app, R.id.event_menu_categories, R.id.navigation_readouts,
+                R.id.navigation_results, R.id.categoryCreateDialogFragment, R.id.competitorCreateDialogFragment
+                -> {
+                    navView.visibility = View.VISIBLE
+                    siStatusTextView.visibility = View.VISIBLE
+                }
 
-                else -> navView.visibility = View.GONE
+                else -> {
+                    navView.visibility = View.GONE
+                    siStatusTextView.visibility = View.GONE
+                }
             }
         }
 

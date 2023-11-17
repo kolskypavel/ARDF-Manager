@@ -41,6 +41,7 @@ class ResultsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         resultsToolbar = view.findViewById(R.id.results_toolbar)
+        resultsToolbar.inflateMenu(R.menu.results_fragment_menu)
 
         selectedEventViewModel.event.observe(viewLifecycleOwner) { event ->
             resultsToolbar.title = event.name

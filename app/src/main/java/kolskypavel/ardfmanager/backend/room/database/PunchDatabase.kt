@@ -7,7 +7,7 @@ import kolskypavel.ardfmanager.backend.room.dao.PunchDao
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 
 @Database(entities = [Punch::class], version = 1, exportSchema = false)
-@TypeConverters(DateTypeConverter::class)
+@TypeConverters(DateTimeTypeConverter::class)
 abstract class PunchDatabase : RoomDatabase() {
     abstract fun punchDao(): PunchDao
 }

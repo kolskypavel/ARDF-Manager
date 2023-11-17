@@ -8,9 +8,11 @@ import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
+import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
@@ -20,6 +22,8 @@ import java.util.UUID
 class SelectedEventViewModel : ViewModel() {
     private val dataProcessor = DataProcessor.get()
     private val _event = MutableLiveData<Event>()
+    var isEventSelected = false
+    var siReaderStatus = SIReaderStatus.DISCONNECTED
 
     val event: LiveData<Event> get() = _event
     private val _categories: MutableStateFlow<List<Category>> = MutableStateFlow(emptyList())
@@ -27,7 +31,6 @@ class SelectedEventViewModel : ViewModel() {
 
     private val _competitors: MutableStateFlow<List<Competitor>> = MutableStateFlow(emptyList())
     val competitors: StateFlow<List<Competitor>> get() = _competitors.asStateFlow()
-
 
     private val _readouts: MutableStateFlow<List<Readout>> = MutableStateFlow(emptyList())
     val readouts: StateFlow<List<Readout>> get() = _readouts.asStateFlow()
@@ -37,24 +40,42 @@ class SelectedEventViewModel : ViewModel() {
      */
     suspend fun setEvent(id: UUID) {
         _event.postValue(dataProcessor.getEvent(id))
+        isEventSelected = true
 
         runBlocking {
-            dataProcessor.getCategoriesForEvent(id).collect {
-                _categories.value = it
+
+            launch {
+                dataProcessor.getCompetitorsForEvent(id).collect {
+                    _competitors.value = it
+                }
             }
-            dataProcessor.getCompetitorsForEvent(id).collect {
-                _competitors.value = it
+            launch {
+                dataProcessor.getCategoriesForEvent(id).collect {
+                    _categories.value = it
+                }
             }
 
-            dataProcessor.getReadoutsForEvent(id).collect {
-                _readouts.value = it
+            launch {
+                dataProcessor.getReadoutsForEvent(id).collect {
+                    _readouts.value = it
+                }
             }
         }
     }
 
+    //Category
     fun createCategory(category: Category, siCodes: String) =
         dataProcessor.createCategory(category, siCodes)
 
     fun updateCategory(category: Category, siCodes: String) =
         dataProcessor.updateCategory(category, siCodes)
+
+    fun deleteCategory(categoryId: UUID) = dataProcessor.deleteCategory(categoryId)
+
+    //Competitor
+    fun createCompetitor(competitor: Competitor) = dataProcessor.createCompetitor(competitor)
+
+    fun updateCompetitor(competitor: Competitor) = dataProcessor.updateCompetitor(competitor)
+
+    fun checkIfSINumberExists(siNumber: Int) = dataProcessor.checkIfSINumberExists(siNumber)
 }

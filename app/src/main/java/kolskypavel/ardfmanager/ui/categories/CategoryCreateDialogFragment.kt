@@ -8,6 +8,7 @@ import android.widget.Button
 import android.widget.CheckBox
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.navArgs
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -16,6 +17,7 @@ import com.google.android.material.textfield.TextInputLayout
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
+import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
@@ -23,6 +25,7 @@ import java.util.UUID
 class CategoryCreateDialogFragment : DialogFragment() {
 
     private val args: CategoryCreateDialogFragmentArgs by navArgs()
+    private lateinit var selectedEventViewModel: SelectedEventViewModel
     private val dataProcessor = DataProcessor.get()
 
     private lateinit var category: Category
@@ -52,6 +55,9 @@ class CategoryCreateDialogFragment : DialogFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val sl: SelectedEventViewModel by activityViewModels()
+        selectedEventViewModel = sl
+
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.add_dialog)
 
@@ -73,6 +79,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
         populateFields()
         setButtons()
+
     }
 
     /**
@@ -99,11 +106,16 @@ class CategoryCreateDialogFragment : DialogFragment() {
                     category.climb = climbTextView.text.toString().toFloat()
                 }
 
+                val siCodes = siCodesTextView.text.toString()
+                if (args.create) {
+                    selectedEventViewModel.createCategory(category, siCodes)
+                } else {
+                    selectedEventViewModel.updateCategory(category, siCodes)
+                }
                 setFragmentResult(
                     REQUEST_CATEGORY_MODIFICATION, bundleOf(
                         BUNDLE_KEY_CREATE to args.create,
-                        BUNDLE_KEY_CATEGORY to category,
-                        BUNDLE_KEY_SI_CODES to siCodesTextView.text.toString()
+                        BUNDLE_KEY_POSITION to args.position
                     )
                 )
                 dialog?.dismiss()
@@ -134,17 +146,57 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 0F
             )
 
+            //Preset the event type
+            eventTypePicker.setText(
+                dataProcessor.eventTypeToString(args.event.eventType),
+                false
+            )
+            eventTypeLayout.isEnabled = false
+            minYearLayout.isEnabled = false
+            maxYearLayout.isEnabled = false
+
         } else {
             dialog?.setTitle(R.string.category_edit)
             category = args.category!!
-        }
+            nameTextView.setText(category.name)
 
-        //Preset the event type
-        eventTypePicker.setText(
-            dataProcessor.eventTypeToString(args.event.eventType),
-            false
-        )
-        eventTypeLayout.isEnabled = false
+            //Preset event type
+            if (category.eventType != args.event.eventType) {
+                sameTypeCheckBox.isChecked = false
+                eventTypePicker.setText(
+                    dataProcessor.eventTypeToString(category.eventType),
+                    false
+                )
+            } else {
+                sameTypeCheckBox.isChecked = true
+                eventTypePicker.setText(
+                    dataProcessor.eventTypeToString(args.event.eventType),
+                    false
+                )
+                eventTypeLayout.isEnabled = false
+            }
+
+            //Preset the age pickers
+            if (category.ageBased) {
+                minYearTextView.setText(category.minYear.toString())
+                maxYearTextView.setText(category.maxYear.toString())
+                ageBasedCheckBox.isChecked = true
+                minYearLayout.isEnabled = true
+                maxYearLayout.isEnabled = true
+            } else {
+                ageBasedCheckBox.isChecked = false
+                minYearLayout.isEnabled = false
+                maxYearLayout.isEnabled = false
+            }
+
+            if (category.length != 0F) {
+                lengthTextView.setText(category.length.toString())
+            }
+
+            if (category.climb != 0F) {
+                climbTextView.setText(category.climb.toString())
+            }
+        }
 
         //Set the event type checkbox functionality
         sameTypeCheckBox.setOnClickListener {
@@ -161,15 +213,14 @@ class CategoryCreateDialogFragment : DialogFragment() {
             }
         }
 
-        //Enable the fields for age input
-        minYearLayout.isEnabled = false
-        maxYearLayout.isEnabled = false
-
+        //Set the minimal check box functionality
         ageBasedCheckBox.setOnClickListener {
             if (ageBasedCheckBox.isChecked) {
                 minYearLayout.isEnabled = true
                 maxYearLayout.isEnabled = true
             } else {
+                minYearTextView.setText("")
+                maxYearTextView.setText("")
                 minYearLayout.isEnabled = false
                 maxYearLayout.isEnabled = false
             }
@@ -223,14 +274,12 @@ class CategoryCreateDialogFragment : DialogFragment() {
             siCodesTextView.error = getString(R.string.invalid_codes)
             valid = false
         }
-
         return valid
     }
 
     companion object {
         const val REQUEST_CATEGORY_MODIFICATION = "REQUEST_CATEGORY_MODIFICATION"
         const val BUNDLE_KEY_CREATE = "BUNDLE_KEY_CREATE"
-        const val BUNDLE_KEY_CATEGORY = "BUNDLE_KEY_CATEGORY"
-        const val BUNDLE_KEY_SI_CODES = "BUNDLE_KEY_SI_CODES"
+        const val BUNDLE_KEY_POSITION = "BUNDLE_KEY_POSITION"
     }
 }

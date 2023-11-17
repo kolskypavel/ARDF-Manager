@@ -7,7 +7,7 @@ import kolskypavel.ardfmanager.backend.room.dao.CompetitorDao
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 
 @Database(entities = [Competitor::class], version = 1, exportSchema = false)
-@TypeConverters(DateTypeConverter::class)
+@TypeConverters(DateTimeTypeConverter::class)
 abstract class CompetitorDatabase : RoomDatabase() {
     abstract fun CompetitorDao(): CompetitorDao
 }

@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-class EventsViewModel : ViewModel() {
+class EventViewModel : ViewModel() {
     private val dataProcessor = DataProcessor.get()
     private val _events: MutableStateFlow<List<Event>> = MutableStateFlow(emptyList())
     val events: StateFlow<List<Event>> get() = _events.asStateFlow()

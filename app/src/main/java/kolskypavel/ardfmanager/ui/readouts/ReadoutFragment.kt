@@ -12,7 +12,7 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.databinding.FragmentReadoutsBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 
-class ReadoutsFragment : Fragment() {
+class ReadoutFragment : Fragment() {
 
     private var _binding: FragmentReadoutsBinding? = null
     private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
@@ -37,6 +37,8 @@ class ReadoutsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         readoutToolbar = view.findViewById(R.id.readouts_toolbar)
+
+        readoutToolbar.inflateMenu(R.menu.readouts_fragment_menu)
 
         selectedEventViewModel.event.observe(viewLifecycleOwner) { event ->
             readoutToolbar.title = event.name

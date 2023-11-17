@@ -24,20 +24,25 @@
         <dialog
             android:id="@+id/competitorCreateDialogFragment"
             android:name="kolskypavel.ardfmanager.ui.competitors.CompetitorCreateDialogFragment"
-            android:label="CompetitorCreateDialogFragment" >
+            android:label="CompetitorCreateDialogFragment">
             <argument
                 android:name="create"
                 app:argType="boolean" />
+
             <argument
                 android:name="competitor"
                 app:argType="kolskypavel.ardfmanager.backend.room.entitity.Competitor"
                 app:nullable="true" />
+            <argument
+                android:name="position"
+                app:argType="integer" />
+
         </dialog>
         <fragment
-            android:id="@+id/event_menu_competitors"
-            android:name="kolskypavel.ardfmanager.ui.competitors.CompetitorsFragment"
+            android:id="@+id/event_menu_about_the_app"
+            android:name="kolskypavel.ardfmanager.ui.competitors.CompetitorFragment"
             android:label="@string/title_competitors"
-            tools:layout="@layout/fragment_competitors" >
+            tools:layout="@layout/fragment_competitors">
             <action
                 android:id="@+id/modifyCompetitor"
                 app:destination="@id/competitorCreateDialogFragment" />
@@ -45,9 +50,9 @@
 
         <fragment
             android:id="@+id/event_menu_categories"
-            android:name="kolskypavel.ardfmanager.ui.categories.CategoriesFragment"
+            android:name="kolskypavel.ardfmanager.ui.categories.CategoryFragment"
             android:label="@string/title_categories"
-            tools:layout="@layout/fragment_categories" >
+            tools:layout="@layout/fragment_categories">
             <action
                 android:id="@+id/modifyCategory"
                 app:destination="@id/categoryCreateDialogFragment" />
@@ -55,7 +60,7 @@
 
         <fragment
             android:id="@+id/navigation_readouts"
-            android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutsFragment"
+            android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutFragment"
             android:label="@string/title_readouts"
             tools:layout="@layout/fragment_readouts" />
         <fragment
@@ -67,7 +72,7 @@
         <dialog
             android:id="@+id/categoryCreateDialogFragment"
             android:name="kolskypavel.ardfmanager.ui.categories.CategoryCreateDialogFragment"
-            android:label="CategoryCreateDialogFragment" >
+            android:label="CategoryCreateDialogFragment">
             <argument
                 android:name="create"
                 app:argType="boolean" />

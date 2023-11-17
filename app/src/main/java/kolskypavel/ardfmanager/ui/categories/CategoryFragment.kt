@@ -1,6 +1,6 @@
 package kolskypavel.ardfmanager.ui.categories
 
-import android.os.Build
+import android.app.AlertDialog
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.LayoutInflater
@@ -21,10 +21,9 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.databinding.FragmentCategoriesBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
-import kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment
 import kotlinx.coroutines.launch
 
-class CategoriesFragment : Fragment() {
+class CategoryFragment : Fragment() {
 
     private var _binding: FragmentCategoriesBinding? = null
     private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
@@ -64,7 +63,7 @@ class CategoriesFragment : Fragment() {
             //Prevent accidental double click
             if (SystemClock.elapsedRealtime() - mLastClickTime > 1000) {
                 findNavController().navigate(
-                    CategoriesFragmentDirections.modifyCategory(
+                    CategoryFragmentDirections.modifyCategory(
                         true,
                         -1, null,
                         selectedEventViewModel.event.value!!
@@ -85,24 +84,10 @@ class CategoriesFragment : Fragment() {
     private fun setFragmentListener() {
         setFragmentResultListener(CategoryCreateDialogFragment.REQUEST_CATEGORY_MODIFICATION) { _, bundle ->
             val create = bundle.getBoolean(CategoryCreateDialogFragment.BUNDLE_KEY_CREATE)
-            val category: Category
-            val siCodes: String =
-                bundle.getString(CategoryCreateDialogFragment.BUNDLE_KEY_SI_CODES)!!
+            val position = bundle.getInt(CategoryCreateDialogFragment.BUNDLE_KEY_POSITION)
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                category = bundle.getSerializable(
-                    EventCreateDialogFragment.BUNDLE_KEY_EVENT,
-                    Category::class.java
-                )!!
-            } else {
-                category =
-                    bundle.getSerializable(CategoryCreateDialogFragment.BUNDLE_KEY_CATEGORY) as Category
-            }
-
-            if (create) {
-                selectedEventViewModel.createCategory(category, siCodes)
-            } else {
-                selectedEventViewModel.updateCategory(category, siCodes)
+            if (!create) {
+                categoryRecyclerView.adapter?.notifyItemChanged(position)
             }
         }
     }
@@ -112,30 +97,48 @@ class CategoriesFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 selectedEventViewModel.categories.collect { categories ->
                     categoryRecyclerView.adapter =
-                        context?.let {
-                            CategoryRecyclerViewAdapter(categories, { action, position, category ->
-                                recyclerViewContextMenuActions(
-                                    action,
-                                    position,
-                                    category
-                                )
-                            }, it)
-                        }
+                        CategoryRecyclerViewAdapter(categories, { action, position, category ->
+                            recyclerViewContextMenuActions(
+                                action,
+                                position,
+                                category
+                            )
+                        }, requireContext())
                 }
             }
         }
     }
 
+    private fun confirmCategoryDeletion(category: Category) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(getString(R.string.category_delete))
+        val message = getString(R.string.category_delete_confirmation) + " " + category.name
+        builder.setMessage(message)
+
+        builder.setPositiveButton(R.string.ok) { dialog, _ ->
+            selectedEventViewModel.deleteCategory(category.id)
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton(R.string.cancel) { dialog, _ ->
+            dialog.cancel()
+        }
+        builder.show()
+    }
+
     private fun recyclerViewContextMenuActions(action: Int, position: Int, category: Category) {
         when (action) {
             0 -> findNavController().navigate(
-                CategoriesFragmentDirections.modifyCategory(
+                CategoryFragmentDirections.modifyCategory(
                     false,
                     position,
                     category,
                     selectedEventViewModel.event.value!!
                 )
             )
+
+            1 -> {}
+            2 -> confirmCategoryDeletion(category)
         }
     }
 

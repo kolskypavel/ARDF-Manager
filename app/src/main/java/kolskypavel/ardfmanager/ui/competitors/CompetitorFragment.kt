@@ -8,20 +8,26 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.databinding.FragmentCompetitorsBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kotlinx.coroutines.launch
 
-class CompetitorsFragment : Fragment() {
+class CompetitorFragment : Fragment() {
 
     private var _binding: FragmentCompetitorsBinding? = null
 
     private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
     private val dataProcessor = DataProcessor.get()
     private lateinit var competitorToolbar: Toolbar
+    private lateinit var competitorRecyclerView: RecyclerView
     private lateinit var competitorAddFab: FloatingActionButton
     private var mLastClickTime: Long = 0
 
@@ -36,17 +42,16 @@ class CompetitorsFragment : Fragment() {
     ): View {
 
         _binding = FragmentCompetitorsBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-
-        return root
+        return binding.root
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         competitorToolbar = view.findViewById(R.id.competitor_toolbar)
         competitorAddFab = view.findViewById(R.id.competitor_btn_add)
+        competitorRecyclerView = view.findViewById(R.id.competitor_recycler_view)
 
         competitorToolbar.inflateMenu(R.menu.competitor_nav_menu)
 
@@ -59,10 +64,25 @@ class CompetitorsFragment : Fragment() {
             //Prevent accidental double click
             if (SystemClock.elapsedRealtime() - mLastClickTime > 1500) {
                 findNavController().navigate(
-                    CompetitorsFragmentDirections.modifyCompetitor(true, null)
+                    CompetitorFragmentDirections.modifyCompetitor(
+                        true,
+                        null, -1
+                    )
                 )
             }
             mLastClickTime = SystemClock.elapsedRealtime()
+        }
+        setRecyclerAdapter()
+    }
+
+    private fun setRecyclerAdapter() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                selectedEventViewModel.competitors.collect { competitors ->
+                    competitorRecyclerView.adapter =
+                        CompetitorRecyclerViewAdapter(competitors, requireContext())
+                }
+            }
         }
     }
 
