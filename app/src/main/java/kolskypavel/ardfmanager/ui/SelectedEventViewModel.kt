@@ -22,8 +22,7 @@ import java.util.UUID
 class SelectedEventViewModel : ViewModel() {
     private val dataProcessor = DataProcessor.get()
     private val _event = MutableLiveData<Event>()
-    var isEventSelected = false
-    var siReaderStatus = SIReaderStatus.DISCONNECTED
+    var siReaderStatus = MutableLiveData<SIReaderStatus>()
 
     val event: LiveData<Event> get() = _event
     private val _categories: MutableStateFlow<List<Category>> = MutableStateFlow(emptyList())
@@ -40,7 +39,6 @@ class SelectedEventViewModel : ViewModel() {
      */
     suspend fun setEvent(id: UUID) {
         _event.postValue(dataProcessor.getEvent(id))
-        isEventSelected = true
 
         runBlocking {
 
@@ -59,6 +57,8 @@ class SelectedEventViewModel : ViewModel() {
                 dataProcessor.getReadoutsForEvent(id).collect {
                     _readouts.value = it
                 }
+
+                dataProcessor.setReaderEvent(id)
             }
         }
     }

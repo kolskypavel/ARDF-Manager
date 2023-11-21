@@ -3,8 +3,10 @@ package kolskypavel.ardfmanager.ui
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -20,28 +22,26 @@ import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.databinding.ActivityMainBinding
 import kolskypavel.ardfmanager.ui.event.EventViewModel
 
+
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val eventViewModel: EventViewModel by viewModels()
     private lateinit var siStatusTextView: TextView
-    private val ACTION_USB_PERMISSION = "kolskypavel.ardfmanager.USB_PERMISSION"
+    private lateinit var dataProcessor: DataProcessor
 
-    private val usbReceiver = object : BroadcastReceiver() {
-
+    private var usbDetachReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
-            if (ACTION_USB_PERMISSION == intent.action) {
-                synchronized(this) {
-                    val accessory =
-                        intent.getParcelableExtra<UsbDevice>(UsbManager.EXTRA_ACCESSORY)
 
-                    if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-                        accessory?.apply {
-                            //call method to set up accessory communication
-                        }
+            if (UsbManager.ACTION_USB_DEVICE_DETACHED == intent.action) {
+                val device: UsbDevice? =
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        intent.getParcelableExtra(UsbManager.EXTRA_DEVICE, UsbDevice::class.java)
                     } else {
-
+                        intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
                     }
+                device?.apply {
+
                 }
             }
         }
@@ -50,9 +50,22 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        requestUSBPermissions()
         ARDFRepository.initialize(this)
         DataProcessor.initialize(this)
+        dataProcessor = DataProcessor.get()
+
+        // Set the usb device
+        if (intent != null) {
+            val device: UsbDevice? =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(UsbManager.EXTRA_DEVICE, UsbDevice::class.java)
+                } else {
+                    intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
+                }
+            if (device != null) {
+                dataProcessor.connectDevice(device)
+            }
+        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -82,30 +95,40 @@ class MainActivity : AppCompatActivity() {
                     siStatusTextView.visibility = View.VISIBLE
                 }
 
+                R.id.eventSelectionFragment -> {
+                    navView.visibility = View.GONE
+                    siStatusTextView.visibility = View.VISIBLE
+                }
+
                 else -> {
                     navView.visibility = View.GONE
                     siStatusTextView.visibility = View.GONE
                 }
             }
         }
-
     }
 
-    /**
-     * Request USB permissions
-     */
-    private fun requestUSBPermissions() {
+    override fun onResume() {
+        super.onResume()
+        val filter = IntentFilter()
+        filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
+        registerReceiver(usbDetachReceiver, filter)
+    }
 
 
-//        val manager = getSystemService(Context.USB_SERVICE) as UsbManager
-//        val permissionIntent = PendingIntent.getBroadcast(
-//            this, 0, Intent(ACTION_USB_PERMISSION),
-//            PendingIntent.FLAG_IMMUTABLE
-//        )
-//
-//        val filter = IntentFilter(ACTION_USB_PERMISSION)
-//        registerReceiver(usbReceiver, filter)
-//
-//        manager.requestPermission(manager.deviceList[0], permissionIntent)
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+
+        if (intent != null) {
+            val device: UsbDevice? =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(UsbManager.EXTRA_DEVICE, UsbDevice::class.java)
+                } else {
+                    intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
+                }
+            if (device != null) {
+                dataProcessor.connectDevice(device)
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 package kolskypavel.ardfmanager.backend
 
 import android.content.Context
+import android.hardware.usb.UsbDevice
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
@@ -9,6 +10,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
 import kolskypavel.ardfmanager.backend.room.enums.EventType
+import kolskypavel.ardfmanager.backend.sportident.SIReader
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
@@ -23,6 +25,7 @@ class DataProcessor private constructor(context: Context) {
 
     private val ardfRepository = kolskypavel.ardfmanager.backend.room.ARDFRepository.get()
     private var appContext: WeakReference<Context>
+    private val siReader: SIReader
 
     companion object {
         private var INSTANCE: DataProcessor? = null
@@ -39,6 +42,7 @@ class DataProcessor private constructor(context: Context) {
 
     init {
         appContext = WeakReference(context)
+        siReader = SIReader(appContext.get()!!)
     }
 
     //METHODS TO HANDLE EVENTS
@@ -191,6 +195,14 @@ class DataProcessor private constructor(context: Context) {
         }
 
         //TODO save the CPs to database
+    }
+
+    //SportIdent manipulation
+
+    fun connectDevice(usbDevice: UsbDevice) = siReader.setReaderDevice(usbDevice)
+
+    fun detachDevice(usbDevice: UsbDevice) = siReader.detachReaderDevice(usbDevice)
+    fun setReaderEvent(eventId: UUID) {
 
     }
 
