@@ -5,6 +5,8 @@ import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbManager
 import com.felhr.usbserial.UsbSerialDevice
+import kolskypavel.ardfmanager.backend.sportident.SIConstants.SPORTIDENT_PRODUCT_ID
+import kolskypavel.ardfmanager.backend.sportident.SIConstants.SPORTIDENT_VENDOR_ID
 import java.util.UUID
 
 
@@ -18,8 +20,6 @@ class SIReader(val context: Context) {
     private var eventId: UUID? = null
 
     //  private val ACTION_USB_PERMISSION = "kolskypavel.ardfmanager.USB_PERMISSION"
-    private val SPORTIDENT_VENDOR_ID = 4292
-    private val SPORTIDENT_PRODUCT_ID = 32778
 
 
     fun setReaderDevice(newDevice: UsbDevice) {

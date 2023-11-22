@@ -11,6 +11,7 @@ import kolskypavel.ardfmanager.backend.room.database.ReadoutDatabase
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
@@ -93,7 +94,11 @@ class ARDFRepository private constructor(context: Context) {
         controlPointDatabase.controlPointDao().getControlPointsForCategory(categoryId)
 
     //Competitors
-    fun getCompetitor(id: UUID) = competitorDatabase.CompetitorDao().getCompetitor(id)
+    fun getCompetitor(id: UUID): Competitor = competitorDatabase.CompetitorDao().getCompetitor(id)
+
+    fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
+        competitorDatabase.CompetitorDao().getCompetitorBySINumber(siNumber, eventId)
+
     fun getCompetitorsForEvent(eventId: UUID): Flow<List<Competitor>> =
         competitorDatabase.CompetitorDao().getCompetitorsForEvent(eventId)
 
@@ -105,18 +110,23 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun deleteCompetitor(id: UUID) = competitorDatabase.CompetitorDao().deleteCompetitor(id)
 
-    suspend fun checkIfSINumberExists(siNumber: Int): Int =
-        competitorDatabase.CompetitorDao().checkIfSINumberExists(siNumber)
+    suspend fun checkIfSINumberExists(siNumber: Int, eventId: UUID): Int =
+        competitorDatabase.CompetitorDao().checkIfSINumberExists(siNumber, eventId)
 
     //Readouts
     fun getReadoutsForEvent(eventId: UUID) =
         readoutDatabase.ReadoutDao().getReadoutsForEvent(eventId)
 
+    fun getReadoutBySINumber(siNumber: Int, eventId: UUID) =
+        readoutDatabase.ReadoutDao().getReadoutsForSINumber(siNumber, eventId)
+
     fun getReadout(id: UUID) = readoutDatabase.ReadoutDao().getReadout(id)
 
-    suspend fun createReadout(readout: Readout) =
+    fun createReadout(readout: Readout) =
         readoutDatabase.ReadoutDao().createReadout(readout)
 
+    //PUNCHES
+    fun createPunch(punch: Punch) = punchDatabase.punchDao().createPunch(punch)
 
     //Results
 

@@ -54,7 +54,7 @@ class SelectedEventViewModel : ViewModel() {
             }
 
             launch {
-                dataProcessor.getReadoutsForEvent(id).collect {
+                dataProcessor.getReadoutsByEvent(id).collect {
                     _readouts.value = it
                 }
 
@@ -77,5 +77,10 @@ class SelectedEventViewModel : ViewModel() {
 
     fun updateCompetitor(competitor: Competitor) = dataProcessor.updateCompetitor(competitor)
 
-    fun checkIfSINumberExists(siNumber: Int) = dataProcessor.checkIfSINumberExists(siNumber)
+    fun checkIfSINumberExists(siNumber: Int): Boolean {
+        if (event.value != null) {
+            return dataProcessor.checkIfSINumberExists(siNumber, event.value!!.id)
+        }
+        return true
+    }
 }

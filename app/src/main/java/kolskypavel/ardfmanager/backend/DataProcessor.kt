@@ -3,10 +3,13 @@ package kolskypavel.ardfmanager.backend
 import android.content.Context
 import android.hardware.usb.UsbDevice
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
 import kolskypavel.ardfmanager.backend.room.enums.EventType
@@ -23,7 +26,7 @@ import java.util.UUID
  */
 class DataProcessor private constructor(context: Context) {
 
-    private val ardfRepository = kolskypavel.ardfmanager.backend.room.ARDFRepository.get()
+    private val ardfRepository = ARDFRepository.get()
     private var appContext: WeakReference<Context>
     private val siReader: SIReader
 
@@ -99,9 +102,14 @@ class DataProcessor private constructor(context: Context) {
     fun getCompetitorsForEvent(eventId: UUID) =
         ardfRepository.getCompetitorsForEvent(eventId)
 
-    fun checkIfSINumberExists(siNumber: Int): Boolean {
+    fun getCompetitor(id: UUID): Competitor = ardfRepository.getCompetitor(id)
+
+    fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
+        ardfRepository.getCompetitorBySINumber(siNumber, eventId)
+
+    fun checkIfSINumberExists(siNumber: Int, eventId: UUID): Boolean {
         return runBlocking {
-            return@runBlocking ardfRepository.checkIfSINumberExists(siNumber) > 0
+            return@runBlocking ardfRepository.checkIfSINumberExists(siNumber, eventId) > 0
         }
     }
 
@@ -128,9 +136,18 @@ class DataProcessor private constructor(context: Context) {
 
     //READOUTS
 
-    fun getReadoutsForEvent(eventId: UUID) = ardfRepository.getReadoutsForEvent(eventId)
+    fun getReadoutsByEvent(eventId: UUID) = ardfRepository.getReadoutsForEvent(eventId)
 
     fun getReadout(id: UUID) = ardfRepository.getReadout(id)
+
+    fun getReadoutBySINumber(siNumber: Int, eventId: UUID): Readout? =
+        ardfRepository.getReadoutBySINumber(siNumber, eventId)
+
+    fun createReadout(readout: Readout) = ardfRepository.createReadout(readout)
+
+
+    //PUNCHES
+    fun createPunch(punch: Punch) = ardfRepository.createPunch(punch)
 
     //Parsing categories to control points
     fun checkCodesString(string: String): Boolean {

@@ -16,7 +16,7 @@ interface PunchDao {
     fun getPunch(id: UUID): Punch
 
     @Insert
-    suspend fun createPunch(punch: Punch)
+    fun createPunch(punch: Punch)
 
     @Query("DELETE FROM punch WHERE id =(:id) ")
     fun deletePunch(id: UUID)
