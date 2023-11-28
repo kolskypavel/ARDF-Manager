@@ -7,10 +7,15 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.databinding.FragmentReadoutsBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kotlinx.coroutines.launch
 
 class ReadoutFragment : Fragment() {
 
@@ -19,6 +24,7 @@ class ReadoutFragment : Fragment() {
     private val dataProcessor = DataProcessor.get()
 
     private lateinit var readoutToolbar: Toolbar
+    private lateinit var readoutRecyclerView: RecyclerView
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -37,12 +43,25 @@ class ReadoutFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         readoutToolbar = view.findViewById(R.id.readouts_toolbar)
+        readoutRecyclerView = view.findViewById(R.id.readout_recycler_view)
 
         readoutToolbar.inflateMenu(R.menu.readouts_fragment_menu)
 
         selectedEventViewModel.event.observe(viewLifecycleOwner) { event ->
             readoutToolbar.title = event.name
             readoutToolbar.subtitle = dataProcessor.eventTypeToString(event.eventType)
+        }
+        setRecyclerAdapter()
+    }
+
+    private fun setRecyclerAdapter() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                selectedEventViewModel.readouts.collect { readouts ->
+                    readoutRecyclerView.adapter =
+                        ReadoutRecyclerViewAdapter(readouts, requireContext())
+                }
+            }
         }
     }
 

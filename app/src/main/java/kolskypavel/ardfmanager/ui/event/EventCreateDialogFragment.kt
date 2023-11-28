@@ -104,8 +104,7 @@ class EventCreateDialogFragment : DialogFragment() {
             event = Event(
                 UUID.randomUUID(),
                 "",
-                LocalDate.now(),
-                LocalTime.now(),
+                LocalDate.now(), LocalTime.now(),
                 EventType.CLASSICS,
                 EventLevel.PRACTICE,
                 EventBand.M80

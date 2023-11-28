@@ -3,7 +3,9 @@ package kolskypavel.ardfmanager.backend.room.entitity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kolskypavel.ardfmanager.backend.room.enums.EvaluationStatus
 import java.io.Serializable
+import java.time.Duration
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -15,10 +17,14 @@ data class Competitor(
     var name: String,
     var club: String,
     var index: String,
-    var isWoman: Boolean = false,
+    @ColumnInfo(name = "is_woman") var isWoman: Boolean = false,
     @ColumnInfo(name = "birth_year") var birthYear: Int,
     @ColumnInfo(name = "si_number") var siNumber: Int,
     @ColumnInfo(name = "si_rent") var siRent: Boolean = false,
     @ColumnInfo(name = "automatic_category") var automaticCategory: Boolean,
-    @ColumnInfo(name = "start_time") var startTime: LocalDateTime
+    @ColumnInfo(name = "start_time") var startTime: LocalDateTime? = null,
+    @ColumnInfo(name = "finish_time") var finishTime: LocalDateTime? = null,
+    @ColumnInfo(name = "eval_status") var evaluationStatus: EvaluationStatus,
+    @ColumnInfo(name = "points") var points: Int,
+    @ColumnInfo(name = "run_time") var runTime: Duration,
 ) : Serializable

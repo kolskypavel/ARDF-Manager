@@ -1,7 +1,9 @@
 package kolskypavel.ardfmanager.backend
 
 import android.content.Context
+import android.content.Intent
 import android.hardware.usb.UsbDevice
+import androidx.lifecycle.MutableLiveData
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.room.entitity.Category
@@ -13,7 +15,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
 import kolskypavel.ardfmanager.backend.room.enums.EventType
-import kolskypavel.ardfmanager.backend.sportident.SIReader
+import kolskypavel.ardfmanager.backend.sportident.SIReaderService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
@@ -28,7 +30,8 @@ class DataProcessor private constructor(context: Context) {
 
     private val ardfRepository = ARDFRepository.get()
     private var appContext: WeakReference<Context>
-    private val siReader: SIReader
+    //private val siReaderService: SIReaderService
+    var currentEvent = MutableLiveData<Event>()
 
     companion object {
         private var INSTANCE: DataProcessor? = null
@@ -45,7 +48,7 @@ class DataProcessor private constructor(context: Context) {
 
     init {
         appContext = WeakReference(context)
-        siReader = SIReader(appContext.get()!!)
+        //siReaderService = SIReaderService()
     }
 
     //METHODS TO HANDLE EVENTS
@@ -156,7 +159,7 @@ class DataProcessor private constructor(context: Context) {
         return regex.matches(string)
     }
 
-    private suspend fun parseCodeStringIntoControlPoints(siCodes: String, categoryId: UUID) {
+    private fun parseCodeStringIntoControlPoints(siCodes: String, categoryId: UUID) {
 
         //Handle empty CP situation
         if (siCodes.isEmpty()) {
@@ -216,11 +219,24 @@ class DataProcessor private constructor(context: Context) {
 
     //SportIdent manipulation
 
-    fun connectDevice(usbDevice: UsbDevice) = siReader.setReaderDevice(usbDevice)
+    fun connectDevice(usbDevice: UsbDevice) {
+        Intent(appContext.get(), SIReaderService::class.java).also {
+            it.action = SIReaderService.ReaderActions.START.toString()
+            it.putExtra(SIReaderService.USB_DEVICE, usbDevice)
+            appContext.get()?.startService(it)
+        }
+    }
 
-    fun detachDevice(usbDevice: UsbDevice) = siReader.detachReaderDevice(usbDevice)
-    fun setReaderEvent(eventId: UUID) {
+    fun detachDevice(usbDevice: UsbDevice) {
+        Intent(appContext.get(), SIReaderService::class.java).also {
+            it.action = SIReaderService.ReaderActions.STOP.toString()
+            it.putExtra(SIReaderService.USB_DEVICE, usbDevice)
+            appContext.get()?.startService(it)
+        }
+    }
 
+    fun setReaderEvent(event: Event) {
+        currentEvent.postValue(event)
     }
 
     //GENERAL HELPER METHODS

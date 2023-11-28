@@ -14,11 +14,12 @@ object SIConstants {
     const val EXTENDED_MODE: Byte = 0x01.toByte()
     const val ZERO: Byte = 0x00
 
-    const val DELAY_INTERVAL = 5000L
+    const val DELAY_INTERVAL = 500L
     const val WRITE_TIMEOUT = 500
     const val BAUDRATE_LOW = 4800
     const val BAUDRATE_HIGH = 38400
     const val POLYNOM = 0x8005
+    const val HALF_DAY = 12 * 3600000L
 
     const val SI_CARD5: Byte = 0xE5.toByte()
     const val GET_SI_CARD5: Byte = 0xB1.toByte()
@@ -27,6 +28,11 @@ object SIConstants {
     const val SI_CARD8_9_SIAC: Byte = 0xE8.toByte()
     const val GET_SI_CARD8_9_SIAC: Byte = 0xEF.toByte()
     const val SI_CARD_REMOVED: Byte = 0xE7.toByte()
+    const val SI_CARD8_SERIES = 2
+    const val SI_CARD9_SERIES = 1
+    const val SI_CARD_PCARD_SERIES = 4
+    const val SI_CARD10_11_SIAC_SERIES = 15
+
 
     const val UNKNOWN: Byte = 0x00
     const val CONTROL: Byte = 0x02

@@ -20,8 +20,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /**
@@ -162,9 +160,7 @@ class EventSelectionFragment : Fragment() {
                             events, { eventId ->
 
                                 // Pass the event id into view Model
-                                CoroutineScope(Dispatchers.IO).launch {
-                                    selectedEventViewModel.setEvent(eventId)
-                                }
+                                selectedEventViewModel.setEvent(eventId)
 
                                 findNavController().navigate(
                                     EventSelectionFragmentDirections.openEvent()

@@ -18,9 +18,10 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.enums.EvaluationStatus
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import java.time.Duration
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
@@ -99,8 +100,8 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 LocalDate.now().year,
                 0,
                 siRent = false,
-                automaticCategory = true,
-                LocalDateTime.now()
+                automaticCategory = true, null, null,
+                EvaluationStatus.NOT_EVALUATED, 0, Duration.ZERO
             )
             categoryPicker.setText(getString(R.string.no_category), false)
         } else {

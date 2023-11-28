@@ -105,6 +105,7 @@
     <string name="man">Man</string>
     <string name="woman">Woman</string>
 
+    <string name="si_connected">SI station connected</string>
     <string name="si_disconnected">SI station disconnected</string>
 
 </resources>

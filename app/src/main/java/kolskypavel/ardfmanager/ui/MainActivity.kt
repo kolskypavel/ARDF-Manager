@@ -1,5 +1,7 @@
 package kolskypavel.ardfmanager.ui
 
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -41,7 +43,7 @@ class MainActivity : AppCompatActivity() {
                         intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
                     }
                 device?.apply {
-
+                    dataProcessor.detachDevice(device)
                 }
             }
         }
@@ -66,6 +68,9 @@ class MainActivity : AppCompatActivity() {
                 dataProcessor.connectDevice(device)
             }
         }
+
+        //Set the notification channel
+        setNotificationChannel()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -130,5 +135,17 @@ class MainActivity : AppCompatActivity() {
                 dataProcessor.connectDevice(device)
             }
         }
+    }
+
+    private fun setNotificationChannel() {
+        val channel = NotificationChannel(
+            "si_reader_channel",
+            "ARDF Manager channel",
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 }

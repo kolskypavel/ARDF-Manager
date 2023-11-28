@@ -9,11 +9,12 @@ import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
 /**
@@ -37,10 +38,11 @@ class SelectedEventViewModel : ViewModel() {
     /**
      * Updates the current selected event and corresponding data
      */
-    suspend fun setEvent(id: UUID) {
-        _event.postValue(dataProcessor.getEvent(id))
-
-        runBlocking {
+    fun setEvent(id: UUID) {
+        CoroutineScope(Dispatchers.IO).launch {
+            val event = dataProcessor.getEvent(id)
+            _event.postValue(event)
+            dataProcessor.setReaderEvent(event)
 
             launch {
                 dataProcessor.getCompetitorsForEvent(id).collect {
@@ -57,9 +59,8 @@ class SelectedEventViewModel : ViewModel() {
                 dataProcessor.getReadoutsByEvent(id).collect {
                     _readouts.value = it
                 }
-
-                dataProcessor.setReaderEvent(id)
             }
+
         }
     }
 

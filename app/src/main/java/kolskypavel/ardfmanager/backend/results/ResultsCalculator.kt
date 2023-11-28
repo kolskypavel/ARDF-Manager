@@ -3,7 +3,6 @@ package kolskypavel.ardfmanager.backend.results
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
-import kolskypavel.ardfmanager.backend.room.enums.EvaluationStatus
 
 class ResultsCalculator {
 
@@ -18,8 +17,6 @@ class ResultsCalculator {
             if (competitor.categoryId != null) {
 
             }
-        } else {
-            readout.evaluationStatus = EvaluationStatus.NOT_ASSIGNED
         }
     }
 
