@@ -92,7 +92,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberSigned"
-                    android:maxLength="4"/>
+                    android:maxLength="4" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <CheckBox
@@ -101,7 +101,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/woman" />
+                android:text="@string/competitor_woman" />
         </LinearLayout>
 
         <LinearLayout
@@ -168,7 +168,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/rent_chip" />
+                android:text="@string/competitor_rent_chip" />
         </LinearLayout>
 
 
@@ -178,8 +178,23 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginTop="10dp"
-            android:text="@string/edit_punches"
+            android:text="@string/competitor_edit_punches"
             android:textColor="@color/black" />
+
+        <ScrollView
+            android:id="@+id/competitor_dialog_punch_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="250dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/competitor_dialog_punch_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:theme="@style/punch_record_recycler"
+                app:layoutManager="LinearLayoutManager" />
+
+        </ScrollView>
 
         <LinearLayout
             android:layout_width="wrap_content"

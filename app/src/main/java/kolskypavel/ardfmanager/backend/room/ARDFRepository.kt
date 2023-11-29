@@ -128,6 +128,9 @@ class ARDFRepository private constructor(context: Context) {
     //PUNCHES
     fun createPunch(punch: Punch) = punchDatabase.punchDao().createPunch(punch)
 
+    suspend fun getPunchesForCompetitor(competitorId: UUID) =
+        punchDatabase.punchDao().getPunchesForCompetitor(competitorId)
+
     //Results
 
 

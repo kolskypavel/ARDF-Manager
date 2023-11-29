@@ -16,6 +16,8 @@ import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
 import kolskypavel.ardfmanager.backend.room.enums.EventType
 import kolskypavel.ardfmanager.backend.sportident.SIReaderService
+import kolskypavel.ardfmanager.backend.sportident.SIReaderState
+import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
@@ -30,8 +32,10 @@ class DataProcessor private constructor(context: Context) {
 
     private val ardfRepository = ARDFRepository.get()
     private var appContext: WeakReference<Context>
+
     //private val siReaderService: SIReaderService
     var currentEvent = MutableLiveData<Event>()
+    var siReaderState = MutableLiveData<SIReaderState>()
 
     companion object {
         private var INSTANCE: DataProcessor? = null
@@ -48,7 +52,7 @@ class DataProcessor private constructor(context: Context) {
 
     init {
         appContext = WeakReference(context)
-        //siReaderService = SIReaderService()
+        siReaderState.postValue(SIReaderState(SIReaderStatus.DISCONNECTED, null, null))
     }
 
     //METHODS TO HANDLE EVENTS
@@ -152,6 +156,9 @@ class DataProcessor private constructor(context: Context) {
     //PUNCHES
     fun createPunch(punch: Punch) = ardfRepository.createPunch(punch)
 
+    suspend fun getPunchesForCompetitor(competitorId: UUID) =
+        ardfRepository.getPunchesForCompetitor(competitorId)
+
     //Parsing categories to control points
     fun checkCodesString(string: String): Boolean {
 
@@ -235,8 +242,10 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    fun setReaderEvent(event: Event) {
+    suspend fun setReaderEvent(eventId: UUID): Event {
+        val event = getEvent(eventId)
         currentEvent.postValue(event)
+        return event
     }
 
     //GENERAL HELPER METHODS

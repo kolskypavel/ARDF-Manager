@@ -32,7 +32,6 @@
 
     <TextView
         android:id="@+id/si_status_view"
-        style="@style/si_status_disconnected"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="10dp"

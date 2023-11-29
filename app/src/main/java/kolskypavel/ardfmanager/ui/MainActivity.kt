@@ -14,13 +14,15 @@ import android.view.View
 import android.widget.TextView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
+import kolskypavel.ardfmanager.backend.sportident.SIReaderState
+import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
 import kolskypavel.ardfmanager.databinding.ActivityMainBinding
 import kolskypavel.ardfmanager.ui.event.EventViewModel
 
@@ -69,9 +71,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        //Set the notification channel
-        setNotificationChannel()
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -79,16 +78,6 @@ class MainActivity : AppCompatActivity() {
         siStatusTextView = binding.siStatusView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        val appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.event_menu_about_the_app,
-                R.id.event_menu_categories,
-                R.id.navigation_readouts,
-                R.id.navigation_results
-            )
-        )
         navView.setupWithNavController(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
@@ -111,6 +100,12 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+        //Set the notification channel
+        setNotificationChannel()
+
+        //Set the observer for the SI text view
+        setStationObserver()
     }
 
     override fun onResume() {
@@ -147,5 +142,65 @@ class MainActivity : AppCompatActivity() {
         val notificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
+    }
+
+    private fun setStationObserver() {
+        val siObserver = Observer<SIReaderState> { newState ->
+            when (newState.status) {
+                SIReaderStatus.CONNECTED -> {
+                    if (newState.stationId != null) {
+                        siStatusTextView.text =
+                            getString(R.string.si_connected, newState.stationId!!)
+                    } else {
+                        siStatusTextView.text = getString(R.string.si_connected)
+                    }
+                    siStatusTextView.setBackgroundResource(R.color.green_ok)
+                }
+
+                SIReaderStatus.DISCONNECTED -> {
+                    siStatusTextView.setText(R.string.si_disconnected)
+                    siStatusTextView.setBackgroundResource(R.color.grey)
+                }
+
+                SIReaderStatus.READING -> {
+                    if (newState.stationId != null && newState.cardId != null) {
+                        siStatusTextView.text =
+                            getString(R.string.si_reading, newState.stationId!!, newState.cardId!!)
+                    } else {
+                        siStatusTextView.text = getString(R.string.si_reading)
+                    }
+                    siStatusTextView.setBackgroundResource(R.color.orange_reading)
+                }
+
+                SIReaderStatus.CARD_REMOVED -> {
+                    if (newState.stationId != null && newState.cardId != null) {
+                        siStatusTextView.text =
+                            getString(
+                                R.string.si_card_removed,
+                                newState.stationId!!,
+                                newState.cardId!!
+                            )
+                    } else {
+                        siStatusTextView.text = getString(R.string.si_card_removed)
+                    }
+                    siStatusTextView.setBackgroundResource(R.color.red_error)
+                }
+
+                SIReaderStatus.CARD_READ -> {
+                    if (newState.stationId != null && newState.cardId != null) {
+                        siStatusTextView.text =
+                            getString(
+                                R.string.si_card_read,
+                                newState.stationId!!,
+                                newState.cardId!!
+                            )
+                    } else {
+                        siStatusTextView.text = getString(R.string.si_card_read)
+                    }
+                    siStatusTextView.setBackgroundResource(R.color.green_ok)
+                }
+            }
+        }
+        DataProcessor.get().siReaderState.observe(this, siObserver)
     }
 }

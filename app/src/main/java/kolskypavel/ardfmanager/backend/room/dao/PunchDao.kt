@@ -9,8 +9,11 @@ import java.util.UUID
 
 @Dao
 interface PunchDao {
-    @Query("SELECT * FROM punch WHERE si_number=(:siNumber)")
-    fun getPunchesForSINumber(siNumber: Int): Flow<List<Punch>>
+    @Query("SELECT * FROM punch WHERE card_number=(:cardNumber)")
+    fun getPunchesForSINumber(cardNumber: Int): Flow<List<Punch>>
+
+    @Query("SELECT * FROM punch WHERE competitor_id = (:competitorId)")
+    suspend fun getPunchesForCompetitor(competitorId: UUID): List<Punch>
 
     @Query("SELECT * FROM punch WHERE id=(:id)")
     fun getPunch(id: UUID): Punch

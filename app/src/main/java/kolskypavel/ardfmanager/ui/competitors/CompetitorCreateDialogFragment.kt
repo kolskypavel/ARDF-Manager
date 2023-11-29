@@ -7,9 +7,11 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.ScrollView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
@@ -20,7 +22,6 @@ import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.enums.EvaluationStatus
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
-import java.time.Duration
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -45,6 +46,8 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private lateinit var siNumberTextView: TextInputEditText
     private lateinit var siRentCheckBox: CheckBox
     private lateinit var editPunchesSwitch: SwitchMaterial
+    private lateinit var punchEditScrollView: ScrollView
+    private lateinit var punchEditRecyclerView: RecyclerView
 
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
@@ -78,6 +81,8 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         siNumberTextView = view.findViewById(R.id.competitor_dialog_si_number)
         siRentCheckBox = view.findViewById(R.id.competitor_dialog_si_rent)
         editPunchesSwitch = view.findViewById(R.id.competitor_dialog_edit_punches)
+        punchEditScrollView = view.findViewById(R.id.competitor_dialog_punch_scroll)
+        punchEditRecyclerView = view.findViewById(R.id.competitor_dialog_punch_recycler_view)
 
         cancelButton = view.findViewById(R.id.competitor_dialog_cancel)
         okButton = view.findViewById(R.id.competitor_dialog_ok)
@@ -100,8 +105,9 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 LocalDate.now().year,
                 0,
                 siRent = false,
-                automaticCategory = true, null, null,
-                EvaluationStatus.NOT_EVALUATED, 0, Duration.ZERO
+                automaticCategory = true,
+                null,
+                EvaluationStatus.NOT_EVALUATED, 0
             )
             categoryPicker.setText(getString(R.string.no_category), false)
         } else {
@@ -136,6 +142,20 @@ class CompetitorCreateDialogFragment : DialogFragment() {
             ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryArr)
 
         categoryPicker.setAdapter(categoriesAdapter)
+
+        punchEditRecyclerView.adapter =
+            PunchWrapperRecyclerViewAdapter(
+                selectedEventViewModel.getPunchRecordsForCompetitor(
+                    args.create,
+                    competitor
+                ), requireContext()
+            )
+        punchEditScrollView.visibility = View.GONE
+        //Toggle the visibility of the punch switch
+        editPunchesSwitch.setOnCheckedChangeListener { _, checked ->
+            if (checked) punchEditScrollView.visibility =
+                View.VISIBLE else punchEditScrollView.visibility = View.GONE
+        }
     }
 
     private fun setButtons() {

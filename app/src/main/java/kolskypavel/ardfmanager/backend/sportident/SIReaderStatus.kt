@@ -1,7 +1,9 @@
 package kolskypavel.ardfmanager.backend.sportident
 
 enum class SIReaderStatus {
-    DISCONNECTED,
     CONNECTED,
-    READING
+    DISCONNECTED,
+    READING,
+    CARD_REMOVED,
+    CARD_READ
 }

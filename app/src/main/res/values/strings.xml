@@ -99,13 +99,19 @@
     <string name="index_callsign">Index/Callsign</string>
     <string name="si_number">SI number</string>
     <string name="automatic">Automatic</string>
-    <string name="rent_chip">Rent chip</string>
-    <string name="edit_punches">Edit punches</string>
+    <string name="competitor_rent_chip">Rent chip</string>
+    <string name="competitor_edit_punches">Edit punches</string>
+    <string name="competitor_man">Man</string>
+    <string name="competitor_woman">Woman</string>
 
-    <string name="man">Man</string>
-    <string name="woman">Woman</string>
+    <string name="competitor_hint_code">Code</string>
+    <string name="competitor_hint_time_format" translatable="false">HH:MM:SS</string>
 
-    <string name="si_connected">SI station connected</string>
+    <!--SI station display-->
+    <string name="si_connected">SI station %1$d connected</string>
     <string name="si_disconnected">SI station disconnected</string>
+    <string name="si_reading">SI station %1$d reading card %2$d </string>
+    <string name="si_card_removed">SI station %1$d, removed card %2$d </string>
+    <string name="si_card_read">SI station %1$d, read card %2$d </string>
 
 </resources>

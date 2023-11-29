@@ -7,14 +7,17 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
-import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
+import kolskypavel.ardfmanager.backend.room.enums.PunchType
+import kolskypavel.ardfmanager.backend.wrappers.PunchRecordsWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
 /**
@@ -23,7 +26,6 @@ import java.util.UUID
 class SelectedEventViewModel : ViewModel() {
     private val dataProcessor = DataProcessor.get()
     private val _event = MutableLiveData<Event>()
-    var siReaderStatus = MutableLiveData<SIReaderStatus>()
 
     val event: LiveData<Event> get() = _event
     private val _categories: MutableStateFlow<List<Category>> = MutableStateFlow(emptyList())
@@ -40,9 +42,8 @@ class SelectedEventViewModel : ViewModel() {
      */
     fun setEvent(id: UUID) {
         CoroutineScope(Dispatchers.IO).launch {
-            val event = dataProcessor.getEvent(id)
+            val event = dataProcessor.setReaderEvent(id)
             _event.postValue(event)
-            dataProcessor.setReaderEvent(event)
 
             launch {
                 dataProcessor.getCompetitorsForEvent(id).collect {
@@ -83,5 +84,28 @@ class SelectedEventViewModel : ViewModel() {
             return dataProcessor.checkIfSINumberExists(siNumber, event.value!!.id)
         }
         return true
+    }
+
+    fun getPunchRecordsForCompetitor(
+        create: Boolean,
+        competitor: Competitor
+    ): ArrayList<PunchRecordsWrapper> {
+        val punchRecords = ArrayList<PunchRecordsWrapper>()
+
+        //New or existing competitor
+        if (create) {
+            //Add start and finish punch
+            punchRecords.add(PunchRecordsWrapper(null, null, PunchType.START))
+            punchRecords.add(PunchRecordsWrapper(null, null, PunchType.FINISH))
+
+            return punchRecords
+        } else {
+            runBlocking {
+                val orig = dataProcessor.getPunchesForCompetitor(competitor.id)
+                var punchArr = ArrayList<Punch>(orig)
+
+            }
+        }
+        return punchRecords
     }
 }

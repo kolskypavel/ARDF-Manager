@@ -11,6 +11,7 @@ import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import com.felhr.usbserial.UsbSerialDevice
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SPORTIDENT_PRODUCT_ID
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SPORTIDENT_VENDOR_ID
 import kotlinx.coroutines.Job
@@ -18,7 +19,7 @@ import kotlinx.coroutines.Job
 
 class SIReaderService :
     Service() {
-
+    private var dataProcessor = DataProcessor.get()
     private var device: UsbDevice? = null
     private var connection: UsbDeviceConnection? = null
     private var serialDevice: UsbSerialDevice? = null
@@ -69,6 +70,13 @@ class SIReaderService :
                 connection?.close()
             }
             stopForeground(STOP_FOREGROUND_REMOVE)
+            dataProcessor.siReaderState.postValue(
+                SIReaderState(
+                    SIReaderStatus.DISCONNECTED,
+                    null,
+                    null
+                )
+            )
         }
     }
 

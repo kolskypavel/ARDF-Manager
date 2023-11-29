@@ -11,10 +11,15 @@ import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.GET_SI_CARD8_9_SIAC
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.HALF_DAY
+import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD10_11_SIAC_MAX_PUNCHES
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD10_11_SIAC_SERIES
+import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD8_MAX_PUNCHES
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD8_SERIES
+import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD9_MAX_PUNCHES
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD9_SERIES
+import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD_PCARD_MAX_PUNCHES
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD_PCARD_SERIES
+import kolskypavel.ardfmanager.backend.sportident.SIConstants.ZERO
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -34,7 +39,7 @@ class SIPort(
     private val msgCache: ArrayList<ByteArray> = ArrayList()
     private var extendedMode =
         false                            //  Marks if station uses SI extended mode
-    private var serialNo: Long = 0L                             //  Serial number of the SI station
+    private var serialNo: Int = 0                           //  Serial number of the SI station
     private var readerStatus = SIReaderStatus.DISCONNECTED
 
     private var event: Event? = null
@@ -68,7 +73,7 @@ class SIPort(
                 delay(SIConstants.DELAY_INTERVAL)
 
                 if (readerStatus == SIReaderStatus.DISCONNECTED && probeDevice()) {
-                    readerStatus = SIReaderStatus.CONNECTED
+                    setStatusConnected()
                 }
                 if (readerStatus == SIReaderStatus.CONNECTED) {
                     readCardOnce()
@@ -88,7 +93,7 @@ class SIPort(
                 ((event!!.startTime.hour * 3600000) + (event!!.startTime.minute * 60000) + (event!!.startTime.second * 1000)).toLong()
             this.zeroTimeWeekDay = (event!!.date.dayOfWeek.value % 7).toLong()
         }
-         dataProcessor.currentEvent.observeForever(observer!!)
+        //   dataProcessor.currentEvent.observeForever(observer!!)
     }
 
     private fun removeObserver() {
@@ -186,7 +191,7 @@ class SIPort(
             }
             val incByte = tmpBuffer[tmpBufferIndex++]
             if (!(bufferSize == 0 && incByte == 0xff.toByte()) &&
-                !(bufferSize == 0 && incByte.toInt() == 0x00) &&
+                !(bufferSize == 0 && incByte == ZERO) &&
                 !(bufferSize == 1 && incByte == SIConstants.STX)
             ) {
                 buffer[bufferSize++] = incByte
@@ -218,7 +223,7 @@ class SIPort(
             }
 
             // Check if message should be cached
-            if (eof && filter.toInt() != 0x00 && bufferSize > 1 && filter != buffer[1]) {
+            if (eof && filter != ZERO && bufferSize > 1 && filter != buffer[1]) {
                 enqueueCache(buffer.copyOfRange(0, bufferSize))
                 eof = false
                 dle = false
@@ -234,7 +239,7 @@ class SIPort(
 
     private fun dequeueCache(filter: Byte): ByteArray? {
         for (i in msgCache.indices) {
-            if (filter.toInt() == 0x00 || msgCache[i][1] == filter) {
+            if (filter == ZERO || msgCache[i][1] == filter) {
                 return msgCache.removeAt(i)
             }
         }
@@ -273,7 +278,7 @@ class SIPort(
 
         if (reply.isNotEmpty()) {
             Log.d("SI", "Unit responded, reading device info")
-            msg = byteArrayOf(0x00, 0x75)
+            msg = byteArrayOf(ZERO, 0x75)
             writeMsg(SIConstants.GET_SYSTEM_INFO, msg, true)
             reply = readMsg(6000, 0x83.toByte())!!
 
@@ -285,7 +290,7 @@ class SIPort(
                     (reply[122] and SIConstants.EXTENDED_MODE).compareTo(SIConstants.EXTENDED_MODE) == 0
                 serialNo =
                     ((byteToUnsignedInt(reply[6]) shl 24) + (byteToUnsignedInt(reply[7]) shl 16)
-                            + (byteToUnsignedInt(reply[8]) shl 8) + byteToUnsignedInt(reply[9])).toLong()
+                            + (byteToUnsignedInt(reply[8]) shl 8) + byteToUnsignedInt(reply[9]))
                 ret = true
             }
 
@@ -293,7 +298,7 @@ class SIPort(
             else {
                 Log.d("SI", "Invalid device info response, trying short info")
 
-                msg = byteArrayOf(0x00, 0x07)
+                msg = byteArrayOf(ZERO, 0x07)
                 writeMsg(0x83.toByte(), msg, extendedMode)
                 reply = readMsg(6000, 0x83.toByte())!!
 
@@ -304,7 +309,7 @@ class SIPort(
                     serialNo =
                         ((byteToUnsignedInt(reply[6]) shl 24) + (byteToUnsignedInt(reply[7]) shl 16) + (byteToUnsignedInt(
                             reply[8]
-                        ) shl 8) + byteToUnsignedInt(reply[9])).toLong()
+                        ) shl 8) + byteToUnsignedInt(reply[9]))
                     ret = true
                 }
             }
@@ -391,16 +396,23 @@ class SIPort(
         var valid = false
 
         if (waitForCardInsert(cardData)) {
+
+            setStatusReading(cardData.siNumber)
+
             when (cardData.cardType) {
                 SIConstants.SI_CARD5 -> valid = card5Readout(cardData)
                 SIConstants.SI_CARD6 -> valid = card6Readout(cardData)
                 SIConstants.SI_CARD8_9_SIAC -> valid = card89SiacReadout(cardData)
             }
-        }
-        //If the readout was valid, process the data further
-        if (valid) {
-            //TODO: EMIT successful readout
-            saveReadout(cardData)
+
+            //If the readout was valid, process the data further
+            if (valid) {
+                //TODO: EMIT successful readout
+                setStatusRead(cardData.siNumber)
+                saveReadout(cardData)
+            } else {
+                setStatusRemoved(cardData.siNumber)
+            }
         }
     }
 
@@ -419,10 +431,7 @@ class SIPort(
                         cardData.siNumber,
                         cardData.cardType,
                         event!!.id,
-                        null,
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
-                        LocalDateTime.now(),
+                        null, null, null, null,
                         Duration.ZERO,
                         LocalDateTime.now()
                     )
@@ -431,7 +440,7 @@ class SIPort(
                     val punch = Punch(
                         UUID.randomUUID(),
                         event!!.id, null,
-                        cardData.siNumber,
+                        cardData.siNumber, pd.siCode,
                         pd.time,
                         PunchStatus.INVALID
                     )
@@ -464,7 +473,7 @@ class SIPort(
             // Start at data part
             offset += 5
             // Get cardId
-            if (data[offset + 6].toInt() == 0x00 || data[offset + 6].toInt() == 0x01) {
+            if (data[offset + 6] == ZERO || data[offset + 6].toInt() == 0x01) {
                 cardData.siNumber =
                     (byteToUnsignedInt(data[offset + 4]) shl 8) + byteToUnsignedInt(
                         data[offset + 5]
@@ -490,6 +499,7 @@ class SIPort(
             cardData.checkTime = ((byteToUnsignedInt(data[offset + 25]) shl 8) + byteToUnsignedInt(
                 data[offset + 26]
             )).toLong()
+
             val punchCount = byteToUnsignedInt(data[offset + 23]) - 1
             run {
                 var i = 0
@@ -559,7 +569,7 @@ class SIPort(
     private fun card6Readout(cardData: CardData): Boolean {
 
         val reply = ByteArray(7 * 128)
-        val msg = byteArrayOf(0x00)
+        val msg = byteArrayOf(ZERO)
         val blocks = byteArrayOf(0, 6, 7, 2, 3, 4, 5)
         var i = 0
         while (i < 7) {
@@ -607,7 +617,7 @@ class SIPort(
         } else return false
 
         //Parse the regular punches
-        val punches: Int = min(data[18].toInt(), 192)
+        val punches: Int = min(data[18].toInt(), 192)       //TODO: verify
 
         for (i in 0 until punches) {
             val tmpPunchData = parsePunch(data.copyOfRange(128 + 4 * i, 128 + 4 * i + 4))
@@ -625,7 +635,7 @@ class SIPort(
     private fun card89SiacReadout(cardData: CardData): Boolean {
 
         //Request the first block with service data
-        val msg = byteArrayOf(0x00)
+        val msg = byteArrayOf(ZERO)
         val reply: ByteArray
 
         writeMsg(GET_SI_CARD8_9_SIAC, msg, extendedMode)
@@ -680,7 +690,7 @@ class SIPort(
             )
 
         //Parse the special punches
-        val series = data[24].toInt() and 0x0f
+        val series = data[24].toInt() and SI_CARD10_11_SIAC_SERIES
         val startPunch = parsePunch(data.copyOfRange(12, 16))
         val finishPunch = parsePunch(data.copyOfRange(16, 20))
         val checkPunch = parsePunch(data.copyOfRange(8, 12))
@@ -693,8 +703,13 @@ class SIPort(
 
         when (series) {
             SI_CARD8_SERIES -> {
-                // SI card 8
-                val punches: Int = min(data[22].toInt(), 30)    //Determine number of punches by reading the pointer
+                //Determine number of punches by reading the pointer
+                val punches: Int = min(
+                    data[22].toInt(),
+                    SI_CARD8_MAX_PUNCHES
+                )
+
+                //Go through all the punches and parse them
                 for (i in 0 until punches) {
                     val tmpPunch = parsePunch(
                         data.copyOfRange(34 * 4 + 4 * i, 34 * 4 + 4 * i + 4)
@@ -708,7 +723,13 @@ class SIPort(
             }
 
             SI_CARD9_SERIES -> {
-                val punches: Int = min(data[22].toInt(), 50)    //Determine number of punches by reading the pointer
+                //Determine number of punches by reading the pointer
+                val punches: Int = min(
+                    data[22].toInt(),
+                    SI_CARD9_MAX_PUNCHES
+                )
+
+                //Go through all the punches and parse them
                 for (i in 0 until punches) {
                     val tmpPunch = parsePunch(
                         data.copyOfRange(14 * 4 + 4 * i, 14 * 4 + 4 * i + 4)
@@ -722,7 +743,13 @@ class SIPort(
             }
 
             SI_CARD_PCARD_SERIES -> {
-                val punches: Int = min(data[22].toInt(), 20)    //Determine number of punches by reading the pointer
+                //Determine number of punches by reading the pointer
+                val punches: Int = min(
+                    data[22].toInt(),
+                    SI_CARD_PCARD_MAX_PUNCHES
+                )
+
+                //Go through all the punches and parse them
                 for (i in 0 until punches) {
                     val tmpPunch = parsePunch(
                         data.copyOfRange(44 * 4 + 4 * i, 44 * 4 + 4 * i + 4)
@@ -736,8 +763,14 @@ class SIPort(
             }
 
             SI_CARD10_11_SIAC_SERIES -> {
-                val punches: Int = min(data[22].toInt(), 128)   //Determine number of punches by reading the pointer
 
+                //Determine number of punches by reading the pointer
+                val punches: Int = min(
+                    data[22].toInt(),
+                    SI_CARD10_11_SIAC_MAX_PUNCHES
+                )
+
+                //Go through all the punches and parse them
                 for (i in 0 until punches) {
                     val tmpPunch: PunchData? =
                         parsePunch(data.copyOfRange(128 + 4 * i, 128 + 4 * i + 4))
@@ -780,5 +813,47 @@ class SIPort(
         basetime -= zeroTimeBase
         punchData.time = basetime
         return punchData
+    }
+
+    private fun setStatusConnected() {
+        readerStatus = SIReaderStatus.CONNECTED
+        dataProcessor.siReaderState.postValue(
+            SIReaderState(
+                SIReaderStatus.CONNECTED,
+                serialNo,
+                null
+            )
+        )
+    }
+
+    private fun setStatusReading(cardNo: Int) {
+        dataProcessor.siReaderState.postValue(
+            SIReaderState(
+                SIReaderStatus.READING,
+                serialNo,
+                cardNo
+            )
+        )
+    }
+
+    private fun setStatusRemoved(cardNo: Int) {
+        readerStatus = SIReaderStatus.CONNECTED
+        dataProcessor.siReaderState.postValue(
+            SIReaderState(
+                SIReaderStatus.CARD_REMOVED,
+                serialNo,
+                cardNo
+            )
+        )
+    }
+
+    private fun setStatusRead(cardNo: Int) {
+        dataProcessor.siReaderState.postValue(
+            SIReaderState(
+                SIReaderStatus.CARD_READ,
+                serialNo,
+                cardNo
+            )
+        )
     }
 }
