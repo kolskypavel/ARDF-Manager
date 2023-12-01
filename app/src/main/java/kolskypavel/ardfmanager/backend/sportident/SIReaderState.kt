@@ -6,6 +6,7 @@ package kolskypavel.ardfmanager.backend.sportident
  */
 data class SIReaderState(
     var status: SIReaderStatus,
-    var stationId: Int?,
-    var cardId: Int?
+    var stationId: Int? = null,
+    var cardId: Int? = null,
+    var lastCard: Int? = null
 )

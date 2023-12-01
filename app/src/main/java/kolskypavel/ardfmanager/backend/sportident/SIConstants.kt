@@ -14,8 +14,8 @@ object SIConstants {
     const val EXTENDED_MODE: Byte = 0x01.toByte()
     const val ZERO: Byte = 0x00
 
-    const val DELAY_INTERVAL = 200L
-    const val WRITE_TIMEOUT = 500
+    const val PERIOD = 200L
+    const val READ_WRITE_TIMEOUT = 500
     const val BAUDRATE_LOW = 4800
     const val BAUDRATE_HIGH = 38400
     const val POLYNOM = 0x8005      //USED FOR CRC
@@ -42,14 +42,4 @@ object SIConstants {
     const val SI_CARD9_MAX_PUNCHES = 50
     const val SI_CARD10_11_SIAC_MAX_PUNCHES = 128
     const val SI_CARD_PCARD_MAX_PUNCHES = 20
-
-
-    const val UNKNOWN: Byte = 0x00
-    const val CONTROL: Byte = 0x02
-    const val START: Byte = 0x03
-    const val FINISH: Byte = 0x04
-    const val READ: Byte = 0x05
-    const val CLEAR_START_NBR: Byte = 0x06
-    const val CLEAR: Byte = 0x07
-    const val CHECK: Byte = 0x0a
 }

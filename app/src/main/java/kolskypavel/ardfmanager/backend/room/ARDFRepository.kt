@@ -125,6 +125,9 @@ class ARDFRepository private constructor(context: Context) {
     fun createReadout(readout: Readout) =
         readoutDatabase.ReadoutDao().createReadout(readout)
 
+    fun checkIfReadoutExistsById(siNumber: Int, eventId: UUID) =
+        readoutDatabase.ReadoutDao().checkIfReadoutExistsById(siNumber, eventId)
+
     //PUNCHES
     fun createPunch(punch: Punch) = punchDatabase.punchDao().createPunch(punch)
 

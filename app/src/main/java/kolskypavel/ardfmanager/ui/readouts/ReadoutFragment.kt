@@ -1,15 +1,18 @@
 package kolskypavel.ardfmanager.ui.readouts
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
@@ -52,6 +55,7 @@ class ReadoutFragment : Fragment() {
             readoutToolbar.subtitle = dataProcessor.eventTypeToString(event.eventType)
         }
         setRecyclerAdapter()
+        setBackButton()
     }
 
     private fun setRecyclerAdapter() {
@@ -63,6 +67,26 @@ class ReadoutFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun setBackButton() {
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            val builder = AlertDialog.Builder(context)
+            builder.setTitle(getString(R.string.event_end))
+            val message = getString(R.string.event_end_confirmation)
+            builder.setMessage(message)
+
+            builder.setPositiveButton(R.string.ok) { dialog, _ ->
+                dataProcessor.removeReaderEvent()
+                findNavController().navigate(ReadoutFragmentDirections.closeEvent())
+            }
+
+            builder.setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog.cancel()
+            }
+            builder.show()
+        }
+
     }
 
 

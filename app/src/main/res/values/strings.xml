@@ -21,6 +21,8 @@
     <string name="event_edit">Edit event</string>
     <string name="event_delete">Delete event</string>
     <string name="event_export">Export event</string>
+    <string name="event_end">Close event</string>
+    <string name="event_end_confirmation">Do you really want to close the current event?</string>
 
     <string name="event_type_0">Classics</string>
     <string name="event_type_1" translatable="false">Sprint</string>
@@ -108,10 +110,16 @@
     <string name="competitor_hint_time_format" translatable="false">HH:MM:SS</string>
 
     <!--SI station display-->
+    <string name="si_ready">SI service started</string>
     <string name="si_connected">SI station %1$d connected</string>
+    <string name="si_connected_but_no_event">SI station %1$d connected, but no event set!</string>
     <string name="si_disconnected">SI station disconnected</string>
     <string name="si_reading">SI station %1$d reading card %2$d </string>
-    <string name="si_card_removed">SI station %1$d, removed card %2$d </string>
+    <string name="si_card_error">SI station %1$d, error reading card %2$d </string>
     <string name="si_card_read">SI station %1$d, read card %2$d </string>
+    <string name="si_last_card">Last read card: %1$s </string>
+    <string name="no_cards_yet">No cards yet </string>
 
+    <!--Readout-->
+    <string name="readout_exists">Readout with the same SI number already exists!</string>
 </resources>

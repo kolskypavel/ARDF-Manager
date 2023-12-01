@@ -24,4 +24,7 @@ interface ReadoutDao {
 
     @Query("DELETE FROM readout WHERE id =(:id) ")
     fun deletePunch(id: UUID)
+
+    @Query("SELECT COUNT(*) from readout WHERE si_number=(:siNumber) AND event_id= (:eventId)")
+    fun checkIfReadoutExistsById(siNumber: Int, eventId: UUID): Int
 }

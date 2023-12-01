@@ -7,17 +7,14 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
-import kolskypavel.ardfmanager.backend.room.enums.PunchType
-import kolskypavel.ardfmanager.backend.wrappers.PunchRecordsWrapper
+import kolskypavel.ardfmanager.backend.wrappers.RecordWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
 /**
@@ -61,7 +58,6 @@ class SelectedEventViewModel : ViewModel() {
                     _readouts.value = it
                 }
             }
-
         }
     }
 
@@ -89,23 +85,23 @@ class SelectedEventViewModel : ViewModel() {
     fun getPunchRecordsForCompetitor(
         create: Boolean,
         competitor: Competitor
-    ): ArrayList<PunchRecordsWrapper> {
-        val punchRecords = ArrayList<PunchRecordsWrapper>()
-
-        //New or existing competitor
-        if (create) {
-            //Add start and finish punch
-            punchRecords.add(PunchRecordsWrapper(null, null, PunchType.START))
-            punchRecords.add(PunchRecordsWrapper(null, null, PunchType.FINISH))
-
-            return punchRecords
-        } else {
-            runBlocking {
-                val orig = dataProcessor.getPunchesForCompetitor(competitor.id)
-                var punchArr = ArrayList<Punch>(orig)
-
-            }
-        }
+    ): ArrayList<RecordWrapper> {
+        val punchRecords = ArrayList<RecordWrapper>()
+//
+//        //New or existing competitor
+//        if (create) {
+//            //Add start and finish punch
+//            punchRecords.add(SIPort.PunchData(null, null, PunchType.START))
+//            punchRecords.add(PunchRecordsWrapper(null, null, PunchType.FINISH))
+//
+//            return punchRecords
+//        } else {
+//            runBlocking {
+//                val orig = dataProcessor.getPunchesForCompetitor(competitor.id)
+//                var punchArr = ArrayList<Punch>(orig)
+//
+//            }
+//        }
         return punchRecords
     }
 }

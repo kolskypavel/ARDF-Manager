@@ -88,6 +88,9 @@
                 app:argType="kolskypavel.ardfmanager.backend.room.entitity.Event" />
 
         </dialog>
+        <action
+            android:id="@+id/closeEvent"
+            app:destination="@id/eventSelectionFragment" />
     </navigation>
 
     <dialog

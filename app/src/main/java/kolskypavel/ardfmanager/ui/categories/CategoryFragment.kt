@@ -6,6 +6,7 @@ import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -79,6 +80,7 @@ class CategoryFragment : Fragment() {
         }
         setFragmentListener()
         setRecyclerViewAdapter()
+        setBackButton()
     }
 
     private fun setFragmentListener() {
@@ -140,6 +142,26 @@ class CategoryFragment : Fragment() {
             1 -> {}
             2 -> confirmCategoryDeletion(category)
         }
+    }
+
+    private fun setBackButton() {
+        requireActivity().onBackPressedDispatcher.addCallback(this) {
+            val builder = AlertDialog.Builder(context)
+            builder.setTitle(getString(R.string.event_end))
+            val message = getString(R.string.event_end_confirmation)
+            builder.setMessage(message)
+
+            builder.setPositiveButton(R.string.ok) { dialog, _ ->
+                dataProcessor.removeReaderEvent()
+                findNavController().navigate(CategoryFragmentDirections.closeEvent())
+            }
+
+            builder.setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog.cancel()
+            }
+            builder.show()
+        }
+
     }
 
     override fun onDestroyView() {

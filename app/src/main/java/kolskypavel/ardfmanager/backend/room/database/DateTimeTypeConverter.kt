@@ -1,6 +1,7 @@
 package kolskypavel.ardfmanager.backend.room.database
 
 import androidx.room.TypeConverter
+import kolskypavel.ardfmanager.backend.sportident.SITime
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -46,4 +47,15 @@ class DateTimeTypeConverter {
     fun toDuration(stringDuration: String): Duration {
         return Duration.parse(stringDuration)
     }
+
+    @TypeConverter
+    fun fromSITime(siTime: SITime): String {
+        return siTime.toString()
+    }
+
+    @TypeConverter
+    fun toSITime(string: String): SITime {
+        return SITime.from(string)
+    }
+
 }

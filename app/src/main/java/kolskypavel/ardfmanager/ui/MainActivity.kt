@@ -20,6 +20,7 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.sportident.SIReaderState
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
@@ -54,9 +55,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
+        //Initialize singletons
         ARDFRepository.initialize(this)
         DataProcessor.initialize(this)
         dataProcessor = DataProcessor.get()
+        dataProcessor.resultsProcessor = ResultsProcessor()
 
         // Set the usb device
         if (intent != null) {
@@ -148,13 +152,26 @@ class MainActivity : AppCompatActivity() {
         val siObserver = Observer<SIReaderState> { newState ->
             when (newState.status) {
                 SIReaderStatus.CONNECTED -> {
-                    if (newState.stationId != null) {
-                        siStatusTextView.text =
-                            getString(R.string.si_connected, newState.stationId!!)
-                    } else {
-                        siStatusTextView.text = getString(R.string.si_connected)
+                    //Check if event is set
+                    if (dataProcessor.currentEvent.value != null) {
+                        if (newState.stationId != null) {
+                            siStatusTextView.text =
+                                getString(R.string.si_connected, newState.stationId)
+                        } else {
+                            siStatusTextView.text = getString(R.string.si_connected)
+                        }
+                        siStatusTextView.setBackgroundResource(R.color.green_ok)
                     }
-                    siStatusTextView.setBackgroundResource(R.color.green_ok)
+                    //Event not selected - warn user
+                    else {
+                        if (newState.stationId != null) {
+                            siStatusTextView.text =
+                                getString(R.string.si_connected_but_no_event, newState.stationId!!)
+                        } else {
+                            getString(R.string.si_connected_but_no_event)
+                        }
+                        siStatusTextView.setBackgroundResource(R.color.yellow_warning)
+                    }
                 }
 
                 SIReaderStatus.DISCONNECTED -> {
@@ -165,23 +182,27 @@ class MainActivity : AppCompatActivity() {
                 SIReaderStatus.READING -> {
                     if (newState.stationId != null && newState.cardId != null) {
                         siStatusTextView.text =
-                            getString(R.string.si_reading, newState.stationId!!, newState.cardId!!)
+                            getString(
+                                R.string.si_reading,
+                                newState.stationId!!,
+                                newState.cardId!!
+                            )
                     } else {
                         siStatusTextView.text = getString(R.string.si_reading)
                     }
                     siStatusTextView.setBackgroundResource(R.color.orange_reading)
                 }
 
-                SIReaderStatus.CARD_REMOVED -> {
+                SIReaderStatus.ERROR -> {
                     if (newState.stationId != null && newState.cardId != null) {
                         siStatusTextView.text =
                             getString(
-                                R.string.si_card_removed,
+                                R.string.si_card_error,
                                 newState.stationId!!,
                                 newState.cardId!!
                             )
                     } else {
-                        siStatusTextView.text = getString(R.string.si_card_removed)
+                        siStatusTextView.text = getString(R.string.si_card_error)
                     }
                     siStatusTextView.setBackgroundResource(R.color.red_error)
                 }

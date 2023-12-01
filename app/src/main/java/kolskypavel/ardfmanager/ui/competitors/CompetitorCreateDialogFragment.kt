@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
-import android.widget.ScrollView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
@@ -46,7 +45,6 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private lateinit var siNumberTextView: TextInputEditText
     private lateinit var siRentCheckBox: CheckBox
     private lateinit var editPunchesSwitch: SwitchMaterial
-    private lateinit var punchEditScrollView: ScrollView
     private lateinit var punchEditRecyclerView: RecyclerView
 
     private lateinit var okButton: Button
@@ -81,7 +79,6 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         siNumberTextView = view.findViewById(R.id.competitor_dialog_si_number)
         siRentCheckBox = view.findViewById(R.id.competitor_dialog_si_rent)
         editPunchesSwitch = view.findViewById(R.id.competitor_dialog_edit_punches)
-        punchEditScrollView = view.findViewById(R.id.competitor_dialog_punch_scroll)
         punchEditRecyclerView = view.findViewById(R.id.competitor_dialog_punch_recycler_view)
 
         cancelButton = view.findViewById(R.id.competitor_dialog_cancel)
@@ -144,17 +141,17 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         categoryPicker.setAdapter(categoriesAdapter)
 
         punchEditRecyclerView.adapter =
-            PunchWrapperRecyclerViewAdapter(
+            RecordRecyclerViewAdapter(
                 selectedEventViewModel.getPunchRecordsForCompetitor(
                     args.create,
                     competitor
                 ), requireContext()
             )
-        punchEditScrollView.visibility = View.GONE
+        punchEditRecyclerView.visibility = View.GONE
         //Toggle the visibility of the punch switch
         editPunchesSwitch.setOnCheckedChangeListener { _, checked ->
-            if (checked) punchEditScrollView.visibility =
-                View.VISIBLE else punchEditScrollView.visibility = View.GONE
+            if (checked) punchEditRecyclerView.visibility =
+                View.VISIBLE else punchEditRecyclerView.visibility = View.GONE
         }
     }
 

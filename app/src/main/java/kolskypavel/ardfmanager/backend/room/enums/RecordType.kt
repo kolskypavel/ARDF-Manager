@@ -1,7 +1,8 @@
 package kolskypavel.ardfmanager.backend.room.enums
 
-enum class PunchType {
-    CONTROL,
+enum class RecordType {
+    CHECK,
     START,
-    FINISH
+    FINISH,
+    CONTROL
 }

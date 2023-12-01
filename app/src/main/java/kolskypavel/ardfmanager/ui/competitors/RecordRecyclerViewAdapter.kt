@@ -9,37 +9,31 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
-import kolskypavel.ardfmanager.backend.room.enums.PunchType
-import kolskypavel.ardfmanager.backend.wrappers.PunchRecordsWrapper
-import java.time.format.DateTimeFormatter
+import kolskypavel.ardfmanager.backend.room.enums.RecordType
+import kolskypavel.ardfmanager.backend.wrappers.RecordWrapper
 
-class PunchWrapperRecyclerViewAdapter(
-    private var values: ArrayList<PunchRecordsWrapper>,
+class RecordRecyclerViewAdapter(
+    private var values: ArrayList<RecordWrapper>,
     private val context: Context
 ) :
-    RecyclerView.Adapter<PunchWrapperRecyclerViewAdapter.PunchWrapperViewHolder>() {
+    RecyclerView.Adapter<RecordRecyclerViewAdapter.PunchViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PunchWrapperViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PunchViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
             .inflate(R.layout.recycler_item_punch, parent, false)
 
-        return PunchWrapperViewHolder(adapterLayout)
+        return PunchViewHolder(adapterLayout)
     }
 
     override fun getItemCount() = values.size
 
-    override fun onBindViewHolder(holder: PunchWrapperViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PunchViewHolder, position: Int) {
         val item = values[position]
 
         holder.order.text = (position + 1).toString()
-        if (item.siCode != null) {
-            holder.code.setText(item.siCode.toString())
-        }
+        holder.code.setText(item.siCode.toString())
 
-        if (item.time != null) {
-            val formatter = DateTimeFormatter.ofPattern("HH:MM:SS")
-            holder.hours.setText(item.time!!.format(formatter))
-        }
+        holder.time.setText("${item.siTime?.time?.hour}:${item.siTime?.time?.minute}:${item.siTime?.time?.second}")
 
         holder.addBtn.setOnClickListener {
             addPunchWrapper(position)
@@ -49,7 +43,7 @@ class PunchWrapperRecyclerViewAdapter(
             deletePunchWrapper(position)
         }
         //Set the start punch
-        if (item.punchType == PunchType.START) {
+        if (item.recordType == RecordType.START) {
             holder.code.setText("S")
             holder.code.isEnabled = false
             holder.order.visibility = View.GONE
@@ -57,7 +51,7 @@ class PunchWrapperRecyclerViewAdapter(
         }
 
         //Set the finish punch
-        else if (item.punchType == PunchType.FINISH) {
+        else if (item.recordType == RecordType.FINISH) {
             holder.code.setText("F")
             holder.code.isEnabled = false
             holder.order.visibility = View.GONE
@@ -67,7 +61,9 @@ class PunchWrapperRecyclerViewAdapter(
     }
 
     private fun addPunchWrapper(position: Int) {
-        values.add(position + 1, PunchRecordsWrapper(null, null, PunchType.CONTROL))
+//        values.add(
+//            position + 1, SIPort.PunchData()
+//        )
         notifyItemInserted(position + 1)
     }
 
@@ -76,10 +72,10 @@ class PunchWrapperRecyclerViewAdapter(
         notifyItemRemoved(position)
     }
 
-    inner class PunchWrapperViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class PunchViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var order: TextView = view.findViewById(R.id.punch_item_order)
         var code: EditText = view.findViewById(R.id.punch_item_si_code)
-        var hours: EditText = view.findViewById(R.id.punch_item_time)
+        var time: EditText = view.findViewById(R.id.punch_item_time)
         var addBtn: ImageButton = view.findViewById(R.id.punch_item_add_btn)
         var deleteBtn: ImageButton = view.findViewById(R.id.punch_item_delete_btn)
     }

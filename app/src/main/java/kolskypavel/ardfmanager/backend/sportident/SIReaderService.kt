@@ -1,5 +1,6 @@
 package kolskypavel.ardfmanager.backend.sportident
 
+import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
@@ -9,6 +10,7 @@ import android.hardware.usb.UsbManager
 import android.os.Build
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.Observer
 import com.felhr.usbserial.UsbSerialDevice
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
@@ -25,6 +27,7 @@ class SIReaderService :
     private var serialDevice: UsbSerialDevice? = null
     private var siPort: SIPort? = null
     private var siJob: Job? = null
+    private var observer: Observer<SIReaderState>? = null
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -39,8 +42,8 @@ class SIReaderService :
 
         if (usbDevice != null) {
             when (intent?.action) {
-                ReaderActions.START.toString() -> startService(usbDevice)
-                ReaderActions.STOP.toString() -> stopService(usbDevice)
+                ReaderServiceActions.START.toString() -> startService(usbDevice)
+                ReaderServiceActions.STOP.toString() -> stopService(usbDevice)
             }
         }
         return super.onStartCommand(intent, flags, startId)
@@ -53,15 +56,22 @@ class SIReaderService :
 
             val notification = NotificationCompat.Builder(this, "si_reader_channel")
                 .setSmallIcon(R.drawable.ic_sportident)
-                .setContentTitle(getString(R.string.si_connected)).build()
+                .setContentTitle(getString(R.string.si_ready)).build()
 
             startForeground(1, notification)
+            setNotificationObserver()
         }
     }
 
     private fun stopService(removedDevice: UsbDevice) {
         if (removedDevice.vendorId == SPORTIDENT_VENDOR_ID && removedDevice.productId == SPORTIDENT_PRODUCT_ID) {
             siJob?.cancel()
+
+            //Remove the observer
+            if (observer != null) {
+                dataProcessor.siReaderState.removeObserver(observer!!)
+            }
+
             if (serialDevice != null) {
                 serialDevice!!.close()
             }
@@ -74,7 +84,7 @@ class SIReaderService :
                 SIReaderState(
                     SIReaderStatus.DISCONNECTED,
                     null,
-                    null
+                    null, null
                 )
             )
         }
@@ -91,7 +101,32 @@ class SIReaderService :
         siJob!!.start()
     }
 
-    enum class ReaderActions {
+    private fun setNotificationObserver() {
+
+        observer = Observer { newState ->
+
+            val lastCardString =
+                if (newState.lastCard != null) {
+                    newState.lastCard.toString()
+                } else {
+                    getString(R.string.no_cards_yet)
+                }
+            val notification = NotificationCompat.Builder(this, "si_reader_channel")
+                .setSmallIcon(R.drawable.ic_sportident)
+                .setContentTitle(getString(R.string.si_ready))
+                .setContentText(getString(R.string.si_last_card, lastCardString))
+                .build()
+
+            val notificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.notify(1, notification)
+        }
+
+        dataProcessor.siReaderState.observeForever(observer!!)
+    }
+
+
+    enum class ReaderServiceActions {
         START,
         STOP
     }

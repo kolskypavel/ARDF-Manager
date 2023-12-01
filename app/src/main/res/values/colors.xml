@@ -11,4 +11,5 @@
     <color name="grey">#505050</color>
     <color name="orange_reading">#FD8204</color>
     <color name="green_ok">#0AE62F</color>
+    <color name="yellow_warning">#FFFF00</color>
 </resources>

@@ -4,6 +4,6 @@ enum class SIReaderStatus {
     CONNECTED,
     DISCONNECTED,
     READING,
-    CARD_REMOVED,
+    ERROR,
     CARD_READ
 }

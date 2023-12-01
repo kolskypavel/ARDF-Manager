@@ -5,6 +5,7 @@ import android.content.Intent
 import android.hardware.usb.UsbDevice
 import androidx.lifecycle.MutableLiveData
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
@@ -15,6 +16,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
 import kolskypavel.ardfmanager.backend.room.enums.EventType
+import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SIReaderService
 import kolskypavel.ardfmanager.backend.sportident.SIReaderState
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
@@ -36,6 +38,7 @@ class DataProcessor private constructor(context: Context) {
     //private val siReaderService: SIReaderService
     var currentEvent = MutableLiveData<Event>()
     var siReaderState = MutableLiveData<SIReaderState>()
+    var resultsProcessor: ResultsProcessor? = null
 
     companion object {
         private var INSTANCE: DataProcessor? = null
@@ -52,7 +55,37 @@ class DataProcessor private constructor(context: Context) {
 
     init {
         appContext = WeakReference(context)
-        siReaderState.postValue(SIReaderState(SIReaderStatus.DISCONNECTED, null, null))
+        siReaderState.postValue(SIReaderState(SIReaderStatus.DISCONNECTED, null, null, null))
+    }
+
+    suspend fun setReaderEvent(eventId: UUID): Event {
+        val event = getEvent(eventId)
+        currentEvent.postValue(event)
+
+        if (siReaderState.value != null &&
+            siReaderState.value!!.status == SIReaderStatus.CONNECTED
+        ) {
+            siReaderState.postValue(siReaderState.value)
+        }
+
+        return event
+    }
+
+    fun removeReaderEvent() {
+        currentEvent.postValue(null)
+        if (siReaderState.value != null) {
+
+            when (siReaderState.value!!.status) {
+                SIReaderStatus.CONNECTED -> siReaderState.postValue(siReaderState.value)
+                SIReaderStatus.READING,
+                SIReaderStatus.ERROR,
+                SIReaderStatus.CARD_READ -> {
+                    siReaderState.postValue(SIReaderState(SIReaderStatus.CONNECTED))
+                }
+
+                else -> {}
+            }
+        }
     }
 
     //METHODS TO HANDLE EVENTS
@@ -152,9 +185,17 @@ class DataProcessor private constructor(context: Context) {
 
     fun createReadout(readout: Readout) = ardfRepository.createReadout(readout)
 
+    fun checkIfReadoutExistsBySI(siNumber: Int, eventId: UUID): Boolean {
+        return runBlocking {
+            return@runBlocking ardfRepository.checkIfReadoutExistsById(siNumber, eventId) > 0
+        }
+    }
 
     //PUNCHES
     fun createPunch(punch: Punch) = ardfRepository.createPunch(punch)
+
+    fun processCardData(cardData: CardData, event: Event) =
+        appContext.get()?.let { resultsProcessor?.processCardData(cardData, event, it) }
 
     suspend fun getPunchesForCompetitor(competitorId: UUID) =
         ardfRepository.getPunchesForCompetitor(competitorId)
@@ -228,7 +269,7 @@ class DataProcessor private constructor(context: Context) {
 
     fun connectDevice(usbDevice: UsbDevice) {
         Intent(appContext.get(), SIReaderService::class.java).also {
-            it.action = SIReaderService.ReaderActions.START.toString()
+            it.action = SIReaderService.ReaderServiceActions.START.toString()
             it.putExtra(SIReaderService.USB_DEVICE, usbDevice)
             appContext.get()?.startService(it)
         }
@@ -236,17 +277,12 @@ class DataProcessor private constructor(context: Context) {
 
     fun detachDevice(usbDevice: UsbDevice) {
         Intent(appContext.get(), SIReaderService::class.java).also {
-            it.action = SIReaderService.ReaderActions.STOP.toString()
+            it.action = SIReaderService.ReaderServiceActions.STOP.toString()
             it.putExtra(SIReaderService.USB_DEVICE, usbDevice)
             appContext.get()?.startService(it)
         }
     }
 
-    suspend fun setReaderEvent(eventId: UUID): Event {
-        val event = getEvent(eventId)
-        currentEvent.postValue(event)
-        return event
-    }
 
     //GENERAL HELPER METHODS
     fun getHoursMinutesFromTime(time: LocalTime): String {
