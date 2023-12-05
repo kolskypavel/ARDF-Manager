@@ -52,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/start_time_00"
+            android:hint="@string/start_time"
             app:endIconDrawable="@drawable/ic_clock"
             app:endIconMode="custom">
 

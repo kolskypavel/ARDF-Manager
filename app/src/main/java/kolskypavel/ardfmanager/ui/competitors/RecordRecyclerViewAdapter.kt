@@ -10,10 +10,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.enums.RecordType
-import kolskypavel.ardfmanager.backend.wrappers.RecordWrapper
+import kolskypavel.ardfmanager.backend.wrappers.PunchRecordWrapper
 
 class RecordRecyclerViewAdapter(
-    private var values: ArrayList<RecordWrapper>,
+    private var values: ArrayList<PunchRecordWrapper>,
     private val context: Context
 ) :
     RecyclerView.Adapter<RecordRecyclerViewAdapter.PunchViewHolder>() {

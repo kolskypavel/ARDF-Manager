@@ -8,7 +8,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
-import kolskypavel.ardfmanager.backend.wrappers.RecordWrapper
+import kolskypavel.ardfmanager.backend.wrappers.PunchRecordWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -85,8 +85,8 @@ class SelectedEventViewModel : ViewModel() {
     fun getPunchRecordsForCompetitor(
         create: Boolean,
         competitor: Competitor
-    ): ArrayList<RecordWrapper> {
-        val punchRecords = ArrayList<RecordWrapper>()
+    ): ArrayList<PunchRecordWrapper> {
+        val punchRecords = ArrayList<PunchRecordWrapper>()
 //
 //        //New or existing competitor
 //        if (create) {

@@ -19,10 +19,10 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.backend.AppState
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
-import kolskypavel.ardfmanager.backend.sportident.SIReaderState
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
 import kolskypavel.ardfmanager.databinding.ActivityMainBinding
 import kolskypavel.ardfmanager.ui.event.EventViewModel
@@ -149,14 +149,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setStationObserver() {
-        val siObserver = Observer<SIReaderState> { newState ->
-            when (newState.status) {
+        val siObserver = Observer<AppState> { newState ->
+            when (newState.siReaderState.status) {
                 SIReaderStatus.CONNECTED -> {
                     //Check if event is set
-                    if (dataProcessor.currentEvent.value != null) {
-                        if (newState.stationId != null) {
+                    if (newState.currentEvent != null) {
+
+                        if (newState.siReaderState.stationId != null) {
                             siStatusTextView.text =
-                                getString(R.string.si_connected, newState.stationId)
+                                getString(R.string.si_connected, newState.siReaderState.stationId)
                         } else {
                             siStatusTextView.text = getString(R.string.si_connected)
                         }
@@ -164,9 +165,12 @@ class MainActivity : AppCompatActivity() {
                     }
                     //Event not selected - warn user
                     else {
-                        if (newState.stationId != null) {
+                        if (newState.siReaderState.stationId != null) {
                             siStatusTextView.text =
-                                getString(R.string.si_connected_but_no_event, newState.stationId!!)
+                                getString(
+                                    R.string.si_connected_but_no_event,
+                                    newState.siReaderState.stationId!!
+                                )
                         } else {
                             getString(R.string.si_connected_but_no_event)
                         }
@@ -180,12 +184,14 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 SIReaderStatus.READING -> {
-                    if (newState.stationId != null && newState.cardId != null) {
+                    if (newState.siReaderState.stationId != null &&
+                        newState.siReaderState.cardId != null
+                    ) {
                         siStatusTextView.text =
                             getString(
                                 R.string.si_reading,
-                                newState.stationId!!,
-                                newState.cardId!!
+                                newState.siReaderState.stationId!!,
+                                newState.siReaderState.cardId!!
                             )
                     } else {
                         siStatusTextView.text = getString(R.string.si_reading)
@@ -194,12 +200,12 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 SIReaderStatus.ERROR -> {
-                    if (newState.stationId != null && newState.cardId != null) {
+                    if (newState.siReaderState.stationId != null && newState.siReaderState.cardId != null) {
                         siStatusTextView.text =
                             getString(
                                 R.string.si_card_error,
-                                newState.stationId!!,
-                                newState.cardId!!
+                                newState.siReaderState.stationId!!,
+                                newState.siReaderState.cardId!!
                             )
                     } else {
                         siStatusTextView.text = getString(R.string.si_card_error)
@@ -208,12 +214,12 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 SIReaderStatus.CARD_READ -> {
-                    if (newState.stationId != null && newState.cardId != null) {
+                    if (newState.siReaderState.stationId != null && newState.siReaderState.cardId != null) {
                         siStatusTextView.text =
                             getString(
                                 R.string.si_card_read,
-                                newState.stationId!!,
-                                newState.cardId!!
+                                newState.siReaderState.stationId!!,
+                                newState.siReaderState.cardId!!
                             )
                     } else {
                         siStatusTextView.text = getString(R.string.si_card_read)
@@ -222,6 +228,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        DataProcessor.get().siReaderState.observe(this, siObserver)
+        DataProcessor.get().currentState.observe(this, siObserver)
     }
 }

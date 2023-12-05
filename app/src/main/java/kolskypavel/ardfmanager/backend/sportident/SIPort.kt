@@ -1,7 +1,6 @@
 package kolskypavel.ardfmanager.backend.sportident
 
 import android.util.Log
-import androidx.lifecycle.Observer
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
 import kolskypavel.ardfmanager.backend.DataProcessor
@@ -42,12 +41,7 @@ class SIPort(
     private var extendedMode =
         false                            //  Marks if station uses SI extended mode
     private var serialNo: Int = 0                           //  Serial number of the SI station
-    private var readerStatus = SIReaderStatus.DISCONNECTED
     private var lastReadCardId: Int? = null
-
-    private var zeroTimeBase = 0L
-    private var zeroTimeWeekDay = 0L
-    private var observer: Observer<Event>? = null
 
     /**
      * Stores the temp readout data
@@ -72,11 +66,12 @@ class SIPort(
             while (true) {
                 delay(SIConstants.PERIOD)
 
-                if (readerStatus == SIReaderStatus.DISCONNECTED && probeDevice()) {
+                if (dataProcessor.currentState.value!!.siReaderState.status == SIReaderStatus.DISCONNECTED && probeDevice()) {
                     setStatusConnected()
                 }
-                if (readerStatus == SIReaderStatus.CONNECTED && dataProcessor.currentEvent.value != null) {
-                    readCardOnce(dataProcessor.currentEvent.value!!)
+                if (dataProcessor.currentState.value!!.siReaderState.status != SIReaderStatus.DISCONNECTED
+                    && dataProcessor.currentState.value!!.currentEvent != null) {
+                    readCardOnce(dataProcessor.currentState.value!!.currentEvent!!)
                 }
             }
         }
@@ -116,7 +111,7 @@ class SIPort(
     /**
      * Attempts to read out the data from the SI card, based on the cardType
      */
-    private fun readCardOnce(event: Event) {
+    private suspend fun readCardOnce(event: Event) {
         val cardData = CardData(ZERO, 0, punchData = ArrayList())
         var valid = false
 
@@ -804,8 +799,7 @@ class SIPort(
     }
 
     private fun setStatusConnected() {
-        readerStatus = SIReaderStatus.CONNECTED
-        dataProcessor.siReaderState.postValue(
+        dataProcessor.updateReaderState(
             SIReaderState(
                 SIReaderStatus.CONNECTED,
                 serialNo,
@@ -815,7 +809,7 @@ class SIPort(
     }
 
     private fun setStatusReading(cardNo: Int) {
-        dataProcessor.siReaderState.postValue(
+        dataProcessor.updateReaderState(
             SIReaderState(
                 SIReaderStatus.READING,
                 serialNo,
@@ -825,8 +819,7 @@ class SIPort(
     }
 
     private fun setStatusError(cardNo: Int) {
-        readerStatus = SIReaderStatus.CONNECTED
-        dataProcessor.siReaderState.postValue(
+        dataProcessor.updateReaderState(
             SIReaderState(
                 SIReaderStatus.ERROR,
                 serialNo,
@@ -836,7 +829,7 @@ class SIPort(
     }
 
     private fun setStatusRead(cardNo: Int) {
-        dataProcessor.siReaderState.postValue(
+        dataProcessor.updateReaderState(
             SIReaderState(
                 SIReaderStatus.CARD_READ,
                 serialNo,

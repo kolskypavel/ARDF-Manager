@@ -25,5 +25,5 @@ interface PunchDao {
     fun deletePunch(id: UUID)
 
     @Query("DELETE FROM punch WHERE event_id=(:eventId)")
-    fun deletePunchesForEvent(eventId: UUID)
+    fun deletePunchesByEvent(eventId: UUID)
 }

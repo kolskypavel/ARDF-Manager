@@ -36,8 +36,7 @@ class DataProcessor private constructor(context: Context) {
     private var appContext: WeakReference<Context>
 
     //private val siReaderService: SIReaderService
-    var currentEvent = MutableLiveData<Event>()
-    var siReaderState = MutableLiveData<SIReaderState>()
+    var currentState = MutableLiveData<AppState>()
     var resultsProcessor: ResultsProcessor? = null
 
     companion object {
@@ -55,37 +54,29 @@ class DataProcessor private constructor(context: Context) {
 
     init {
         appContext = WeakReference(context)
-        siReaderState.postValue(SIReaderState(SIReaderStatus.DISCONNECTED, null, null, null))
+        currentState.postValue(
+            AppState(null, SIReaderState(SIReaderStatus.DISCONNECTED))
+        )
+    }
+
+    fun updateReaderState(newSIState: SIReaderState) {
+        val stateToUpdate = currentState.value
+
+        if (stateToUpdate != null) {
+            stateToUpdate.siReaderState = newSIState
+            currentState.postValue(stateToUpdate!!)
+        }
     }
 
     suspend fun setReaderEvent(eventId: UUID): Event {
         val event = getEvent(eventId)
-        currentEvent.postValue(event)
-
-        if (siReaderState.value != null &&
-            siReaderState.value!!.status == SIReaderStatus.CONNECTED
-        ) {
-            siReaderState.postValue(siReaderState.value)
-        }
+        currentState.postValue(currentState.value?.let { AppState(event, it.siReaderState) })
 
         return event
     }
 
     fun removeReaderEvent() {
-        currentEvent.postValue(null)
-        if (siReaderState.value != null) {
-
-            when (siReaderState.value!!.status) {
-                SIReaderStatus.CONNECTED -> siReaderState.postValue(siReaderState.value)
-                SIReaderStatus.READING,
-                SIReaderStatus.ERROR,
-                SIReaderStatus.CARD_READ -> {
-                    siReaderState.postValue(SIReaderState(SIReaderStatus.CONNECTED))
-                }
-
-                else -> {}
-            }
-        }
+        currentState.postValue(currentState.value?.let { AppState(null, it.siReaderState) })
     }
 
     //METHODS TO HANDLE EVENTS
@@ -118,7 +109,7 @@ class DataProcessor private constructor(context: Context) {
     //CATEGORIES
     fun getCategoriesForEvent(eventId: UUID) = ardfRepository.getCategoriesForEvent(eventId)
 
-    fun getCategory(id: UUID) = ardfRepository.getCategory(id)
+    suspend fun getCategory(id: UUID) = ardfRepository.getCategory(id)
 
     fun createCategory(category: Category, siCodes: String) {
         runBlocking {
@@ -144,7 +135,7 @@ class DataProcessor private constructor(context: Context) {
 
     fun getCompetitor(id: UUID): Competitor = ardfRepository.getCompetitor(id)
 
-    fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
+    suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
         ardfRepository.getCompetitorBySINumber(siNumber, eventId)
 
     fun checkIfSINumberExists(siNumber: Int, eventId: UUID): Boolean {
@@ -194,7 +185,7 @@ class DataProcessor private constructor(context: Context) {
     //PUNCHES
     fun createPunch(punch: Punch) = ardfRepository.createPunch(punch)
 
-    fun processCardData(cardData: CardData, event: Event) =
+    suspend fun processCardData(cardData: CardData, event: Event) =
         appContext.get()?.let { resultsProcessor?.processCardData(cardData, event, it) }
 
     suspend fun getPunchesForCompetitor(competitorId: UUID) =

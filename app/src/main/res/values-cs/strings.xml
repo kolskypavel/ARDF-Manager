@@ -24,7 +24,7 @@
     <string name="event_edit">Upravit závod</string>
     <string name="cancel">Zrušit</string>
     <string name="event_create">Vytvořit událost</string>
-    <string name="start_time_00">Čas startu</string>
+    <string name="start_time">Čas startu</string>
     <string name="band">Pásmo</string>
     <string name="event_type_0">Klasická trať</string>
     <string name="event_type_3">Orientační běh</string>

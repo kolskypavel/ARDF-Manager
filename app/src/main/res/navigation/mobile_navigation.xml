@@ -62,7 +62,11 @@
             android:id="@+id/navigation_readouts"
             android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutFragment"
             android:label="@string/title_readouts"
-            tools:layout="@layout/fragment_readouts" />
+            tools:layout="@layout/fragment_readouts" >
+            <action
+                android:id="@+id/openReadoutDetail"
+                app:destination="@id/readoutDetailFragment" />
+        </fragment>
         <fragment
             android:id="@+id/navigation_results"
             android:name="kolskypavel.ardfmanager.ui.readouts.ResultsFragment"
@@ -91,6 +95,14 @@
         <action
             android:id="@+id/closeEvent"
             app:destination="@id/eventSelectionFragment" />
+        <fragment
+            android:id="@+id/readoutDetailFragment"
+            android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutDetailFragment"
+            android:label="ReadoutDetailFragment" >
+            <argument
+                android:name="readoutId"
+                app:argType="java.util.UUID" />
+        </fragment>
     </navigation>
 
     <dialog

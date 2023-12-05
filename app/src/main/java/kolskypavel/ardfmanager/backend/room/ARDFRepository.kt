@@ -71,13 +71,19 @@ class ARDFRepository private constructor(context: Context) {
     fun getEvent(id: UUID): Event = eventDatabase.eventDao().getEvent(id)
     suspend fun createEvent(event: Event) = eventDatabase.eventDao().createEvent(event)
     suspend fun updateEvent(event: Event) = eventDatabase.eventDao().updateEvent(event)
-    suspend fun deleteEvent(id: UUID) = eventDatabase.eventDao().deleteEvent(id)
+    suspend fun deleteEvent(id: UUID) {
+        eventDatabase.eventDao().deleteEvent(id)
+        competitorDatabase.competitorDao().deleteCompetitorsByEvent(id)
+        categoryDatabase.categoryDao().deleteCategoriesByEvent(id)
+        readoutDatabase.readoutDao().deleteReadoutsByEvent(id)
+        punchDatabase.punchDao().deletePunchesByEvent(id)
+    }
 
     //Categories
     fun getCategoriesForEvent(eventId: UUID): Flow<List<Category>> =
         categoryDatabase.categoryDao().getCategoriesForEvent(eventId)
 
-    fun getCategory(id: UUID) = categoryDatabase.categoryDao().getCategory(id)
+    suspend fun getCategory(id: UUID) = categoryDatabase.categoryDao().getCategory(id)
     suspend fun createCategory(category: Category) =
         categoryDatabase.categoryDao().createCategory(category)
 
@@ -94,39 +100,39 @@ class ARDFRepository private constructor(context: Context) {
         controlPointDatabase.controlPointDao().getControlPointsForCategory(categoryId)
 
     //Competitors
-    fun getCompetitor(id: UUID): Competitor = competitorDatabase.CompetitorDao().getCompetitor(id)
+    fun getCompetitor(id: UUID): Competitor = competitorDatabase.competitorDao().getCompetitor(id)
 
-    fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
-        competitorDatabase.CompetitorDao().getCompetitorBySINumber(siNumber, eventId)
+    suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
+        competitorDatabase.competitorDao().getCompetitorBySINumber(siNumber, eventId)
 
     fun getCompetitorsForEvent(eventId: UUID): Flow<List<Competitor>> =
-        competitorDatabase.CompetitorDao().getCompetitorsForEvent(eventId)
+        competitorDatabase.competitorDao().getCompetitorsForEvent(eventId)
 
     suspend fun createCompetitor(competitor: Competitor) =
-        competitorDatabase.CompetitorDao().createCompetitor(competitor)
+        competitorDatabase.competitorDao().createCompetitor(competitor)
 
     suspend fun updateCompetitor(competitor: Competitor) =
-        competitorDatabase.CompetitorDao().updateCompetitor(competitor)
+        competitorDatabase.competitorDao().updateCompetitor(competitor)
 
-    suspend fun deleteCompetitor(id: UUID) = competitorDatabase.CompetitorDao().deleteCompetitor(id)
+    suspend fun deleteCompetitor(id: UUID) = competitorDatabase.competitorDao().deleteCompetitor(id)
 
     suspend fun checkIfSINumberExists(siNumber: Int, eventId: UUID): Int =
-        competitorDatabase.CompetitorDao().checkIfSINumberExists(siNumber, eventId)
+        competitorDatabase.competitorDao().checkIfSINumberExists(siNumber, eventId)
 
     //Readouts
     fun getReadoutsForEvent(eventId: UUID) =
-        readoutDatabase.ReadoutDao().getReadoutsForEvent(eventId)
+        readoutDatabase.readoutDao().getReadoutsForEvent(eventId)
 
     fun getReadoutBySINumber(siNumber: Int, eventId: UUID) =
-        readoutDatabase.ReadoutDao().getReadoutsForSINumber(siNumber, eventId)
+        readoutDatabase.readoutDao().getReadoutsForSINumber(siNumber, eventId)
 
-    fun getReadout(id: UUID) = readoutDatabase.ReadoutDao().getReadout(id)
+    fun getReadout(id: UUID) = readoutDatabase.readoutDao().getReadout(id)
 
     fun createReadout(readout: Readout) =
-        readoutDatabase.ReadoutDao().createReadout(readout)
+        readoutDatabase.readoutDao().createReadout(readout)
 
     fun checkIfReadoutExistsById(siNumber: Int, eventId: UUID) =
-        readoutDatabase.ReadoutDao().checkIfReadoutExistsById(siNumber, eventId)
+        readoutDatabase.readoutDao().checkIfReadoutExistsById(siNumber, eventId)
 
     //PUNCHES
     fun createPunch(punch: Punch) = punchDatabase.punchDao().createPunch(punch)

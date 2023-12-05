@@ -14,7 +14,7 @@ interface CategoryDao {
     fun getCategoriesForEvent(eventId: UUID): Flow<List<Category>>
 
     @Query("SELECT * FROM category WHERE id=(:id) LIMIT 1")
-    fun getCategory(id: UUID): Flow<List<Category>>
+    suspend fun getCategory(id: UUID): Category
 
     @Insert
     suspend fun createCategory(category: Category): Long
@@ -24,4 +24,7 @@ interface CategoryDao {
 
     @Query("DELETE FROM category WHERE id=(:id) ")
     suspend fun deleteCategory(id: UUID)
+
+    @Query("DELETE FROM category WHERE event_id=(:eventId)")
+    suspend fun deleteCategoriesByEvent(eventId: UUID)
 }

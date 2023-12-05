@@ -9,5 +9,5 @@ import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 @Database(entities = [Competitor::class], version = 1, exportSchema = false)
 @TypeConverters(DateTimeTypeConverter::class)
 abstract class CompetitorDatabase : RoomDatabase() {
-    abstract fun CompetitorDao(): CompetitorDao
+    abstract fun competitorDao(): CompetitorDao
 }

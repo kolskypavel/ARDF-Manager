@@ -23,9 +23,6 @@ class SITime(
         time = time.plusHours(12)
     }
 
-    fun difference(siTime: SITime): Duration {
-        return Duration.ZERO
-    }
 
     companion object {
         @Throws(IllegalArgumentException::class)
@@ -41,6 +38,25 @@ class SITime(
             } catch (e: Exception) {
                 throw java.lang.IllegalArgumentException("Error when parsing SI time")
             }
+        }
+
+        fun split(time1: SITime, time2: SITime): Duration {
+            if (time1.week == time2.week) {
+                if (time1.dayOfWeek == time2.dayOfWeek) {
+                    return Duration.between(time2.time, time1.time)
+                }
+
+            } else if (time1.week > time2.week) {
+
+            } else {
+
+            }
+            return Duration.ZERO
+        }
+
+        fun difference(time1: SITime, time2: SITime): Duration {
+            //  return abs(split(time1, time2))
+            return Duration.ZERO
         }
     }
 }

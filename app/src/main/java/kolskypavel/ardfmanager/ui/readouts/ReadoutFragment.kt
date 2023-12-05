@@ -19,6 +19,7 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.databinding.FragmentReadoutsBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 class ReadoutFragment : Fragment() {
 
@@ -63,10 +64,17 @@ class ReadoutFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 selectedEventViewModel.readouts.collect { readouts ->
                     readoutRecyclerView.adapter =
-                        ReadoutRecyclerViewAdapter(readouts, requireContext())
+                        ReadoutRecyclerViewAdapter(
+                            readouts,
+                            requireContext()
+                        ) { readoutId -> openReadoutDetail(readoutId) }
                 }
             }
         }
+    }
+
+    private fun openReadoutDetail(readoutId: UUID) {
+        findNavController().navigate(ReadoutFragmentDirections.openReadoutDetail(readoutId))
     }
 
     private fun setBackButton() {

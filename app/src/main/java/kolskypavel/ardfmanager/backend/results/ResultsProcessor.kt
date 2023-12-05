@@ -21,7 +21,7 @@ class ResultsProcessor {
     /**
      * Processes the given readout - calculate the score and times
      */
-    fun processCardData(cardData: CardData, event: Event, context: Context): Boolean {
+    suspend fun processCardData(cardData: CardData, event: Event, context: Context): Boolean {
 
         //Check if readout already exists
         if (!dataProcessor.checkIfReadoutExistsBySI(cardData.siNumber, event.id)) {

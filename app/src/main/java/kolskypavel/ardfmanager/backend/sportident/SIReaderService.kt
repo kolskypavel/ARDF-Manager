@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.lifecycle.Observer
 import com.felhr.usbserial.UsbSerialDevice
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.backend.AppState
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SPORTIDENT_PRODUCT_ID
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SPORTIDENT_VENDOR_ID
@@ -27,7 +28,7 @@ class SIReaderService :
     private var serialDevice: UsbSerialDevice? = null
     private var siPort: SIPort? = null
     private var siJob: Job? = null
-    private var observer: Observer<SIReaderState>? = null
+    private var observer: Observer<AppState>? = null
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -69,7 +70,7 @@ class SIReaderService :
 
             //Remove the observer
             if (observer != null) {
-                dataProcessor.siReaderState.removeObserver(observer!!)
+                dataProcessor.currentState.removeObserver(observer!!)
             }
 
             if (serialDevice != null) {
@@ -80,7 +81,7 @@ class SIReaderService :
                 connection?.close()
             }
             stopForeground(STOP_FOREGROUND_REMOVE)
-            dataProcessor.siReaderState.postValue(
+            dataProcessor.updateReaderState(
                 SIReaderState(
                     SIReaderStatus.DISCONNECTED,
                     null,
@@ -106,8 +107,8 @@ class SIReaderService :
         observer = Observer { newState ->
 
             val lastCardString =
-                if (newState.lastCard != null) {
-                    newState.lastCard.toString()
+                if (newState.siReaderState.lastCard != null) {
+                    newState.siReaderState.lastCard.toString()
                 } else {
                     getString(R.string.no_cards_yet)
                 }
@@ -122,7 +123,7 @@ class SIReaderService :
             notificationManager.notify(1, notification)
         }
 
-        dataProcessor.siReaderState.observeForever(observer!!)
+        dataProcessor.currentState.observeForever(observer!!)
     }
 
 
