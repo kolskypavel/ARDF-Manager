@@ -16,7 +16,8 @@ data class Category(
     @ColumnInfo(name = "min_year") var minYear: Int,
     @ColumnInfo(name = "max_year") var maxYear: Int,
     @ColumnInfo(name = "event_type") var eventType: EventType,
+    var siCodes: String,
     var length: Float,
     var climb: Float,
-    var defaultCategory: Boolean = false    //Marks one default category for competitors without category
+    var defaultCategory: Boolean = false    //Marks one default category for competitors without category){}
 ) : Serializable

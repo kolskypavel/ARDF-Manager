@@ -7,8 +7,8 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
-import kolskypavel.ardfmanager.backend.room.entitity.Readout
-import kolskypavel.ardfmanager.backend.wrappers.PunchRecordWrapper
+import kolskypavel.ardfmanager.backend.wrappers.PunchEdit
+import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,8 +31,9 @@ class SelectedEventViewModel : ViewModel() {
     private val _competitors: MutableStateFlow<List<Competitor>> = MutableStateFlow(emptyList())
     val competitors: StateFlow<List<Competitor>> get() = _competitors.asStateFlow()
 
-    private val _readouts: MutableStateFlow<List<Readout>> = MutableStateFlow(emptyList())
-    val readouts: StateFlow<List<Readout>> get() = _readouts.asStateFlow()
+    private val _readoutData: MutableStateFlow<List<ReadoutDataWrapper>> =
+        MutableStateFlow(emptyList())
+    val readoutData: StateFlow<List<ReadoutDataWrapper>> get() = _readoutData.asStateFlow()
 
     /**
      * Updates the current selected event and corresponding data
@@ -54,19 +55,19 @@ class SelectedEventViewModel : ViewModel() {
             }
 
             launch {
-                dataProcessor.getReadoutsByEvent(id).collect {
-                    _readouts.value = it
+                dataProcessor.getReadoutDataByEvent(id).collect {
+                    _readoutData.value = it
                 }
             }
         }
     }
 
     //Category
-    fun createCategory(category: Category, siCodes: String) =
-        dataProcessor.createCategory(category, siCodes)
+    fun createCategory(category: Category) =
+        dataProcessor.createCategory(category)
 
-    fun updateCategory(category: Category, siCodes: String) =
-        dataProcessor.updateCategory(category, siCodes)
+    fun updateCategory(category: Category) =
+        dataProcessor.updateCategory(category)
 
     fun deleteCategory(categoryId: UUID) = dataProcessor.deleteCategory(categoryId)
 
@@ -74,6 +75,8 @@ class SelectedEventViewModel : ViewModel() {
     fun createCompetitor(competitor: Competitor) = dataProcessor.createCompetitor(competitor)
 
     fun updateCompetitor(competitor: Competitor) = dataProcessor.updateCompetitor(competitor)
+    fun deleteCompetitor(competitorId: UUID) = dataProcessor.deleteCompetitor(competitorId)
+
 
     fun checkIfSINumberExists(siNumber: Int): Boolean {
         if (event.value != null) {
@@ -82,11 +85,12 @@ class SelectedEventViewModel : ViewModel() {
         return true
     }
 
+
     fun getPunchRecordsForCompetitor(
         create: Boolean,
         competitor: Competitor
-    ): ArrayList<PunchRecordWrapper> {
-        val punchRecords = ArrayList<PunchRecordWrapper>()
+    ): ArrayList<PunchEdit> {
+        val punchRecords = ArrayList<PunchEdit>()
 //
 //        //New or existing competitor
 //        if (create) {
@@ -103,5 +107,11 @@ class SelectedEventViewModel : ViewModel() {
 //            }
 //        }
         return punchRecords
+    }
+
+    fun deleteReadout(id: UUID) {
+        CoroutineScope(Dispatchers.IO).launch {
+            dataProcessor.deleteReadout(id)
+        }
     }
 }

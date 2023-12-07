@@ -36,11 +36,12 @@ class CategoryRecyclerViewAdapter(
         holder.title.text = item.name
         holder.competitors.text = "TODO"
         holder.type.text = dataProcessor.eventTypeToString(item.eventType)
+        holder.siCodes.text = item.siCodes
 
         holder.moreBtn.setOnClickListener {
 
             val popupMenu = PopupMenu(context, holder.moreBtn)
-            popupMenu.inflate(R.menu.category_item_menu)
+            popupMenu.inflate(R.menu.context_menu_category)
 
             popupMenu.setOnMenuItemClickListener {
                 when (it.itemId) {

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/readout_detail_menu_edit_readout"
+        android:icon="@drawable/ic_edit"
+        android:title="@string/readout_edit_readout"
+        app:showAsAction="always|withText" />
+    <item
+        android:id="@+id/readout_detail_menu_print_ticket"
+        android:icon="@drawable/ic_print"
+        android:title="@string/readout_print_ticket"
+        app:showAsAction="always|withText" />
+    <item
+        android:id="@+id/readout_detail_delete_readout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/readout_delete_readout" />
+</menu>

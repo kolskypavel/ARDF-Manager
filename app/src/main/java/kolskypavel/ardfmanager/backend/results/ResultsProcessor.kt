@@ -6,7 +6,9 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
+import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,8 +38,8 @@ class ResultsProcessor {
                     cardData.checkTime, cardData.startTime, cardData.finishTime,
                     Duration.ZERO
                 )
-            processPunches()
             dataProcessor.createReadout(readout)
+            dataProcessor.createPunches(processPunches(cardData, event, readout.id, competitor?.id))
 
             return true
         } else {
@@ -53,8 +55,27 @@ class ResultsProcessor {
         }
     }
 
-    private fun processPunches() {
+    private fun processPunches(
+        cardData: CardData,
+        event: Event,
+        readoutId: UUID, competitorId: UUID?
+    ): ArrayList<Punch> {
+        val punches = ArrayList<Punch>()
 
+        var orderCounter = 1
+        cardData.punchData.forEach { punchData ->
+            val punch = Punch(
+                UUID.randomUUID(),
+                event.id,
+                readoutId,
+                competitorId,
+                cardData.siNumber,
+                punchData.siCode, orderCounter, punchData.siTime, PunchStatus.INVALID
+            )
+            punches.add(punch)
+            orderCounter++
+        }
+        return punches
     }
 
     /**

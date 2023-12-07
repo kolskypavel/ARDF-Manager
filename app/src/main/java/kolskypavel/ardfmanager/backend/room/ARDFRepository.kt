@@ -120,7 +120,7 @@ class ARDFRepository private constructor(context: Context) {
         competitorDatabase.competitorDao().checkIfSINumberExists(siNumber, eventId)
 
     //Readouts
-    fun getReadoutsForEvent(eventId: UUID) =
+    suspend fun getReadoutsForEvent(eventId: UUID) =
         readoutDatabase.readoutDao().getReadoutsForEvent(eventId)
 
     fun getReadoutBySINumber(siNumber: Int, eventId: UUID) =
@@ -134,11 +134,20 @@ class ARDFRepository private constructor(context: Context) {
     fun checkIfReadoutExistsById(siNumber: Int, eventId: UUID) =
         readoutDatabase.readoutDao().checkIfReadoutExistsById(siNumber, eventId)
 
+    fun deleteReadout(id: UUID) = readoutDatabase.readoutDao().deleteReadout(id)
+
     //PUNCHES
     fun createPunch(punch: Punch) = punchDatabase.punchDao().createPunch(punch)
 
-    suspend fun getPunchesForCompetitor(competitorId: UUID) =
+    suspend fun getPunchesByCompetitor(competitorId: UUID) =
         punchDatabase.punchDao().getPunchesForCompetitor(competitorId)
+
+    suspend fun getPunchesBySINumber(siNumber: Int, eventId: UUID) =
+        punchDatabase.punchDao().getPunchesForSINumber(siNumber, eventId)
+
+    fun deletePunchesByReadoutId(readoutId: UUID) =
+        punchDatabase.punchDao().deletePunchesByReadoutId(readoutId)
+
 
     //Results
 

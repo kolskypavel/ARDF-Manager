@@ -106,11 +106,11 @@ class CategoryCreateDialogFragment : DialogFragment() {
                     category.climb = climbTextView.text.toString().toFloat()
                 }
 
-                val siCodes = siCodesTextView.text.toString()
+                category.siCodes = siCodesTextView.text.toString()
                 if (args.create) {
-                    selectedEventViewModel.createCategory(category, siCodes)
+                    selectedEventViewModel.createCategory(category)
                 } else {
-                    selectedEventViewModel.updateCategory(category, siCodes)
+                    selectedEventViewModel.updateCategory(category)
                 }
                 setFragmentResult(
                     REQUEST_CATEGORY_MODIFICATION, bundleOf(
@@ -141,7 +141,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 false,
                 -1,
                 -1,
-                args.event.eventType,
+                args.event.eventType, "",
                 0F,
                 0F
             )

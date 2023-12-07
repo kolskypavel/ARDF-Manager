@@ -100,7 +100,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 "",
                 false,
                 LocalDate.now().year,
-                0,
+                null,
                 siRent = false,
                 automaticCategory = true,
                 null,
@@ -141,7 +141,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         categoryPicker.setAdapter(categoriesAdapter)
 
         punchEditRecyclerView.adapter =
-            RecordRecyclerViewAdapter(
+            PunchEditRecyclerViewAdapter(
                 selectedEventViewModel.getPunchRecordsForCompetitor(
                     args.create,
                     competitor

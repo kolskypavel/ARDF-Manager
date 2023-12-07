@@ -16,10 +16,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
 import kolskypavel.ardfmanager.databinding.FragmentReadoutsBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class ReadoutFragment : Fragment() {
 
@@ -49,7 +49,7 @@ class ReadoutFragment : Fragment() {
         readoutToolbar = view.findViewById(R.id.readouts_toolbar)
         readoutRecyclerView = view.findViewById(R.id.readout_recycler_view)
 
-        readoutToolbar.inflateMenu(R.menu.readouts_fragment_menu)
+        readoutToolbar.inflateMenu(R.menu.fragment_menu_readouts)
 
         selectedEventViewModel.event.observe(viewLifecycleOwner) { event ->
             readoutToolbar.title = event.name
@@ -59,22 +59,61 @@ class ReadoutFragment : Fragment() {
         setBackButton()
     }
 
+    private fun recyclerViewContextMenuActions(
+        action: Int,
+        position: Int,
+        readoutData: ReadoutDataWrapper
+    ) {
+        when (action) {
+            0 -> {}
+
+            1 -> {
+                confirmReadoutDeletion(readoutData)
+            }
+        }
+    }
+
+    private fun confirmReadoutDeletion(readoutData: ReadoutDataWrapper) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(getString(R.string.readout_delete_readout))
+        val message =
+            getString(R.string.readout_delete_readout_confirmation, readoutData.readout.siNumber)
+        builder.setMessage(message)
+
+        builder.setPositiveButton(R.string.ok) { dialog, _ ->
+            selectedEventViewModel.deleteReadout(readoutData.readout.id)
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton(R.string.cancel) { dialog, _ ->
+            dialog.cancel()
+        }
+        builder.show()
+    }
+
     private fun setRecyclerAdapter() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                selectedEventViewModel.readouts.collect { readouts ->
+                selectedEventViewModel.readoutData.collect { readouts ->
                     readoutRecyclerView.adapter =
-                        ReadoutRecyclerViewAdapter(
+                        ReadoutDataRecyclerViewAdapter(
                             readouts,
-                            requireContext()
-                        ) { readoutId -> openReadoutDetail(readoutId) }
+                            requireContext(),
+                            { readoutData -> openReadoutDetail(readoutData) },
+                            { action, position, readoutData ->
+                                recyclerViewContextMenuActions(
+                                    action,
+                                    position,
+                                    readoutData
+                                )
+                            })
                 }
             }
         }
     }
 
-    private fun openReadoutDetail(readoutId: UUID) {
-        findNavController().navigate(ReadoutFragmentDirections.openReadoutDetail(readoutId))
+    private fun openReadoutDetail(readoutData: ReadoutDataWrapper) {
+        findNavController().navigate(ReadoutFragmentDirections.openReadoutDetail(readoutData))
     }
 
     private fun setBackButton() {

@@ -15,7 +15,7 @@ object SIConstants {
     const val ZERO: Byte = 0x00
 
     const val PERIOD = 200L
-    const val READ_WRITE_TIMEOUT = 500
+    const val READ_WRITE_TIMEOUT = 300
     const val BAUDRATE_LOW = 4800
     const val BAUDRATE_HIGH = 38400
     const val POLYNOM = 0x8005      //USED FOR CRC

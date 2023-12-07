@@ -4,13 +4,12 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
 @Dao
 interface PunchDao {
-    @Query("SELECT * FROM punch WHERE card_number=(:cardNumber)")
-    fun getPunchesForSINumber(cardNumber: Int): Flow<List<Punch>>
+    @Query("SELECT * FROM punch WHERE card_number=(:cardNumber) AND event_id=(:eventId)")
+    suspend fun getPunchesForSINumber(cardNumber: Int, eventId: UUID): List<Punch>
 
     @Query("SELECT * FROM punch WHERE competitor_id = (:competitorId)")
     suspend fun getPunchesForCompetitor(competitorId: UUID): List<Punch>
@@ -26,4 +25,7 @@ interface PunchDao {
 
     @Query("DELETE FROM punch WHERE event_id=(:eventId)")
     fun deletePunchesByEvent(eventId: UUID)
+
+    @Query("DELETE FROM punch WHERE readout_id=(:readoutId)")
+    fun deletePunchesByReadoutId(readoutId: UUID)
 }

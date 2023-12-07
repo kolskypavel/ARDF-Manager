@@ -124,6 +124,14 @@
     <string name="no_cards_yet">No cards yet </string>
 
     <!--Readout-->
+    <string name="readout_detail_title">Readout detail</string>
     <string name="readout_exists">Readout with the same SI number already exists!</string>
     <string name="unknown_si">Unknown SI card!</string>
+    <string name="points">Points</string>
+    <string name="placement">Place</string>
+    <string name="readout_edit_readout">Edit readout</string>
+    <string name="readout_print_ticket">Print ticket</string>
+    <string name="readout_delete_readout">Delete readout</string>
+    <string name="readout_delete_readout_confirmation">Do you really want to delete readout for SI card %1$d?</string>
+
 </resources>

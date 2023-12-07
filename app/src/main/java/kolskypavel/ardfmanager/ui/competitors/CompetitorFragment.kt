@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.databinding.FragmentCompetitorsBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import kotlinx.coroutines.launch
@@ -55,7 +56,7 @@ class CompetitorFragment : Fragment() {
         competitorAddFab = view.findViewById(R.id.competitor_btn_add)
         competitorRecyclerView = view.findViewById(R.id.competitor_recycler_view)
 
-        competitorToolbar.inflateMenu(R.menu.competitor_nav_menu)
+        competitorToolbar.inflateMenu(R.menu.fragment_menu_competitor)
 
         selectedEventViewModel.event.observe(viewLifecycleOwner) { event ->
             competitorToolbar.title = event.name
@@ -83,10 +84,48 @@ class CompetitorFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 selectedEventViewModel.competitors.collect { competitors ->
                     competitorRecyclerView.adapter =
-                        CompetitorRecyclerViewAdapter(competitors, requireContext())
+                        CompetitorRecyclerViewAdapter(competitors,{ action, position, competitor ->
+                            recyclerViewContextMenuActions(
+                                action,
+                                position,
+                                competitor
+                            )
+                        }, requireContext())
                 }
             }
         }
+    }
+
+    private fun recyclerViewContextMenuActions(action: Int, position: Int, competitor: Competitor) {
+        when (action) {
+            0 -> findNavController().navigate(
+                CompetitorFragmentDirections.modifyCompetitor(
+                    false,
+                    competitor,
+                    position
+                )
+            )
+
+            1 -> {}
+            2 -> confirmCompetitorDeletion(competitor)
+        }
+    }
+
+    private fun confirmCompetitorDeletion(competitor: Competitor) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(getString(R.string.competitor_delete))
+        val message = getString(R.string.competitor_delete_confirmation) + " " + competitor.name
+        builder.setMessage(message)
+
+        builder.setPositiveButton(R.string.ok) { dialog, _ ->
+            selectedEventViewModel.deleteCompetitor(competitor.id)
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton(R.string.cancel) { dialog, _ ->
+            dialog.cancel()
+        }
+        builder.show()
     }
 
     private fun setBackButton() {

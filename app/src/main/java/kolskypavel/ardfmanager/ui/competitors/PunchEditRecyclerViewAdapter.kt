@@ -10,17 +10,17 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.enums.RecordType
-import kolskypavel.ardfmanager.backend.wrappers.PunchRecordWrapper
+import kolskypavel.ardfmanager.backend.wrappers.PunchEdit
 
-class RecordRecyclerViewAdapter(
-    private var values: ArrayList<PunchRecordWrapper>,
+class PunchEditRecyclerViewAdapter(
+    private var values: ArrayList<PunchEdit>,
     private val context: Context
 ) :
-    RecyclerView.Adapter<RecordRecyclerViewAdapter.PunchViewHolder>() {
+    RecyclerView.Adapter<PunchEditRecyclerViewAdapter.PunchViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PunchViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.recycler_item_punch, parent, false)
+            .inflate(R.layout.recycler_item_punch_edit, parent, false)
 
         return PunchViewHolder(adapterLayout)
     }
@@ -73,11 +73,11 @@ class RecordRecyclerViewAdapter(
     }
 
     inner class PunchViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var order: TextView = view.findViewById(R.id.punch_item_order)
-        var code: EditText = view.findViewById(R.id.punch_item_si_code)
-        var time: EditText = view.findViewById(R.id.punch_item_time)
-        var addBtn: ImageButton = view.findViewById(R.id.punch_item_add_btn)
-        var deleteBtn: ImageButton = view.findViewById(R.id.punch_item_delete_btn)
+        var order: TextView = view.findViewById(R.id.punch_edit_item_order)
+        var code: EditText = view.findViewById(R.id.punch_edit_item_si_code)
+        var time: EditText = view.findViewById(R.id.punch_edit_item_time)
+        var addBtn: ImageButton = view.findViewById(R.id.punch_edit_item_add_btn)
+        var deleteBtn: ImageButton = view.findViewById(R.id.punch_edit_item_delete_btn)
     }
 
 }

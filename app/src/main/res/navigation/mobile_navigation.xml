@@ -19,7 +19,7 @@
 
     <navigation
         android:id="@+id/bottomNav"
-        app:startDestination="@id/event_menu_categories">
+        app:startDestination="@id/navigation_categories">
 
         <dialog
             android:id="@+id/competitorCreateDialogFragment"
@@ -39,7 +39,7 @@
 
         </dialog>
         <fragment
-            android:id="@+id/event_menu_about_the_app"
+            android:id="@+id/navigation_competitors"
             android:name="kolskypavel.ardfmanager.ui.competitors.CompetitorFragment"
             android:label="@string/title_competitors"
             tools:layout="@layout/fragment_competitors">
@@ -49,7 +49,7 @@
         </fragment>
 
         <fragment
-            android:id="@+id/event_menu_categories"
+            android:id="@+id/navigation_categories"
             android:name="kolskypavel.ardfmanager.ui.categories.CategoryFragment"
             android:label="@string/title_categories"
             tools:layout="@layout/fragment_categories">
@@ -100,8 +100,8 @@
             android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutDetailFragment"
             android:label="ReadoutDetailFragment" >
             <argument
-                android:name="readoutId"
-                app:argType="java.util.UUID" />
+                android:name="readoutDetail"
+                app:argType="kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper" />
         </fragment>
     </navigation>
 

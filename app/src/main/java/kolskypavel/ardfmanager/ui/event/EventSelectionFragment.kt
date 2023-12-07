@@ -51,7 +51,7 @@ class EventSelectionFragment : Fragment() {
         eventAddFAB = view.findViewById(R.id.event_btn_add)
 
         toolbar.setTitle(R.string.event_toolbar_title)
-        toolbar.inflateMenu(R.menu.event_fragment_menu)
+        toolbar.inflateMenu(R.menu.fragment_menu_event)
 
         eventAddFAB.setOnClickListener {
 

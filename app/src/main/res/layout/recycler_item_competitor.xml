@@ -27,7 +27,12 @@
                 android:id="@+id/competitor_item_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="start" />
 
+            <TextView
+                android:id="@+id/competitor_item_si_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:gravity="start" />
 
             <TextView

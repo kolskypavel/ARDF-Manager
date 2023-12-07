@@ -20,7 +20,10 @@ import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SIReaderService
 import kolskypavel.ardfmanager.backend.sportident.SIReaderState
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
+import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
 import java.time.LocalTime
@@ -111,14 +114,14 @@ class DataProcessor private constructor(context: Context) {
 
     suspend fun getCategory(id: UUID) = ardfRepository.getCategory(id)
 
-    fun createCategory(category: Category, siCodes: String) {
+    fun createCategory(category: Category) {
         runBlocking {
             ardfRepository.createCategory(category)
-            parseCodeStringIntoControlPoints(siCodes, category.id)
+            parseCodeStringIntoControlPoints(category.siCodes, category.id)
         }
     }
 
-    fun updateCategory(category: Category, siCodes: String) {
+    fun updateCategory(category: Category) {
         //TODO: Finish the update of category
     }
 
@@ -167,7 +170,35 @@ class DataProcessor private constructor(context: Context) {
 
     //READOUTS
 
-    fun getReadoutsByEvent(eventId: UUID) = ardfRepository.getReadoutsForEvent(eventId)
+    suspend fun getReadoutDataByEvent(eventId: UUID): Flow<List<ReadoutDataWrapper>> {
+        return flow {
+            while (true) {
+                val temp = ArrayList<ReadoutDataWrapper>()
+
+                ardfRepository.getReadoutsForEvent(eventId).forEach { readout ->
+
+                    val punches = getPunchesForSICard(readout.siNumber, eventId)
+                    val competitor = getCompetitorBySINumber(readout.siNumber, eventId)
+
+                    var category: Category? = null
+                    if (competitor?.categoryId != null) {
+                        category = getCategory(competitor.categoryId!!)
+                    }
+                    temp.add(
+                        ReadoutDataWrapper(
+                            readout,
+                            ArrayList(punches),
+                            competitor,
+                            category
+                        )
+                    )
+                }
+
+                emit(temp)
+                delay(5000) //TODO: FIX
+            }
+        }
+    }
 
     fun getReadout(id: UUID) = ardfRepository.getReadout(id)
 
@@ -182,14 +213,26 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
+    suspend fun deleteReadout(id: UUID) {
+        ardfRepository.deleteReadout(id)
+        ardfRepository.deletePunchesByReadoutId(id)
+    }
+
     //PUNCHES
     fun createPunch(punch: Punch) = ardfRepository.createPunch(punch)
+    suspend fun createPunches(punches: ArrayList<Punch>) {
+        punches.forEach { punch -> createPunch(punch) }
+    }
 
     suspend fun processCardData(cardData: CardData, event: Event) =
         appContext.get()?.let { resultsProcessor?.processCardData(cardData, event, it) }
 
     suspend fun getPunchesForCompetitor(competitorId: UUID) =
-        ardfRepository.getPunchesForCompetitor(competitorId)
+        ardfRepository.getPunchesByCompetitor(competitorId)
+
+    suspend fun getPunchesForSICard(siNumber: Int, eventId: UUID) =
+        ardfRepository.getPunchesBySINumber(siNumber, eventId)
+
 
     //Parsing categories to control points
     fun checkCodesString(string: String): Boolean {
@@ -256,7 +299,7 @@ class DataProcessor private constructor(context: Context) {
         //TODO save the CPs to database
     }
 
-    //SportIdent manipulation
+//SportIdent manipulation
 
     fun connectDevice(usbDevice: UsbDevice) {
         Intent(appContext.get(), SIReaderService::class.java).also {

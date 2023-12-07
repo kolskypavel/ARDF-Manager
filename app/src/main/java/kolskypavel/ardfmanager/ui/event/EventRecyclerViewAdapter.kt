@@ -46,7 +46,7 @@ class EventRecyclerViewAdapter(
         holder.moreBtn.setOnClickListener {
 
             val popupMenu = PopupMenu(context, holder.moreBtn)
-            popupMenu.inflate(R.menu.event_item_menu)
+            popupMenu.inflate(R.menu.context_menu_event)
 
             popupMenu.setOnMenuItemClickListener {
                 when (it.itemId) {

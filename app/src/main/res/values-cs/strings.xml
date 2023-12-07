@@ -26,9 +26,13 @@
     <string name="event_create">Vytvořit událost</string>
     <string name="start_time">Čas startu</string>
     <string name="band">Pásmo</string>
+    <string name="event_end">Ukončit závod</string>
+    <string name="event_end_confirmation">Opravdu chcete ukončit závod?</string>
     <string name="event_type_0">Klasická trať</string>
     <string name="event_type_3">Orientační běh</string>
     <string name="event_type_4">Vlastní</string>
+    <string name="finish_time">Čas cíle</string>
+    <string name="run_time">Čas běhu</string>
     <string name="required">Požadováno</string>
     <string name="event_level_4">Trénink</string>
     <string name="invalid">Neplatný</string>
@@ -46,6 +50,7 @@
     <string name="category_edit">Upravit kategorii</string>
     <string name="category_delete_confirmation">Opravdu chcete smazat tuto kategorii?</string>
     <string name="last_name">Příjmení</string>
+    <string name="competitor">Závodník</string>
     <string name="competitor_import_file">Importovat závodníky ze souboru</string>
     <string name="club">Klub</string>
     <string name="competitor_man">Muž</string>
@@ -65,5 +70,17 @@
     <string name="competitor_edit_punches">Upravit ražení</string>
     <string name="competitor_delete">Smazat závodníka</string>
     <string name="category_delete">Smazat kategorii</string>
+    <string name="competitor_hint_code">Kód</string>
+    <string name="si_ready">SI služba spuštěna</string>
+    <string name="si_connected">SI čtečka %1$d připojena</string>
+    <string name="si_connected_but_no_event">SI čtečka %1$d připojena, ale není vybrán závod!</string>
     <string name="si_disconnected">SI čtečka nepřipojena</string>
+    <string name="si_reading">"SI čtečka %1$d čtení čipu %2$d "</string>
+    <string name="si_card_error">"SI čtečka %1$d, chyba při čtení čipu %2$d "</string>
+    <string name="si_card_read">"SI čtečka %1$d, vyčten čip %2$d "</string>
+    <string name="si_last_card">"Poslední vyčtený čip: %1$s "</string>
+    <string name="no_cards_yet">Žádný vyčtený čip</string>
+    <string name="readout_exists">Čip už byl vyčtený!</string>
+    <string name="unknown_si">Neznámý SI čip!</string>
+    <string name="points">Body</string>
 </resources>

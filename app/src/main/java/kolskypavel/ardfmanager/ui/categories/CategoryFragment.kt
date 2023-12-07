@@ -58,7 +58,7 @@ class CategoryFragment : Fragment() {
         categoryAddFab = view.findViewById(R.id.category_btn_add)
         categoryRecyclerView = view.findViewById(R.id.category_recycler_view)
 
-        categoryToolbar.inflateMenu(R.menu.category_fragment_menu)
+        categoryToolbar.inflateMenu(R.menu.fragment_menu_category)
 
         categoryAddFab.setOnClickListener {
             //Prevent accidental double click
