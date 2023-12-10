@@ -14,7 +14,7 @@ interface CompetitorDao {
     fun getCompetitorsForEvent(eventId: UUID): Flow<List<Competitor>>
 
     @Query("SELECT * FROM competitor WHERE id=(:id) LIMIT 1")
-    fun getCompetitor(id: UUID): Competitor
+    suspend fun getCompetitor(id: UUID): Competitor
 
     @Query("SELECT * FROM competitor WHERE si_number=(:siNumber) AND event_id = (:eventId) LIMIT 1")
     suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor?

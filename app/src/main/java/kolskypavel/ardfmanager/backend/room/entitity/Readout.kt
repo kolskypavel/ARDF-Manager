@@ -3,6 +3,7 @@ package kolskypavel.ardfmanager.backend.room.entitity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.sportident.SITime
 import java.io.Serializable
 import java.time.Duration
@@ -19,6 +20,8 @@ data class Readout(
     @ColumnInfo(name = "check_time") var checkTime: SITime?,
     @ColumnInfo(name = "start_time") var startTime: SITime?,
     @ColumnInfo(name = "finish_time") var finishTime: SITime?,
-    @ColumnInfo(name = "run_time") var runTime: Duration,
-    @ColumnInfo(name = "readout_time") var readoutTime: LocalDateTime = LocalDateTime.now()
+    @ColumnInfo(name = "run_time") var runTime: Duration?,
+    @ColumnInfo(name = "readout_time") var readoutTime: LocalDateTime = LocalDateTime.now(),
+    @ColumnInfo(name = "race_status") var raceStatus: RaceStatus,
+    @ColumnInfo(name = "points") var points: Int,
 ) : Serializable

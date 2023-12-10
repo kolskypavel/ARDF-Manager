@@ -63,21 +63,34 @@ class SelectedEventViewModel : ViewModel() {
     }
 
     //Category
-    fun createCategory(category: Category) =
-        dataProcessor.createCategory(category)
+    suspend fun getCategory(id: UUID) = dataProcessor.getCategory(id)
 
-    fun updateCategory(category: Category) =
+    fun createCategory(category: Category) {
+        CoroutineScope(Dispatchers.IO).launch {
+            dataProcessor.createCategory(category)
+        }
+    }
+
+    fun updateCategory(category: Category) = CoroutineScope(Dispatchers.IO).launch {
         dataProcessor.updateCategory(category)
+    }
 
-    fun deleteCategory(categoryId: UUID) = dataProcessor.deleteCategory(categoryId)
+    fun deleteCategory(categoryId: UUID) =
+        CoroutineScope(Dispatchers.IO).launch { dataProcessor.deleteCategory(categoryId) }
 
     //Competitor
-    fun createCompetitor(competitor: Competitor) = dataProcessor.createCompetitor(competitor)
+    fun createCompetitor(competitor: Competitor) =
+        CoroutineScope(Dispatchers.IO).launch { dataProcessor.createCompetitor(competitor) }
 
-    fun updateCompetitor(competitor: Competitor) = dataProcessor.updateCompetitor(competitor)
-    fun deleteCompetitor(competitorId: UUID) = dataProcessor.deleteCompetitor(competitorId)
+    fun updateCompetitor(competitor: Competitor) =
+        CoroutineScope(Dispatchers.IO).launch { dataProcessor.updateCompetitor(competitor) }
 
+    fun deleteCompetitor(competitorId: UUID) =
+        CoroutineScope(Dispatchers.IO).launch { dataProcessor.deleteCompetitor(competitorId) }
 
+    /**
+     * Checks if the SI number is unique
+     */
     fun checkIfSINumberExists(siNumber: Int): Boolean {
         if (event.value != null) {
             return dataProcessor.checkIfSINumberExists(siNumber, event.value!!.id)
@@ -109,9 +122,13 @@ class SelectedEventViewModel : ViewModel() {
         return punchRecords
     }
 
+    fun getLastReadCard() = dataProcessor.getLastReadCard()
+
     fun deleteReadout(id: UUID) {
         CoroutineScope(Dispatchers.IO).launch {
             dataProcessor.deleteReadout(id)
         }
     }
+
+
 }

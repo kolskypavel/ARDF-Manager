@@ -10,6 +10,7 @@ import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -77,6 +78,7 @@ class CompetitorFragment : Fragment() {
         }
         setRecyclerAdapter()
         setBackButton()
+        setResultListener()
     }
 
     private fun setRecyclerAdapter() {
@@ -84,7 +86,7 @@ class CompetitorFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 selectedEventViewModel.competitors.collect { competitors ->
                     competitorRecyclerView.adapter =
-                        CompetitorRecyclerViewAdapter(competitors,{ action, position, competitor ->
+                        CompetitorRecyclerViewAdapter(competitors, { action, position, competitor ->
                             recyclerViewContextMenuActions(
                                 action,
                                 position,
@@ -114,7 +116,8 @@ class CompetitorFragment : Fragment() {
     private fun confirmCompetitorDeletion(competitor: Competitor) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(getString(R.string.competitor_delete))
-        val message = getString(R.string.competitor_delete_confirmation) + " " + competitor.name
+        val message =
+            "${getString(R.string.competitor_delete_confirmation)} ${competitor.firstName}  ${competitor.lastName}"
         builder.setMessage(message)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
@@ -144,6 +147,17 @@ class CompetitorFragment : Fragment() {
                 dialog.cancel()
             }
             builder.show()
+        }
+    }
+
+    private fun setResultListener() {
+        setFragmentResultListener(CompetitorCreateDialogFragment.REQUEST_COMPETITOR_MODIFICATION) { _, bundle ->
+            val create = bundle.getBoolean(CompetitorCreateDialogFragment.BUNDLE_KEY_CREATE)
+            val position = bundle.getInt(CompetitorCreateDialogFragment.BUNDLE_KEY_POSITION)
+
+            if (!create) {
+                competitorRecyclerView.adapter?.notifyItemChanged(position)
+            }
         }
     }
 

@@ -33,9 +33,10 @@ class ReadoutDataRecyclerViewAdapter(
         val item = values[position]
 
         if (item.competitor != null) {
-            holder.competitorView.text = item.competitor!!.name
+            holder.competitorView.text =
+                "${item.competitor!!.firstName} ${item.competitor!!.lastName}"
         } else {
-            holder.competitorView.setText(R.string.unknown_si)
+            holder.competitorView.setText(R.string.unknown_competitor)
         }
 
         if (item.category != null) {
@@ -45,7 +46,8 @@ class ReadoutDataRecyclerViewAdapter(
         }
 
         holder.siNumberView.text = item.readout.siNumber.toString()
-        holder.runTimeView.text = item.readout.runTime.toString()
+        holder.runTimeView.text =
+            item.readout.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
         holder.placementView.text = ""
 
         //Set readout detail navigation

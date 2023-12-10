@@ -16,8 +16,8 @@ data class Punch(
     @ColumnInfo(name = "readout_id") var readoutId: UUID,
     @ColumnInfo(name = "competitor_id") var competitorId: UUID? = null,
     @ColumnInfo(name = "card_number") var cardNumber: Int? = null,
-    @ColumnInfo(name = "si_code") var siCode: Int? = null,
-    var order: Int,
+    @ColumnInfo(name = "si_code") var siCode: Int,
+    @ColumnInfo(name = "order") var order: Int,
     @ColumnInfo(name = "si_time") var siTime: SITime,
     @ColumnInfo(name = "punch_status") var punchStatus: PunchStatus,
     var split: Duration? = null

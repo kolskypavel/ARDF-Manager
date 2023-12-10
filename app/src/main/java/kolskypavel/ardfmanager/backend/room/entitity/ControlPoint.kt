@@ -12,8 +12,9 @@ import java.util.UUID
 @Entity(tableName = "control_point")
 data class ControlPoint(
     @PrimaryKey var id: UUID,
+    @ColumnInfo(name = "event_id") var eventId: UUID,
     @ColumnInfo(name = "category_id") var categoryId: UUID,
-    var siNumber: Int,
+    @ColumnInfo(name = "si_code") var siCode: Int,
     var order: Int,
     var round: Int,
     var points: Int,

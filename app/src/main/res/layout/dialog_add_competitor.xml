@@ -18,10 +18,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:hint="@string/name">
+            android:hint="@string/competitor_first_name">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/competitor_dialog_name"
+                android:id="@+id/competitor_dialog_first_name"
+                style="@style/dialog_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="100" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+
+            style="@style/dialog_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/last_name">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/competitor_dialog_last_name"
                 style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -129,12 +144,12 @@
                     android:focusable="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <CheckBox
+            <Button
                 android:id="@+id/competitor_dialog_automatic_category_checkbox"
-                style="@style/dialog_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:checked="false"
                 android:text="@string/automatic" />
         </LinearLayout>
 
@@ -145,21 +160,24 @@
             android:orientation="horizontal">
 
             <com.google.android.material.textfield.TextInputLayout
-
+                android:id="@+id/competitor_dialog_si_layout"
                 style="@style/dialog_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="0.6"
-                android:hint="@string/si_number">
+
+                android:hint="@string/si_number"
+                app:endIconDrawable="@drawable/ic_upload"
+                app:endIconMode="custom">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/competitor_dialog_si_number"
                     style="@style/dialog_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableEnd="@drawable/ic_upload" />
+                    android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <CheckBox

@@ -85,75 +85,39 @@ class CategoryCreateDialogFragment : DialogFragment() {
     /**
      * Set the OK and Cancel buttons
      */
-    private fun setButtons() {
-
-        okButton.setOnClickListener {
-            if (checkFields()) {
-                category.name = nameTextView.text.toString()
-                category.eventType =
-                    dataProcessor.eventTypeStringToEnum(eventTypePicker.text.toString())
-                category.ageBased = ageBasedCheckBox.isChecked
-
-                if (category.ageBased) {
-                    category.minYear = (minYearTextView.text.toString()).toInt()
-                    category.maxYear = (maxYearTextView.text.toString()).toInt()
-                }
-
-                if (lengthTextView.text?.isBlank() == false) {
-                    category.length = lengthTextView.text.toString().toFloat()
-                }
-                if (climbTextView.text?.isBlank() == false) {
-                    category.climb = climbTextView.text.toString().toFloat()
-                }
-
-                category.siCodes = siCodesTextView.text.toString()
-                if (args.create) {
-                    selectedEventViewModel.createCategory(category)
-                } else {
-                    selectedEventViewModel.updateCategory(category)
-                }
-                setFragmentResult(
-                    REQUEST_CATEGORY_MODIFICATION, bundleOf(
-                        BUNDLE_KEY_CREATE to args.create,
-                        BUNDLE_KEY_POSITION to args.position
-                    )
-                )
-                dialog?.dismiss()
-            }
-        }
-
-        cancelButton.setOnClickListener {
-            dialog?.cancel()
-        }
-    }
 
     /**
      * Populate the data fields - text views, pickers
      */
     private fun populateFields() {
+        val event = selectedEventViewModel.event.value!!
 
         if (args.create) {
             dialog?.setTitle(R.string.category_create)
             category = Category(
                 UUID.randomUUID(),
-                args.event.id,
+                event.id,
                 "",
                 false,
                 -1,
                 -1,
-                args.event.eventType, "",
+                event.eventType, 120, "",
                 0F,
                 0F
             )
 
             //Preset the event type
             eventTypePicker.setText(
-                dataProcessor.eventTypeToString(args.event.eventType),
+                dataProcessor.eventTypeToString(event.eventType),
                 false
             )
             eventTypeLayout.isEnabled = false
             minYearLayout.isEnabled = false
             maxYearLayout.isEnabled = false
+
+            if (args.siCodes != null) {
+                siCodesTextView.setText(args.siCodes)
+            }
 
         } else {
             dialog?.setTitle(R.string.category_edit)
@@ -161,7 +125,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
             nameTextView.setText(category.name)
 
             //Preset event type
-            if (category.eventType != args.event.eventType) {
+            if (category.eventType != event.eventType) {
                 sameTypeCheckBox.isChecked = false
                 eventTypePicker.setText(
                     dataProcessor.eventTypeToString(category.eventType),
@@ -170,7 +134,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
             } else {
                 sameTypeCheckBox.isChecked = true
                 eventTypePicker.setText(
-                    dataProcessor.eventTypeToString(args.event.eventType),
+                    dataProcessor.eventTypeToString(event.eventType),
                     false
                 )
                 eventTypeLayout.isEnabled = false
@@ -202,7 +166,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
         sameTypeCheckBox.setOnClickListener {
             if (sameTypeCheckBox.isChecked) {
                 eventTypePicker.setText(
-                    dataProcessor.eventTypeToString(args.event.eventType),
+                    dataProcessor.eventTypeToString(event.eventType),
                     false
                 )
                 eventTypeLayout.isEnabled = false
@@ -270,11 +234,55 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
         //Check SI codes
         val siCodes: String = siCodesTextView.text.toString()
-        if (!dataProcessor.checkCodesString(siCodes)) {
+        val eventType = dataProcessor.eventTypeStringToEnum(eventTypePicker.text.toString())
+
+        if (!dataProcessor.checkCodesString(siCodes, eventType)) {
             siCodesTextView.error = getString(R.string.invalid_codes)
             valid = false
         }
         return valid
+    }
+
+    private fun setButtons() {
+
+        okButton.setOnClickListener {
+            if (checkFields()) {
+                category.name = nameTextView.text.toString()
+                category.eventType =
+                    dataProcessor.eventTypeStringToEnum(eventTypePicker.text.toString())
+                category.ageBased = ageBasedCheckBox.isChecked
+
+                if (category.ageBased) {
+                    category.minYear = (minYearTextView.text.toString()).toInt()
+                    category.maxYear = (maxYearTextView.text.toString()).toInt()
+                }
+
+                if (lengthTextView.text?.isBlank() == false) {
+                    category.length = lengthTextView.text.toString().toFloat()
+                }
+                if (climbTextView.text?.isBlank() == false) {
+                    category.climb = climbTextView.text.toString().toFloat()
+                }
+
+                category.siCodes = siCodesTextView.text.toString()
+                if (args.create) {
+                    selectedEventViewModel.createCategory(category)
+                } else {
+                    selectedEventViewModel.updateCategory(category)
+                }
+                setFragmentResult(
+                    REQUEST_CATEGORY_MODIFICATION, bundleOf(
+                        BUNDLE_KEY_CREATE to args.create,
+                        BUNDLE_KEY_POSITION to args.position
+                    )
+                )
+                dialog?.dismiss()
+            }
+        }
+
+        cancelButton.setOnClickListener {
+            dialog?.cancel()
+        }
     }
 
     companion object {

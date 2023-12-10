@@ -10,6 +10,7 @@ import kolskypavel.ardfmanager.backend.room.database.PunchDatabase
 import kolskypavel.ardfmanager.backend.room.database.ReadoutDatabase
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
+import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
@@ -68,16 +69,11 @@ class ARDFRepository private constructor(context: Context) {
 
     //Events
     fun getEvents(): Flow<List<Event>> = eventDatabase.eventDao().getEvents()
-    fun getEvent(id: UUID): Event = eventDatabase.eventDao().getEvent(id)
+    suspend fun getEvent(id: UUID): Event = eventDatabase.eventDao().getEvent(id)
     suspend fun createEvent(event: Event) = eventDatabase.eventDao().createEvent(event)
     suspend fun updateEvent(event: Event) = eventDatabase.eventDao().updateEvent(event)
-    suspend fun deleteEvent(id: UUID) {
-        eventDatabase.eventDao().deleteEvent(id)
-        competitorDatabase.competitorDao().deleteCompetitorsByEvent(id)
-        categoryDatabase.categoryDao().deleteCategoriesByEvent(id)
-        readoutDatabase.readoutDao().deleteReadoutsByEvent(id)
-        punchDatabase.punchDao().deletePunchesByEvent(id)
-    }
+    suspend fun deleteEvent(id: UUID) = eventDatabase.eventDao().deleteEvent(id)
+
 
     //Categories
     fun getCategoriesForEvent(eventId: UUID): Flow<List<Category>> =
@@ -92,15 +88,27 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun deleteCategory(id: UUID) = categoryDatabase.categoryDao().deleteCategory(id)
 
-    //Control point
-    suspend fun getControlPointsForCategory(categoryId: UUID) =
-        controlPointDatabase.controlPointDao().getControlPointsForCategory(categoryId)
+    suspend fun deleteCategoriesByEvent(eventId: UUID) =
+        categoryDatabase.categoryDao().deleteCategoriesByEvent(eventId)
 
-    suspend fun deleteControlPointsForCategory(categoryId: UUID) =
-        controlPointDatabase.controlPointDao().getControlPointsForCategory(categoryId)
+    suspend fun createControlPoint(cp: ControlPoint) =
+        controlPointDatabase.controlPointDao().createControlPoint(cp)
+
+
+    //Control point
+    suspend fun getControlPointsByCategory(categoryId: UUID) =
+        controlPointDatabase.controlPointDao().getControlPointsByCategory(categoryId)
+
+    suspend fun deleteControlPointsByCategory(categoryId: UUID) =
+        controlPointDatabase.controlPointDao().deleteControlPointsByCategory(categoryId)
+
+    suspend fun deleteControlPointsByEvent(eventId: UUID) =
+        controlPointDatabase.controlPointDao().deleteControlPointsByEvent(eventId)
+
 
     //Competitors
-    fun getCompetitor(id: UUID): Competitor = competitorDatabase.competitorDao().getCompetitor(id)
+    suspend fun getCompetitor(id: UUID): Competitor =
+        competitorDatabase.competitorDao().getCompetitor(id)
 
     suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
         competitorDatabase.competitorDao().getCompetitorBySINumber(siNumber, eventId)
@@ -116,28 +124,34 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun deleteCompetitor(id: UUID) = competitorDatabase.competitorDao().deleteCompetitor(id)
 
+    suspend fun deleteCompetitorsByEvent(id: UUID) =
+        competitorDatabase.competitorDao().deleteCompetitorsByEvent(id)
+
     suspend fun checkIfSINumberExists(siNumber: Int, eventId: UUID): Int =
         competitorDatabase.competitorDao().checkIfSINumberExists(siNumber, eventId)
 
-    //Readouts
+    //READOUTS
     suspend fun getReadoutsForEvent(eventId: UUID) =
         readoutDatabase.readoutDao().getReadoutsForEvent(eventId)
 
-    fun getReadoutBySINumber(siNumber: Int, eventId: UUID) =
+    suspend fun getReadoutBySINumber(siNumber: Int, eventId: UUID) =
         readoutDatabase.readoutDao().getReadoutsForSINumber(siNumber, eventId)
 
-    fun getReadout(id: UUID) = readoutDatabase.readoutDao().getReadout(id)
+    suspend fun getReadout(id: UUID) = readoutDatabase.readoutDao().getReadout(id)
 
-    fun createReadout(readout: Readout) =
+    suspend fun createReadout(readout: Readout) =
         readoutDatabase.readoutDao().createReadout(readout)
 
-    fun checkIfReadoutExistsById(siNumber: Int, eventId: UUID) =
+    suspend fun checkIfReadoutExistsById(siNumber: Int, eventId: UUID) =
         readoutDatabase.readoutDao().checkIfReadoutExistsById(siNumber, eventId)
 
-    fun deleteReadout(id: UUID) = readoutDatabase.readoutDao().deleteReadout(id)
+    suspend fun deleteReadout(id: UUID) = readoutDatabase.readoutDao().deleteReadout(id)
+
+    suspend fun deleteReadoutsByEvent(eventId: UUID) =
+        readoutDatabase.readoutDao().deleteReadoutsByEvent(eventId)
 
     //PUNCHES
-    fun createPunch(punch: Punch) = punchDatabase.punchDao().createPunch(punch)
+    suspend fun createPunch(punch: Punch) = punchDatabase.punchDao().createPunch(punch)
 
     suspend fun getPunchesByCompetitor(competitorId: UUID) =
         punchDatabase.punchDao().getPunchesForCompetitor(competitorId)
@@ -145,9 +159,11 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun getPunchesBySINumber(siNumber: Int, eventId: UUID) =
         punchDatabase.punchDao().getPunchesForSINumber(siNumber, eventId)
 
-    fun deletePunchesByReadoutId(readoutId: UUID) =
+    suspend fun deletePunchesByReadoutId(readoutId: UUID) =
         punchDatabase.punchDao().deletePunchesByReadoutId(readoutId)
 
+    suspend fun deletePunchesByEvent(eventId: UUID) =
+        punchDatabase.punchDao().deletePunchesByEvent(eventId)
 
     //Results
 

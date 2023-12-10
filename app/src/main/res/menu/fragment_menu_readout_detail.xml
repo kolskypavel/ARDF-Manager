@@ -11,8 +11,14 @@
         android:icon="@drawable/ic_print"
         android:title="@string/readout_print_ticket"
         app:showAsAction="always|withText" />
+
     <item
-        android:id="@+id/readout_detail_delete_readout"
+        android:id="@+id/readout_detail_menu_create_category"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/readout_create_category_from_readout" />
+    <item
+        android:id="@+id/readout_detail_menu_delete_readout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="@string/readout_delete_readout" />

@@ -1,8 +1,10 @@
 package kolskypavel.ardfmanager.backend.sportident
 
 object SIConstants {
-    const val SPORTIDENT_VENDOR_ID = 4292
-    const val SPORTIDENT_PRODUCT_ID = 32778
+    const val SI_VENDOR_ID = 4292
+    const val SI_PRODUCT_ID = 32778
+    const val SI_MIN_NUMBER = 1
+    const val SI_MAX_NUMBER = 9999999
 
     const val STX: Byte = 0x02 //Transmission start
     const val ETX: Byte = 0x03 //Transmission end
@@ -19,7 +21,9 @@ object SIConstants {
     const val BAUDRATE_LOW = 4800
     const val BAUDRATE_HIGH = 38400
     const val POLYNOM = 0x8005      //USED FOR CRC
-    const val HALF_DAY = 12 * 3600000L
+
+    const val SECONDS_DAY = 86400L
+    const val SECONDS_WEEK = 604800L
 
     const val SI_CARD5: Byte = 0xE5.toByte()
     const val GET_SI_CARD5: Byte = 0xB1.toByte()

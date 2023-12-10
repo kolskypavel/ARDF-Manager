@@ -7,8 +7,10 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
+import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -19,8 +21,9 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kolskypavel.ardfmanager.backend.room.enums.EvaluationStatus
+import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -29,19 +32,22 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private val args: CompetitorCreateDialogFragmentArgs by navArgs()
     private lateinit var selectedEventViewModel: SelectedEventViewModel
 
+
     private lateinit var competitor: Competitor
     private lateinit var categories: List<Category>
     private val categoryArr = ArrayList<String>()
     private var punches = ArrayList<Punch>()
 
-    private lateinit var nameTextView: TextInputEditText
+    private lateinit var firstNameTextView: TextInputEditText
+    private lateinit var lastNameTextView: TextInputEditText
     private lateinit var clubTextView: TextInputEditText
     private lateinit var indexTextView: TextInputEditText
     private lateinit var birthYearTextView: TextInputEditText
     private lateinit var womanCheckBox: CheckBox
     private lateinit var categoryPicker: MaterialAutoCompleteTextView
     private lateinit var categoryLayout: TextInputLayout
-    private lateinit var automaticCategoryCheckBox: CheckBox
+    private lateinit var automaticCategoryButton: Button
+    private lateinit var siNumberLayout: TextInputLayout
     private lateinit var siNumberTextView: TextInputEditText
     private lateinit var siRentCheckBox: CheckBox
     private lateinit var editPunchesSwitch: SwitchMaterial
@@ -67,15 +73,17 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.add_dialog)
 
-        nameTextView = view.findViewById(R.id.competitor_dialog_name)
+        firstNameTextView = view.findViewById(R.id.competitor_dialog_first_name)
+        lastNameTextView = view.findViewById(R.id.competitor_dialog_last_name)
         clubTextView = view.findViewById(R.id.competitor_dialog_club)
         indexTextView = view.findViewById(R.id.competitor_dialog_index_callsign)
         birthYearTextView = view.findViewById(R.id.competitor_dialog_year_of_birth)
         womanCheckBox = view.findViewById(R.id.competitor_dialog_woman_checkbox)
         categoryLayout = view.findViewById(R.id.competitor_dialog_category_layout)
-        automaticCategoryCheckBox =
+        automaticCategoryButton =
             view.findViewById(R.id.competitor_dialog_automatic_category_checkbox)
         categoryPicker = view.findViewById(R.id.competitor_dialog_category)
+        siNumberLayout = view.findViewById(R.id.competitor_dialog_si_layout)
         siNumberTextView = view.findViewById(R.id.competitor_dialog_si_number)
         siRentCheckBox = view.findViewById(R.id.competitor_dialog_si_rent)
         editPunchesSwitch = view.findViewById(R.id.competitor_dialog_edit_punches)
@@ -95,42 +103,60 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 UUID.randomUUID(),
                 selectedEventViewModel.event.value!!.id,
                 null,
-                "",
-                "",
-                "",
+                "", "", "", "",
                 false,
                 LocalDate.now().year,
                 null,
                 siRent = false,
-                automaticCategory = true,
-                null,
-                EvaluationStatus.NOT_EVALUATED, 0
+                null
             )
             categoryPicker.setText(getString(R.string.no_category), false)
         } else {
             dialog?.setTitle(R.string.competitor_edit)
             competitor = args.competitor!!
-            nameTextView.setText(competitor.name)
+            firstNameTextView.setText(competitor.firstName)
+            lastNameTextView.setText(competitor.lastName)
             clubTextView.setText(competitor.club)
             indexTextView.setText(competitor.index)
             birthYearTextView.setText(competitor.birthYear.toString())
-            siNumberTextView.setText(competitor.siNumber.toString())
 
+            //Pre-set SI number
+            if (competitor.siNumber != null) {
+                siNumberTextView.setText(competitor.siNumber.toString())
+            }
+
+            //Auto insertion of the last card read
+            siNumberLayout.setEndIconOnClickListener {
+                val last = selectedEventViewModel.getLastReadCard()
+                if (last != null) {
+                    siNumberTextView.setText(last.toString())
+                }
+            }
+
+            //Preset gender
             if (competitor.isWoman) {
                 womanCheckBox.isChecked = true
             }
 
-            if (competitor.automaticCategory) {
-                automaticCategoryCheckBox.isChecked = true
-                categoryLayout.isEnabled = false
+            //Preset category
+            if (competitor.categoryId != null) {
+                runBlocking {
+                    val category = selectedEventViewModel.getCategory(competitor.categoryId!!)
+                    categoryPicker.setText(category.name, false)
+                }
+
+            } else {
+                categoryPicker.setText(getString(R.string.no_category), false)
             }
+
+            //Rented chip
             if (competitor.siRent) {
                 siRentCheckBox.isChecked = true
             }
+
         }
 
         //Populate the list of categories
-
         for (cat in categories) {
             categoryArr.add(cat.name)
         }
@@ -140,6 +166,12 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
         categoryPicker.setAdapter(categoriesAdapter)
 
+        //Enable the automatic category, based on the year of birth
+        automaticCategoryButton.setOnClickListener() {
+
+        }
+
+        //Set up the punch edit recycler view
         punchEditRecyclerView.adapter =
             PunchEditRecyclerViewAdapter(
                 selectedEventViewModel.getPunchRecordsForCompetitor(
@@ -157,32 +189,38 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
     private fun setButtons() {
         okButton.setOnClickListener {
-            if (validateFields()) {
-                competitor.name = nameTextView.text.toString()
+            if (validateFields(competitor.siNumber)) {
+                competitor.firstName = firstNameTextView.text.toString()
+                competitor.lastName = lastNameTextView.text.toString()
                 competitor.club = clubTextView.text.toString()
                 competitor.index = indexTextView.text.toString()
                 if (birthYearTextView.text.toString().isNotEmpty()) {
                     competitor.birthYear = birthYearTextView.text.toString().toInt()
                 }
-                competitor.automaticCategory = automaticCategoryCheckBox.isChecked
 
                 if (siNumberTextView.text.toString().isNotEmpty()) {
                     competitor.siNumber = siNumberTextView.text.toString().toInt()
                 }
 
-                if (!automaticCategoryCheckBox.isChecked) {
-                    //0 is reserved for no category
-                    val catPos = categoryArr.indexOf(categoryPicker.text.toString()).or(0)
-                    if (catPos != 0) {
-                        competitor.categoryId = categories[catPos - 1].id
-                    }
+                //0 is reserved for no category
+                val catPos = categoryArr.indexOf(categoryPicker.text.toString()).or(0)
+                if (catPos != 0) {
+                    competitor.categoryId = categories[catPos - 1].id
                 }
+
                 if (args.create) {
                     selectedEventViewModel.createCompetitor(competitor)
                 } else {
                     selectedEventViewModel.updateCompetitor(competitor)
-                    //TODO: Update the recycler view
+
                 }
+                //Send back the result to update the recycler view
+                setFragmentResult(
+                    REQUEST_COMPETITOR_MODIFICATION, bundleOf(
+                        BUNDLE_KEY_CREATE to args.create,
+                        BUNDLE_KEY_POSITION to args.position
+                    )
+                )
                 dialog?.dismiss()
             }
         }
@@ -192,12 +230,16 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         }
     }
 
-    private fun validateFields(): Boolean {
+    private fun validateFields(origSiNumber: Int?): Boolean {
         var valid = true
 
-        if (nameTextView.text.toString().isBlank()) {
+        if (firstNameTextView.text.toString().isBlank()) {
             valid = false
-            nameTextView.error = getString(R.string.required)
+            firstNameTextView.error = getString(R.string.required)
+        }
+        if (lastNameTextView.text.toString().isBlank()) {
+            valid = false
+            lastNameTextView.error = getString(R.string.required)
         }
 
         //Check the birth year
@@ -215,6 +257,37 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 valid = false
             }
         }
+
+        //Check if the SI number is valid
+        if (siNumberTextView.text.toString().isNotEmpty()) {
+            try {
+                val siNumber = siNumberTextView.text.toString().toInt()
+
+                if (siNumber != origSiNumber) {
+                    //Invalid range
+                    if (siNumber < SIConstants.SI_MIN_NUMBER || siNumber > SIConstants.SI_MAX_NUMBER) {
+                        valid = false
+                        siNumberTextView.error =
+                            getString(R.string.competitor_si_number_out_of_range)
+                    }
+                    //Already existing
+                    else if (selectedEventViewModel.checkIfSINumberExists(siNumber)) {
+                        valid = false
+                        siNumberTextView.error = getString(R.string.competitor_duplicate_si_number)
+                    }
+                }
+            } catch (e: Exception) {
+                valid = false
+                siNumberTextView.error = getString(R.string.invalid)
+            }
+        }
+
         return valid
+    }
+
+    companion object {
+        const val REQUEST_COMPETITOR_MODIFICATION = "REQUEST_COMPETITOR_MODIFICATION"
+        const val BUNDLE_KEY_CREATE = "BUNDLE_KEY_CREATE"
+        const val BUNDLE_KEY_POSITION = "BUNDLE_KEY_POSITION"
     }
 }

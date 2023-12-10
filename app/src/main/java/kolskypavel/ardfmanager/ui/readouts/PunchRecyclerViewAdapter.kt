@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 
 class PunchRecyclerViewAdapter(
     private var values: List<Punch>,
@@ -15,6 +17,7 @@ class PunchRecyclerViewAdapter(
 ) :
     RecyclerView.Adapter<PunchRecyclerViewAdapter.PunchViewHolder>() {
 
+    private val dataProcessor = DataProcessor.get()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PunchViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
             .inflate(R.layout.recycler_item_punch, parent, false)
@@ -29,14 +32,22 @@ class PunchRecyclerViewAdapter(
 
         holder.punchOrder.text = position.toString()
         holder.punchSiCode.text = item.siCode.toString()
-        holder.punchRealTime.text = item.siTime.time.toString()
-        holder.punchSplit.text = item.split.toString()
+        holder.punchRealTime.text = item.siTime.getTime().toString()
+        holder.punchSplit.text = item.split?.let { dataProcessor.durationToString(it) }
+
+        holder.punchStatus.text = when (item.punchStatus) {
+            PunchStatus.VALID -> context.getString(R.string.punch_status_valid)
+            PunchStatus.INVALID -> context.getString(R.string.punch_status_invalid)
+            PunchStatus.DUPLICATE -> context.getString(R.string.punch_status_duplicate)
+            PunchStatus.UNKNOWN -> context.getString(R.string.punch_status_unknown)
+        }
     }
 
     inner class PunchViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var punchOrder: TextView = view.findViewById(R.id.punch_order)
+        var punchOrder: TextView = view.findViewById(R.id.punch_item_order)
         var punchSiCode: TextView = view.findViewById(R.id.punch_si_code)
-        var punchRealTime: TextView = view.findViewById(R.id.punch_real_time)
-        var punchSplit: TextView = view.findViewById(R.id.punch_punch_split)
+        var punchRealTime: TextView = view.findViewById(R.id.punch_item_real_time)
+        var punchSplit: TextView = view.findViewById(R.id.punch_item_split)
+        var punchStatus: TextView = view.findViewById(R.id.punch_item_status)
     }
 }

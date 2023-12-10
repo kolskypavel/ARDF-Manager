@@ -9,7 +9,6 @@ import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
@@ -26,9 +25,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
+import java.time.Duration
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
+
 
 /**
  * This is the main backend interface, processing and providing various sources of data
@@ -103,10 +104,13 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    fun deleteEvent(id: UUID) {
-        runBlocking {
-            ardfRepository.deleteEvent(id)
-        }
+    suspend fun deleteEvent(id: UUID) {
+        ardfRepository.deleteEvent(id)
+        ardfRepository.deleteCompetitorsByEvent(id)
+        ardfRepository.deleteCategoriesByEvent(id)
+        ardfRepository.deleteControlPointsByEvent(id)
+        ardfRepository.deleteReadoutsByEvent(id)
+        ardfRepository.deletePunchesByEvent(id)
     }
 
     //CATEGORIES
@@ -114,29 +118,33 @@ class DataProcessor private constructor(context: Context) {
 
     suspend fun getCategory(id: UUID) = ardfRepository.getCategory(id)
 
-    fun createCategory(category: Category) {
+    suspend fun createCategory(category: Category) {
         runBlocking {
             ardfRepository.createCategory(category)
-            parseCodeStringIntoControlPoints(category.siCodes, category.id)
+            parseCodeStringIntoControlPoints(category.siCodes, category)
         }
     }
 
-    fun updateCategory(category: Category) {
-        //TODO: Finish the update of category
+    suspend fun updateCategory(category: Category) {
+        ardfRepository.deleteControlPointsByCategory(category.id)
+        ardfRepository.updateCategory(category)
+        parseCodeStringIntoControlPoints(category.siCodes, category)
     }
 
-    fun deleteCategory(id: UUID) {
-        runBlocking {
-            ardfRepository.deleteCategory(id)
-            ardfRepository.deleteControlPointsForCategory(id)
-        }
+    suspend fun deleteCategory(id: UUID) {
+        ardfRepository.deleteCategory(id)
+        ardfRepository.deleteControlPointsByCategory(id)
     }
+
+    //CONTROL POINTS
+    suspend fun getControlPointsByCategory(categoryId: UUID) =
+        ardfRepository.getControlPointsByCategory(categoryId)
 
     //COMPETITORS
     fun getCompetitorsForEvent(eventId: UUID) =
         ardfRepository.getCompetitorsForEvent(eventId)
 
-    fun getCompetitor(id: UUID): Competitor = ardfRepository.getCompetitor(id)
+    suspend fun getCompetitor(id: UUID): Competitor = ardfRepository.getCompetitor(id)
 
     suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
         ardfRepository.getCompetitorBySINumber(siNumber, eventId)
@@ -147,26 +155,15 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    fun createCompetitor(competitor: Competitor) {
-        runBlocking {
-            ardfRepository.createCompetitor(competitor)
-            //TODO:add punches
-        }
-    }
+    suspend fun createCompetitor(competitor: Competitor) =
+        ardfRepository.createCompetitor(competitor)
 
-    fun updateCompetitor(competitor: Competitor) {
-        runBlocking {
-            ardfRepository.updateCompetitor(competitor)
-            //TODO:update punches
-        }
-    }
+    suspend fun updateCompetitor(competitor: Competitor) =
+        ardfRepository.updateCompetitor(competitor)
 
-    fun deleteCompetitor(id: UUID) {
-        runBlocking {
-            ardfRepository.deleteCompetitor(id)
-            //TODO:delete punches
-        }
-    }
+
+    suspend fun deleteCompetitor(id: UUID) = ardfRepository.deleteCompetitor(id)
+
 
     //READOUTS
 
@@ -195,17 +192,17 @@ class DataProcessor private constructor(context: Context) {
                 }
 
                 emit(temp)
-                delay(5000) //TODO: FIX
+                delay(1000) //TODO: FIX
             }
         }
     }
 
-    fun getReadout(id: UUID) = ardfRepository.getReadout(id)
+    suspend fun getReadout(id: UUID) = ardfRepository.getReadout(id)
 
-    fun getReadoutBySINumber(siNumber: Int, eventId: UUID): Readout? =
+    suspend fun getReadoutBySINumber(siNumber: Int, eventId: UUID): Readout? =
         ardfRepository.getReadoutBySINumber(siNumber, eventId)
 
-    fun createReadout(readout: Readout) = ardfRepository.createReadout(readout)
+    suspend fun createReadout(readout: Readout) = ardfRepository.createReadout(readout)
 
     fun checkIfReadoutExistsBySI(siNumber: Int, eventId: UUID): Boolean {
         return runBlocking {
@@ -219,7 +216,8 @@ class DataProcessor private constructor(context: Context) {
     }
 
     //PUNCHES
-    fun createPunch(punch: Punch) = ardfRepository.createPunch(punch)
+    suspend fun createPunch(punch: Punch) = ardfRepository.createPunch(punch)
+
     suspend fun createPunches(punches: ArrayList<Punch>) {
         punches.forEach { punch -> createPunch(punch) }
     }
@@ -230,77 +228,24 @@ class DataProcessor private constructor(context: Context) {
     suspend fun getPunchesForCompetitor(competitorId: UUID) =
         ardfRepository.getPunchesByCompetitor(competitorId)
 
-    suspend fun getPunchesForSICard(siNumber: Int, eventId: UUID) =
+    private suspend fun getPunchesForSICard(siNumber: Int, eventId: UUID) =
         ardfRepository.getPunchesBySINumber(siNumber, eventId)
 
 
     //Parsing categories to control points
-    fun checkCodesString(string: String): Boolean {
+    fun checkCodesString(string: String, eventType: EventType) =
+        ResultsProcessor.checkCodesString(string, eventType)
 
-        val regex = Regex("(\\b\\d+(?:-\\d+)?[!b]?\\s*)*")
-        return regex.matches(string)
+    private suspend fun parseCodeStringIntoControlPoints(
+        siCodes: String,
+        category: Category
+    ) {
+        val processed =
+            ResultsProcessor.parseIntoControlPoints(siCodes, category.id, category.eventId)
+        processed?.forEach { cp -> ardfRepository.createControlPoint(cp) }
     }
 
-    private fun parseCodeStringIntoControlPoints(siCodes: String, categoryId: UUID) {
-
-        //Handle empty CP situation
-        if (siCodes.isEmpty()) {
-            return
-        }
-        //Replace multiple whitespaces with one and trim the spaces
-        val replaced = siCodes.replace("\\s+".toRegex(), " ").trim()
-
-        val regex = Regex("(\\b\\d+(?:-\\d+)?[!b]?\\s*)*")
-        val match = regex.find(replaced)
-
-        val controlPoints = mutableListOf<ControlPoint>()
-
-        var order = 0
-        var round = 0
-        var siText: String
-        var points = 1
-
-        val orig = match?.value.toString().split(' ')
-
-        orig.forEach { cp ->
-            if (cp.contains("-")) {
-                siText = cp.substringBefore("-")
-                points = cp.substringAfter("-", "").toInt()
-            } else {
-                siText = cp
-            }
-
-            val beacon = siText.endsWith("b", true)
-            val separator = siText.endsWith("!")
-
-            //Get the code
-            if (beacon || separator) {
-                siText = siText.dropLast(1)
-            }
-
-            val controlPoint = ControlPoint(
-                UUID.randomUUID(),
-                categoryId,
-                siText.toInt(),
-                order,
-                round,
-                points,
-                beacon,
-                separator
-            )
-            controlPoints.add(controlPoint)
-
-            if (separator) {
-                round++
-            }
-            order++
-        }
-
-        //TODO save the CPs to database
-    }
-
-//SportIdent manipulation
-
+    //SportIdent manipulation
     fun connectDevice(usbDevice: UsbDevice) {
         Intent(appContext.get(), SIReaderService::class.java).also {
             it.action = SIReaderService.ReaderServiceActions.START.toString()
@@ -317,6 +262,7 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
+    fun getLastReadCard(): Int? = currentState.value?.siReaderState?.lastCard
 
     //GENERAL HELPER METHODS
     fun getHoursMinutesFromTime(time: LocalTime): String {
@@ -352,5 +298,16 @@ class DataProcessor private constructor(context: Context) {
     fun eventBandStringToEnum(string: String): EventBand {
         val eventBandStrings = appContext.get()?.resources?.getStringArray(R.array.event_bands)!!
         return EventBand.getByValue(eventBandStrings.indexOf(string))!!
+    }
+
+    fun durationToString(duration: Duration): String {
+        val seconds = duration.seconds
+        return if (kotlin.math.abs(seconds / 60) <= 99) {
+            String.format("%02d:%02d", (seconds % 3600) / 60, kotlin.math.abs(seconds) % 60);
+        } else if (kotlin.math.abs(seconds / 60) <= 999) {
+            String.format("%03d:%02d", (seconds % 3600) / 60, kotlin.math.abs(seconds) % 60)
+        } else {
+            String.format("%04d:%02d", (seconds % 3600) / 60, kotlin.math.abs(seconds) % 60)
+        }
     }
 }

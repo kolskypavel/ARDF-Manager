@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,9 +24,13 @@ class EventViewModel : ViewModel() {
 
     fun modifyEvent(
         event: Event
-    ) = dataProcessor.modifyEvent(event) 
+    ) = dataProcessor.modifyEvent(event)
 
-    fun deleteEvent(id: UUID) = dataProcessor.deleteEvent(id)
+    fun deleteEvent(id: UUID) {
+        CoroutineScope(Dispatchers.IO).launch {
+            dataProcessor.deleteEvent(id)
+        }
+    }
 
     init {
         viewModelScope.launch {

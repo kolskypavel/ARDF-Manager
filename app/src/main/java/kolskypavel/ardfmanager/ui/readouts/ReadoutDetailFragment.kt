@@ -10,11 +10,14 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 
 class ReadoutDetailFragment : Fragment() {
 
+    private val dataProcessor = DataProcessor.get()
     private val args: ReadoutDetailFragmentArgs by navArgs()
+
     private lateinit var readoutDetailToolbar: Toolbar
     private lateinit var punchRecyclerView: RecyclerView
     private lateinit var competitorNameView: TextView
@@ -66,24 +69,61 @@ class ReadoutDetailFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
-        competitorNameView.text = readoutDetail.competitor?.name
-        siNumberView.text = readoutDetail.readout.siNumber.toString()
-        clubView.text = readoutDetail.competitor?.club
-        indexView.text = readoutDetail.competitor?.index
-        startTimeView.text = readoutDetail.readout.startTime?.time.toString()
-        finishTimeView.text = readoutDetail.readout.finishTime?.time.toString()
-        runTimeView.text = readoutDetail.readout.runTime.toString()
-        categoryView.text = readoutDetail.category?.name
-
         if (readoutDetail.competitor != null) {
-            pointsView.text = readoutDetail.competitor!!.points.toString()
+            clubView.text = readoutDetail.competitor?.club
+            indexView.text = readoutDetail.competitor?.index
+            competitorNameView.text =
+                "${readoutDetail.competitor?.firstName} ${readoutDetail.competitor?.lastName}"
+            pointsView.text = readoutDetail.readout.points.toString()
         } else {
-            pointsView.text = "0"
+            competitorNameView.text = getText(R.string.unknown_competitor)
+            pointsView.text = getText(R.string.unknown)
+            clubView.text = getText(R.string.unknown)
+            indexView.text = getText(R.string.unknown)
         }
 
-        //TODO: Place
+        if (readoutDetail.category != null) {
+            categoryView.text = readoutDetail.category!!.name
+        } else {
+            categoryView.text = getText(R.string.unknown)
+        }
 
+        siNumberView.text = readoutDetail.readout.siNumber.toString()
+        startTimeView.text = readoutDetail.readout.startTime?.getTime().toString()
+        finishTimeView.text = readoutDetail.readout.finishTime?.getTime().toString()
+        runTimeView.text =
+            readoutDetail.readout.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
+
+        placeView.text = getText(R.string.unknown) //TODO: Place
+
+        setMenuActions()
         setRecyclerViewAdapter(readoutDetail.punches)
+    }
+
+    private fun setMenuActions() {
+        readoutDetailToolbar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.readout_detail_menu_edit_readout -> {
+                    true
+                }
+
+                R.id.readout_detail_menu_print_ticket -> {
+                    true
+                }
+
+                R.id.readout_detail_menu_create_category -> {
+                    true
+                }
+
+                R.id.readout_detail_menu_delete_readout -> {
+                    true
+                }
+
+                else -> {
+                    false
+                }
+            }
+        }
     }
 
     private fun setRecyclerViewAdapter(punches: ArrayList<Punch>) {

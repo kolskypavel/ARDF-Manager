@@ -8,12 +8,19 @@ import java.time.LocalTime
  * Wrapper class for calculating the split times
  */
 class SITime(
-    var time: LocalTime,
-    var dayOfWeek: Int = 0,
-    var week: Int = 0
+    private var time: LocalTime,
+    private var dayOfWeek: Int = 0,
+    private var week: Int = 0
 ) : Serializable {
 
+    private var seconds: Long = 0
+
+
     constructor() : this(LocalTime.MIDNIGHT)
+
+    fun calculateSeconds() {
+        seconds += week * SIConstants.SECONDS_WEEK + dayOfWeek * SIConstants.SECONDS_DAY + time.toSecondOfDay()
+    }
 
     override fun toString(): String {
         return "$time;$dayOfWeek;$week"
@@ -21,8 +28,28 @@ class SITime(
 
     fun addHalfDay() {
         time = time.plusHours(12)
+        calculateSeconds()
     }
 
+    //Getters and setters
+    fun getTime() = time
+    fun getDayOfWeek() = dayOfWeek
+    fun getWeek() = week
+
+    fun setTime(newTime: LocalTime) {
+        time = newTime
+        calculateSeconds()
+    }
+
+    fun setDayOfWeek(newDayOfWeek: Int) {
+        dayOfWeek = newDayOfWeek
+        calculateSeconds()
+    }
+
+    fun setWeek(newWeek: Int) {
+        week = newWeek
+        calculateSeconds()
+    }
 
     companion object {
         @Throws(IllegalArgumentException::class)
@@ -40,23 +67,12 @@ class SITime(
             }
         }
 
-        fun split(time1: SITime, time2: SITime): Duration {
-            if (time1.week == time2.week) {
-                if (time1.dayOfWeek == time2.dayOfWeek) {
-                    return Duration.between(time2.time, time1.time)
-                }
-
-            } else if (time1.week > time2.week) {
-
-            } else {
-
-            }
-            return Duration.ZERO
+        fun split(start: SITime, end: SITime): Duration {
+            return Duration.ofSeconds(end.seconds - start.seconds)
         }
 
-        fun difference(time1: SITime, time2: SITime): Duration {
-            //  return abs(split(time1, time2))
-            return Duration.ZERO
+        fun difference(start: SITime, end: SITime): Duration {
+            return Duration.ofSeconds(kotlin.math.abs(end.seconds - start.seconds))
         }
     }
 }

@@ -14,18 +14,21 @@ interface PunchDao {
     @Query("SELECT * FROM punch WHERE competitor_id = (:competitorId)")
     suspend fun getPunchesForCompetitor(competitorId: UUID): List<Punch>
 
+    @Query("SELECT * FROM punch WHERE readout_id = (:readoutId) ORDER BY `order` ASC")
+    suspend fun getPunchesForReadout(readoutId: UUID): List<Punch>
+
     @Query("SELECT * FROM punch WHERE id=(:id)")
-    fun getPunch(id: UUID): Punch
+    suspend fun getPunch(id: UUID): Punch
 
     @Insert
-    fun createPunch(punch: Punch)
+    suspend fun createPunch(punch: Punch)
 
     @Query("DELETE FROM punch WHERE id =(:id) ")
-    fun deletePunch(id: UUID)
+    suspend fun deletePunch(id: UUID)
 
     @Query("DELETE FROM punch WHERE event_id=(:eventId)")
-    fun deletePunchesByEvent(eventId: UUID)
+    suspend fun deletePunchesByEvent(eventId: UUID)
 
     @Query("DELETE FROM punch WHERE readout_id=(:readoutId)")
-    fun deletePunchesByReadoutId(readoutId: UUID)
+    suspend fun deletePunchesByReadoutId(readoutId: UUID)
 }

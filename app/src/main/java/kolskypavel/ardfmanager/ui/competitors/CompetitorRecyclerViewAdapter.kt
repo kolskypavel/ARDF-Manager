@@ -25,10 +25,16 @@ class CompetitorRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: CompetitorViewHolder, position: Int) {
         val item = values[position]
-        holder.name.text = item.name
+        holder.name.text = "${item.firstName} ${item.lastName}"
         holder.club.text = item.club
         holder.index.text = item.index
-        holder.siNumberView.text = item.siNumber.toString()
+
+        if (item.siNumber != null) {
+            holder.siNumberView.text = item.siNumber.toString()
+        } else {
+            holder.siNumberView.text = context.getText(R.string.no_si_card)
+        }
+       // holder.category = item.
 
         holder.moreBtn.setOnClickListener {
 

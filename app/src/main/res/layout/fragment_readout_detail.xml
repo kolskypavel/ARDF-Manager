@@ -237,6 +237,49 @@
             android:background="@android:color/black" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/readout_detail_punch_titles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/readout_detail_category_layout_wrapper">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/readout_detail_order"
+            android:textAlignment="center" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            android:text="@string/readout_detail_code" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAlignment="center"
+            android:text="@string/readout_detail_real_time" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:layout_weight="1"
+            android:text="@string/readout_detail_split" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:layout_weight="1"
+            android:text="@string/readout_detail_status" />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/readout_detail_punch_recycler_view"
         android:layout_width="match_parent"
@@ -244,7 +287,7 @@
         android:padding="16dp"
         app:layoutManager="LinearLayoutManager"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/readout_detail_category_layout_wrapper" />
+        app:layout_constraintTop_toBottomOf="@id/readout_detail_punch_titles" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

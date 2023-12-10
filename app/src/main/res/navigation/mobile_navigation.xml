@@ -88,8 +88,10 @@
                 app:argType="kolskypavel.ardfmanager.backend.room.entitity.Category"
                 app:nullable="true" />
             <argument
-                android:name="event"
-                app:argType="kolskypavel.ardfmanager.backend.room.entitity.Event" />
+                android:name="siCodes"
+                app:argType="string"
+                app:nullable="true"
+                android:defaultValue="null" />
 
         </dialog>
         <action

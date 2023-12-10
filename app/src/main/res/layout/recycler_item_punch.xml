@@ -4,9 +4,10 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/punch_order"
+        android:id="@+id/punch_item_order"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAlignment="center"
         android:layout_weight="1"
         android:text="TextView" />
 
@@ -14,20 +15,31 @@
         android:id="@+id/punch_si_code"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAlignment="center"
         android:layout_weight="1"
         android:text="TextView" />
 
     <TextView
-        android:id="@+id/punch_real_time"
+        android:id="@+id/punch_item_real_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAlignment="center"
         android:layout_weight="1"
         android:text="TextView" />
 
     <TextView
-        android:id="@+id/punch_punch_split"
+        android:id="@+id/punch_item_split"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_weight="1"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/punch_item_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
         android:layout_weight="1"
         android:text="TextView" />
 </LinearLayout>

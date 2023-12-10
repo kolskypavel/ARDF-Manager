@@ -66,8 +66,7 @@ class CategoryFragment : Fragment() {
                 findNavController().navigate(
                     CategoryFragmentDirections.modifyCategory(
                         true,
-                        -1, null,
-                        selectedEventViewModel.event.value!!
+                        -1, null
                     )
                 )
             }
@@ -134,8 +133,7 @@ class CategoryFragment : Fragment() {
                 CategoryFragmentDirections.modifyCategory(
                     false,
                     position,
-                    category,
-                    selectedEventViewModel.event.value!!
+                    category
                 )
             )
 
@@ -151,7 +149,7 @@ class CategoryFragment : Fragment() {
             val message = getString(R.string.event_end_confirmation)
             builder.setMessage(message)
 
-            builder.setPositiveButton(R.string.ok) { dialog, _ ->
+            builder.setPositiveButton(R.string.ok) { _, _ ->
                 dataProcessor.removeReaderEvent()
                 findNavController().navigate(CategoryFragmentDirections.closeEvent())
             }

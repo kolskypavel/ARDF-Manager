@@ -15,8 +15,8 @@ import com.felhr.usbserial.UsbSerialDevice
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.AppState
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.sportident.SIConstants.SPORTIDENT_PRODUCT_ID
-import kolskypavel.ardfmanager.backend.sportident.SIConstants.SPORTIDENT_VENDOR_ID
+import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_PRODUCT_ID
+import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_VENDOR_ID
 import kotlinx.coroutines.Job
 
 
@@ -51,7 +51,7 @@ class SIReaderService :
     }
 
     private fun startService(newDevice: UsbDevice) {
-        if (newDevice.vendorId == SPORTIDENT_VENDOR_ID && newDevice.productId == SPORTIDENT_PRODUCT_ID) {
+        if (newDevice.vendorId == SI_VENDOR_ID && newDevice.productId == SI_PRODUCT_ID) {
             device = newDevice
             startSIDevice()
 
@@ -65,7 +65,7 @@ class SIReaderService :
     }
 
     private fun stopService(removedDevice: UsbDevice) {
-        if (removedDevice.vendorId == SPORTIDENT_VENDOR_ID && removedDevice.productId == SPORTIDENT_PRODUCT_ID) {
+        if (removedDevice.vendorId == SI_VENDOR_ID && removedDevice.productId == SI_PRODUCT_ID) {
             siJob?.cancel()
 
             //Remove the observer

@@ -7,6 +7,7 @@
     <string name="global_settings">Global settings</string>
     <string name="about_the_app">About the app</string>
     <string name="description_file_import">Import a file</string>
+    <string name="unknown" translatable="false">\?</string>
 
     <!--Event-->
     <string name="event_import_text">Import event from a file</string>
@@ -95,6 +96,8 @@
 
     <!--Competitors-->
     <string name="competitor">Competitor</string>
+    <string name="competitor_first_name">First name</string>
+    <string name="competitor_last_name">First name</string>
     <string name="competitor_import_file">Import competitors from a file</string>
     <string name="club">Club</string>
     <string name="competitor_create">Create competitor</string>
@@ -108,6 +111,9 @@
     <string name="competitor_edit_punches">Edit punches</string>
     <string name="competitor_man">Man</string>
     <string name="competitor_woman">Woman</string>
+    <string name="no_si_card">No SI card!</string>
+    <string name="competitor_duplicate_si_number">Duplicate SI number!</string>
+    <string name="competitor_si_number_out_of_range">SI number out of range!</string>
 
     <string name="competitor_hint_code">Code</string>
     <string name="competitor_hint_time_format" translatable="false">HH:MM:SS</string>
@@ -125,13 +131,24 @@
 
     <!--Readout-->
     <string name="readout_detail_title">Readout detail</string>
+    <string name="readout_detail_order">Order</string>
+    <string name="readout_detail_code">Code</string>
+    <string name="readout_detail_real_time">Real time</string>
+    <string name="readout_detail_split">Split</string>
+    <string name="readout_detail_status">Status</string>
     <string name="readout_exists">Readout with the same SI number already exists!</string>
-    <string name="unknown_si">Unknown SI card!</string>
+    <string name="unknown_competitor">Unknown competitor!</string>
     <string name="points">Points</string>
     <string name="placement">Place</string>
     <string name="readout_edit_readout">Edit readout</string>
     <string name="readout_print_ticket">Print ticket</string>
     <string name="readout_delete_readout">Delete readout</string>
+    <string name="readout_create_category_from_readout">Create a category from this readout</string>
     <string name="readout_delete_readout_confirmation">Do you really want to delete readout for SI card %1$d?</string>
+
+    <string name="punch_status_valid" translatable="false">✓</string>
+    <string name="punch_status_invalid" translatable="false">✖</string>
+    <string name="punch_status_duplicate" translatable="false">+</string>
+    <string name="punch_status_unknown" translatable="false">\?</string>
 
 </resources>

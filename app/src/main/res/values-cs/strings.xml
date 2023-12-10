@@ -51,6 +51,8 @@
     <string name="category_delete_confirmation">Opravdu chcete smazat tuto kategorii?</string>
     <string name="last_name">Příjmení</string>
     <string name="competitor">Závodník</string>
+    <string name="competitor_first_name">Jméno</string>
+    <string name="competitor_last_name">Příjmení</string>
     <string name="competitor_import_file">Importovat závodníky ze souboru</string>
     <string name="club">Klub</string>
     <string name="competitor_man">Muž</string>
@@ -70,6 +72,9 @@
     <string name="competitor_edit_punches">Upravit ražení</string>
     <string name="competitor_delete">Smazat závodníka</string>
     <string name="category_delete">Smazat kategorii</string>
+    <string name="no_si_card">Žádný čip</string>
+    <string name="competitor_duplicate_si_number">Čip již existuje!</string>
+    <string name="competitor_si_number_out_of_range">Číslo čipu mimo rozsah!</string>
     <string name="competitor_hint_code">Kód</string>
     <string name="si_ready">SI služba spuštěna</string>
     <string name="si_connected">SI čtečka %1$d připojena</string>
@@ -80,7 +85,19 @@
     <string name="si_card_read">"SI čtečka %1$d, vyčten čip %2$d "</string>
     <string name="si_last_card">"Poslední vyčtený čip: %1$s "</string>
     <string name="no_cards_yet">Žádný vyčtený čip</string>
+    <string name="readout_detail_title">Detail vyčítání</string>
+    <string name="readout_detail_order">Pořadí</string>
+    <string name="readout_detail_code">Kód</string>
+    <string name="readout_detail_real_time">Reálný čas</string>
+    <string name="readout_detail_split">Mezičas</string>
+    <string name="readout_detail_status">Status</string>
     <string name="readout_exists">Čip už byl vyčtený!</string>
-    <string name="unknown_si">Neznámý SI čip!</string>
+    <string name="unknown_competitor">Neznámý SI čip!</string>
     <string name="points">Body</string>
+    <string name="placement">Umístění</string>
+    <string name="readout_edit_readout">Upravit vyčítání</string>
+    <string name="readout_print_ticket">Vytisknout lísteček</string>
+    <string name="readout_delete_readout">Smazat vyčítání</string>
+    <string name="readout_delete_readout_confirmation">Opravdu chcete smazat data čipu %1$d?</string>
+    <string name="readout_create_category_from_readout">Vytvořit kategorii podle vyčítání</string>
 </resources>

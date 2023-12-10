@@ -33,7 +33,7 @@ class PunchEditRecyclerViewAdapter(
         holder.order.text = (position + 1).toString()
         holder.code.setText(item.siCode.toString())
 
-        holder.time.setText("${item.siTime?.time?.hour}:${item.siTime?.time?.minute}:${item.siTime?.time?.second}")
+        holder.time.setText("${item.siTime?.getTime()?.hour}:${item.siTime?.getTime()?.minute}:${item.siTime?.getTime()?.second}")
 
         holder.addBtn.setOnClickListener {
             addPunchWrapper(position)

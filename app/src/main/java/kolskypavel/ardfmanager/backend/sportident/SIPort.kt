@@ -70,7 +70,8 @@ class SIPort(
                     setStatusConnected()
                 }
                 if (dataProcessor.currentState.value!!.siReaderState.status != SIReaderStatus.DISCONNECTED
-                    && dataProcessor.currentState.value!!.currentEvent != null) {
+                    && dataProcessor.currentState.value!!.currentEvent != null
+                ) {
                     readCardOnce(dataProcessor.currentState.value!!.currentEvent!!)
                 }
             }
@@ -776,14 +777,17 @@ class SIPort(
         }
         punchData.siCode =
             byteToUnsignedInt(data[1]) + 256 * (byteToUnsignedInt(data[0]) shr 6 and 0x03)
-        punchData.siTime.dayOfWeek = (data[0].toInt() shr 1 and 0x07)
+        punchData.siTime.setDayOfWeek((data[0].toInt() shr 1 and 0x07))
+
+        //TODO: Set week
+       // punchData.siTime.setWeek(byteToUnsignedInt(data[0]) shr 4)
 
         //Read and parse the seconds
         val seconds =
             (byteToUnsignedInt(data[2]) shl 8 or byteToUnsignedInt(data[3])).toLong()
 
         try {
-            punchData.siTime.time = LocalTime.ofSecondOfDay(seconds)
+            punchData.siTime.setTime(LocalTime.ofSecondOfDay(seconds))
         } catch (dateE: DateTimeException) {
             Log.d(
                 "SI",

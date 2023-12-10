@@ -14,7 +14,7 @@ interface EventDao {
     fun getEvents(): Flow<List<Event>>
 
     @Query("SELECT * FROM event WHERE id=(:id) LIMIT 1")
-    fun getEvent(id: UUID): Event
+    suspend fun getEvent(id: UUID): Event
 
     @Insert
     suspend fun createEvent(event: Event)
