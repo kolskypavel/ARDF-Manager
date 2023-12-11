@@ -160,7 +160,7 @@
     <string name="race_status_did_not_finish">Did not finish</string>
     <string name="race_status_over_limit">Over time limit</string>
     <string name="race_status_unofficial">Unofficial</string>
-    <string name="race_status_not_evaluated">Not evaluated</string>
+    <string name="race_status_not_processed">Not evaluated</string>
 
     <string name="race_status_valid_short">OK</string>
     <string name="race_status_no_ranking_short">NRA</string>
@@ -168,7 +168,7 @@
     <string name="race_status_did_not_finish_short">DNF</string>
     <string name="race_status_over_limit_short">OVT</string>
     <string name="race_status_unofficial_short">UNF</string>
-    <string name="race_status_not_evaluated_short">NEV</string>
+    <string name="race_status_not_processed_short">NPR</string>
 
     <string-array name="race_status_array">
         <item>@string/race_status_valid</item>
@@ -177,7 +177,7 @@
         <item>@string/race_status_did_not_finish</item>
         <item>@string/race_status_over_limit</item>
         <item>@string/race_status_unofficial</item>
-        <item>@string/race_status_not_evaluated</item>
+        <item>@string/race_status_not_processed</item>
     </string-array>
 
     <string-array name="race_status_array_short">
@@ -187,7 +187,7 @@
         <item>@string/race_status_did_not_finish_short</item>
         <item>@string/race_status_over_limit_short</item>
         <item>@string/race_status_unofficial_short</item>
-        <item>@string/race_status_not_evaluated_short</item>
+        <item>@string/race_status_not_processed_short</item>
     </string-array>
 
 </resources>

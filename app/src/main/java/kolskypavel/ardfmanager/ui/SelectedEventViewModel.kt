@@ -82,8 +82,13 @@ class SelectedEventViewModel : ViewModel() {
     fun createCompetitor(competitor: Competitor) =
         CoroutineScope(Dispatchers.IO).launch { dataProcessor.createCompetitor(competitor) }
 
-    fun updateCompetitor(competitor: Competitor) =
-        CoroutineScope(Dispatchers.IO).launch { dataProcessor.updateCompetitor(competitor) }
+    fun updateCompetitor(competitor: Competitor, changed: Boolean) =
+        CoroutineScope(Dispatchers.IO).launch {
+            dataProcessor.updateCompetitor(
+                competitor,
+                changed
+            )
+        }
 
     fun deleteCompetitor(competitorId: UUID) =
         CoroutineScope(Dispatchers.IO).launch { dataProcessor.deleteCompetitor(competitorId) }

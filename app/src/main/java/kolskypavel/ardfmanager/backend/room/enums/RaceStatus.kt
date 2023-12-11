@@ -7,5 +7,5 @@ enum class RaceStatus(val value: Int) {
     DID_NOT_FINISH(3), //Did not finish the race
     OVER_TIME_LIMIT(4),     //Over the time limit / not enough points
     UNOFFICIAL(5),     //Did not run officially
-    NOT_EVALUATED(6)    //Not evaluated - missing category or not assigned
+    NOT_PROCESSED(6)    //Not processed - missing category or not assigned
 }

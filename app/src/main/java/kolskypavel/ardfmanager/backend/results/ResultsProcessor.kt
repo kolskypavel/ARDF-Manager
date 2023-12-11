@@ -52,7 +52,7 @@ class ResultsProcessor {
                     event.id,
                     competitor?.id,
                     cardData.checkTime, cardData.startTime, cardData.finishTime,
-                    runTime, LocalDateTime.now(), RaceStatus.NOT_EVALUATED, 0
+                    runTime, LocalDateTime.now(), RaceStatus.NOT_PROCESSED, 0
                 )
 
             //Process the punches
@@ -166,6 +166,17 @@ class ResultsProcessor {
     }
 
     /**
+     * Resets all the punches to unknown, e. g. when the category has been deleted
+     */
+    private fun clearEvaluation(punches: ArrayList<Punch>, readout: Readout) {
+        readout.points = 0
+        punches.forEach { punch ->
+            punch.punchStatus = PunchStatus.UNKNOWN
+        }
+        readout.raceStatus = RaceStatus.NOT_PROCESSED
+    }
+
+    /**
      * Process the classics race
      */
     private fun processClassics(
@@ -212,7 +223,7 @@ class ResultsProcessor {
         if (readout.points > 1) {
             readout.raceStatus = RaceStatus.VALID
         } else {
-            readout.raceStatus = RaceStatus.NOT_EVALUATED
+            readout.raceStatus = RaceStatus.NOT_PROCESSED
         }
     }
 
@@ -276,23 +287,59 @@ class ResultsProcessor {
     /**
      * Updates the already read out data in case of a change in category / competitor
      */
-    suspend fun updateReadoutsForCategory(categoryId: UUID) {
-        //Get the category and the corresponding competitors
-        val category = dataProcessor.getCategory(categoryId)
+    suspend fun updateReadoutsForCategory(categoryId: UUID, delete: Boolean) {
         val competitors = dataProcessor.getCompetitorsByCategory(categoryId)
 
         competitors.forEach { competitor ->
-            val punches = ArrayList(dataProcessor.getPunchesForCompetitor(competitor.id))
+
+            //Update competitor
+            if (delete) {
+                competitor.categoryId = null
+                dataProcessor.updateCompetitor(competitor, false)
+            }
+
             val readout = dataProcessor.getReadoutByCompetitor(competitor.id)
-            if (readout != null) {
-                evaluatePunches(punches, category, readout)
-                dataProcessor.createPunches(punches)
+            readout?.let {
+                val punches = ArrayList(dataProcessor.getPunchesByReadout(readout.id))
+
+                if (!delete) {
+                    val category = dataProcessor.getCategory(categoryId)
+                    evaluatePunches(punches, category, readout)
+                } else {
+                    clearEvaluation(punches, readout)
+                }
+
                 dataProcessor.createReadout(readout)
+                dataProcessor.createPunches(punches)
             }
         }
     }
 
-    suspend fun updateReadoutsForCompetitor(competitorId: UUID) {}
+    suspend fun updateReadoutsForCompetitor(competitorId: UUID, eventId: UUID, delete: Boolean) {
+        var readout = dataProcessor.getReadoutByCompetitor(competitorId)
+        val competitor = dataProcessor.getCompetitor(competitorId)
+
+        //Try to get readout by SI instead and update competitor ID
+        if (readout == null && !delete) {
+            readout = competitor.siNumber?.let { dataProcessor.getReadoutBySINumber(it, eventId) }
+            if (readout != null) {
+                readout.competitorID = competitorId
+            }
+        }
+        if (readout != null) {
+            val punches = ArrayList(dataProcessor.getPunchesByReadout(readout.id))
+            if (!delete && competitor.categoryId != null) {
+                val category = dataProcessor.getCategory(competitor.categoryId!!)
+                evaluatePunches(punches, category, readout)
+            } else {
+                clearEvaluation(punches, readout)
+            }
+
+            //Save into db
+            dataProcessor.createReadout(readout)
+            dataProcessor.createPunches(punches)
+        }
+    }
 
     companion object {
 

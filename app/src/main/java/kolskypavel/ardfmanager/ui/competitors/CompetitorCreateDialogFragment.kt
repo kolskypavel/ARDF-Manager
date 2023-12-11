@@ -32,8 +32,10 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private val args: CompetitorCreateDialogFragmentArgs by navArgs()
     private lateinit var selectedEventViewModel: SelectedEventViewModel
 
-
     private lateinit var competitor: Competitor
+    private var origSiNumber: Int? = null
+    private var origCategory: UUID? = null
+
     private lateinit var categories: List<Category>
     private val categoryArr = ArrayList<String>()
     private var punches = ArrayList<Punch>()
@@ -114,6 +116,9 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         } else {
             dialog?.setTitle(R.string.competitor_edit)
             competitor = args.competitor!!
+            origSiNumber = competitor.siNumber
+            origCategory = competitor.categoryId
+
             firstNameTextView.setText(competitor.firstName)
             lastNameTextView.setText(competitor.lastName)
             clubTextView.setText(competitor.club)
@@ -166,7 +171,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
         categoryPicker.setAdapter(categoriesAdapter)
 
-        //Enable the automatic category, based on the year of birth
+        //TODO: Enable the automatic category, based on the year of birth
         automaticCategoryButton.setOnClickListener() {
 
         }
@@ -188,6 +193,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     }
 
     private fun setButtons() {
+
         okButton.setOnClickListener {
             if (validateFields(competitor.siNumber)) {
                 competitor.firstName = firstNameTextView.text.toString()
@@ -206,12 +212,22 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 val catPos = categoryArr.indexOf(categoryPicker.text.toString()).or(0)
                 if (catPos != 0) {
                     competitor.categoryId = categories[catPos - 1].id
+                } else {
+                    competitor.categoryId = null
                 }
 
                 if (args.create) {
                     selectedEventViewModel.createCompetitor(competitor)
                 } else {
-                    selectedEventViewModel.updateCompetitor(competitor)
+
+                    //Detect SI number / category change
+                    if (competitor.siNumber != origSiNumber ||
+                        competitor.categoryId != origCategory
+                    ) {
+                        selectedEventViewModel.updateCompetitor(competitor, true)
+                    } else {
+                        selectedEventViewModel.updateCompetitor(competitor, false)
+                    }
 
                 }
                 //Send back the result to update the recycler view

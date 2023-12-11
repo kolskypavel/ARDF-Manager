@@ -134,13 +134,13 @@ class DataProcessor private constructor(context: Context) {
         ardfRepository.deleteControlPointsByCategory(category.id)
         ardfRepository.updateCategory(category)
         createControlPoints(category.siCodes, category)
-        updateReadoutsForCategory(category.id)
+        updateReadoutsForCategory(category.id, false)
     }
 
     suspend fun deleteCategory(id: UUID) {
         ardfRepository.deleteCategory(id)
         ardfRepository.deleteControlPointsByCategory(id)
-        updateReadoutsForCategory(id)
+        updateReadoutsForCategory(id, true)
     }
 
     //CONTROL POINTS
@@ -167,17 +167,20 @@ class DataProcessor private constructor(context: Context) {
 
     suspend fun createCompetitor(competitor: Competitor) {
         ardfRepository.createCompetitor(competitor)
+        updateReadoutsForCompetitor(competitor.id,false)
     }
 
-    suspend fun updateCompetitor(competitor: Competitor) {
+    suspend fun updateCompetitor(competitor: Competitor, changed: Boolean) {
         ardfRepository.updateCompetitor(competitor)
-        updateReadoutsForCompetitor(competitor.id)
+        if (changed) {
+            updateReadoutsForCompetitor(competitor.id, false)
+        }
     }
 
 
     suspend fun deleteCompetitor(id: UUID) {
         ardfRepository.deleteCompetitor(id)
-        updateReadoutsForCompetitor(id)
+        updateReadoutsForCompetitor(id, true)
     }
 
     //READOUTS
@@ -270,11 +273,15 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    private suspend fun updateReadoutsForCategory(categoryId: UUID) =
-        resultsProcessor?.updateReadoutsForCategory(categoryId)
+    private suspend fun updateReadoutsForCategory(categoryId: UUID, delete: Boolean) =
+        resultsProcessor?.updateReadoutsForCategory(categoryId, delete)
 
-    private suspend fun updateReadoutsForCompetitor(competitorId: UUID) =
-        resultsProcessor?.updateReadoutsForCompetitor(competitorId)
+    private suspend fun updateReadoutsForCompetitor(competitorId: UUID, delete: Boolean) =
+        resultsProcessor?.updateReadoutsForCompetitor(
+            competitorId,
+            currentState.value?.currentEvent!!.id,
+            delete
+        )
 
 
     suspend fun deleteReadout(id: UUID) {
@@ -293,8 +300,8 @@ class DataProcessor private constructor(context: Context) {
         appContext.get()?.let { resultsProcessor?.processCardData(cardData, event, it) }
 
 
-    suspend fun getPunchesForCompetitor(competitorId: UUID) =
-        ardfRepository.getPunchesByCompetitor(competitorId)
+    suspend fun getPunchesByReadout(readoutId: UUID) =
+        ardfRepository.getPunchesByReadout(readoutId)
 
     private suspend fun getPunchesForSICard(siNumber: Int, eventId: UUID) =
         ardfRepository.getPunchesBySINumber(siNumber, eventId)

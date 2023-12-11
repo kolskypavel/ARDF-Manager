@@ -12,8 +12,8 @@ interface PunchDao {
     @Query("SELECT * FROM punch WHERE card_number=(:cardNumber) AND event_id=(:eventId)")
     suspend fun getPunchesForSINumber(cardNumber: Int, eventId: UUID): List<Punch>
 
-    @Query("SELECT * FROM punch WHERE competitor_id = (:competitorId)")
-    suspend fun getPunchesForCompetitor(competitorId: UUID): List<Punch>
+    @Query("SELECT * FROM punch WHERE readout_id = (:readoutId)")
+    suspend fun getPunchesByReadout(readoutId: UUID): List<Punch>
 
     @Query("SELECT * FROM punch WHERE readout_id = (:readoutId) ORDER BY `order` ASC")
     suspend fun getPunchesForReadout(readoutId: UUID): List<Punch>
