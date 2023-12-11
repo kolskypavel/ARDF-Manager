@@ -8,11 +8,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
+import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
+import kolskypavel.ardfmanager.backend.wrappers.PunchWrapper
 
 class PunchRecyclerViewAdapter(
-    private var values: List<Punch>,
+    private var values: List<PunchWrapper>,
     private val context: Context
 ) :
     RecyclerView.Adapter<PunchRecyclerViewAdapter.PunchViewHolder>() {
@@ -30,22 +31,36 @@ class PunchRecyclerViewAdapter(
     override fun onBindViewHolder(holder: PunchViewHolder, position: Int) {
         val item = values[position]
 
-        holder.punchOrder.text = position.toString()
-        holder.punchSiCode.text = item.siCode.toString()
         holder.punchRealTime.text = item.siTime.getTime().toString()
         holder.punchSplit.text = item.split?.let { dataProcessor.durationToString(it) }
 
-        holder.punchStatus.text = when (item.punchStatus) {
-            PunchStatus.VALID -> context.getString(R.string.punch_status_valid)
-            PunchStatus.INVALID -> context.getString(R.string.punch_status_invalid)
-            PunchStatus.DUPLICATE -> context.getString(R.string.punch_status_duplicate)
-            PunchStatus.UNKNOWN -> context.getString(R.string.punch_status_unknown)
+        //Set the fields, based on the type of the punch
+        when (item.siRecordType) {
+            SIRecordType.START -> {
+                holder.punchSiCode.text = context.getText(R.string.punch_type_start)
+            }
+
+            SIRecordType.FINISH -> {
+                holder.punchSiCode.text = context.getText(R.string.punch_type_finish)
+            }
+
+            else -> {
+
+                holder.punchOrder.text = position.toString()
+                holder.punchSiCode.text = item.siCode.toString()
+                holder.punchStatus.text = when (item.punchStatus) {
+                    PunchStatus.VALID -> context.getString(R.string.punch_status_valid)
+                    PunchStatus.INVALID -> context.getString(R.string.punch_status_invalid)
+                    PunchStatus.DUPLICATE -> context.getString(R.string.punch_status_duplicate)
+                    PunchStatus.UNKNOWN -> context.getString(R.string.punch_status_unknown)
+                }
+            }
         }
     }
 
     inner class PunchViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var punchOrder: TextView = view.findViewById(R.id.punch_item_order)
-        var punchSiCode: TextView = view.findViewById(R.id.punch_si_code)
+        var punchSiCode: TextView = view.findViewById(R.id.punch_item_si_code)
         var punchRealTime: TextView = view.findViewById(R.id.punch_item_real_time)
         var punchSplit: TextView = view.findViewById(R.id.punch_item_split)
         var punchStatus: TextView = view.findViewById(R.id.punch_item_status)

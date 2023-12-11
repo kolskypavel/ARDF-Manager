@@ -113,8 +113,11 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
         competitorDatabase.competitorDao().getCompetitorBySINumber(siNumber, eventId)
 
-    fun getCompetitorsForEvent(eventId: UUID): Flow<List<Competitor>> =
-        competitorDatabase.competitorDao().getCompetitorsForEvent(eventId)
+    fun getCompetitorsByEvent(eventId: UUID): Flow<List<Competitor>> =
+        competitorDatabase.competitorDao().getCompetitorsByEvent(eventId)
+
+    suspend fun getCompetitorsByCategory(categoryId: UUID) =
+        competitorDatabase.competitorDao().getCompetitorsByCategory(categoryId)
 
     suspend fun createCompetitor(competitor: Competitor) =
         competitorDatabase.competitorDao().createCompetitor(competitor)
@@ -131,11 +134,14 @@ class ARDFRepository private constructor(context: Context) {
         competitorDatabase.competitorDao().checkIfSINumberExists(siNumber, eventId)
 
     //READOUTS
-    suspend fun getReadoutsForEvent(eventId: UUID) =
-        readoutDatabase.readoutDao().getReadoutsForEvent(eventId)
+    suspend fun getReadoutsByEvent(eventId: UUID) =
+        readoutDatabase.readoutDao().getReadoutsByEvent(eventId)
 
     suspend fun getReadoutBySINumber(siNumber: Int, eventId: UUID) =
         readoutDatabase.readoutDao().getReadoutsForSINumber(siNumber, eventId)
+
+    suspend fun getReadoutByCompetitor(competitorId: UUID): Readout? =
+        readoutDatabase.readoutDao().getReadoutByCompetitor(competitorId)
 
     suspend fun getReadout(id: UUID) = readoutDatabase.readoutDao().getReadout(id)
 
@@ -164,6 +170,7 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun deletePunchesByEvent(eventId: UUID) =
         punchDatabase.punchDao().deletePunchesByEvent(eventId)
+
 
     //Results
 

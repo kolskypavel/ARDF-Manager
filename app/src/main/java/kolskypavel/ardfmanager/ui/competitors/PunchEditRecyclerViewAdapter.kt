@@ -9,11 +9,11 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
-import kolskypavel.ardfmanager.backend.room.enums.RecordType
-import kolskypavel.ardfmanager.backend.wrappers.PunchEdit
+import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
+import kolskypavel.ardfmanager.backend.wrappers.PunchWrapper
 
 class PunchEditRecyclerViewAdapter(
-    private var values: ArrayList<PunchEdit>,
+    private var values: ArrayList<PunchWrapper>,
     private val context: Context
 ) :
     RecyclerView.Adapter<PunchEditRecyclerViewAdapter.PunchViewHolder>() {
@@ -43,7 +43,7 @@ class PunchEditRecyclerViewAdapter(
             deletePunchWrapper(position)
         }
         //Set the start punch
-        if (item.recordType == RecordType.START) {
+        if (item.siRecordType == SIRecordType.START) {
             holder.code.setText("S")
             holder.code.isEnabled = false
             holder.order.visibility = View.GONE
@@ -51,7 +51,7 @@ class PunchEditRecyclerViewAdapter(
         }
 
         //Set the finish punch
-        else if (item.recordType == RecordType.FINISH) {
+        else if (item.siRecordType == SIRecordType.FINISH) {
             holder.code.setText("F")
             holder.code.isEnabled = false
             holder.order.visibility = View.GONE

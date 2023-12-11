@@ -81,7 +81,7 @@
             android:layout_height="wrap_content"
             android:inputType="none"
             style="@style/dialog_text"
-            app:simpleItems="@array/event_types" />
+            app:simpleItems="@array/event_types_array" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
@@ -103,7 +103,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="none"
                 style="@style/dialog_text"
-                app:simpleItems="@array/event_levels" />
+                app:simpleItems="@array/event_levels_array" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -119,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="none"
                 style="@style/dialog_text"
-                app:simpleItems="@array/event_bands" />
+                app:simpleItems="@array/event_bands_array" />
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 

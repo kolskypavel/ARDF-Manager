@@ -160,6 +160,8 @@ class CategoryCreateDialogFragment : DialogFragment() {
             if (category.climb != 0F) {
                 climbTextView.setText(category.climb.toString())
             }
+
+            siCodesTextView.setText(category.siCodes)
         }
 
         //Set the event type checkbox functionality

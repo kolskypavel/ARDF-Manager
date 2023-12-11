@@ -11,13 +11,16 @@ import java.util.UUID
 @Dao
 interface CompetitorDao {
     @Query("SELECT * FROM competitor WHERE event_id=(:eventId)")
-    fun getCompetitorsForEvent(eventId: UUID): Flow<List<Competitor>>
+    fun getCompetitorsByEvent(eventId: UUID): Flow<List<Competitor>>
 
     @Query("SELECT * FROM competitor WHERE id=(:id) LIMIT 1")
     suspend fun getCompetitor(id: UUID): Competitor
 
     @Query("SELECT * FROM competitor WHERE si_number=(:siNumber) AND event_id = (:eventId) LIMIT 1")
     suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor?
+
+    @Query("SELECT * FROM competitor WHERE category_id=(:categoryId)")
+    fun getCompetitorsByCategory(categoryId: UUID): List<Competitor>
 
     @Query("SELECT COUNT(*) FROM competitor WHERE si_number=(:siNumber) AND event_id =(:eventId)  LIMIT 1")
     suspend fun checkIfSINumberExists(siNumber: Int, eventId: UUID): Int
@@ -33,4 +36,6 @@ interface CompetitorDao {
 
     @Query("DELETE FROM competitor WHERE event_id=(:eventId)")
     suspend fun deleteCompetitorsByEvent(eventId: UUID)
+
+
 }

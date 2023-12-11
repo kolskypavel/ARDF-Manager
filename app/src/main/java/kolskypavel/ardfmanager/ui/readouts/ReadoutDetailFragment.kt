@@ -11,7 +11,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.wrappers.PunchWrapper
 
 class ReadoutDetailFragment : Fragment() {
 
@@ -24,9 +24,8 @@ class ReadoutDetailFragment : Fragment() {
     private lateinit var siNumberView: TextView
     private lateinit var clubView: TextView
     private lateinit var indexView: TextView
-    private lateinit var startTimeView: TextView
-    private lateinit var finishTimeView: TextView
     private lateinit var runTimeView: TextView
+    private lateinit var raceStatusView: TextView
     private lateinit var categoryView: TextView
     private lateinit var pointsView: TextView
     private lateinit var placeView: TextView
@@ -48,9 +47,8 @@ class ReadoutDetailFragment : Fragment() {
         siNumberView = view.findViewById(R.id.readout_detail_si_number)
         clubView = view.findViewById(R.id.readout_detail_club)
         indexView = view.findViewById(R.id.readout_detail_index_callsign)
-        startTimeView = view.findViewById(R.id.readout_detail_start_time)
-        finishTimeView = view.findViewById(R.id.readout_detail_finish_time)
         runTimeView = view.findViewById(R.id.readout_detail_run_time)
+        raceStatusView = view.findViewById(R.id.readout_detail_status)
         categoryView = view.findViewById(R.id.readout_detail_category)
         pointsView = view.findViewById(R.id.readout_detail_points)
         placeView = view.findViewById(R.id.readout_detail_place)
@@ -81,6 +79,8 @@ class ReadoutDetailFragment : Fragment() {
             clubView.text = getText(R.string.unknown)
             indexView.text = getText(R.string.unknown)
         }
+        raceStatusView.text =
+            dataProcessor.raceStatusToString(readoutDetail.readout.raceStatus)
 
         if (readoutDetail.category != null) {
             categoryView.text = readoutDetail.category!!.name
@@ -89,8 +89,6 @@ class ReadoutDetailFragment : Fragment() {
         }
 
         siNumberView.text = readoutDetail.readout.siNumber.toString()
-        startTimeView.text = readoutDetail.readout.startTime?.getTime().toString()
-        finishTimeView.text = readoutDetail.readout.finishTime?.getTime().toString()
         runTimeView.text =
             readoutDetail.readout.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
 
@@ -126,7 +124,7 @@ class ReadoutDetailFragment : Fragment() {
         }
     }
 
-    private fun setRecyclerViewAdapter(punches: ArrayList<Punch>) {
+    private fun setRecyclerViewAdapter(punches: ArrayList<PunchWrapper>) {
         punchRecyclerView.adapter = PunchRecyclerViewAdapter(punches.toList(), requireContext())
     }
 }

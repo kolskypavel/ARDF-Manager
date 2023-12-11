@@ -137,6 +137,7 @@ class ResultsProcessor {
         } catch (e: Exception) {
             Log.d("ResultsProcess", e.message.toString())
         }
+        readout.points = 0
         when (category.eventType) {
             EventType.CLASSICS, EventType.FOXORING -> processClassics(
                 punches,
@@ -209,7 +210,7 @@ class ResultsProcessor {
 
         //Set the status accordingly
         if (readout.points > 1) {
-            readout.raceStatus = RaceStatus.OK
+            readout.raceStatus = RaceStatus.VALID
         } else {
             readout.raceStatus = RaceStatus.NOT_EVALUATED
         }
@@ -236,8 +237,8 @@ class ResultsProcessor {
     ) {
         var cpIndex = 0
 
+        //TODO: Inform about missing punches
         for (punch in punches) {
-
             //Check bounds
             if (cpIndex > controlPoints.size) {
                 break
@@ -254,8 +255,8 @@ class ResultsProcessor {
             }
         }
 
-        if (readout.points == controlPoints.size - 1) {
-            readout.raceStatus = RaceStatus.OK
+        if (readout.points == controlPoints.size) {
+            readout.raceStatus = RaceStatus.VALID
         } else {
             readout.raceStatus = RaceStatus.DISQUALIFIED
         }
@@ -271,6 +272,27 @@ class ResultsProcessor {
     ) {
         //TODO: Not yet implemented
     }
+
+    /**
+     * Updates the already read out data in case of a change in category / competitor
+     */
+    suspend fun updateReadoutsForCategory(categoryId: UUID) {
+        //Get the category and the corresponding competitors
+        val category = dataProcessor.getCategory(categoryId)
+        val competitors = dataProcessor.getCompetitorsByCategory(categoryId)
+
+        competitors.forEach { competitor ->
+            val punches = ArrayList(dataProcessor.getPunchesForCompetitor(competitor.id))
+            val readout = dataProcessor.getReadoutByCompetitor(competitor.id)
+            if (readout != null) {
+                evaluatePunches(punches, category, readout)
+                dataProcessor.createPunches(punches)
+                dataProcessor.createReadout(readout)
+            }
+        }
+    }
+
+    suspend fun updateReadoutsForCompetitor(competitorId: UUID) {}
 
     companion object {
 

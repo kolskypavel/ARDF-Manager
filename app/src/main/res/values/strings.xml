@@ -41,7 +41,7 @@
     <string name="band_2m" translatable="false">2m</string>
     <string name="band_combined">Combined</string>
 
-    <string-array name="event_types">
+    <string-array name="event_types_array">
         <item>@string/event_type_0</item>
         <item>@string/event_type_1</item>
         <item>@string/event_type_2</item>
@@ -49,7 +49,7 @@
         <item>@string/event_type_4</item>
     </string-array>
 
-    <string-array name="event_levels">
+    <string-array name="event_levels_array">
         <item>@string/event_level_0</item>
         <item>@string/event_level_1</item>
         <item>@string/event_level_2</item>
@@ -57,7 +57,7 @@
         <item>@string/event_level_4</item>
     </string-array>
 
-    <string-array name="event_bands">
+    <string-array name="event_bands_array">
         <item>@string/band_80m</item>
         <item>@string/band_2m</item>
         <item>@string/band_combined</item>
@@ -150,5 +150,44 @@
     <string name="punch_status_invalid" translatable="false">✖</string>
     <string name="punch_status_duplicate" translatable="false">+</string>
     <string name="punch_status_unknown" translatable="false">\?</string>
+
+    <string name="punch_type_start">S</string>
+    <string name="punch_type_finish">F</string>
+
+    <string name="race_status_valid">Valid</string>
+    <string name="race_status_no_ranking">No ranking</string>
+    <string name="race_status_disqualified">Disqualified</string>
+    <string name="race_status_did_not_finish">Did not finish</string>
+    <string name="race_status_over_limit">Over time limit</string>
+    <string name="race_status_unofficial">Unofficial</string>
+    <string name="race_status_not_evaluated">Not evaluated</string>
+
+    <string name="race_status_valid_short">OK</string>
+    <string name="race_status_no_ranking_short">NRA</string>
+    <string name="race_status_disqualified_short">DQ</string>
+    <string name="race_status_did_not_finish_short">DNF</string>
+    <string name="race_status_over_limit_short">OVT</string>
+    <string name="race_status_unofficial_short">UNF</string>
+    <string name="race_status_not_evaluated_short">NEV</string>
+
+    <string-array name="race_status_array">
+        <item>@string/race_status_valid</item>
+        <item>@string/race_status_no_ranking</item>
+        <item>@string/race_status_disqualified</item>
+        <item>@string/race_status_did_not_finish</item>
+        <item>@string/race_status_over_limit</item>
+        <item>@string/race_status_unofficial</item>
+        <item>@string/race_status_not_evaluated</item>
+    </string-array>
+
+    <string-array name="race_status_array_short">
+        <item>@string/race_status_valid_short</item>
+        <item>@string/race_status_no_ranking_short</item>
+        <item>@string/race_status_disqualified_short</item>
+        <item>@string/race_status_did_not_finish_short</item>
+        <item>@string/race_status_over_limit_short</item>
+        <item>@string/race_status_unofficial_short</item>
+        <item>@string/race_status_not_evaluated_short</item>
+    </string-array>
 
 </resources>

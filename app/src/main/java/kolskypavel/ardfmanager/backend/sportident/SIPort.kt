@@ -5,7 +5,7 @@ import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
-import kolskypavel.ardfmanager.backend.room.enums.RecordType
+import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.GET_SI_CARD8_9_SIAC
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.GET_SYSTEM_INFO
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.READ_WRITE_TIMEOUT
@@ -475,11 +475,11 @@ class SIPort(
         return ret
     }
 
-    private fun parseOldPunch(data: ByteArray, recordType: RecordType): PunchData {
+    private fun parseOldPunch(data: ByteArray, siRecordType: SIRecordType): PunchData {
         val punchData = PunchData(0, SITime())
 
         //Read the SI code of the control
-        if (recordType == RecordType.CONTROL) {
+        if (siRecordType == SIRecordType.CONTROL) {
 
         }
 
@@ -780,7 +780,7 @@ class SIPort(
         punchData.siTime.setDayOfWeek((data[0].toInt() shr 1 and 0x07))
 
         //TODO: Set week
-       // punchData.siTime.setWeek(byteToUnsignedInt(data[0]) shr 4)
+        // punchData.siTime.setWeek(byteToUnsignedInt(data[0]) shr 4)
 
         //Read and parse the seconds
         val seconds =

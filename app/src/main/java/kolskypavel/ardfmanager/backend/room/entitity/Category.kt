@@ -10,7 +10,7 @@ import java.util.UUID
 
 @Entity(
     tableName = "category", indices = [Index(
-        value = ["name"],
+        value = ["name","event_id"],
         unique = true
     )]
 )

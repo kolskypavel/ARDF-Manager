@@ -7,7 +7,7 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
-import kolskypavel.ardfmanager.backend.wrappers.PunchEdit
+import kolskypavel.ardfmanager.backend.wrappers.PunchWrapper
 import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -102,8 +102,8 @@ class SelectedEventViewModel : ViewModel() {
     fun getPunchRecordsForCompetitor(
         create: Boolean,
         competitor: Competitor
-    ): ArrayList<PunchEdit> {
-        val punchRecords = ArrayList<PunchEdit>()
+    ): ArrayList<PunchWrapper> {
+        val punchRecords = ArrayList<PunchWrapper>()
 //
 //        //New or existing competitor
 //        if (create) {

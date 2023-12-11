@@ -1,6 +1,6 @@
 package kolskypavel.ardfmanager.backend.room.enums
 
-enum class RecordType {
+enum class SIRecordType {
     CHECK,
     START,
     FINISH,
