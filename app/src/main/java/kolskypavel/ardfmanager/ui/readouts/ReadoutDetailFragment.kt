@@ -11,7 +11,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.wrappers.PunchWrapper
+import kolskypavel.ardfmanager.backend.room.entitity.Punch
 
 class ReadoutDetailFragment : Fragment() {
 
@@ -60,7 +60,7 @@ class ReadoutDetailFragment : Fragment() {
 
         readoutDetailToolbar.setNavigationIcon(R.drawable.ic_back)
         readoutDetailToolbar.setTitle(R.string.readout_detail_title)
-        readoutDetailToolbar.subtitle = readoutDetail.readout.siNumber.toString()
+        readoutDetailToolbar.subtitle = readoutDetail.result!!.siNumber.toString()
         readoutDetailToolbar.inflateMenu(R.menu.fragment_menu_readout_detail)
 
         readoutDetailToolbar.setNavigationOnClickListener {
@@ -72,7 +72,7 @@ class ReadoutDetailFragment : Fragment() {
             indexView.text = readoutDetail.competitor?.index
             competitorNameView.text =
                 "${readoutDetail.competitor?.firstName} ${readoutDetail.competitor?.lastName}"
-            pointsView.text = readoutDetail.readout.points.toString()
+            pointsView.text = readoutDetail.result!!.points.toString()
         } else {
             competitorNameView.text = getText(R.string.unknown_competitor)
             pointsView.text = getText(R.string.unknown)
@@ -80,7 +80,7 @@ class ReadoutDetailFragment : Fragment() {
             indexView.text = getText(R.string.unknown)
         }
         raceStatusView.text =
-            dataProcessor.raceStatusToString(readoutDetail.readout.raceStatus)
+            dataProcessor.raceStatusToString(readoutDetail.result!!.raceStatus)
 
         if (readoutDetail.category != null) {
             categoryView.text = readoutDetail.category!!.name
@@ -88,9 +88,9 @@ class ReadoutDetailFragment : Fragment() {
             categoryView.text = getText(R.string.unknown)
         }
 
-        siNumberView.text = readoutDetail.readout.siNumber.toString()
+        siNumberView.text = readoutDetail.result!!.siNumber.toString()
         runTimeView.text =
-            readoutDetail.readout.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
+            readoutDetail.result!!.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
 
         placeView.text = getText(R.string.unknown) //TODO: Place
 
@@ -124,7 +124,7 @@ class ReadoutDetailFragment : Fragment() {
         }
     }
 
-    private fun setRecyclerViewAdapter(punches: ArrayList<PunchWrapper>) {
-        punchRecyclerView.adapter = PunchRecyclerViewAdapter(punches.toList(), requireContext())
+    private fun setRecyclerViewAdapter(punches: List<Punch>) {
+        punchRecyclerView.adapter = PunchRecyclerViewAdapter(punches, requireContext())
     }
 }

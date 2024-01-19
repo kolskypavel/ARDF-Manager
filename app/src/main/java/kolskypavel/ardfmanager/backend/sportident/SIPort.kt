@@ -793,6 +793,7 @@ class SIPort(
                 "SI",
                 "Invalid punch time - Code: ${punchData.siCode} Seconds: $seconds"
             )
+            return null
         }
 
         //Check the HALF_DAY offset

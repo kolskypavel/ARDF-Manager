@@ -20,7 +20,6 @@ import com.google.android.material.textfield.TextInputLayout
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import kotlinx.coroutines.runBlocking
@@ -35,10 +34,10 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private lateinit var competitor: Competitor
     private var origSiNumber: Int? = null
     private var origCategory: UUID? = null
+    private var modifiedPunches = false
 
     private lateinit var categories: List<Category>
     private val categoryArr = ArrayList<String>()
-    private var punches = ArrayList<Punch>()
 
     private lateinit var firstNameTextView: TextInputEditText
     private lateinit var lastNameTextView: TextInputEditText
@@ -172,7 +171,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         categoryPicker.setAdapter(categoriesAdapter)
 
         //TODO: Enable the automatic category, based on the year of birth
-        automaticCategoryButton.setOnClickListener() {
+        automaticCategoryButton.setOnClickListener {
 
         }
 
@@ -187,8 +186,13 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         punchEditRecyclerView.visibility = View.GONE
         //Toggle the visibility of the punch switch
         editPunchesSwitch.setOnCheckedChangeListener { _, checked ->
-            if (checked) punchEditRecyclerView.visibility =
-                View.VISIBLE else punchEditRecyclerView.visibility = View.GONE
+            if (checked) {
+                punchEditRecyclerView.visibility = View.VISIBLE
+                modifiedPunches = true
+            } else {
+                punchEditRecyclerView.visibility = View.GONE
+                modifiedPunches = false
+            }
         }
     }
 
@@ -210,14 +214,18 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
                 //0 is reserved for no category
                 val catPos = categoryArr.indexOf(categoryPicker.text.toString()).or(0)
-                if (catPos != 0) {
+                if (catPos > 0 && catPos < categories.size) {
                     competitor.categoryId = categories[catPos - 1].id
                 } else {
                     competitor.categoryId = null
                 }
 
                 if (args.create) {
-                    selectedEventViewModel.createCompetitor(competitor)
+                    selectedEventViewModel.createCompetitor(
+                        competitor,
+                        modifiedPunches,
+                        (punchEditRecyclerView.adapter as PunchEditRecyclerViewAdapter).values
+                    )
                 } else {
 
                     //Detect SI number / category change
@@ -296,6 +304,11 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 valid = false
                 siNumberTextView.error = getString(R.string.invalid)
             }
+        }
+
+        //Check if the modified punches are valid
+        if (modifiedPunches && !(punchEditRecyclerView.adapter as PunchEditRecyclerViewAdapter).isValid()) {
+            valid = false
         }
 
         return valid

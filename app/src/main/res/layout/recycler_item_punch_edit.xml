@@ -42,6 +42,30 @@
             android:textColor="@color/black"
             android:textColorHint="@color/grey" />
 
+        <EditText
+            android:id="@+id/punch_edit_item_weekday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:digits="0123456"
+            android:hint="@string/competitor_hint_day"
+            android:inputType="numberSigned"
+            android:maxLength="1"
+            android:paddingEnd="5dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/grey" />
+
+        <EditText
+            android:id="@+id/punch_edit_item_week"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:digits="0123"
+            android:hint="@string/competitor_hint_week"
+            android:inputType="numberSigned"
+            android:maxLength="1"
+            android:paddingEnd="5dp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/grey" />
+
         <ImageButton
             android:id="@+id/punch_edit_item_add_btn"
             android:layout_width="wrap_content"

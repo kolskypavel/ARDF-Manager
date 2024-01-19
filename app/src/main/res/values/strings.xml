@@ -117,6 +117,8 @@
 
     <string name="competitor_hint_code">Code</string>
     <string name="competitor_hint_time_format" translatable="false">HH:MM:SS</string>
+    <string name="competitor_hint_day" translatable="false">D</string>
+    <string name="competitor_hint_week" translatable="false">W</string>
 
     <!--SI station display-->
     <string name="si_ready">SI service started</string>
@@ -161,6 +163,7 @@
     <string name="race_status_over_limit">Over time limit</string>
     <string name="race_status_unofficial">Unofficial</string>
     <string name="race_status_not_processed">Not evaluated</string>
+    <string name="race_status_error">Error</string>
 
     <string name="race_status_valid_short">OK</string>
     <string name="race_status_no_ranking_short">NRA</string>
@@ -169,6 +172,7 @@
     <string name="race_status_over_limit_short">OVT</string>
     <string name="race_status_unofficial_short">UNF</string>
     <string name="race_status_not_processed_short">NPR</string>
+    <string name="race_status_error_short">ERR</string>
 
     <string-array name="race_status_array">
         <item>@string/race_status_valid</item>
@@ -178,6 +182,7 @@
         <item>@string/race_status_over_limit</item>
         <item>@string/race_status_unofficial</item>
         <item>@string/race_status_not_processed</item>
+        <item>@string/race_status_error</item>
     </string-array>
 
     <string-array name="race_status_array_short">
@@ -188,6 +193,7 @@
         <item>@string/race_status_over_limit_short</item>
         <item>@string/race_status_unofficial_short</item>
         <item>@string/race_status_not_processed_short</item>
+        <item>@string/race_status_error_short</item>
     </string-array>
 
 </resources>

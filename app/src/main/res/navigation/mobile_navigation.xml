@@ -46,6 +46,9 @@
             <action
                 android:id="@+id/modifyCompetitor"
                 app:destination="@id/competitorCreateDialogFragment" />
+            <action
+                android:id="@+id/editEvent"
+                app:destination="@id/eventCreateDialogFragment" />
         </fragment>
 
         <fragment
@@ -53,6 +56,9 @@
             android:name="kolskypavel.ardfmanager.ui.categories.CategoryFragment"
             android:label="@string/title_categories"
             tools:layout="@layout/fragment_categories">
+            <action
+                android:id="@+id/editEvent"
+                app:destination="@id/eventCreateDialogFragment" />
             <action
                 android:id="@+id/modifyCategory"
                 app:destination="@id/categoryCreateDialogFragment" />
@@ -62,16 +68,23 @@
             android:id="@+id/navigation_readouts"
             android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutFragment"
             android:label="@string/title_readouts"
-            tools:layout="@layout/fragment_readouts" >
+            tools:layout="@layout/fragment_readouts">
             <action
                 android:id="@+id/openReadoutDetail"
                 app:destination="@id/readoutDetailFragment" />
+            <action
+                android:id="@+id/editEvent"
+                app:destination="@id/eventCreateDialogFragment" />
         </fragment>
         <fragment
             android:id="@+id/navigation_results"
             android:name="kolskypavel.ardfmanager.ui.readouts.ResultsFragment"
             android:label="fragment_results"
-            tools:layout="@layout/fragment_results" />
+            tools:layout="@layout/fragment_results">
+            <action
+                android:id="@+id/editEvent"
+                app:destination="@id/eventCreateDialogFragment" />
+        </fragment>
 
         <dialog
             android:id="@+id/categoryCreateDialogFragment"
@@ -89,9 +102,9 @@
                 app:nullable="true" />
             <argument
                 android:name="siCodes"
+                android:defaultValue="null"
                 app:argType="string"
-                app:nullable="true"
-                android:defaultValue="null" />
+                app:nullable="true" />
 
         </dialog>
         <action
@@ -100,10 +113,10 @@
         <fragment
             android:id="@+id/readoutDetailFragment"
             android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutDetailFragment"
-            android:label="ReadoutDetailFragment" >
+            android:label="ReadoutDetailFragment">
             <argument
                 android:name="readoutDetail"
-                app:argType="kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper" />
+                app:argType="kolskypavel.ardfmanager.backend.wrappers.ResultDataWrapper" />
         </fragment>
     </navigation>
 

@@ -9,15 +9,17 @@ import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kolskypavel.ardfmanager.backend.room.entitity.Readout
+import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kolskypavel.ardfmanager.backend.room.enums.EventType
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
+import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SITime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.Duration
 import java.time.LocalDateTime
 import java.util.TreeSet
 import java.util.UUID
@@ -26,59 +28,147 @@ import java.util.UUID
 class ResultsProcessor {
     val dataProcessor = DataProcessor.get()
 
+    private suspend fun saveOrUpdateResult(result: Result, punches: ArrayList<Punch>) {
+        dataProcessor.createResult(result)
+        dataProcessor.createPunches(punches)
+    }
+
     /**
-     * Processes the given readout - saves the data into the db
+     * Processes the given result - saves the data into the db
      */
     suspend fun processCardData(cardData: CardData, event: Event, context: Context): Boolean {
 
-        //Check if readout already exists
-        if (!dataProcessor.checkIfReadoutExistsBySI(cardData.siNumber, event.id)) {
+        //Check if result already exists
+        if (!dataProcessor.checkIfResultExistsBySI(cardData.siNumber, event.id)) {
             val competitor = dataProcessor.getCompetitorBySINumber(cardData.siNumber, event.id)
             val category = competitor?.categoryId?.let { dataProcessor.getCategory(it) }
 
-            val runTime =
-                if (cardData.startTime != null && cardData.finishTime != null) {
-                    SITime.split(cardData.startTime!!, cardData.finishTime!!)
-                } else {
-                    null
-                }
-
-            //Save the readout
-            val readout =
-                Readout(
+            //Create the result
+            val result =
+                Result(
                     UUID.randomUUID(),
                     cardData.siNumber,
                     cardData.cardType,
                     event.id,
                     competitor?.id,
                     cardData.checkTime, cardData.startTime, cardData.finishTime,
-                    runTime, LocalDateTime.now(), RaceStatus.NOT_PROCESSED, 0
+                    Duration.ZERO, LocalDateTime.now(), RaceStatus.NOT_PROCESSED, 0
                 )
+
+            //TODO: Based on options, set start time to the predefined value
+            if (competitor != null) {
+                if (result.startTime == null && competitor.defaultStartTime != null) {
+                    val startTime =
+                        SITime(competitor.defaultStartTime!!, event.date.dayOfWeek.value - 1)
+
+                    result.startTime = startTime
+                }
+            }
 
             //Process the punches
             val punches = processPunches(
                 cardData,
                 event,
-                readout,
+                result,
                 competitor?.id,
                 category
             )
 
-            //Save to db
-            dataProcessor.createReadout(readout)
-            dataProcessor.createPunches(punches)
+            //Adjust run time
+            if (result.startTime != null && result.finishTime != null) {
+                result.runTime = SITime.split(result.startTime!!, result.finishTime!!)
+            } else {
+                result.raceStatus = RaceStatus.ERROR
+                Log.d("Results processor", "Missing finish or start time")
+            }
 
+            //Save to db
+            saveOrUpdateResult(result, punches)
             return true
-        } else {
+        }
+        //Duplicate readout
+        else {
 
             //Run on the main UI thread
             CoroutineScope(Dispatchers.Main).launch {
-                //TODO: Notify with snackMessage about existing readout
                 Toast.makeText(context, context.getText(R.string.readout_exists), Toast.LENGTH_LONG)
                     .show()
-
             }
             return false
+        }
+    }
+
+    suspend fun processManualPunches(
+        competitorId: UUID,
+        categoryId: UUID?,
+        punches: ArrayList<Punch>
+    ) {
+        val original = dataProcessor.getResultByCompetitor(competitorId)
+
+        //Result exists
+        if (original != null) {
+
+        }
+
+        //New result, just the data is updated
+        else {
+            if (punches.isNotEmpty()) {
+                val result =
+                    Result(
+                        UUID.randomUUID(),
+                        null,
+                        0,
+                        dataProcessor.getCurrentEvent().id,
+                        competitorId,
+                        null,
+                        null,
+                        null,
+                        Duration.ZERO,
+                        LocalDateTime.now(),
+                        RaceStatus.NOT_PROCESSED, 0
+                    )
+
+                var startPunch: Punch? = null
+                var finishPunch: Punch? = null
+
+                //Modify the start and finish times
+                if (punches[0].punchType == SIRecordType.START) {
+                    result.startTime = punches[0].siTime
+                    startPunch = punches[0]
+                    punches.removeFirst()
+                }
+                if (punches.last().punchType == SIRecordType.FINISH) {
+                    result.finishTime = punches.last().siTime
+                    finishPunch = punches.last()
+                    punches.removeLast()
+                }
+
+                //Process punches without start and finish
+                if (categoryId != null) {
+                    val category = dataProcessor.getCategory(categoryId)
+                    evaluatePunches(punches, category, result)
+                }
+
+                //Add back start and finish
+                punches.add(0, startPunch!!)
+                punches.add(finishPunch!!)
+                result.runTime = SITime.split(startPunch.siTime!!, finishPunch.siTime!!)
+
+                var index = 0
+                //Calculate splits
+                punches.forEach { punch ->
+                    if (index != 0) {
+                        punch.split =
+                            SITime.split(punches[index - 1].siTime!!, punch.siTime!!)
+                    }
+                    punch.order = index
+                    punch.resultId = result.id
+                    index++
+                }
+
+                saveOrUpdateResult(result, punches)
+
+            }
         }
     }
 
@@ -88,7 +178,7 @@ class ResultsProcessor {
     private suspend fun processPunches(
         cardData: CardData,
         event: Event,
-        readout: Readout, competitorId: UUID?, category: Category?,
+        result: Result, competitorId: UUID?, category: Category?,
     ): ArrayList<Punch> {
         val punches = ArrayList<Punch>()
 
@@ -97,38 +187,75 @@ class ResultsProcessor {
             val punch = Punch(
                 UUID.randomUUID(),
                 event.id,
-                readout.id,
+                result.id,
                 competitorId,
                 cardData.siNumber,
-                punchData.siCode, orderCounter, punchData.siTime, PunchStatus.UNKNOWN,
+                SIRecordType.CONTROL,
+                punchData.siCode,
+                orderCounter,
+                punchData.siTime,
+                punchData.siTime,
+                PunchStatus.UNKNOWN,
             )
             punches.add(punch)
             orderCounter++
         }
 
-        //Calculate splits
-        punches.forEach { punch ->
-
-            //First punch
-            if (punch.order == 1 && readout.startTime != null) {
-                punch.split = SITime.split(readout.startTime!!, punch.siTime)
-            }
-
-            //Further punches
-            else if (punch.order != 1) {
-                punch.split = SITime.split(punches[punch.order - 2].siTime, punch.siTime)
-            }
+        //Evaluate without start and finish
+        if (category != null) {
+            evaluatePunches(punches, category, result)
         }
 
-        if (category != null) {
-            evaluatePunches(punches, category, readout)
+        //Add start punch
+        if (result.startTime != null) {
+            punches.add(
+                Punch(
+                    UUID.randomUUID(),
+                    event.id,
+                    result.id,
+                    competitorId,
+                    cardData.siNumber,
+                    SIRecordType.START,
+                    0,
+                    0,
+                    result.startTime!!,
+                    result.startTime!!,
+                    PunchStatus.VALID,
+                )
+            )
+        }
+
+        //Add finish punch
+        if (result.finishTime != null) {
+            punches.add(
+                Punch(
+                    UUID.randomUUID(),
+                    event.id,
+                    result.id,
+                    competitorId,
+                    cardData.siNumber,
+                    SIRecordType.FINISH,
+                    0,
+                    orderCounter,
+                    result.finishTime!!,
+                    result.finishTime!!,
+                    PunchStatus.VALID,
+                )
+            )
+        }
+
+        //Calculate splits
+        punches.forEach { punch ->
+            if (punch.order != 0) {
+                punch.split = SITime.split(punches[punch.order - 1].siTime!!, punch.siTime!!)
+            }
         }
         return punches
     }
 
     private suspend fun evaluatePunches(
         punches: ArrayList<Punch>,
-        category: Category, readout: Readout
+        category: Category, result: Result
     ) {
 
         var controlPoints: List<ControlPoint> = ArrayList()
@@ -137,30 +264,30 @@ class ResultsProcessor {
         } catch (e: Exception) {
             Log.d("ResultsProcess", e.message.toString())
         }
-        readout.points = 0
+        result.points = 0
         when (category.eventType) {
             EventType.CLASSICS, EventType.FOXORING -> processClassics(
                 punches,
                 controlPoints,
-                readout
+                result
             )
 
             EventType.SPRINT -> processSprint(
                 punches,
                 controlPoints,
-                readout
+                result
             )
 
             EventType.ORIENTEERING -> processOrienteering(
                 punches,
                 controlPoints,
-                readout
+                result
             )
 
             EventType.CUSTOM -> processCustom(
                 punches,
                 controlPoints,
-                readout
+                result
             )
         }
     }
@@ -168,12 +295,12 @@ class ResultsProcessor {
     /**
      * Resets all the punches to unknown, e. g. when the category has been deleted
      */
-    private fun clearEvaluation(punches: ArrayList<Punch>, readout: Readout) {
-        readout.points = 0
+    private fun clearEvaluation(punches: ArrayList<Punch>, result: Result) {
+        result.points = 0
         punches.forEach { punch ->
             punch.punchStatus = PunchStatus.UNKNOWN
         }
-        readout.raceStatus = RaceStatus.NOT_PROCESSED
+        result.raceStatus = RaceStatus.NOT_PROCESSED
     }
 
     /**
@@ -182,7 +309,7 @@ class ResultsProcessor {
     private fun processClassics(
         punches: ArrayList<Punch>,
         controlPoints: List<ControlPoint>,
-        readout: Readout
+        result: Result
     ) {
         val codes = TreeSet<Int>()
         var beacon: Int = -1
@@ -197,33 +324,39 @@ class ResultsProcessor {
         val taken = TreeSet<Int>()  //Already taken CPs
 
         punches.forEach { punch ->
-            if (codes.contains(punch.siCode)) {
+            if (punch.punchType == SIRecordType.CONTROL && codes.contains(punch.siCode)) {
 
                 //Valid punch
-                if (!taken.contains(punch.siCode)) {
+                if (!taken.contains(punch.siCode) && punch.siCode != beacon) {
                     punch.punchStatus = PunchStatus.VALID
-                    readout.points++
+                    result.points++
                     taken.add(punch.siCode)
                 }
-                //Duplicate
+                //Check if beacon is the last punch
+                else if (punch.siCode == beacon) {
+                    if (punch.order == punches.size) {
+                        result.points++
+
+                    } else {
+                        punch.punchStatus = PunchStatus.INVALID
+                    }
+                }
+                //Duplicate punch
                 else {
                     punch.punchStatus = PunchStatus.DUPLICATE
                 }
             }
-            //Invalid
+            //Unknown punch
             else {
                 punch.punchStatus = PunchStatus.UNKNOWN
             }
         }
 
-        //TODO: Check beacon
-
-
         //Set the status accordingly
-        if (readout.points > 1) {
-            readout.raceStatus = RaceStatus.VALID
+        if (result.points > 1) {
+            result.raceStatus = RaceStatus.VALID
         } else {
-            readout.raceStatus = RaceStatus.NOT_PROCESSED
+            result.raceStatus = RaceStatus.NOT_PROCESSED
         }
     }
 
@@ -233,9 +366,29 @@ class ResultsProcessor {
     private fun processSprint(
         punches: ArrayList<Punch>,
         controlPoints: List<ControlPoint>,
-        readout: Readout
+        result: Result
     ) {
+        //Find separator in the control points
+        var separator: Int? = null
+        var pos = 0
 
+        for (cp in controlPoints) {
+            if (cp.separator) {
+                separator = pos
+                break
+            }
+            pos++
+        }
+
+        //If separator was found, process both loops
+        if (separator != null) {
+            var firstRound = controlPoints.subList(0, separator)
+            var secondRound = controlPoints.subList(separator, controlPoints.size - 1)
+
+            for (punch in punches) {
+
+            }
+        }
     }
 
     /**
@@ -244,7 +397,7 @@ class ResultsProcessor {
     private fun processOrienteering(
         punches: ArrayList<Punch>,
         controlPoints: List<ControlPoint>,
-        readout: Readout
+        result: Result
     ) {
         var cpIndex = 0
 
@@ -258,7 +411,7 @@ class ResultsProcessor {
             if (punch.siCode == controlPoints[cpIndex].siCode) {
                 cpIndex++
                 punch.punchStatus = PunchStatus.VALID
-                readout.points++
+                result.points++
             }
             //Break in a loop
             else {
@@ -266,10 +419,10 @@ class ResultsProcessor {
             }
         }
 
-        if (readout.points == controlPoints.size) {
-            readout.raceStatus = RaceStatus.VALID
+        if (result.points == controlPoints.size) {
+            result.raceStatus = RaceStatus.VALID
         } else {
-            readout.raceStatus = RaceStatus.DISQUALIFIED
+            result.raceStatus = RaceStatus.DISQUALIFIED
         }
     }
 
@@ -279,7 +432,7 @@ class ResultsProcessor {
     private fun processCustom(
         punches: ArrayList<Punch>,
         controlPoints: List<ControlPoint>,
-        readout: Readout
+        result: Result
     ) {
         //TODO: Not yet implemented
     }
@@ -287,7 +440,7 @@ class ResultsProcessor {
     /**
      * Updates the already read out data in case of a change in category / competitor
      */
-    suspend fun updateReadoutsForCategory(categoryId: UUID, delete: Boolean) {
+    suspend fun updateResultsForCategory(categoryId: UUID, delete: Boolean) {
         val competitors = dataProcessor.getCompetitorsByCategory(categoryId)
 
         competitors.forEach { competitor ->
@@ -298,46 +451,44 @@ class ResultsProcessor {
                 dataProcessor.updateCompetitor(competitor, false)
             }
 
-            val readout = dataProcessor.getReadoutByCompetitor(competitor.id)
-            readout?.let {
-                val punches = ArrayList(dataProcessor.getPunchesByReadout(readout.id))
+            val result = dataProcessor.getResultByCompetitor(competitor.id)
+            result?.let {
+                val punches = ArrayList(dataProcessor.getPunchesByResult(result.id))
 
                 if (!delete) {
                     val category = dataProcessor.getCategory(categoryId)
-                    evaluatePunches(punches, category, readout)
+                    evaluatePunches(punches, category, result)
                 } else {
-                    clearEvaluation(punches, readout)
+                    clearEvaluation(punches, result)
                 }
 
-                dataProcessor.createReadout(readout)
-                dataProcessor.createPunches(punches)
+                saveOrUpdateResult(result, punches)
             }
         }
     }
 
-    suspend fun updateReadoutsForCompetitor(competitorId: UUID, eventId: UUID, delete: Boolean) {
-        var readout = dataProcessor.getReadoutByCompetitor(competitorId)
+    suspend fun updateResultsForCompetitor(competitorId: UUID, eventId: UUID, delete: Boolean) {
+        var result = dataProcessor.getResultByCompetitor(competitorId)
         val competitor = dataProcessor.getCompetitor(competitorId)
 
-        //Try to get readout by SI instead and update competitor ID
-        if (readout == null && !delete) {
-            readout = competitor.siNumber?.let { dataProcessor.getReadoutBySINumber(it, eventId) }
-            if (readout != null) {
-                readout.competitorID = competitorId
+        //Try to get result by SI instead and update competitor ID
+        if (result == null && !delete) {
+            result = competitor.siNumber?.let { dataProcessor.getResultBySINumber(it, eventId) }
+            if (result != null) {
+                result.competitorID = competitorId
             }
         }
-        if (readout != null) {
-            val punches = ArrayList(dataProcessor.getPunchesByReadout(readout.id))
+        if (result != null) {
+            val punches = ArrayList(dataProcessor.getPunchesByResult(result.id))
             if (!delete && competitor.categoryId != null) {
                 val category = dataProcessor.getCategory(competitor.categoryId!!)
-                evaluatePunches(punches, category, readout)
+                evaluatePunches(punches, category, result)
             } else {
-                clearEvaluation(punches, readout)
+                clearEvaluation(punches, result)
             }
 
             //Save into db
-            dataProcessor.createReadout(readout)
-            dataProcessor.createPunches(punches)
+            saveOrUpdateResult(result, punches)
         }
     }
 

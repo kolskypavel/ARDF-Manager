@@ -9,11 +9,17 @@ import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.databinding.FragmentResultsBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kolskypavel.ardfmanager.ui.results.ResultsFragmentRecyclerViewAdapter
+import kotlinx.coroutines.launch
 
 class ResultsFragment : Fragment() {
 
@@ -26,7 +32,7 @@ class ResultsFragment : Fragment() {
     private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
     private val dataProcessor = DataProcessor.get()
     private lateinit var resultsToolbar: Toolbar
-
+    private lateinit var resultsRecyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -44,6 +50,7 @@ class ResultsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         resultsToolbar = view.findViewById(R.id.results_toolbar)
+        resultsRecyclerView = view.findViewById(R.id.results_recycler_view)
         resultsToolbar.inflateMenu(R.menu.fragment_menu_results)
 
         selectedEventViewModel.event.observe(viewLifecycleOwner) { event ->
@@ -52,6 +59,7 @@ class ResultsFragment : Fragment() {
         }
 
         setBackButton()
+        setRecyclerViewAdapter()
     }
 
     private fun setBackButton() {
@@ -72,6 +80,18 @@ class ResultsFragment : Fragment() {
             builder.show()
         }
 
+    }
+
+    private fun setRecyclerViewAdapter() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                selectedEventViewModel.readoutData.collect { results ->
+                    resultsRecyclerView.adapter =
+                        ResultsFragmentRecyclerViewAdapter(ArrayList(results))
+                }
+
+            }
+        }
     }
 
     override fun onDestroyView() {

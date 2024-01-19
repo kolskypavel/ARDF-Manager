@@ -10,10 +10,10 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.util.UUID
 
-@Entity
-data class Readout(
+@Entity(tableName = "result")
+data class Result(
     @PrimaryKey var id: UUID,
-    @ColumnInfo(name = "si_number") var siNumber: Int,
+    @ColumnInfo(name = "si_number") var siNumber: Int?,
     @ColumnInfo(name = "card_type") var cardType: Byte,
     @ColumnInfo(name = "event_id") var eventId: UUID,
     @ColumnInfo(name = "competitor_id") var competitorID: UUID? = null,
@@ -25,3 +25,20 @@ data class Readout(
     @ColumnInfo(name = "race_status") var raceStatus: RaceStatus,
     @ColumnInfo(name = "points") var points: Int,
 ) : Serializable
+
+class ReadoutComparator : Comparator<Result> {
+    override fun compare(r1: Result, r2: Result): Int {
+        //Race status comparison
+        if (r1.raceStatus != r2.raceStatus) {
+            return r1.raceStatus.compareTo(r2.raceStatus)
+        }
+        //Points comparison
+        else if (r1.points != r2.points) {
+            return r1.points.compareTo(r2.points)
+        }
+        //Time comparison
+        else {
+            return r1.runTime?.compareTo(r2.runTime) ?: return 0
+        }
+    }
+}

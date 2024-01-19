@@ -10,13 +10,13 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
+import kolskypavel.ardfmanager.backend.wrappers.ResultDataWrapper
 
 class ReadoutDataRecyclerViewAdapter(
-    private var values: List<ReadoutDataWrapper>,
+    private var values: List<ResultDataWrapper>,
     private val context: Context,
-    private val onReadoutClicked: (readoutData: ReadoutDataWrapper) -> Unit,
-    private val onMoreClicked: (action: Int, position: Int, readoutData: ReadoutDataWrapper) -> Unit
+    private val onReadoutClicked: (readoutData: ResultDataWrapper) -> Unit,
+    private val onMoreClicked: (action: Int, position: Int, readoutData: ResultDataWrapper) -> Unit
 ) : RecyclerView.Adapter<ReadoutDataRecyclerViewAdapter.ReadoutViewHolder>() {
     val dataProcessor = DataProcessor.get()
 
@@ -45,9 +45,9 @@ class ReadoutDataRecyclerViewAdapter(
             holder.categoryView.text = "?"
         }
 
-        holder.siNumberView.text = item.readout.siNumber.toString()
+        holder.siNumberView.text = item.result!!.siNumber.toString()
         holder.runTimeView.text =
-            item.readout.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
+            item.result!!.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
         holder.placementView.text = ""
 
         //Set readout detail navigation

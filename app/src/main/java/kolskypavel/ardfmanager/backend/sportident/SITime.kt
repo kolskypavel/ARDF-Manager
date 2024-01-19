@@ -3,6 +3,7 @@ package kolskypavel.ardfmanager.backend.sportident
 import java.io.Serializable
 import java.time.Duration
 import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 /**
  * Wrapper class for calculating the split times
@@ -18,7 +19,7 @@ class SITime(
 
     constructor() : this(LocalTime.MIDNIGHT)
 
-    fun calculateSeconds() {
+    private fun calculateSeconds() {
         seconds += week * SIConstants.SECONDS_WEEK + dayOfWeek * SIConstants.SECONDS_DAY + time.toSecondOfDay()
     }
 
@@ -35,6 +36,10 @@ class SITime(
     fun getTime() = time
     fun getDayOfWeek() = dayOfWeek
     fun getWeek() = week
+
+    fun getTimeString(): String {
+        return time.format(DateTimeFormatter.ofPattern("hh:mm:ss"))
+    }
 
     fun setTime(newTime: LocalTime) {
         time = newTime

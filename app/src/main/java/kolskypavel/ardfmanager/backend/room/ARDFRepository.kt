@@ -7,13 +7,13 @@ import kolskypavel.ardfmanager.backend.room.database.CompetitorDatabase
 import kolskypavel.ardfmanager.backend.room.database.ControlPointDatabase
 import kolskypavel.ardfmanager.backend.room.database.EventDatabase
 import kolskypavel.ardfmanager.backend.room.database.PunchDatabase
-import kolskypavel.ardfmanager.backend.room.database.ReadoutDatabase
+import kolskypavel.ardfmanager.backend.room.database.ResultDatabase
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kolskypavel.ardfmanager.backend.room.entitity.Readout
+import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -51,11 +51,11 @@ class ARDFRepository private constructor(context: Context) {
         )
         .build()
 
-    private val readoutDatabase: ReadoutDatabase = Room
+    private val resultDatabase: ResultDatabase = Room
         .databaseBuilder(
             context.applicationContext,
-            ReadoutDatabase::class.java,
-            "readout-database"
+            ResultDatabase::class.java,
+            "result-database"
         )
         .build()
 
@@ -134,39 +134,39 @@ class ARDFRepository private constructor(context: Context) {
         competitorDatabase.competitorDao().checkIfSINumberExists(siNumber, eventId)
 
     //READOUTS
-    suspend fun getReadoutsByEvent(eventId: UUID) =
-        readoutDatabase.readoutDao().getReadoutsByEvent(eventId)
+    suspend fun getResultsByEvent(eventId: UUID) =
+        resultDatabase.resultDao().getResultsByEvent(eventId)
 
-    suspend fun getReadoutBySINumber(siNumber: Int, eventId: UUID) =
-        readoutDatabase.readoutDao().getReadoutsForSINumber(siNumber, eventId)
+    suspend fun getResultBySINumber(siNumber: Int, eventId: UUID) =
+        resultDatabase.resultDao().getResultForSINumber(siNumber, eventId)
 
-    suspend fun getReadoutByCompetitor(competitorId: UUID): Readout? =
-        readoutDatabase.readoutDao().getReadoutByCompetitor(competitorId)
+    suspend fun getResultByCompetitor(competitorId: UUID): Result? =
+        resultDatabase.resultDao().getResultByCompetitor(competitorId)
 
-    suspend fun getReadout(id: UUID) = readoutDatabase.readoutDao().getReadout(id)
+    suspend fun getResult(id: UUID) = resultDatabase.resultDao().getResult(id)
 
-    suspend fun createReadout(readout: Readout) =
-        readoutDatabase.readoutDao().createReadout(readout)
+    suspend fun createResult(result: Result) =
+        resultDatabase.resultDao().createResult(result)
 
-    suspend fun checkIfReadoutExistsById(siNumber: Int, eventId: UUID) =
-        readoutDatabase.readoutDao().checkIfReadoutExistsById(siNumber, eventId)
+    suspend fun checkIfResultExistsById(siNumber: Int, eventId: UUID) =
+        resultDatabase.resultDao().checkIfResultExistsById(siNumber, eventId)
 
-    suspend fun deleteReadout(id: UUID) = readoutDatabase.readoutDao().deleteReadout(id)
+    suspend fun deleteResult(id: UUID) = resultDatabase.resultDao().deleteResult(id)
 
-    suspend fun deleteReadoutsByEvent(eventId: UUID) =
-        readoutDatabase.readoutDao().deleteReadoutsByEvent(eventId)
+    suspend fun deleteResultsByEvent(eventId: UUID) =
+        resultDatabase.resultDao().deleteResultsByEvent(eventId)
 
     //PUNCHES
     suspend fun createPunch(punch: Punch) = punchDatabase.punchDao().createPunch(punch)
 
-    suspend fun getPunchesByReadout(readoutId: UUID) =
-        punchDatabase.punchDao().getPunchesByReadout(readoutId)
+    suspend fun getPunchesByResult(resultId: UUID) =
+        punchDatabase.punchDao().getPunchesByResult(resultId)
 
-    suspend fun getPunchesBySINumber(siNumber: Int, eventId: UUID) =
-        punchDatabase.punchDao().getPunchesForSINumber(siNumber, eventId)
+    suspend fun getPunchesByCompetitor(competitorId: UUID) =
+        punchDatabase.punchDao().getPunchesByCompetitor(competitorId)
 
-    suspend fun deletePunchesByReadoutId(readoutId: UUID) =
-        punchDatabase.punchDao().deletePunchesByReadoutId(readoutId)
+    suspend fun deletePunchesByResultId(resultId: UUID) =
+        punchDatabase.punchDao().deletePunchesByResultId(resultId)
 
     suspend fun deletePunchesByEvent(eventId: UUID) =
         punchDatabase.punchDao().deletePunchesByEvent(eventId)

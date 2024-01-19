@@ -46,4 +46,8 @@ object SIConstants {
     const val SI_CARD9_MAX_PUNCHES = 50
     const val SI_CARD10_11_SIAC_MAX_PUNCHES = 128
     const val SI_CARD_PCARD_MAX_PUNCHES = 20
+
+    //Code ranges
+    const val SI_MIN_CODE = 31
+    const val SI_MAX_CODE = 255
 }

@@ -8,6 +8,10 @@
         android:icon="@drawable/ic_import_file"
         android:title="@string/category_import_text"
         app:showAsAction="always|withText" />
+
+    <item
+        android:id="@+id/category_menu_edit_event"
+        android:title="@string/event_edit" />
     <item
         android:id="@+id/category_menu_global_settings"
         android:icon="@drawable/ic_settings"

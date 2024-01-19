@@ -16,7 +16,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
+import kolskypavel.ardfmanager.backend.wrappers.ResultDataWrapper
 import kolskypavel.ardfmanager.databinding.FragmentReadoutsBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import kotlinx.coroutines.launch
@@ -62,7 +62,7 @@ class ReadoutFragment : Fragment() {
     private fun recyclerViewContextMenuActions(
         action: Int,
         position: Int,
-        readoutData: ReadoutDataWrapper
+        readoutData: ResultDataWrapper
     ) {
         when (action) {
             0 -> {}
@@ -73,15 +73,15 @@ class ReadoutFragment : Fragment() {
         }
     }
 
-    private fun confirmReadoutDeletion(readoutData: ReadoutDataWrapper) {
+    private fun confirmReadoutDeletion(readoutData: ResultDataWrapper) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(getString(R.string.readout_delete_readout))
         val message =
-            getString(R.string.readout_delete_readout_confirmation, readoutData.readout.siNumber)
+            getString(R.string.readout_delete_readout_confirmation, readoutData.result!!.siNumber)
         builder.setMessage(message)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            selectedEventViewModel.deleteReadout(readoutData.readout.id)
+            selectedEventViewModel.deleteReadout(readoutData.result!!.id)
             dialog.dismiss()
         }
 
@@ -112,7 +112,7 @@ class ReadoutFragment : Fragment() {
         }
     }
 
-    private fun openReadoutDetail(readoutData: ReadoutDataWrapper) {
+    private fun openReadoutDetail(readoutData: ResultDataWrapper) {
         findNavController().navigate(ReadoutFragmentDirections.openReadoutDetail(readoutData))
     }
 

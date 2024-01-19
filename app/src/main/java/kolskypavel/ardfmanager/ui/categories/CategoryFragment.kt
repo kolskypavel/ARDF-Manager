@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
@@ -59,6 +60,9 @@ class CategoryFragment : Fragment() {
         categoryRecyclerView = view.findViewById(R.id.category_recycler_view)
 
         categoryToolbar.inflateMenu(R.menu.fragment_menu_category)
+        categoryToolbar.setOnMenuItemClickListener {
+            return@setOnMenuItemClickListener setFragmentMenuActions(it)
+        }
 
         categoryAddFab.setOnClickListener {
             //Prevent accidental double click
@@ -108,6 +112,28 @@ class CategoryFragment : Fragment() {
                 }
             }
         }
+    }
+
+    private fun setFragmentMenuActions(menuItem: MenuItem): Boolean {
+
+        when (menuItem.itemId) {
+            R.id.category_menu_import_file -> {
+                return true
+            }
+
+            R.id.category_menu_import_file -> {
+                return true
+            }
+
+            R.id.category_menu_global_settings -> {
+                return true
+            }
+
+            R.id.category_menu_about_app -> {
+                return true
+            }
+        }
+        return false
     }
 
     private fun confirmCategoryDeletion(category: Category) {

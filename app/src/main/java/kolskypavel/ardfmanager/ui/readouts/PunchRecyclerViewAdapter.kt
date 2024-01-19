@@ -8,12 +8,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
-import kolskypavel.ardfmanager.backend.wrappers.PunchWrapper
 
 class PunchRecyclerViewAdapter(
-    private var values: List<PunchWrapper>,
+    private var values: List<Punch>,
     private val context: Context
 ) :
     RecyclerView.Adapter<PunchRecyclerViewAdapter.PunchViewHolder>() {
@@ -31,11 +31,11 @@ class PunchRecyclerViewAdapter(
     override fun onBindViewHolder(holder: PunchViewHolder, position: Int) {
         val item = values[position]
 
-        holder.punchRealTime.text = item.siTime.getTime().toString()
+        holder.punchRealTime.text = item.siTime!!.getTime().toString()
         holder.punchSplit.text = item.split?.let { dataProcessor.durationToString(it) }
 
         //Set the fields, based on the type of the punch
-        when (item.siRecordType) {
+        when (item.punchType) {
             SIRecordType.START -> {
                 holder.punchSiCode.text = context.getText(R.string.punch_type_start)
             }

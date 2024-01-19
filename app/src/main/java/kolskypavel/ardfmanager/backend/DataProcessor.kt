@@ -11,20 +11,16 @@ import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kolskypavel.ardfmanager.backend.room.entitity.Readout
+import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
 import kolskypavel.ardfmanager.backend.room.enums.EventType
-import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
-import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SIReaderService
 import kolskypavel.ardfmanager.backend.sportident.SIReaderState
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
-import kolskypavel.ardfmanager.backend.sportident.SITime
-import kolskypavel.ardfmanager.backend.wrappers.PunchWrapper
-import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
+import kolskypavel.ardfmanager.backend.wrappers.ResultDataWrapper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -77,12 +73,14 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    suspend fun setReaderEvent(eventId: UUID): Event {
+    suspend fun setCurrentEvent(eventId: UUID): Event {
         val event = getEvent(eventId)
         currentState.postValue(currentState.value?.let { AppState(event, it.siReaderState) })
 
         return event
     }
+
+    fun getCurrentEvent() = currentState.value?.currentEvent!!
 
     fun removeReaderEvent() {
         currentState.postValue(currentState.value?.let { AppState(null, it.siReaderState) })
@@ -91,7 +89,7 @@ class DataProcessor private constructor(context: Context) {
     //METHODS TO HANDLE EVENTS
     suspend fun getEvents(): Flow<List<Event>> = ardfRepository.getEvents()
 
-    suspend fun getEvent(id: UUID): Event = ardfRepository.getEvent(id)
+    private suspend fun getEvent(id: UUID): Event = ardfRepository.getEvent(id)
 
     fun createEvent(
         event: Event
@@ -114,7 +112,7 @@ class DataProcessor private constructor(context: Context) {
         ardfRepository.deleteCompetitorsByEvent(id)
         ardfRepository.deleteCategoriesByEvent(id)
         ardfRepository.deleteControlPointsByEvent(id)
-        ardfRepository.deleteReadoutsByEvent(id)
+        ardfRepository.deleteResultsByEvent(id)
         ardfRepository.deletePunchesByEvent(id)
     }
 
@@ -134,13 +132,13 @@ class DataProcessor private constructor(context: Context) {
         ardfRepository.deleteControlPointsByCategory(category.id)
         ardfRepository.updateCategory(category)
         createControlPoints(category.siCodes, category)
-        updateReadoutsForCategory(category.id, false)
+        updateResultsForCategory(category.id, false)
     }
 
     suspend fun deleteCategory(id: UUID) {
         ardfRepository.deleteCategory(id)
         ardfRepository.deleteControlPointsByCategory(id)
-        updateReadoutsForCategory(id, true)
+        updateResultsForCategory(id, true)
     }
 
     //CONTROL POINTS
@@ -165,88 +163,59 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    suspend fun createCompetitor(competitor: Competitor) {
+    suspend fun createCompetitor(
+        competitor: Competitor,
+        modifiedPunches: Boolean,
+        punches: ArrayList<Punch>
+    ) {
         ardfRepository.createCompetitor(competitor)
-        updateReadoutsForCompetitor(competitor.id,false)
+
+        //If punches were added, process and save them
+        if (modifiedPunches) {
+            resultsProcessor?.processManualPunches(competitor.id, competitor.categoryId, punches)
+        }
+        updateResultsForCompetitor(competitor.id, false)
     }
 
     suspend fun updateCompetitor(competitor: Competitor, changed: Boolean) {
         ardfRepository.updateCompetitor(competitor)
         if (changed) {
-            updateReadoutsForCompetitor(competitor.id, false)
+            updateResultsForCompetitor(competitor.id, false)
         }
     }
 
-
     suspend fun deleteCompetitor(id: UUID) {
         ardfRepository.deleteCompetitor(id)
-        updateReadoutsForCompetitor(id, true)
+        updateResultsForCompetitor(id, true)
     }
+
 
     //READOUTS
 
-    suspend fun getReadoutDataByEvent(eventId: UUID): Flow<List<ReadoutDataWrapper>> {
+    suspend fun getResultDataByEvent(eventId: UUID): Flow<List<ResultDataWrapper>> {
         return flow {
             while (true) {
-                val temp = ArrayList<ReadoutDataWrapper>()
+                val temp = ArrayList<ResultDataWrapper>()
 
-                ardfRepository.getReadoutsByEvent(eventId).forEach { readout ->
+                ardfRepository.getResultsByEvent(eventId).forEach { result ->
 
-                    val punches = getPunchesForSICard(readout.siNumber, eventId)
-                    val competitor = getCompetitorBySINumber(readout.siNumber, eventId)
-                    val punchWrappers = ArrayList<PunchWrapper>()
+                    val punches = getPunchesByResult(result.id)
+                    val competitor =
+                        if (result.competitorID != null) {
+                            getCompetitor(result.competitorID!!)
+                        } else if (result.siNumber != null) {
+                            getCompetitorBySINumber(result.siNumber!!, eventId)
+                        } else null
 
-                    //Add start
-                    if (readout.startTime != null) {
-                        punchWrappers.add(
-                            PunchWrapper(
-                                null, null,
-                                null,
-                                readout.startTime!!,
-                                PunchStatus.VALID,
-                                null, SIRecordType.START
-                            )
-                        )
-                    }
-                    //Add control points
-                    punches.forEach { punch ->
-                        punchWrappers.add(
-                            PunchWrapper(
-                                punch.cardNumber,
-                                punch.siCode,
-                                punch.order,
-                                punch.siTime,
-                                punch.punchStatus,
-                                punch.split,
-                                SIRecordType.CONTROL
-                            )
-                        )
-                    }
-                    if (readout.finishTime != null) {
-                        val finishSplit = if (punches.isNotEmpty()) {
-                            SITime.split(punches.last().siTime, readout.finishTime!!)
-                        } else {
-                            null
-                        }
-                        punchWrappers.add(
-                            PunchWrapper(
-                                null, null,
-                                null,
-                                readout.finishTime!!,
-                                PunchStatus.VALID,
-                                finishSplit, SIRecordType.FINISH
-                            )
-                        )
-                    }
 
                     var category: Category? = null
                     if (competitor?.categoryId != null) {
                         category = getCategory(competitor.categoryId!!)
                     }
                     temp.add(
-                        ReadoutDataWrapper(
-                            readout,
-                            punchWrappers,
+                        ResultDataWrapper(
+                            result,
+                            punches,
                             competitor,
                             category
                         )
@@ -259,34 +228,34 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    suspend fun getReadoutBySINumber(siNumber: Int, eventId: UUID): Readout? =
-        ardfRepository.getReadoutBySINumber(siNumber, eventId)
+    suspend fun getResultBySINumber(siNumber: Int, eventId: UUID): Result? =
+        ardfRepository.getResultBySINumber(siNumber, eventId)
 
-    suspend fun getReadoutByCompetitor(competitorId: UUID): Readout? =
-        ardfRepository.getReadoutByCompetitor(competitorId)
+    suspend fun getResultByCompetitor(competitorId: UUID): Result? =
+        ardfRepository.getResultByCompetitor(competitorId)
 
-    suspend fun createReadout(readout: Readout) = ardfRepository.createReadout(readout)
+    suspend fun createResult(result: Result) = ardfRepository.createResult(result)
 
-    fun checkIfReadoutExistsBySI(siNumber: Int, eventId: UUID): Boolean {
+    fun checkIfResultExistsBySI(siNumber: Int, eventId: UUID): Boolean {
         return runBlocking {
-            return@runBlocking ardfRepository.checkIfReadoutExistsById(siNumber, eventId) > 0
+            return@runBlocking ardfRepository.checkIfResultExistsById(siNumber, eventId) > 0
         }
     }
 
-    private suspend fun updateReadoutsForCategory(categoryId: UUID, delete: Boolean) =
-        resultsProcessor?.updateReadoutsForCategory(categoryId, delete)
+    private suspend fun updateResultsForCategory(categoryId: UUID, delete: Boolean) =
+        resultsProcessor?.updateResultsForCategory(categoryId, delete)
 
-    private suspend fun updateReadoutsForCompetitor(competitorId: UUID, delete: Boolean) =
-        resultsProcessor?.updateReadoutsForCompetitor(
+    private suspend fun updateResultsForCompetitor(competitorId: UUID, delete: Boolean) =
+        resultsProcessor?.updateResultsForCompetitor(
             competitorId,
             currentState.value?.currentEvent!!.id,
             delete
         )
 
 
-    suspend fun deleteReadout(id: UUID) {
-        ardfRepository.deleteReadout(id)
-        ardfRepository.deletePunchesByReadoutId(id)
+    suspend fun deleteResult(id: UUID) {
+        ardfRepository.deleteResult(id)
+        ardfRepository.deletePunchesByResultId(id)
     }
 
     //PUNCHES
@@ -300,12 +269,11 @@ class DataProcessor private constructor(context: Context) {
         appContext.get()?.let { resultsProcessor?.processCardData(cardData, event, it) }
 
 
-    suspend fun getPunchesByReadout(readoutId: UUID) =
-        ardfRepository.getPunchesByReadout(readoutId)
+    suspend fun getPunchesByResult(resultId: UUID) =
+        ardfRepository.getPunchesByResult(resultId)
 
-    private suspend fun getPunchesForSICard(siNumber: Int, eventId: UUID) =
-        ardfRepository.getPunchesBySINumber(siNumber, eventId)
-
+    suspend fun getPunchesByCompetitor(competitorId: UUID) =
+        ardfRepository.getPunchesByCompetitor(competitorId)
 
     //Parsing categories to control points
     fun checkCodesString(string: String, eventType: EventType) =

@@ -3,11 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/category_menu_edit_event"
+        android:title="@string/event_edit" />
+
+    <item
         android:id="@+id/readout_menu_global_settings"
         android:icon="@drawable/ic_settings"
-        android:title="@string/global_settings"
-
-        />
+        android:title="@string/global_settings" />
 
     <item
         android:id="@+id/readout_menu_about_the_app"
