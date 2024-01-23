@@ -214,7 +214,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
                 //0 is reserved for no category
                 val catPos = categoryArr.indexOf(categoryPicker.text.toString()).or(0)
-                if (catPos > 0 && catPos < categories.size) {
+                if (catPos > 0 && catPos <= categories.size) {
                     competitor.categoryId = categories[catPos - 1].id
                 } else {
                     competitor.categoryId = null

@@ -21,6 +21,12 @@ interface ResultDao {
     @Query("SELECT * FROM result WHERE competitor_id=(:competitorId)")
     suspend fun getResultByCompetitor(competitorId: UUID): Result?
 
+    @Query("SELECT * FROM result WHERE category_id = (:categoryId)")
+    suspend fun getResultByCategory(categoryId: UUID): List<Result>
+
+    @Query("SELECT * FROM result WHERE event_id=(:eventId) AND category_id IS NULL")
+    suspend fun getResultsForNullCategory(eventId: UUID): List<Result>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun createResult(result: Result)
 

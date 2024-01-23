@@ -1,5 +1,6 @@
 package kolskypavel.ardfmanager.ui.results
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,11 +8,17 @@ import android.widget.ImageButton
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
-import kolskypavel.ardfmanager.backend.wrappers.ResultDataWrapper
+import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
+import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
 
-class ResultsFragmentRecyclerViewAdapter(var values: ArrayList<ResultDataWrapper>) :
+class ResultsFragmentRecyclerViewAdapter(
+    var values: ArrayList<ResultDisplayWrapper>,
+    var context: Context
+) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(
     ) {
+    val dataProcessor = DataProcessor.get()
 
     override fun onCreateViewHolder(parent: ViewGroup, child: Int): RecyclerView.ViewHolder {
 
@@ -37,27 +44,44 @@ class ResultsFragmentRecyclerViewAdapter(var values: ArrayList<ResultDataWrapper
             holder as GroupViewHolder
             holder.apply {
                 if (dataList.category != null) {
-                    categoryName.text = dataList.category!!.name
+                    categoryName.text = dataList.category.name
                 } else {
-                    //TODO: no category
+                    categoryName.text = context.getText(R.string.no_category)
                 }
-                downIV.setOnClickListener {
-                    expandOrCollapseParentItem(dataList, position)
+                if (dataList.subList.isNotEmpty()) {
+                    expandButton.visibility = View.VISIBLE
+
+                    //Set on click expansion + icon
+                    expandButton.setOnClickListener {
+                        if (dataList.isExpanded) {
+                            expandButton.setImageResource(R.drawable.ic_expand)
+                        } else {
+                            expandButton.setImageResource(R.drawable.ic_collapse)
+                        }
+                        expandOrCollapseParentItem(dataList, position)
+                    }
+                } else {
+                    expandButton.visibility = View.GONE
                 }
             }
         } else {
             holder as ChildViewHolder
 
             holder.apply {
-                val singleCompetitor = dataList.subList.first()
-                if (singleCompetitor.competitor != null)
+                val singleResult = dataList.subList.first()
+                if (singleResult.competitor != null) {
                     competitorName.text =
-                        "${singleCompetitor.competitor!!.firstName} ${singleCompetitor.competitor!!.lastName!!}"
+                        "${singleResult.competitor!!.firstName} ${singleResult.competitor!!.lastName!!}"
+                    competitorClub.text = singleResult.competitor!!.club
+                    competitorTime.text =
+                        dataProcessor.durationToString(singleResult.result?.runTime!!)
+                    competitorPoints.text = singleResult.result?.points.toString()
+                }
             }
         }
     }
 
-    private fun expandOrCollapseParentItem(singleBoarding: ResultDataWrapper, position: Int) {
+    private fun expandOrCollapseParentItem(singleBoarding: ResultDisplayWrapper, position: Int) {
 
         if (singleBoarding.isExpanded) {
             collapseParentRow(position)
@@ -74,9 +98,9 @@ class ResultsFragmentRecyclerViewAdapter(var values: ArrayList<ResultDataWrapper
         if (currentBoardingRow.isChild == 0) {
 
             services.forEach { service ->
-                val parentModel = ResultDataWrapper()
-                parentModel.isChild = 0
-                val subList: ArrayList<ResultDataWrapper> = ArrayList()
+                val parentModel = ResultDisplayWrapper()
+                parentModel.isChild = 1
+                val subList: ArrayList<ReadoutDataWrapper> = ArrayList()
                 subList.add(service)
                 parentModel.subList = subList
                 values.add(++nextPosition, parentModel)
@@ -105,11 +129,14 @@ class ResultsFragmentRecyclerViewAdapter(var values: ArrayList<ResultDataWrapper
 
     class GroupViewHolder(row: View) : RecyclerView.ViewHolder(row) {
         val categoryName: TextView = row.findViewById(R.id.result_category_name)
-        val downIV: ImageButton = row.findViewById(R.id.down_iv)
+        val expandButton: ImageButton = row.findViewById(R.id.down_iv)
     }
 
     class ChildViewHolder(row: View) : RecyclerView.ViewHolder(row) {
+        val competitorPlace: TextView = row.findViewById(R.id.result_competitor_place)
         val competitorName: TextView = row.findViewById(R.id.result_competitor_name)
-
+        val competitorClub: TextView = row.findViewById(R.id.result_competitor_club)
+        val competitorTime: TextView = row.findViewById(R.id.result_competitor_time)
+        val competitorPoints: TextView = row.findViewById(R.id.result_competitor_points)
     }
 }

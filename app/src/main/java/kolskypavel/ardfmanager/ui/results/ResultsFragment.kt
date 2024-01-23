@@ -85,9 +85,9 @@ class ResultsFragment : Fragment() {
     private fun setRecyclerViewAdapter() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                selectedEventViewModel.readoutData.collect { results ->
+                selectedEventViewModel.resultData.collect { results ->
                     resultsRecyclerView.adapter =
-                        ResultsFragmentRecyclerViewAdapter(ArrayList(results))
+                        ResultsFragmentRecyclerViewAdapter(ArrayList(results), requireContext())
                 }
 
             }

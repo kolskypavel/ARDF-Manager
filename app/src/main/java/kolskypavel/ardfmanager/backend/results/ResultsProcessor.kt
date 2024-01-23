@@ -51,8 +51,14 @@ class ResultsProcessor {
                     cardData.cardType,
                     event.id,
                     competitor?.id,
-                    cardData.checkTime, cardData.startTime, cardData.finishTime,
-                    Duration.ZERO, LocalDateTime.now(), RaceStatus.NOT_PROCESSED, 0
+                    null,
+                    cardData.checkTime,
+                    cardData.startTime,
+                    cardData.finishTime,
+                    Duration.ZERO,
+                    LocalDateTime.now(),
+                    RaceStatus.NOT_PROCESSED,
+                    0
                 )
 
             //TODO: Based on options, set start time to the predefined value
@@ -120,12 +126,12 @@ class ResultsProcessor {
                         0,
                         dataProcessor.getCurrentEvent().id,
                         competitorId,
+                        categoryId,
                         null,
                         null,
                         null,
                         Duration.ZERO,
-                        LocalDateTime.now(),
-                        RaceStatus.NOT_PROCESSED, 0
+                        LocalDateTime.now(), RaceStatus.NOT_PROCESSED, 0
                     )
 
                 var startPunch: Punch? = null

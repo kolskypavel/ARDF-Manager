@@ -7,16 +7,19 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import java.util.UUID
 
 class ReadoutDetailFragment : Fragment() {
 
     private val dataProcessor = DataProcessor.get()
     private val args: ReadoutDetailFragmentArgs by navArgs()
+    private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
 
     private lateinit var readoutDetailToolbar: Toolbar
     private lateinit var punchRecyclerView: RecyclerView
@@ -95,7 +98,7 @@ class ReadoutDetailFragment : Fragment() {
         placeView.text = getText(R.string.unknown) //TODO: Place
 
         setMenuActions()
-        setRecyclerViewAdapter(readoutDetail.punches)
+        setRecyclerViewAdapter(readoutDetail.result!!.id)
     }
 
     private fun setMenuActions() {
@@ -124,7 +127,10 @@ class ReadoutDetailFragment : Fragment() {
         }
     }
 
-    private fun setRecyclerViewAdapter(punches: List<Punch>) {
-        punchRecyclerView.adapter = PunchRecyclerViewAdapter(punches, requireContext())
+    private fun setRecyclerViewAdapter(resultId: UUID) {
+
+            val punches = selectedEventViewModel.getPunchesByResult(resultId)
+            punchRecyclerView.adapter = PunchRecyclerViewAdapter(punches, requireContext())
+
     }
 }

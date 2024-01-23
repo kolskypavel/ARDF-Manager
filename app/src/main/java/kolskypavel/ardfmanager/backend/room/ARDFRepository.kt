@@ -76,7 +76,10 @@ class ARDFRepository private constructor(context: Context) {
 
 
     //Categories
-    fun getCategoriesForEvent(eventId: UUID): Flow<List<Category>> =
+    fun getCategoriesFlowForEvent(eventId: UUID): Flow<List<Category>> =
+        categoryDatabase.categoryDao().getCategoriesFlowForEvent(eventId)
+
+    fun getCategoriesForEvent(eventId: UUID): List<Category> =
         categoryDatabase.categoryDao().getCategoriesForEvent(eventId)
 
     suspend fun getCategory(id: UUID) = categoryDatabase.categoryDao().getCategory(id)
@@ -144,6 +147,12 @@ class ARDFRepository private constructor(context: Context) {
         resultDatabase.resultDao().getResultByCompetitor(competitorId)
 
     suspend fun getResult(id: UUID) = resultDatabase.resultDao().getResult(id)
+
+    suspend fun getResultsByCategory(categoryId: UUID) =
+        resultDatabase.resultDao().getResultByCategory(categoryId)
+
+    suspend fun getResultsForNullCategory(eventId: UUID) =
+        resultDatabase.resultDao().getResultsForNullCategory(eventId)
 
     suspend fun createResult(result: Result) =
         resultDatabase.resultDao().createResult(result)

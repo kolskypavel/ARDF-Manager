@@ -10,13 +10,13 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.wrappers.ResultDataWrapper
+import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
 
 class ReadoutDataRecyclerViewAdapter(
-    private var values: List<ResultDataWrapper>,
+    private var values: List<ReadoutDataWrapper>,
     private val context: Context,
-    private val onReadoutClicked: (readoutData: ResultDataWrapper) -> Unit,
-    private val onMoreClicked: (action: Int, position: Int, readoutData: ResultDataWrapper) -> Unit
+    private val onReadoutClicked: (readoutData: ReadoutDataWrapper) -> Unit,
+    private val onMoreClicked: (action: Int, position: Int, readoutData: ReadoutDataWrapper) -> Unit
 ) : RecyclerView.Adapter<ReadoutDataRecyclerViewAdapter.ReadoutViewHolder>() {
     val dataProcessor = DataProcessor.get()
 

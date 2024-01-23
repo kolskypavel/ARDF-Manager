@@ -10,7 +10,7 @@ import java.util.UUID
 
 @Entity(
     tableName = "category", indices = [Index(
-        value = ["name","event_id"],
+        value = ["name", "event_id"],
         unique = true
     )]
 )
@@ -23,7 +23,8 @@ data class Category(
     @ColumnInfo(name = "max_year") var maxYear: Int,
     @ColumnInfo(name = "event_type") var eventType: EventType,
     @ColumnInfo(name = "limit") var limit: Int,
-    var siCodes: String,
-    var length: Float,
-    var climb: Float
+    @ColumnInfo(name = "si_codes") var siCodes: String,
+    @ColumnInfo(name = "length") var length: Float,
+    @ColumnInfo(name = "climb") var climb: Float,
+    @ColumnInfo(name = "order") var order: Int
 ) : Serializable

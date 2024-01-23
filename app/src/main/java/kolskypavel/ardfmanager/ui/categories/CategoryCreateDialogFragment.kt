@@ -103,7 +103,8 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 -1,
                 event.eventType, 120, "",
                 0F,
-                0F
+                0F,
+                0
             )
 
             //Preset the event type
@@ -114,10 +115,6 @@ class CategoryCreateDialogFragment : DialogFragment() {
             eventTypeLayout.isEnabled = false
             minYearLayout.isEnabled = false
             maxYearLayout.isEnabled = false
-
-            if (args.siCodes != null) {
-                siCodesTextView.setText(args.siCodes)
-            }
 
         } else {
             dialog?.setTitle(R.string.category_edit)
@@ -161,8 +158,11 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 climbTextView.setText(category.climb.toString())
             }
 
-            siCodesTextView.setText(category.siCodes)
+
         }
+
+        //set SI codes
+        siCodesTextView.setText(category.siCodes)
 
         //Set the event type checkbox functionality
         sameTypeCheckBox.setOnClickListener {

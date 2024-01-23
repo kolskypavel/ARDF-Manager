@@ -100,11 +100,6 @@
                 android:name="category"
                 app:argType="kolskypavel.ardfmanager.backend.room.entitity.Category"
                 app:nullable="true" />
-            <argument
-                android:name="siCodes"
-                android:defaultValue="null"
-                app:argType="string"
-                app:nullable="true" />
 
         </dialog>
         <action
@@ -116,7 +111,7 @@
             android:label="ReadoutDetailFragment">
             <argument
                 android:name="readoutDetail"
-                app:argType="kolskypavel.ardfmanager.backend.wrappers.ResultDataWrapper" />
+                app:argType="kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper" />
         </fragment>
     </navigation>
 

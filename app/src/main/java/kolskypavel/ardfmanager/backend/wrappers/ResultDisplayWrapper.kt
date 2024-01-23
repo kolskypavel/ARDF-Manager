@@ -7,9 +7,9 @@ import java.io.Serializable
  * Used for displaying the result data
  */
 data class ResultDisplayWrapper(
-    val category: Category,
+    val category: Category? = null,
     var isChild: Int = 0,
-    var subList: MutableList<ResultDataWrapper> = ArrayList(),
+    var subList: MutableList<ReadoutDataWrapper> = ArrayList(),
     var isExpanded: Boolean = false
 ) : Serializable
 
@@ -18,6 +18,6 @@ data class ResultDisplayWrapper(
  */
 class ResultWrapperComparator : Comparator<ResultDisplayWrapper> {
     override fun compare(r1: ResultDisplayWrapper, r2: ResultDisplayWrapper): Int {
-        return r1.category.name.compareTo(r2.category.name)
+        return 1 //TODO:FIX
     }
 }

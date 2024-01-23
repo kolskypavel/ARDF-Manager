@@ -10,7 +10,8 @@ import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
-import kolskypavel.ardfmanager.backend.wrappers.ResultDataWrapper
+import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
+import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,9 +35,15 @@ class SelectedEventViewModel : ViewModel() {
     private val _competitors: MutableStateFlow<List<Competitor>> = MutableStateFlow(emptyList())
     val competitors: StateFlow<List<Competitor>> get() = _competitors.asStateFlow()
 
-    private val _readoutData: MutableStateFlow<List<ResultDataWrapper>> =
+    private val _readoutData: MutableStateFlow<List<ReadoutDataWrapper>> =
         MutableStateFlow(emptyList())
-    val readoutData: StateFlow<List<ResultDataWrapper>> get() = _readoutData.asStateFlow()
+    val readoutData: StateFlow<List<ReadoutDataWrapper>> get() = _readoutData.asStateFlow()
+
+
+    private val _resultData: MutableStateFlow<List<ResultDisplayWrapper>> =
+        MutableStateFlow(emptyList())
+    val resultData: StateFlow<List<ResultDisplayWrapper>> get() = _resultData.asStateFlow()
+
 
     /**
      * Updates the current selected event and corresponding data
@@ -58,8 +65,13 @@ class SelectedEventViewModel : ViewModel() {
             }
 
             launch {
-                dataProcessor.getResultDataByEvent(id).collect {
+                dataProcessor.getReadoutDataByEvent(id).collect {
                     _readoutData.value = it
+                }
+            }
+            launch {
+                dataProcessor.getResultDataByEvent(id).collect {
+                    _resultData.value = it
                 }
             }
         }
@@ -170,6 +182,12 @@ class SelectedEventViewModel : ViewModel() {
     fun deleteReadout(id: UUID) {
         CoroutineScope(Dispatchers.IO).launch {
             dataProcessor.deleteResult(id)
+        }
+    }
+
+    fun getPunchesByResult(resultId: UUID): List<Punch> {
+        return runBlocking {
+            return@runBlocking dataProcessor.getPunchesByResult(resultId)
         }
     }
 }

@@ -20,7 +20,8 @@ import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SIReaderService
 import kolskypavel.ardfmanager.backend.sportident.SIReaderState
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
-import kolskypavel.ardfmanager.backend.wrappers.ResultDataWrapper
+import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
+import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -117,7 +118,7 @@ class DataProcessor private constructor(context: Context) {
     }
 
     //CATEGORIES
-    fun getCategoriesForEvent(eventId: UUID) = ardfRepository.getCategoriesForEvent(eventId)
+    fun getCategoriesForEvent(eventId: UUID) = ardfRepository.getCategoriesFlowForEvent(eventId)
 
     suspend fun getCategory(id: UUID) = ardfRepository.getCategory(id)
 
@@ -192,14 +193,13 @@ class DataProcessor private constructor(context: Context) {
 
     //READOUTS
 
-    suspend fun getResultDataByEvent(eventId: UUID): Flow<List<ResultDataWrapper>> {
+    suspend fun getReadoutDataByEvent(eventId: UUID): Flow<List<ReadoutDataWrapper>> {
         return flow {
             while (true) {
-                val temp = ArrayList<ResultDataWrapper>()
+                val temp = ArrayList<ReadoutDataWrapper>()
 
                 ardfRepository.getResultsByEvent(eventId).forEach { result ->
 
-                    val punches = getPunchesByResult(result.id)
                     val competitor =
                         if (result.competitorID != null) {
                             getCompetitor(result.competitorID!!)
@@ -213,9 +213,8 @@ class DataProcessor private constructor(context: Context) {
                         category = getCategory(competitor.categoryId!!)
                     }
                     temp.add(
-                        ResultDataWrapper(
+                        ReadoutDataWrapper(
                             result,
-                            punches,
                             competitor,
                             category
                         )
@@ -224,6 +223,56 @@ class DataProcessor private constructor(context: Context) {
 
                 emit(temp)
                 delay(1000) //TODO: FIX
+            }
+        }
+    }
+
+    suspend fun getResultDataByEvent(eventId: UUID): Flow<List<ResultDisplayWrapper>> {
+        return flow {
+            while (true) {
+
+                val temp = ArrayList<ResultDisplayWrapper>()
+
+                ardfRepository.getCategoriesForEvent(eventId).forEach { category ->
+                    val res = ResultDisplayWrapper(category)
+                    res.subList = ArrayList()
+                    ardfRepository.getResultsByCategory(category.id).forEach { result ->
+
+                        val competitor =
+                            if (result.competitorID != null) {
+                                getCompetitor(result.competitorID!!)
+                            } else if (result.siNumber != null) {
+                                getCompetitorBySINumber(result.siNumber!!, eventId)
+                            } else null
+
+                        res.subList.add(ReadoutDataWrapper(result, competitor, category))
+                    }
+                    temp.add(res)
+                }
+
+                //Add competitors with no category
+                val noCatRes = ResultDisplayWrapper()
+                noCatRes.subList = ArrayList()
+                val results = ardfRepository.getResultsForNullCategory(eventId)
+
+                if (results.isNotEmpty()) {
+
+                    results.forEach { result ->
+                        val competitor =
+                            if (result.competitorID != null) {
+                                getCompetitor(result.competitorID!!)
+                            } else if (result.siNumber != null) {
+                                getCompetitorBySINumber(result.siNumber!!, eventId)
+                            } else null
+
+                        noCatRes.subList.add(ReadoutDataWrapper(result, competitor, null))
+                    }
+                    temp.add(noCatRes)
+                }
+
+                emit(temp)
+                delay(1000) //TODO: FIX
+
             }
         }
     }
