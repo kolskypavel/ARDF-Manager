@@ -28,7 +28,7 @@ import java.util.UUID
 class ResultsProcessor {
     val dataProcessor = DataProcessor.get()
 
-    private suspend fun saveOrUpdateResult(result: Result, punches: ArrayList<Punch>) {
+    private suspend fun saveResult(result: Result, punches: ArrayList<Punch>) {
         dataProcessor.createResult(result)
         dataProcessor.createPunches(punches)
     }
@@ -72,7 +72,7 @@ class ResultsProcessor {
             }
 
             //Process the punches
-            val punches = processPunches(
+            val punches = processCardPunches(
                 cardData,
                 event,
                 result,
@@ -89,7 +89,7 @@ class ResultsProcessor {
             }
 
             //Save to db
-            saveOrUpdateResult(result, punches)
+            saveResult(result, punches)
             return true
         }
         //Duplicate readout
@@ -107,81 +107,84 @@ class ResultsProcessor {
     suspend fun processManualPunches(
         competitorId: UUID,
         categoryId: UUID?,
-        punches: ArrayList<Punch>
+        punches: ArrayList<Punch>,
+        manualStatus: RaceStatus?
     ) {
-        val original = dataProcessor.getResultByCompetitor(competitorId)
-
-        //Result exists
-        if (original != null) {
-
-        }
+        var result = dataProcessor.getResultByCompetitor(competitorId)
 
         //New result, just the data is updated
+        if (result == null) {
+
+            result = Result(
+                UUID.randomUUID(),
+                null,
+                0,
+                dataProcessor.getCurrentEvent().id,
+                competitorId,
+                categoryId,
+                null,
+                null,
+                null,
+                Duration.ZERO,
+                LocalDateTime.now(), RaceStatus.NOT_PROCESSED, 0
+            )
+        }
+        //Result exists - delete the old punches
         else {
-            if (punches.isNotEmpty()) {
-                val result =
-                    Result(
-                        UUID.randomUUID(),
-                        null,
-                        0,
-                        dataProcessor.getCurrentEvent().id,
-                        competitorId,
-                        categoryId,
-                        null,
-                        null,
-                        null,
-                        Duration.ZERO,
-                        LocalDateTime.now(), RaceStatus.NOT_PROCESSED, 0
-                    )
+            dataProcessor.deletePunchesForResult(result.id)
+        }
+        if (punches.isNotEmpty()) {
 
-                var startPunch: Punch? = null
-                var finishPunch: Punch? = null
+            var startPunch: Punch? = null
+            var finishPunch: Punch? = null
 
-                //Modify the start and finish times
-                if (punches[0].punchType == SIRecordType.START) {
-                    result.startTime = punches[0].siTime
-                    startPunch = punches[0]
-                    punches.removeFirst()
-                }
-                if (punches.last().punchType == SIRecordType.FINISH) {
-                    result.finishTime = punches.last().siTime
-                    finishPunch = punches.last()
-                    punches.removeLast()
-                }
-
-                //Process punches without start and finish
-                if (categoryId != null) {
-                    val category = dataProcessor.getCategory(categoryId)
-                    evaluatePunches(punches, category, result)
-                }
-
-                //Add back start and finish
-                punches.add(0, startPunch!!)
-                punches.add(finishPunch!!)
-                result.runTime = SITime.split(startPunch.siTime!!, finishPunch.siTime!!)
-
-                var index = 0
-                //Calculate splits
-                punches.forEach { punch ->
-                    if (index != 0) {
-                        punch.split =
-                            SITime.split(punches[index - 1].siTime!!, punch.siTime!!)
-                    }
-                    punch.order = index
-                    punch.resultId = result.id
-                    index++
-                }
-
-                saveOrUpdateResult(result, punches)
-
+            //Modify the start and finish times
+            if (punches[0].punchType == SIRecordType.START) {
+                result.startTime = punches[0].siTime
+                startPunch = punches[0]
+                punches.removeFirst()
             }
+            if (punches.last().punchType == SIRecordType.FINISH) {
+                result.finishTime = punches.last().siTime
+                finishPunch = punches.last()
+                punches.removeLast()
+            }
+
+            //Process punches without start and finish
+            if (categoryId != null) {
+                val category = dataProcessor.getCategory(categoryId)
+                evaluatePunches(punches, category, result)
+            }
+
+            //Add back start and finish
+            punches.add(0, startPunch!!)
+            punches.add(finishPunch!!)
+            result.runTime = SITime.split(startPunch.siTime!!, finishPunch.siTime!!)
+
+            var index = 0
+            //Calculate splits
+            punches.forEach { punch ->
+                if (index != 0) {
+                    punch.split =
+                        SITime.split(punches[index - 1].siTime!!, punch.siTime!!)
+                }
+                punch.order = index
+                punch.resultId = result.id
+                index++
+            }
+
+            // Set the result status based on user preference
+            if (manualStatus != null) {
+                result.raceStatus = manualStatus
+            }
+            saveResult(result, punches)
         }
     }
 
     /**
      * Processes the punches - converts PunchData to Punch entity
      */
-    private suspend fun processPunches(
+    private suspend fun processCardPunches(
         cardData: CardData,
         event: Event,
         result: Result, competitorId: UUID?, category: Category?,
@@ -322,9 +325,9 @@ class ResultsProcessor {
 
         controlPoints.forEach { cp ->
             if (!cp.beacon) {
-                codes.add(cp.siCode)
+                codes.add(cp.siCode!!)
             } else {
-                beacon = cp.siCode
+                beacon = cp.siCode!!
             }
         }
         val taken = TreeSet<Int>()  //Already taken CPs
@@ -454,7 +457,7 @@ class ResultsProcessor {
             //Update competitor
             if (delete) {
                 competitor.categoryId = null
-                dataProcessor.updateCompetitor(competitor, false)
+                dataProcessor.updateCompetitor(competitor)
             }
 
             val result = dataProcessor.getResultByCompetitor(competitor.id)
@@ -468,7 +471,7 @@ class ResultsProcessor {
                     clearEvaluation(punches, result)
                 }
 
-                saveOrUpdateResult(result, punches)
+                saveResult(result, punches)
             }
         }
     }
@@ -494,109 +497,71 @@ class ResultsProcessor {
             }
 
             //Save into db
-            saveOrUpdateResult(result, punches)
+            saveResult(result, punches)
         }
     }
 
     companion object {
 
-        /**
-         * Checks if the provided codesString corresponds with the category definition
-         */
-        @Throws(IllegalArgumentException::class)
-        fun checkCodesString(codesString: String, eventType: EventType): Boolean {
-            return when (eventType) {
-                EventType.CLASSICS, EventType.FOXORING -> checkClassics(codesString)
-                EventType.SPRINT -> checkSprint(codesString)
-                EventType.ORIENTEERING -> checkOrienteering(codesString)
-                EventType.CUSTOM -> checkCustom(codesString)
-            }
-        }
-
-        private fun checkClassics(codesString: String): Boolean {
-            val check = Regex("((\\b\\d+(?!B)\\b\\s+)*(\\b\\d+B\\b))?")
-
-            if (codesString.matches(check)) {
-                return true
-            }
-            return false
-        }
-
-        private fun checkSprint(codesString: String): Boolean {
-            return false
-        }
-
-        private fun checkOrienteering(codesString: String): Boolean {
-            val check = Regex("(\\b\\d+\\b\\s*)*")
-            if (codesString.matches(check)) {
-                return true
-            }
-            return false
-        }
-
-        private fun checkCustom(codesString: String): Boolean {
-            return false
-        }
-
-        fun parseIntoControlPoints(
-            siCodes: String,
-            categoryId: UUID,
-            eventId: UUID
-        ): ArrayList<ControlPoint>? {
-
-            //Handle empty CP situation
-            if (siCodes.isEmpty()) {
-                return null
-            }
-            //Replace multiple whitespaces with one and trim the spaces
-            val replaced = siCodes.replace("\\s+".toRegex(), " ").trim()
-
-            val regex = Regex("(\\b\\d+(?:-\\d+)?[!b]?\\s*)*")
-            val match = regex.find(replaced)
-
-            val controlPoints = ArrayList<ControlPoint>()
-
-            var order = 0
-            var round = 0
-            var siText: String
-            var points = 1
-
-            val orig = match?.value.toString().split(' ')
-
-            orig.forEach { cp ->
-                if (cp.contains("-")) {
-                    siText = cp.substringBefore("-")
-                    points = cp.substringAfter("-", "").toInt()
-                } else {
-                    siText = cp
-                }
-
-                val beacon = siText.endsWith("b", true)
-                val separator = siText.endsWith("!")
-
-                //Get the code
-                if (beacon || separator) {
-                    siText = siText.dropLast(1)
-                }
-
-                val controlPoint = ControlPoint(
-                    UUID.randomUUID(),
-                    eventId, categoryId,
-                    siText.toInt(),
-                    order,
-                    round,
-                    points,
-                    beacon,
-                    separator
-                )
-                controlPoints.add(controlPoint)
-
-                if (separator) {
-                    round++
-                }
-                order++
-            }
-            return controlPoints
-        }
+//        fun parseIntoControlPoints(
+//            siCodes: String,
+//            categoryId: UUID,
+//            eventId: UUID
+//        ): ArrayList<ControlPoint>? {
+//
+//            //Handle empty CP situation
+//            if (siCodes.isEmpty()) {
+//                return null
+//            }
+//            //Replace multiple whitespaces with one and trim the spaces
+//            val replaced = siCodes.replace("\\s+".toRegex(), " ").trim()
+//
+//            val regex = Regex("(\\b\\d+(?:-\\d+)?[!b]?\\s*)*")
+//            val match = regex.find(replaced)
+//
+//            val controlPoints = ArrayList<ControlPoint>()
+//
+//            var order = 0
+//            var round = 0
+//            var siText: String
+//            var points = 1
+//
+//            val orig = match?.value.toString().split(' ')
+//
+//            orig.forEach { cp ->
+//                if (cp.contains("-")) {
+//                    siText = cp.substringBefore("-")
+//                    points = cp.substringAfter("-", "").toInt()
+//                } else {
+//                    siText = cp
+//                }
+//
+//                val beacon = siText.endsWith("b", true)
+//                val separator = siText.endsWith("!")
+//
+//                //Get the code
+//                if (beacon || separator) {
+//                    siText = siText.dropLast(1)
+//                }
+//
+//                val controlPoint = ControlPoint(
+//                    UUID.randomUUID(),
+//                    eventId, categoryId,
+//                    siText.toInt(),
+//                    order,
+//                    round,
+//                    points,
+//                    beacon,
+//                    separator
+//                )
+//                controlPoints.add(controlPoint)
+//
+//                if (separator) {
+//                    round++
+//                }
+//                order++
+//            }
+//            return controlPoints
+//        }
     }
 }

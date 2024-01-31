@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <EditText
+        android:id="@+id/control_point_item_name"
+        android:layout_width="40dp"
+        android:layout_height="45dp"
+        android:layout_weight="1"
+        android:ems="10"
+        android:textColor="@color/black"
+        android:hint="@string/name"
+        android:inputType="text"
+        android:maxLength="3" />
+
+    <EditText
+        android:id="@+id/control_point_item_code"
+        android:layout_width="40dp"
+        android:layout_height="45dp"
+        android:layout_weight="1"
+        android:ems="10"
+        android:textColor="@color/black"
+        android:hint="@string/readout_detail_code"
+        android:inputType="numberSigned"
+        android:maxLength="3" />
+
+    <EditText
+        android:id="@+id/control_point_item_points"
+        android:layout_width="40dp"
+        android:layout_height="45dp"
+        android:layout_weight="1"
+        android:ems="10"
+        android:textColor="@color/black"
+        android:hint="@string/points"
+        android:inputType="numberSigned"
+        android:maxLength="3" />
+
+    <CheckBox
+        android:id="@+id/control_point_item_separator"
+        android:layout_width="wrap_content"
+        android:textColor="@color/black"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="S" />
+
+    <CheckBox
+        android:id="@+id/control_point_item_beacon"
+        android:layout_width="wrap_content"
+        android:textColor="@color/black"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="B" />
+
+    <ImageButton
+        android:id="@+id/control_point_item_add_btn"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:src="@drawable/ic_add" />
+
+    <ImageButton
+        android:id="@+id/control_point_item_delete_btn"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:src="@drawable/ic_delete" />
+
+</LinearLayout>

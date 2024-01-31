@@ -11,6 +11,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -18,6 +19,7 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import java.time.Duration
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
@@ -30,18 +32,21 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
     private lateinit var category: Category
 
-    private lateinit var nameTextView: TextInputEditText
+    private lateinit var nameEditText: TextInputEditText
     private lateinit var sameTypeCheckBox: CheckBox
     private lateinit var eventTypeLayout: TextInputLayout
+    private lateinit var limitEditText: TextInputEditText
+    private lateinit var limitLayout: TextInputLayout
     private lateinit var eventTypePicker: MaterialAutoCompleteTextView
     private lateinit var ageBasedCheckBox: CheckBox
     private lateinit var minYearLayout: TextInputLayout
     private lateinit var maxYearLayout: TextInputLayout
-    private lateinit var minYearTextView: TextInputEditText
-    private lateinit var maxYearTextView: TextInputEditText
-    private lateinit var siCodesTextView: TextInputEditText
-    private lateinit var lengthTextView: TextInputEditText
-    private lateinit var climbTextView: TextInputEditText
+    private lateinit var minYearEditText: TextInputEditText
+    private lateinit var maxYearEditText: TextInputEditText
+    private lateinit var lengthEditText: TextInputEditText
+    private lateinit var climbEditText: TextInputEditText
+
+    private lateinit var controlPointRecyclerView: RecyclerView
 
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
@@ -61,18 +66,22 @@ class CategoryCreateDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.add_dialog)
 
-        nameTextView = view.findViewById(R.id.category_dialog_name)
+        nameEditText = view.findViewById(R.id.category_dialog_name)
         sameTypeCheckBox = view.findViewById(R.id.category_dialog_same_type_checkbox)
         eventTypeLayout = view.findViewById(R.id.category_dialog_type_layout)
+        limitEditText = view.findViewById(R.id.category_dialog_limit)
+        limitLayout = view.findViewById(R.id.category_dialog_limit_layout)
         eventTypePicker = view.findViewById(R.id.category_dialog_type)
         ageBasedCheckBox = view.findViewById(R.id.category_dialog_ageBased_checkbox)
         minYearLayout = view.findViewById(R.id.category_dialog_min_year_layout)
         maxYearLayout = view.findViewById(R.id.category_dialog_max_year_layout)
-        minYearTextView = view.findViewById(R.id.category_dialog_min_year)
-        maxYearTextView = view.findViewById(R.id.category_dialog_max_year)
-        siCodesTextView = view.findViewById(R.id.category_dialog_si_codes)
-        lengthTextView = view.findViewById(R.id.category_dialog_length)
-        climbTextView = view.findViewById(R.id.category_dialog_climb)
+        minYearEditText = view.findViewById(R.id.category_dialog_min_year)
+        maxYearEditText = view.findViewById(R.id.category_dialog_max_year)
+        lengthEditText = view.findViewById(R.id.category_dialog_length)
+        climbEditText = view.findViewById(R.id.category_dialog_climb)
+
+        controlPointRecyclerView =
+            view.findViewById(R.id.category_dialog_control_point_recycler_view)
 
         cancelButton = view.findViewById(R.id.category_dialog_cancel)
         okButton = view.findViewById(R.id.category_dialog_ok)
@@ -101,7 +110,9 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 false,
                 -1,
                 -1,
-                event.eventType, 120, "",
+                true,
+                event.eventType, event.timeLimit,
+                "",
                 0F,
                 0F,
                 0
@@ -112,35 +123,38 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 dataProcessor.eventTypeToString(event.eventType),
                 false
             )
+            limitEditText.setText(event.timeLimit.toMinutes().toString())
+
             eventTypeLayout.isEnabled = false
+            limitLayout.isEnabled = false
             minYearLayout.isEnabled = false
             maxYearLayout.isEnabled = false
 
-        } else {
+        }
+
+        //Edit category
+        else {
             dialog?.setTitle(R.string.category_edit)
             category = args.category!!
-            nameTextView.setText(category.name)
+            nameEditText.setText(category.name)
 
-            //Preset event type
-            if (category.eventType != event.eventType) {
+            if (category.differentProperties) {
                 sameTypeCheckBox.isChecked = false
-                eventTypePicker.setText(
-                    dataProcessor.eventTypeToString(category.eventType),
-                    false
-                )
             } else {
-                sameTypeCheckBox.isChecked = true
-                eventTypePicker.setText(
-                    dataProcessor.eventTypeToString(event.eventType),
-                    false
-                )
                 eventTypeLayout.isEnabled = false
+                limitLayout.isEnabled = true
             }
+
+            eventTypePicker.setText(
+                dataProcessor.eventTypeToString(category.eventType),
+                false
+            )
+            limitEditText.setText(category.timeLimit.toMinutes().toString())
 
             //Preset the age pickers
             if (category.ageBased) {
-                minYearTextView.setText(category.minYear.toString())
-                maxYearTextView.setText(category.maxYear.toString())
+                minYearEditText.setText(category.minYear.toString())
+                maxYearEditText.setText(category.maxYear.toString())
                 ageBasedCheckBox.isChecked = true
                 minYearLayout.isEnabled = true
                 maxYearLayout.isEnabled = true
@@ -151,18 +165,13 @@ class CategoryCreateDialogFragment : DialogFragment() {
             }
 
             if (category.length != 0F) {
-                lengthTextView.setText(category.length.toString())
+                lengthEditText.setText(category.length.toString())
             }
 
             if (category.climb != 0F) {
-                climbTextView.setText(category.climb.toString())
+                climbEditText.setText(category.climb.toString())
             }
-
-
         }
-
-        //set SI codes
-        siCodesTextView.setText(category.siCodes)
 
         //Set the event type checkbox functionality
         sameTypeCheckBox.setOnClickListener {
@@ -171,11 +180,15 @@ class CategoryCreateDialogFragment : DialogFragment() {
                     dataProcessor.eventTypeToString(event.eventType),
                     false
                 )
+                limitEditText.setText(event.timeLimit.toMinutes().toString())
+
                 eventTypeLayout.isEnabled = false
+                limitLayout.isEnabled = false
             }
             //Hide the shading and enable input
             else {
                 eventTypeLayout.isEnabled = true
+                limitLayout.isEnabled = true
             }
         }
 
@@ -185,31 +198,51 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 minYearLayout.isEnabled = true
                 maxYearLayout.isEnabled = true
             } else {
-                minYearTextView.setText("")
-                maxYearTextView.setText("")
+                minYearEditText.setText("")
+                maxYearEditText.setText("")
                 minYearLayout.isEnabled = false
                 maxYearLayout.isEnabled = false
             }
         }
+
+        //Set the punches
+        val controlPoints =
+            ArrayList(selectedEventViewModel.getControlPointsByCategory(category.id))
+        controlPointRecyclerView.adapter = ControlPointRecyclerViewAdapter(controlPoints)
     }
 
     private fun checkFields(): Boolean {
         var valid = true
 
-        if (nameTextView.text?.isBlank() == true) {
-            nameTextView.error = getString(R.string.required)
+        if (nameEditText.text?.isBlank() == true) {
+            nameEditText.error = getString(R.string.required)
             valid = false
         }
+
+        if (!sameTypeCheckBox.isChecked) {
+            if (limitEditText.text?.isBlank() == false) {
+                try {
+                    Duration.ofMinutes(limitEditText.text.toString().toLong())
+                } catch (e: Exception) {
+                    limitEditText.error = getString(R.string.invalid)
+                    valid = false
+                }
+            } else {
+                limitEditText.error = getString(R.string.required)
+                valid = false
+            }
+        }
+
         if (ageBasedCheckBox.isChecked) {
-            val minYear: String = minYearTextView.text.toString()
-            val maxYear: String = maxYearTextView.text.toString()
+            val minYear: String = minYearEditText.text.toString()
+            val maxYear: String = maxYearEditText.text.toString()
 
             if (minYear.isBlank()) {
-                minYearTextView.error = getString(R.string.required)
+                minYearEditText.error = getString(R.string.required)
                 valid = false
             }
             if (maxYear.isBlank()) {
-                maxYearTextView.error = getString(R.string.required)
+                maxYearEditText.error = getString(R.string.required)
                 valid = false
             }
 
@@ -217,31 +250,27 @@ class CategoryCreateDialogFragment : DialogFragment() {
             try {
                 formatter.parse(minYear)
             } catch (e: Exception) {
-                minYearTextView.error = getString(R.string.nonexistent_year)
+                minYearEditText.error = getString(R.string.nonexistent_year)
                 valid = false
             }
 
             try {
                 formatter.parse(maxYear)
             } catch (e: Exception) {
-                maxYearTextView.error = getString(R.string.nonexistent_year)
+                maxYearEditText.error = getString(R.string.nonexistent_year)
                 valid = false
             }
 
             if (maxYear < minYear) {
-                maxYearTextView.error = getString(R.string.invalid_year_range)
+                maxYearEditText.error = getString(R.string.invalid_year_range)
                 valid = false
             }
         }
 
-        //Check SI codes
-        val siCodes: String = siCodesTextView.text.toString()
+        //Check control points
         val eventType = dataProcessor.eventTypeStringToEnum(eventTypePicker.text.toString())
 
-        if (!dataProcessor.checkCodesString(siCodes, eventType)) {
-            siCodesTextView.error = getString(R.string.invalid_codes)
-            valid = false
-        }
+
         return valid
     }
 
@@ -249,24 +278,25 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
         okButton.setOnClickListener {
             if (checkFields()) {
-                category.name = nameTextView.text.toString()
+                category.name = nameEditText.text.toString()
+                category.differentProperties = !sameTypeCheckBox.isChecked
                 category.eventType =
                     dataProcessor.eventTypeStringToEnum(eventTypePicker.text.toString())
+                category.timeLimit = Duration.ofMinutes(limitEditText.text.toString().toLong())
                 category.ageBased = ageBasedCheckBox.isChecked
 
                 if (category.ageBased) {
-                    category.minYear = (minYearTextView.text.toString()).toInt()
-                    category.maxYear = (maxYearTextView.text.toString()).toInt()
+                    category.minYear = (minYearEditText.text.toString()).toInt()
+                    category.maxYear = (maxYearEditText.text.toString()).toInt()
                 }
 
-                if (lengthTextView.text?.isBlank() == false) {
-                    category.length = lengthTextView.text.toString().toFloat()
+                if (lengthEditText.text?.isBlank() == false) {
+                    category.length = lengthEditText.text.toString().toFloat()
                 }
-                if (climbTextView.text?.isBlank() == false) {
-                    category.climb = climbTextView.text.toString().toFloat()
+                if (climbEditText.text?.isBlank() == false) {
+                    category.climb = climbEditText.text.toString().toFloat()
                 }
 
-                category.siCodes = siCodesTextView.text.toString()
                 if (args.create) {
                     selectedEventViewModel.createCategory(category)
                 } else {

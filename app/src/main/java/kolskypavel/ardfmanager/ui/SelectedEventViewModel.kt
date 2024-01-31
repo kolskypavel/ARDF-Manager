@@ -6,9 +6,11 @@ import androidx.lifecycle.ViewModel
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
+import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
+import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
 import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
@@ -93,25 +95,50 @@ class SelectedEventViewModel : ViewModel() {
     fun deleteCategory(categoryId: UUID) =
         CoroutineScope(Dispatchers.IO).launch { dataProcessor.deleteCategory(categoryId) }
 
+
+    fun getControlPointsByCategory(categoryId: UUID): ArrayList<ControlPoint> {
+        val controlPoints =
+            runBlocking {
+                ArrayList(dataProcessor.getControlPointsByCategory(categoryId))
+            }
+
+        //Add the first control point
+        if (controlPoints.isEmpty()) {
+            controlPoints.add(
+                ControlPoint(
+                    UUID.randomUUID(),
+                    dataProcessor.getCurrentEvent().id,
+                    categoryId,
+                    null,
+                    "", 0, 0, 0,
+                    beacon = false, separator = false
+                )
+            )
+        }
+        return controlPoints
+    }
+
+
     //Competitor
     fun createCompetitor(
         competitor: Competitor,
         modifiedPunches: Boolean,
-        punches: ArrayList<Punch>
+        punches: ArrayList<Punch>,
+        manualStatus: RaceStatus?
     ) =
         CoroutineScope(Dispatchers.IO).launch {
-            dataProcessor.createCompetitor(
+            dataProcessor.createOrUpdateCompetitor(
                 competitor,
                 modifiedPunches,
-                punches
+                punches,
+                manualStatus
             )
         }
 
     fun updateCompetitor(competitor: Competitor, changed: Boolean) =
         CoroutineScope(Dispatchers.IO).launch {
             dataProcessor.updateCompetitor(
-                competitor,
-                changed
+                competitor
             )
         }
 

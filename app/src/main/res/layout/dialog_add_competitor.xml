@@ -8,6 +8,7 @@
         style="@style/add_dialog"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:id="@+id/competitor_dialog_main_layout"
         android:maxWidth="300dp"
         android:orientation="vertical"
         android:paddingHorizontal="10dp">
@@ -199,14 +200,39 @@
             android:text="@string/competitor_edit_punches"
             android:textColor="@color/black" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/competitor_dialog_punch_recycler_view"
+        <LinearLayout
+            android:id="@+id/competitor_dialog_data_edit_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:theme="@style/punch_record_recycler"
-            app:layoutManager="LinearLayoutManager" />
+            android:orientation="vertical">
 
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/competitor_dialog_status_layout"
+                style="@style/dialog_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.6"
+                android:hint="@string/readout_detail_status"
+                android:inputType="none"
+                android:textColor="@color/black">
+
+                <AutoCompleteTextView
+                    android:id="@+id/competitor_dialog_status"
+                    style="@style/dialog_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:focusable="false" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/competitor_dialog_punch_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:theme="@style/punch_record_recycler"
+                app:layoutManager="LinearLayoutManager" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"

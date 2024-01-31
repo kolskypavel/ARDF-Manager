@@ -125,14 +125,13 @@ class DataProcessor private constructor(context: Context) {
     suspend fun createCategory(category: Category) {
         runBlocking {
             ardfRepository.createCategory(category)
-            createControlPoints(category.siCodes, category)
+
         }
     }
 
     suspend fun updateCategory(category: Category) {
         ardfRepository.deleteControlPointsByCategory(category.id)
         ardfRepository.updateCategory(category)
-        createControlPoints(category.siCodes, category)
         updateResultsForCategory(category.id, false)
     }
 
@@ -150,6 +149,7 @@ class DataProcessor private constructor(context: Context) {
     fun getCompetitorsForEvent(eventId: UUID) =
         ardfRepository.getCompetitorsByEvent(eventId)
 
+
     suspend fun getCompetitor(id: UUID): Competitor = ardfRepository.getCompetitor(id)
 
     suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
@@ -164,26 +164,28 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    suspend fun createCompetitor(
+    suspend fun createOrUpdateCompetitor(
         competitor: Competitor,
         modifiedPunches: Boolean,
-        punches: ArrayList<Punch>
+        punches: ArrayList<Punch>,
+        manualStatus: RaceStatus?
     ) {
         ardfRepository.createCompetitor(competitor)
 
         //If punches were added, process and save them
         if (modifiedPunches) {
-            resultsProcessor?.processManualPunches(competitor.id, competitor.categoryId, punches)
+            resultsProcessor?.processManualPunches(
+                competitor.id,
+                competitor.categoryId,
+                punches,
+                manualStatus
+            )
         }
         updateResultsForCompetitor(competitor.id, false)
     }
 
-    suspend fun updateCompetitor(competitor: Competitor, changed: Boolean) {
+    suspend fun updateCompetitor(competitor: Competitor) =
         ardfRepository.updateCompetitor(competitor)
-        if (changed) {
-            updateResultsForCompetitor(competitor.id, false)
-        }
-    }
 
     suspend fun deleteCompetitor(id: UUID) {
         ardfRepository.deleteCompetitor(id)
@@ -308,6 +310,12 @@ class DataProcessor private constructor(context: Context) {
     }
 
     //PUNCHES
+    suspend fun getPunchesByResult(resultId: UUID) =
+        ardfRepository.getPunchesByResult(resultId)
+
+    suspend fun getPunchesByCompetitor(competitorId: UUID) =
+        ardfRepository.getPunchesByCompetitor(competitorId)
+
     private suspend fun createPunch(punch: Punch) = ardfRepository.createPunch(punch)
 
     suspend fun createPunches(punches: ArrayList<Punch>) {
@@ -318,24 +326,9 @@ class DataProcessor private constructor(context: Context) {
         appContext.get()?.let { resultsProcessor?.processCardData(cardData, event, it) }
 
 
-    suspend fun getPunchesByResult(resultId: UUID) =
-        ardfRepository.getPunchesByResult(resultId)
+    suspend fun deletePunchesForResult(resultId: UUID) =
+        ardfRepository.deletePunchesByResultId(resultId)
 
-    suspend fun getPunchesByCompetitor(competitorId: UUID) =
-        ardfRepository.getPunchesByCompetitor(competitorId)
-
-    //Parsing categories to control points
-    fun checkCodesString(string: String, eventType: EventType) =
-        ResultsProcessor.checkCodesString(string, eventType)
-
-    private suspend fun createControlPoints(
-        siCodes: String,
-        category: Category
-    ) {
-        val processed =
-            ResultsProcessor.parseIntoControlPoints(siCodes, category.id, category.eventId)
-        processed?.forEach { cp -> ardfRepository.createControlPoint(cp) }
-    }
 
     //SportIdent manipulation
     fun connectDevice(usbDevice: UsbDevice) {

@@ -30,22 +30,45 @@
         android:checked="true"
         android:text="@string/same_category_type" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/category_dialog_type_layout"
-        style="@style/dialog_dropdown"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/type"
-        android:textColor="@color/black">
+        android:orientation="horizontal">
 
-        <AutoCompleteTextView
-            android:id="@+id/category_dialog_type"
-            style="@style/dialog_text"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/category_dialog_type_layout"
+            style="@style/dialog_dropdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="none"
-            app:simpleItems="@array/event_types_array" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_weight="1"
+            android:hint="@string/type"
+            android:textColor="@color/black">
+
+            <AutoCompleteTextView
+                android:id="@+id/category_dialog_type"
+                style="@style/dialog_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                app:simpleItems="@array/event_types_array" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/category_dialog_limit_layout"
+            style="@style/dialog_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/limit">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/category_dialog_limit"
+                style="@style/dialog_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="numberSigned" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
 
     <CheckBox
         android:id="@+id/category_dialog_ageBased_checkbox"
@@ -97,24 +120,6 @@
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-
-        style="@style/dialog_textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:hint="@string/si_codes"
-        app:counterTextColor="@color/black">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/category_dialog_si_codes"
-            style="@style/dialog_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:digits="0123456789-!B " />
-
-    </com.google.android.material.textfield.TextInputLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -157,6 +162,22 @@
         </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/control_points"
+        android:textStyle="bold" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/category_dialog_control_point_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:padding="10dp"
+        android:theme="@style/punch_record_recycler"
+        app:layoutManager="LinearLayoutManager" />
 
     <LinearLayout
         android:layout_width="wrap_content"

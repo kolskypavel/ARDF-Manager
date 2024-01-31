@@ -6,6 +6,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import kolskypavel.ardfmanager.backend.room.enums.EventType
 import java.io.Serializable
+import java.time.Duration
 import java.util.UUID
 
 @Entity(
@@ -21,8 +22,9 @@ data class Category(
     @ColumnInfo(name = "age_based") var ageBased: Boolean,
     @ColumnInfo(name = "min_year") var minYear: Int,
     @ColumnInfo(name = "max_year") var maxYear: Int,
+    @ColumnInfo(name = "different") var differentProperties: Boolean,
     @ColumnInfo(name = "event_type") var eventType: EventType,
-    @ColumnInfo(name = "limit") var limit: Int,
+    @ColumnInfo(name = "limit") var timeLimit: Duration,
     @ColumnInfo(name = "si_codes") var siCodes: String,
     @ColumnInfo(name = "length") var length: Float,
     @ColumnInfo(name = "climb") var climb: Float,

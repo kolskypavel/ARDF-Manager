@@ -21,6 +21,7 @@ import kolskypavel.ardfmanager.backend.room.enums.EventLevel
 import kolskypavel.ardfmanager.backend.room.enums.EventType
 import kolskypavel.ardfmanager.ui.pickers.DatePickerFragment
 import kolskypavel.ardfmanager.ui.pickers.TimePickerFragment
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
@@ -32,6 +33,7 @@ class EventCreateDialogFragment : DialogFragment() {
     private lateinit var nameEditText: TextInputEditText
     private lateinit var dateView: TextInputEditText
     private lateinit var startTimeView: TextInputEditText
+    private lateinit var limitEditText: TextInputEditText
     private lateinit var eventTypePicker: MaterialAutoCompleteTextView
     private lateinit var eventLevelPicker: MaterialAutoCompleteTextView
     private lateinit var eventBandPicker: MaterialAutoCompleteTextView
@@ -56,6 +58,7 @@ class EventCreateDialogFragment : DialogFragment() {
         nameEditText = view.findViewById(R.id.event_dialog_name)
         dateView = view.findViewById(R.id.event_dialog_date)
         startTimeView = view.findViewById(R.id.event_dialog_start_time)
+        limitEditText = view.findViewById(R.id.event_dialog_limit)
         eventTypePicker = view.findViewById(R.id.category_dialog_type)
         eventLevelPicker = view.findViewById(R.id.event_dialog_level)
         eventBandPicker = view.findViewById(R.id.event_dialog_band)
@@ -65,7 +68,6 @@ class EventCreateDialogFragment : DialogFragment() {
         eventTypePicker.isSaveEnabled = false
         eventLevelPicker.isSaveEnabled = false
         eventBandPicker.isSaveEnabled = false
-
 
         populateFields()
         setButtons()
@@ -107,7 +109,8 @@ class EventCreateDialogFragment : DialogFragment() {
                 LocalDate.now(), LocalTime.now(),
                 EventType.CLASSICS,
                 EventLevel.PRACTICE,
-                EventBand.M80
+                EventBand.M80,
+                Duration.ofMinutes(120)
             )
         } else {
             event = args.event!!
@@ -117,6 +120,7 @@ class EventCreateDialogFragment : DialogFragment() {
 
         dateView.setText(event.date.toString())
         startTimeView.setText(dataProcessor.getHoursMinutesFromTime(event.startTime))
+        limitEditText.setText("120") //TODO: Fix with default values from settings
 
         eventTypePicker.setText(dataProcessor.eventTypeToString(event.eventType), false)
         eventLevelPicker.setText(dataProcessor.eventLevelToString(event.eventLevel), false)
@@ -136,6 +140,8 @@ class EventCreateDialogFragment : DialogFragment() {
                     dataProcessor.eventLevelStringToEnum(eventLevelPicker.text.toString())
                 event.eventBand =
                     dataProcessor.eventBandStringToEnum(eventBandPicker.text.toString())
+
+                event.timeLimit = Duration.ofMinutes(limitEditText.text.toString().toLong())
 
                 setFragmentResult(
                     REQUEST_EVENT_MODIFICATION, bundleOf(
@@ -162,6 +168,19 @@ class EventCreateDialogFragment : DialogFragment() {
             nameEditText.error = getString(R.string.required)
             valid = false
         }
+
+        if (limitEditText.text?.isBlank() == false) {
+            try {
+                Duration.ofMinutes(limitEditText.text.toString().toLong())
+            } catch (e: Exception) {
+                limitEditText.error = getString(R.string.invalid)
+                valid = false
+            }
+        } else {
+            limitEditText.error = getString(R.string.required)
+            valid = false
+        }
+
         return valid
     }
 

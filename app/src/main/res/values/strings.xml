@@ -17,6 +17,7 @@
     <string name="level">Level</string>
     <string name="type">Event type</string>
     <string name="band">Band</string>
+    <string name="limit">Limit (min)</string>
 
     <string name="event_create">Create event</string>
     <string name="event_edit">Edit event</string>
@@ -89,10 +90,13 @@
     <string name="last_name">Last name</string>
     <string name="length">Length (km)</string>
     <string name="climb">Climb (m)</string>
+    <string name="control_points">Control points</string>
     <string name="nonexistent_year">Invalid year</string>
     <string name="invalid_codes">Invalid SI codes</string>
     <string name="invalid_year_range">Max year is smaller than min year.</string>
-    <string name="si_codes_info">Input a list of codes, separated by space. Each code can have assigned score to it, separated by dash(–), default is 1. S is marked with an ! and beacon with B. Examples: 31 32 33 34 99B, 32–2 54–3 56–3 61! 53 52 </string>
+
+    <string name="separator">Separator</string>
+    <string name="beacon">Beacon</string>
 
     <!--Competitors-->
     <string name="competitor">Competitor</string>
@@ -153,8 +157,8 @@
     <string name="punch_status_duplicate" translatable="false">+</string>
     <string name="punch_status_unknown" translatable="false">\?</string>
 
-    <string name="punch_type_start">S</string>
-    <string name="punch_type_finish">F</string>
+    <string name="punch_type_start" translatable="false">S</string>
+    <string name="punch_type_finish" translatable="false">F</string>
 
     <string name="race_status_valid">Valid</string>
     <string name="race_status_no_ranking">No ranking</string>
@@ -165,14 +169,14 @@
     <string name="race_status_not_processed">Not evaluated</string>
     <string name="race_status_error">Error</string>
 
-    <string name="race_status_valid_short">OK</string>
-    <string name="race_status_no_ranking_short">NRA</string>
-    <string name="race_status_disqualified_short">DQ</string>
-    <string name="race_status_did_not_finish_short">DNF</string>
-    <string name="race_status_over_limit_short">OVT</string>
-    <string name="race_status_unofficial_short">UNF</string>
-    <string name="race_status_not_processed_short">NPR</string>
-    <string name="race_status_error_short">ERR</string>
+    <string name="race_status_valid_short" translatable="false">OK</string>
+    <string name="race_status_no_ranking_short" translatable="false">NRA</string>
+    <string name="race_status_disqualified_short" translatable="false">DQ</string>
+    <string name="race_status_did_not_finish_short" translatable="false">DNF</string>
+    <string name="race_status_over_limit_short" translatable="false">OVT</string>
+    <string name="race_status_unofficial_short" translatable="false">UNF</string>
+    <string name="race_status_not_processed_short" translatable="false">NPR</string>
+    <string name="race_status_error_short" translatable="false">ERR</string>
 
     <string-array name="race_status_array">
         <item>@string/race_status_valid</item>

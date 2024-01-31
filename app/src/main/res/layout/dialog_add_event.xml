@@ -21,6 +21,22 @@
             android:layout_height="wrap_content" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/dialog_dropdown"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/type"
+        android:textColor="@color/black">
+
+        <AutoCompleteTextView
+            android:id="@+id/category_dialog_type"
+            style="@style/dialog_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            app:simpleItems="@array/event_types_array" />
+    </com.google.android.material.textfield.TextInputLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,9 +55,9 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_dialog_date"
+                style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/dialog_text"
                 android:clickable="true"
                 android:focusable="false" />
 
@@ -58,31 +74,15 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/event_dialog_start_time"
+                style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                style="@style/dialog_text"
                 android:focusable="false" />
 
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/dialog_dropdown"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/type"
-        android:textColor="@color/black">
-
-        <AutoCompleteTextView
-            android:id="@+id/category_dialog_type"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="none"
-            style="@style/dialog_text"
-            app:simpleItems="@array/event_types_array" />
-    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -99,10 +99,10 @@
 
             <AutoCompleteTextView
                 android:id="@+id/event_dialog_level"
+                style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none"
-                style="@style/dialog_text"
                 app:simpleItems="@array/event_levels_array" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -115,13 +115,28 @@
 
             <AutoCompleteTextView
                 android:id="@+id/event_dialog_band"
+                style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none"
-                style="@style/dialog_text"
                 app:simpleItems="@array/event_bands_array" />
         </com.google.android.material.textfield.TextInputLayout>
+
     </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/dialog_textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/limit">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/event_dialog_limit"
+            style="@style/dialog_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="numberSigned" />
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"

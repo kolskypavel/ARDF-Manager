@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.LinearLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -18,8 +19,10 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
+import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import kotlinx.coroutines.runBlocking
@@ -30,6 +33,7 @@ import java.util.UUID
 class CompetitorCreateDialogFragment : DialogFragment() {
     private val args: CompetitorCreateDialogFragmentArgs by navArgs()
     private lateinit var selectedEventViewModel: SelectedEventViewModel
+    private val dataProcessor = DataProcessor.get()
 
     private lateinit var competitor: Competitor
     private var origSiNumber: Int? = null
@@ -38,6 +42,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
     private lateinit var categories: List<Category>
     private val categoryArr = ArrayList<String>()
+    private val statusArr = ArrayList<String>()
 
     private lateinit var firstNameTextView: TextInputEditText
     private lateinit var lastNameTextView: TextInputEditText
@@ -52,6 +57,8 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private lateinit var siNumberTextView: TextInputEditText
     private lateinit var siRentCheckBox: CheckBox
     private lateinit var editPunchesSwitch: SwitchMaterial
+    private lateinit var dataEditLinearLayout: LinearLayout
+    private lateinit var statusPicker: MaterialAutoCompleteTextView
     private lateinit var punchEditRecyclerView: RecyclerView
 
     private lateinit var okButton: Button
@@ -88,6 +95,9 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         siNumberTextView = view.findViewById(R.id.competitor_dialog_si_number)
         siRentCheckBox = view.findViewById(R.id.competitor_dialog_si_rent)
         editPunchesSwitch = view.findViewById(R.id.competitor_dialog_edit_punches)
+
+        dataEditLinearLayout = view.findViewById(R.id.competitor_dialog_data_edit_layout)
+        statusPicker = view.findViewById(R.id.competitor_dialog_status)
         punchEditRecyclerView = view.findViewById(R.id.competitor_dialog_punch_recycler_view)
 
         cancelButton = view.findViewById(R.id.competitor_dialog_cancel)
@@ -183,17 +193,29 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                     competitor
                 ), requireContext()
             )
-        punchEditRecyclerView.visibility = View.GONE
+        dataEditLinearLayout.visibility = View.GONE
         //Toggle the visibility of the punch switch
         editPunchesSwitch.setOnCheckedChangeListener { _, checked ->
             if (checked) {
-                punchEditRecyclerView.visibility = View.VISIBLE
+                dataEditLinearLayout.visibility = View.VISIBLE
                 modifiedPunches = true
             } else {
-                punchEditRecyclerView.visibility = View.GONE
+                dataEditLinearLayout.visibility = View.GONE
                 modifiedPunches = false
             }
         }
+
+        //Populate the status options
+        for (status in RaceStatus.entries) {
+            statusArr.add(dataProcessor.raceStatusToString(status))
+        }
+
+        statusArr.add(0, getString(R.string.automatic))
+        val statusAdapter: ArrayAdapter<String> =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, statusArr)
+
+        statusPicker.setAdapter(statusAdapter)
+        statusPicker.setText(getString(R.string.automatic), false)
     }
 
     private fun setButtons() {
@@ -224,7 +246,8 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                     selectedEventViewModel.createCompetitor(
                         competitor,
                         modifiedPunches,
-                        (punchEditRecyclerView.adapter as PunchEditRecyclerViewAdapter).values
+                        (punchEditRecyclerView.adapter as PunchEditRecyclerViewAdapter).values,
+                        null
                     )
                 } else {
 

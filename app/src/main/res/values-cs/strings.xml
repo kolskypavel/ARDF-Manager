@@ -23,6 +23,7 @@
     <string name="event_delete">Odstranit závod</string>
     <string name="event_edit">Upravit závod</string>
     <string name="cancel">Zrušit</string>
+    <string name="limit">Limit (min)</string>
     <string name="event_create">Vytvořit událost</string>
     <string name="start_time">Čas startu</string>
     <string name="band">Pásmo</string>
@@ -100,4 +101,12 @@
     <string name="readout_delete_readout">Smazat vyčítání</string>
     <string name="readout_delete_readout_confirmation">Opravdu chcete smazat data čipu %1$d?</string>
     <string name="readout_create_category_from_readout">Vytvořit kategorii podle vyčítání</string>
+    <string name="race_status_valid">Validní</string>
+    <string name="race_status_no_ranking">Nehodnocen</string>
+    <string name="race_status_disqualified">Diskvalfikován</string>
+    <string name="race_status_did_not_finish">Nedokončil</string>
+    <string name="race_status_over_limit">Přes limit</string>
+    <string name="race_status_unofficial">Neoficiální</string>
+    <string name="race_status_not_processed">Nevyhodnoceno</string>
+    <string name="race_status_error">Chyba</string>
 </resources>

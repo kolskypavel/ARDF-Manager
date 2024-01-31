@@ -7,6 +7,7 @@ import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
 import kolskypavel.ardfmanager.backend.room.enums.EventType
 import java.io.Serializable
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
@@ -19,5 +20,6 @@ data class Event(
     @ColumnInfo(name = "start_time") var startTime: LocalTime,
     @ColumnInfo(name = "event_type") var eventType: EventType,
     @ColumnInfo(name = "event_level") var eventLevel: EventLevel,
-    @ColumnInfo(name = "event_band") var eventBand: EventBand
+    @ColumnInfo(name = "event_band") var eventBand: EventBand,
+    @ColumnInfo(name = "time_limit") var timeLimit: Duration
 ) : Serializable
