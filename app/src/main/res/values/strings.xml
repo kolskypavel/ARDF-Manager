@@ -26,44 +26,6 @@
     <string name="event_end">Close event</string>
     <string name="event_end_confirmation">Do you really want to close the current event?</string>
 
-    <string name="event_type_0">Classics</string>
-    <string name="event_type_1" translatable="false">Sprint</string>
-    <string name="event_type_2" translatable="false">Foxoring</string>
-    <string name="event_type_3">Orienteering</string>
-    <string name="event_type_4">Custom</string>
-
-    <string name="event_level_0">International</string>
-    <string name="event_level_1">National</string>
-    <string name="event_level_2">Regional</string>
-    <string name="event_level_3">District</string>
-    <string name="event_level_4">Practice</string>
-
-    <string name="band_80m" translatable="false">80m</string>
-    <string name="band_2m" translatable="false">2m</string>
-    <string name="band_combined">Combined</string>
-
-    <string-array name="event_types_array">
-        <item>@string/event_type_0</item>
-        <item>@string/event_type_1</item>
-        <item>@string/event_type_2</item>
-        <item>@string/event_type_3</item>
-        <item>@string/event_type_4</item>
-    </string-array>
-
-    <string-array name="event_levels_array">
-        <item>@string/event_level_0</item>
-        <item>@string/event_level_1</item>
-        <item>@string/event_level_2</item>
-        <item>@string/event_level_3</item>
-        <item>@string/event_level_4</item>
-    </string-array>
-
-    <string-array name="event_bands_array">
-        <item>@string/band_80m</item>
-        <item>@string/band_2m</item>
-        <item>@string/band_combined</item>
-    </string-array>
-
     <string name="ok" translatable="false">OK</string>
     <string name="cancel">Cancel</string>
     <string name="start_time">Start time</string>
@@ -85,6 +47,7 @@
     <string name="no_category">No category</string>
     <string name="category_create">Create category</string>
     <string name="category_edit">Edit category</string>
+    <string name="category_duplicate">Duplicate category</string>
     <string name="category_delete">Delete category</string>
     <string name="category_delete_confirmation">Do you really want to delete this category?</string>
     <string name="last_name">Last name</string>
@@ -94,6 +57,7 @@
     <string name="nonexistent_year">Invalid year</string>
     <string name="invalid_codes">Invalid SI codes</string>
     <string name="invalid_year_range">Max year is smaller than min year.</string>
+    <string name="last_beacon">Last control is a beacon</string>
 
     <string name="separator">Separator</string>
     <string name="beacon">Beacon</string>
@@ -177,6 +141,53 @@
     <string name="race_status_unofficial_short" translatable="false">UNF</string>
     <string name="race_status_not_processed_short" translatable="false">NPR</string>
     <string name="race_status_error_short" translatable="false">ERR</string>
+
+
+    <!--    Settings    -->
+    <string name="settings_general">General</string>
+    <string name="settings_results">Results</string>
+    <string name="settings_prints">Prints</string>
+    <string name="settings_help">Help</string>
+
+    <!--    DATA ARRAYS-->
+
+    <string name="event_type_0">Classics</string>
+    <string name="event_type_1" translatable="false">Sprint</string>
+    <string name="event_type_2" translatable="false">Foxoring</string>
+    <string name="event_type_3">Orienteering</string>
+    <string name="event_type_4">Custom</string>
+
+    <string name="event_level_0">International</string>
+    <string name="event_level_1">National</string>
+    <string name="event_level_2">Regional</string>
+    <string name="event_level_3">District</string>
+    <string name="event_level_4">Practice</string>
+
+    <string name="band_80m" translatable="false">80m</string>
+    <string name="band_2m" translatable="false">2m</string>
+    <string name="band_combined">Combined</string>
+
+    <string-array name="event_types_array">
+        <item>@string/event_type_0</item>
+        <item>@string/event_type_1</item>
+        <item>@string/event_type_2</item>
+        <item>@string/event_type_3</item>
+        <item>@string/event_type_4</item>
+    </string-array>
+
+    <string-array name="event_levels_array">
+        <item>@string/event_level_0</item>
+        <item>@string/event_level_1</item>
+        <item>@string/event_level_2</item>
+        <item>@string/event_level_3</item>
+        <item>@string/event_level_4</item>
+    </string-array>
+
+    <string-array name="event_bands_array">
+        <item>@string/band_80m</item>
+        <item>@string/band_2m</item>
+        <item>@string/band_combined</item>
+    </string-array>
 
     <string-array name="race_status_array">
         <item>@string/race_status_valid</item>

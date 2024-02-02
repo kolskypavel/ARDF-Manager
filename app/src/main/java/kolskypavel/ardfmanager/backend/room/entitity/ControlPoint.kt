@@ -15,7 +15,7 @@ data class ControlPoint(
     @ColumnInfo(name = "event_id") var eventId: UUID,
     @ColumnInfo(name = "category_id") var categoryId: UUID,
     @ColumnInfo(name = "si_code") var siCode: Int?,
-    @ColumnInfo(name = "name") var name: String,
+    @ColumnInfo(name = "name") var name: String?,
     var order: Int,
     var round: Int,
     var points: Int,

@@ -124,7 +124,6 @@ class PunchEditRecyclerViewAdapter(
                 PunchStatus.UNKNOWN
             )
         )
-
         notifyItemInserted(position + 1)
     }
 

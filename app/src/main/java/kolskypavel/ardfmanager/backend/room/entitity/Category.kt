@@ -25,7 +25,8 @@ data class Category(
     @ColumnInfo(name = "different") var differentProperties: Boolean,
     @ColumnInfo(name = "event_type") var eventType: EventType,
     @ColumnInfo(name = "limit") var timeLimit: Duration,
-    @ColumnInfo(name = "si_codes") var siCodes: String,
+    @ColumnInfo(name = "cp_names") var controlPointsNames: String,
+    @ColumnInfo(name = "cp_codes") var controlPointsCodes: String,
     @ColumnInfo(name = "length") var length: Float,
     @ColumnInfo(name = "climb") var climb: Float,
     @ColumnInfo(name = "order") var order: Int

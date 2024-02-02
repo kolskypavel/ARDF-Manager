@@ -9,6 +9,7 @@ import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
+import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Result
@@ -122,16 +123,17 @@ class DataProcessor private constructor(context: Context) {
 
     suspend fun getCategory(id: UUID) = ardfRepository.getCategory(id)
 
-    suspend fun createCategory(category: Category) {
+    suspend fun createCategory(category: Category, controlPoints: List<ControlPoint>) {
         runBlocking {
             ardfRepository.createCategory(category)
-
+            createControlPoints(controlPoints)
         }
     }
 
-    suspend fun updateCategory(category: Category) {
+    suspend fun updateCategory(category: Category, controlPoints: List<ControlPoint>) {
         ardfRepository.deleteControlPointsByCategory(category.id)
         ardfRepository.updateCategory(category)
+        createControlPoints(controlPoints)
         updateResultsForCategory(category.id, false)
     }
 
@@ -144,6 +146,26 @@ class DataProcessor private constructor(context: Context) {
     //CONTROL POINTS
     suspend fun getControlPointsByCategory(categoryId: UUID) =
         ardfRepository.getControlPointsByCategory(categoryId)
+
+    fun adjustControlPoints(
+        controlPoints: ArrayList<ControlPoint>,
+        eventType: EventType,
+        isBeaconLast: Boolean
+    ) = ResultsProcessor.adjustControlPoints(controlPoints, eventType, isBeaconLast)
+
+    private suspend fun createControlPoints(controlPoints: List<ControlPoint>) {
+        controlPoints.forEach { cp ->
+            ardfRepository.createControlPoint(cp)
+        }
+    }
+
+    suspend fun getControlPointByName(eventId: UUID, name: String) =
+        ardfRepository.getControlPointByName(eventId, name)
+
+
+    fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): Pair<String, String> =
+        resultsProcessor!!.getCodesNameFromControlPoints(controlPoints)
+
 
     //COMPETITORS
     fun getCompetitorsForEvent(eventId: UUID) =

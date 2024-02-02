@@ -503,6 +503,62 @@ class ResultsProcessor {
 
     companion object {
 
+        fun adjustControlPoints(
+            controlPoints: ArrayList<ControlPoint>,
+            eventType: EventType,
+            isBeaconLast: Boolean
+        ): List<ControlPoint> {
+
+            var order = 1
+            var round = 1
+
+            for (cp in controlPoints) {
+                cp.order = order
+                cp.round = round
+
+                if (cp.separator) {
+                    round++
+                }
+
+                if (cp.name == null) {
+                    cp.name = cp.siCode.toString()
+                }
+                cp.beacon = false
+                order++
+            }
+
+            //Mark last control as a beacon
+            if (eventType != EventType.ORIENTEERING && isBeaconLast) {
+                controlPoints.last().beacon = true
+            }
+            return controlPoints.toList()
+        }
+    }
+
+    fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): Pair<String, String> {
+        var names = ""
+        var codes = ""
+
+        for (cp in controlPoints) {
+            codes += cp.siCode
+
+            if (cp.beacon) {
+                codes += "B"
+            }
+            if (cp.separator) {
+                codes += "!"
+            }
+            if (cp.name != null) {
+                codes += " (" + cp.name + "), "
+                names += cp.name + " "
+            } else {
+                names += cp.siCode
+                names += " "
+            }
+        }
+        return Pair(names, codes)
+    }
+
 //        fun parseIntoControlPoints(
 //            siCodes: String,
 //            categoryId: UUID,
@@ -563,5 +619,4 @@ class ResultsProcessor {
 //            }
 //            return controlPoints
 //        }
-    }
 }

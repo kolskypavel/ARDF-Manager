@@ -44,7 +44,7 @@ class ResultsFragmentRecyclerViewAdapter(
             holder as GroupViewHolder
             holder.apply {
                 if (dataList.category != null) {
-                    categoryName.text = dataList.category.name
+                    categoryName.text = dataList.category.name + " (" + dataList.category.controlPointsNames +")"
                 } else {
                     categoryName.text = context.getText(R.string.no_category)
                 }

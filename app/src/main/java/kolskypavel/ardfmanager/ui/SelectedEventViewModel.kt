@@ -9,6 +9,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.enums.EventType
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
@@ -82,15 +83,16 @@ class SelectedEventViewModel : ViewModel() {
     //Category
     suspend fun getCategory(id: UUID) = dataProcessor.getCategory(id)
 
-    fun createCategory(category: Category) {
+    fun createCategory(category: Category, controlPoints: List<ControlPoint>) {
         CoroutineScope(Dispatchers.IO).launch {
-            dataProcessor.createCategory(category)
+            dataProcessor.createCategory(category, controlPoints)
         }
     }
 
-    fun updateCategory(category: Category) = CoroutineScope(Dispatchers.IO).launch {
-        dataProcessor.updateCategory(category)
-    }
+    fun updateCategory(category: Category, controlPoints: List<ControlPoint>) =
+        CoroutineScope(Dispatchers.IO).launch {
+            dataProcessor.updateCategory(category, controlPoints)
+        }
 
     fun deleteCategory(categoryId: UUID) =
         CoroutineScope(Dispatchers.IO).launch { dataProcessor.deleteCategory(categoryId) }
@@ -103,21 +105,29 @@ class SelectedEventViewModel : ViewModel() {
             }
 
         //Add the first control point
-        if (controlPoints.isEmpty()) {
-            controlPoints.add(
-                ControlPoint(
-                    UUID.randomUUID(),
-                    dataProcessor.getCurrentEvent().id,
-                    categoryId,
-                    null,
-                    "", 0, 0, 0,
-                    beacon = false, separator = false
-                )
+        controlPoints.add(
+            0,
+            ControlPoint(
+                UUID.randomUUID(),
+                dataProcessor.getCurrentEvent().id,
+                categoryId,
+                null,
+                null, 0, 0, 1,
+                beacon = false, separator = false
             )
-        }
+        )
         return controlPoints
     }
 
+
+    fun adjustControlPoints(
+        controlPoints: ArrayList<ControlPoint>,
+        eventType: EventType,
+        isBeaconLast: Boolean
+    ) = dataProcessor.adjustControlPoints(controlPoints, eventType, isBeaconLast)
+
+    fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): Pair<String, String> =
+        dataProcessor.getCodesNameFromControlPoints(controlPoints)
 
     //Competitor
     fun createCompetitor(

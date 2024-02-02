@@ -170,6 +170,14 @@
         android:text="@string/control_points"
         android:textStyle="bold" />
 
+    <CheckBox
+        android:id="@+id/category_dialog_last_beacon_checkbox"
+        style="@style/dialog_checkbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/last_beacon" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/category_dialog_control_point_recycler_view"
         android:layout_width="match_parent"

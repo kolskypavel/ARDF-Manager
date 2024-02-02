@@ -18,6 +18,8 @@ import com.google.android.material.textfield.TextInputLayout
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
+import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
+import kolskypavel.ardfmanager.backend.room.enums.EventType
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import java.time.Duration
 import java.time.format.DateTimeFormatter
@@ -29,7 +31,6 @@ class CategoryCreateDialogFragment : DialogFragment() {
     private val args: CategoryCreateDialogFragmentArgs by navArgs()
     private lateinit var selectedEventViewModel: SelectedEventViewModel
     private val dataProcessor = DataProcessor.get()
-
     private lateinit var category: Category
 
     private lateinit var nameEditText: TextInputEditText
@@ -45,7 +46,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
     private lateinit var maxYearEditText: TextInputEditText
     private lateinit var lengthEditText: TextInputEditText
     private lateinit var climbEditText: TextInputEditText
-
+    private lateinit var beaconLastCheckBox: CheckBox
     private lateinit var controlPointRecyclerView: RecyclerView
 
     private lateinit var okButton: Button
@@ -79,7 +80,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
         maxYearEditText = view.findViewById(R.id.category_dialog_max_year)
         lengthEditText = view.findViewById(R.id.category_dialog_length)
         climbEditText = view.findViewById(R.id.category_dialog_climb)
-
+        beaconLastCheckBox = view.findViewById(R.id.category_dialog_last_beacon_checkbox)
         controlPointRecyclerView =
             view.findViewById(R.id.category_dialog_control_point_recycler_view)
 
@@ -112,6 +113,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 -1,
                 true,
                 event.eventType, event.timeLimit,
+                "",
                 "",
                 0F,
                 0F,
@@ -180,16 +182,22 @@ class CategoryCreateDialogFragment : DialogFragment() {
                     dataProcessor.eventTypeToString(event.eventType),
                     false
                 )
+                eventTypeWatcher(event.eventType.value)
                 limitEditText.setText(event.timeLimit.toMinutes().toString())
 
                 eventTypeLayout.isEnabled = false
                 limitLayout.isEnabled = false
             }
+
             //Hide the shading and enable input
             else {
                 eventTypeLayout.isEnabled = true
                 limitLayout.isEnabled = true
+                eventTypePicker.setOnItemClickListener { _, _, position, _ ->
+                    eventTypeWatcher(position)
+                }
             }
+            setAdapter(null)
         }
 
         //Set the minimal check box functionality
@@ -206,9 +214,37 @@ class CategoryCreateDialogFragment : DialogFragment() {
         }
 
         //Set the punches
-        val controlPoints =
-            ArrayList(selectedEventViewModel.getControlPointsByCategory(category.id))
-        controlPointRecyclerView.adapter = ControlPointRecyclerViewAdapter(controlPoints)
+        setAdapter(ArrayList(selectedEventViewModel.getControlPointsByCategory(category.id)))
+    }
+
+    private fun setAdapter(values: ArrayList<ControlPoint>?) {
+        if (values != null) {
+            controlPointRecyclerView.adapter =
+                ControlPointRecyclerViewAdapter(
+                    values,
+                    selectedEventViewModel.event.value!!.id,
+                    category.id,
+                    category.eventType
+                )
+        } else {
+            controlPointRecyclerView.adapter =
+                ControlPointRecyclerViewAdapter(
+                    (controlPointRecyclerView.adapter as ControlPointRecyclerViewAdapter).getOriginalValues(),
+                    selectedEventViewModel.event.value!!.id,
+                    category.id,
+                    category.eventType
+                )
+        }
+    }
+
+    private fun eventTypeWatcher(position: Int) {
+        category.eventType = EventType.getByValue(position)!!
+        if (category.eventType == EventType.ORIENTEERING) {
+            beaconLastCheckBox.visibility = View.GONE
+        } else {
+            beaconLastCheckBox.visibility = View.VISIBLE
+        }
+        setAdapter(null)
     }
 
     private fun checkFields(): Boolean {
@@ -268,8 +304,9 @@ class CategoryCreateDialogFragment : DialogFragment() {
         }
 
         //Check control points
-        val eventType = dataProcessor.eventTypeStringToEnum(eventTypePicker.text.toString())
-
+        if (!(controlPointRecyclerView.adapter as ControlPointRecyclerViewAdapter).checkCodes()) {
+            valid = false
+        }
 
         return valid
     }
@@ -297,10 +334,23 @@ class CategoryCreateDialogFragment : DialogFragment() {
                     category.climb = climbEditText.text.toString().toFloat()
                 }
 
+                //Get control points
+                val parsed = selectedEventViewModel.adjustControlPoints(
+                    (controlPointRecyclerView.adapter as ControlPointRecyclerViewAdapter).getControlPoints(),
+                    category.eventType,
+                    beaconLastCheckBox.isChecked
+                )
+
+                val names = selectedEventViewModel.getCodesNameFromControlPoints(parsed)
+                //Set the code names
+                category.controlPointsNames = names.first
+                category.controlPointsCodes = names.second
+
+                //Create or update the category
                 if (args.create) {
-                    selectedEventViewModel.createCategory(category)
+                    selectedEventViewModel.createCategory(category, parsed)
                 } else {
-                    selectedEventViewModel.updateCategory(category)
+                    selectedEventViewModel.updateCategory(category, parsed)
                 }
                 setFragmentResult(
                     REQUEST_CATEGORY_MODIFICATION, bundleOf(

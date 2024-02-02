@@ -36,7 +36,7 @@ class CategoryRecyclerViewAdapter(
         holder.title.text = item.name
         holder.competitors.text = "TODO"
         holder.type.text = dataProcessor.eventTypeToString(item.eventType)
-        holder.siCodes.text = item.siCodes
+        holder.siCodes.text = item.controlPointsCodes
 
         holder.moreBtn.setOnClickListener {
 

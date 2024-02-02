@@ -6,10 +6,10 @@
         android:layout_height="wrap_content"
         android:title="@string/category_edit" />
     <item
-        android:id="@+id/menu_item_export_category"
+        android:id="@+id/menu_item_duplicate_category"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/category_edit" />
+        android:title="@string/category_duplicate" />
     <item
         android:id="@+id/menu_item_delete_category"
         android:layout_width="wrap_content"
