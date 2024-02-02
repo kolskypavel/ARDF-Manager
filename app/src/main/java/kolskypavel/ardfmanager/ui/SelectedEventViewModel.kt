@@ -80,6 +80,13 @@ class SelectedEventViewModel : ViewModel() {
         }
     }
 
+    fun updateEvent(event: Event) {
+        CoroutineScope(Dispatchers.IO).launch {
+            dataProcessor.updateEvent(event)
+            _event.postValue(event)
+        }
+    }
+
     //Category
     suspend fun getCategory(id: UUID) = dataProcessor.getCategory(id)
 

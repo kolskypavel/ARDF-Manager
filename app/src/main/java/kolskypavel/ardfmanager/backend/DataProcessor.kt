@@ -101,7 +101,7 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    fun modifyEvent(
+    fun updateEvent(
         event: Event
     ) {
         runBlocking {

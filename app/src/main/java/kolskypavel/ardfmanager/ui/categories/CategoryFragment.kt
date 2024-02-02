@@ -1,6 +1,7 @@
 package kolskypavel.ardfmanager.ui.categories
 
 import android.app.AlertDialog
+import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.LayoutInflater
@@ -18,11 +19,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
+import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.databinding.FragmentCategoriesBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment
 import kotlinx.coroutines.launch
 
 class CategoryFragment : Fragment() {
@@ -86,6 +90,37 @@ class CategoryFragment : Fragment() {
         setBackButton()
     }
 
+    private fun setFragmentMenuActions(menuItem: MenuItem): Boolean {
+
+        when (menuItem.itemId) {
+            R.id.category_menu_import_file -> {
+                return true
+            }
+
+            R.id.category_menu_edit_event -> {
+                findNavController().navigate(
+                    BottomNavDirections.modifyEventProperties(
+                        false,
+                        0,
+                        selectedEventViewModel.event.value
+                    )
+                )
+                return true
+            }
+
+            R.id.category_menu_global_settings -> {
+                findNavController().navigate(BottomNavDirections.openSettingsFromEvent())
+                return true
+            }
+
+            R.id.category_menu_about_app -> {
+                return true
+            }
+        }
+        return false
+    }
+
+
     private fun setFragmentListener() {
         setFragmentResultListener(CategoryCreateDialogFragment.REQUEST_CATEGORY_MODIFICATION) { _, bundle ->
             val create = bundle.getBoolean(CategoryCreateDialogFragment.BUNDLE_KEY_CREATE)
@@ -94,6 +129,19 @@ class CategoryFragment : Fragment() {
             if (!create) {
                 categoryRecyclerView.adapter?.notifyItemChanged(position)
             }
+        }
+
+        //Enable event modification from menu
+        setFragmentResultListener(EventCreateDialogFragment.REQUEST_EVENT_MODIFICATION) { _, bundle ->
+            val event: Event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                bundle.getSerializable(
+                    EventCreateDialogFragment.BUNDLE_KEY_EVENT,
+                    Event::class.java
+                )!!
+            } else {
+                bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT) as Event
+            }
+            selectedEventViewModel.updateEvent(event)
         }
     }
 
@@ -112,28 +160,6 @@ class CategoryFragment : Fragment() {
                 }
             }
         }
-    }
-
-    private fun setFragmentMenuActions(menuItem: MenuItem): Boolean {
-
-        when (menuItem.itemId) {
-            R.id.category_menu_import_file -> {
-                return true
-            }
-
-            R.id.category_menu_import_file -> {
-                return true
-            }
-
-            R.id.category_menu_global_settings -> {
-                return true
-            }
-
-            R.id.category_menu_about_app -> {
-                return true
-            }
-        }
-        return false
     }
 
     private fun confirmCategoryDeletion(category: Category) {

@@ -157,9 +157,11 @@ class ResultsProcessor {
             }
 
             //Add back start and finish
-            punches.add(0, startPunch!!)
-            punches.add(finishPunch!!)
-            result.runTime = SITime.split(startPunch.siTime!!, finishPunch.siTime!!)
+            if (startPunch != null && finishPunch != null) {
+                punches.add(0, startPunch)
+                punches.add(finishPunch)
+                result.runTime = SITime.split(startPunch.siTime!!, finishPunch.siTime!!)
+            }
 
             var index = 0
             //Calculate splits

@@ -22,9 +22,9 @@ class EventViewModel : ViewModel() {
         event: Event
     ) = dataProcessor.createEvent(event)
 
-    fun modifyEvent(
+    fun updateEvent(
         event: Event
-    ) = dataProcessor.modifyEvent(event)
+    ) = dataProcessor.updateEvent(event)
 
     fun deleteEvent(id: UUID) {
         CoroutineScope(Dispatchers.IO).launch {

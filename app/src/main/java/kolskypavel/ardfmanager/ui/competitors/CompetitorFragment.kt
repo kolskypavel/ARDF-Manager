@@ -1,9 +1,11 @@
 package kolskypavel.ardfmanager.ui.competitors
 
 import android.app.AlertDialog
+import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
@@ -17,11 +19,14 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
+import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.databinding.FragmentCompetitorsBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment
 import kotlinx.coroutines.launch
 
 class CompetitorFragment : Fragment() {
@@ -58,6 +63,9 @@ class CompetitorFragment : Fragment() {
         competitorRecyclerView = view.findViewById(R.id.competitor_recycler_view)
 
         competitorToolbar.inflateMenu(R.menu.fragment_menu_competitor)
+        competitorToolbar.setOnMenuItemClickListener {
+            return@setOnMenuItemClickListener setFragmentMenuActions(it)
+        }
 
         selectedEventViewModel.event.observe(viewLifecycleOwner) { event ->
             competitorToolbar.title = event.name
@@ -79,6 +87,36 @@ class CompetitorFragment : Fragment() {
         setRecyclerAdapter()
         setBackButton()
         setResultListener()
+    }
+
+    private fun setFragmentMenuActions(menuItem: MenuItem): Boolean {
+
+        when (menuItem.itemId) {
+            R.id.competitor_menu_import_file -> {
+                return true
+            }
+
+            R.id.competitor_menu_edit_event -> {
+                findNavController().navigate(
+                    BottomNavDirections.modifyEventProperties(
+                        false,
+                        0,
+                        selectedEventViewModel.event.value
+                    )
+                )
+                return true
+            }
+
+            R.id.competitor_menu_global_settings -> {
+                findNavController().navigate(BottomNavDirections.openSettingsFromEvent())
+                return true
+            }
+
+            R.id.competitor_menu_about_app -> {
+                return true
+            }
+        }
+        return false
     }
 
     private fun setRecyclerAdapter() {
@@ -158,6 +196,19 @@ class CompetitorFragment : Fragment() {
             if (!create) {
                 competitorRecyclerView.adapter?.notifyItemChanged(position)
             }
+        }
+
+        //Enable event modification from menu
+        setFragmentResultListener(EventCreateDialogFragment.REQUEST_EVENT_MODIFICATION) { _, bundle ->
+            val event: Event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                bundle.getSerializable(
+                    EventCreateDialogFragment.BUNDLE_KEY_EVENT,
+                    Event::class.java
+                )!!
+            } else {
+                bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT) as Event
+            }
+            selectedEventViewModel.updateEvent(event)
         }
     }
 

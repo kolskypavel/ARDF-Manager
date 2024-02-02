@@ -13,8 +13,11 @@
             android:id="@+id/openEvent"
             app:destination="@id/bottomNav" />
         <action
-            android:id="@+id/eventModification"
+            android:id="@+id/eventCreateOfModify"
             app:destination="@id/eventCreateDialogFragment" />
+        <action
+            android:id="@+id/openSettings"
+            app:destination="@id/settingsFragment" />
     </fragment>
 
     <navigation
@@ -113,6 +116,13 @@
                 android:name="readoutDetail"
                 app:argType="kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper" />
         </fragment>
+
+        <action
+            android:id="@+id/modifyEventProperties"
+            app:destination="@id/eventCreateDialogFragment" />
+        <action
+            android:id="@+id/openSettingsFromEvent"
+            app:destination="@id/settingsFragment" />
     </navigation>
 
     <dialog
@@ -157,5 +167,9 @@
             android:name="curTime"
             app:argType="java.time.LocalTime" />
     </dialog>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="kolskypavel.ardfmanager.ui.settings.SettingsFragment"
+        android:label="SettingsFragment" />
 
 </navigation>

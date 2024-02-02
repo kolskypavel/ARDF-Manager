@@ -1,23 +1,29 @@
 package kolskypavel.ardfmanager.ui.readouts
 
 import android.app.AlertDialog
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.databinding.FragmentResultsBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment
 import kolskypavel.ardfmanager.ui.results.ResultsFragmentRecyclerViewAdapter
 import kotlinx.coroutines.launch
 
@@ -51,15 +57,61 @@ class ResultsFragment : Fragment() {
 
         resultsToolbar = view.findViewById(R.id.results_toolbar)
         resultsRecyclerView = view.findViewById(R.id.results_recycler_view)
-        resultsToolbar.inflateMenu(R.menu.fragment_menu_results)
+        resultsToolbar.inflateMenu(R.menu.fragment_menu_result)
+        resultsToolbar.setOnMenuItemClickListener {
+            return@setOnMenuItemClickListener setFragmentMenuActions(it)
+        }
 
         selectedEventViewModel.event.observe(viewLifecycleOwner) { event ->
             resultsToolbar.title = event.name
             resultsToolbar.subtitle = dataProcessor.eventTypeToString(event.eventType)
         }
 
+        setResultListener()
         setBackButton()
         setRecyclerViewAdapter()
+    }
+
+    private fun setFragmentMenuActions(menuItem: MenuItem): Boolean {
+
+        when (menuItem.itemId) {
+
+            R.id.result_menu_edit_event -> {
+                findNavController().navigate(
+                    BottomNavDirections.modifyEventProperties(
+                        false,
+                        0,
+                        selectedEventViewModel.event.value
+                    )
+                )
+                return true
+            }
+
+            R.id.result_menu_global_settings -> {
+                findNavController().navigate(BottomNavDirections.openSettingsFromEvent())
+                return true
+            }
+
+            R.id.result_menu_about_app -> {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun setResultListener() {
+        //Enable event modification from menu
+        setFragmentResultListener(EventCreateDialogFragment.REQUEST_EVENT_MODIFICATION) { _, bundle ->
+            val event: Event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                bundle.getSerializable(
+                    EventCreateDialogFragment.BUNDLE_KEY_EVENT,
+                    Event::class.java
+                )!!
+            } else {
+                bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT) as Event
+            }
+            selectedEventViewModel.updateEvent(event)
+        }
     }
 
     private fun setBackButton() {

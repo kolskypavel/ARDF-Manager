@@ -9,7 +9,7 @@
         android:title="@string/event_import_text"
         app:showAsAction="always|withText" />
     <item
-        android:id="@+id/event_menu_categories"
+        android:id="@+id/event_menu_global_settings"
         android:icon="@drawable/ic_settings"
         android:title="@string/global_settings"
 

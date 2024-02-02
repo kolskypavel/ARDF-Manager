@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/category_menu_edit_event"
+        android:id="@+id/readout_menu_edit_event"
         android:title="@string/event_edit" />
 
     <item
@@ -12,7 +12,7 @@
         android:title="@string/global_settings" />
 
     <item
-        android:id="@+id/readout_menu_about_the_app"
+        android:id="@+id/readout_menu_about_app"
         android:title="@string/about_the_app" />
 
 </menu>

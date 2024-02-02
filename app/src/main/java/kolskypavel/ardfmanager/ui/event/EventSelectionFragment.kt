@@ -58,7 +58,7 @@ class EventSelectionFragment : Fragment() {
             //Prevent accidental double click
             if (SystemClock.elapsedRealtime() - mLastClickTime > 1500) {
                 findNavController().navigate(
-                    EventSelectionFragmentDirections.eventModification(true, -1, null)
+                    EventSelectionFragmentDirections.eventCreateOfModify(true, -1, null)
                 )
             }
             mLastClickTime = SystemClock.elapsedRealtime()
@@ -76,8 +76,9 @@ class EventSelectionFragment : Fragment() {
                     true
                 }
 
-                R.id.event_menu_categories -> {
+                R.id.event_menu_global_settings -> {
                     // Navigate to settings screen.
+                    findNavController().navigate(EventSelectionFragmentDirections.openSettings())
                     true
                 }
 
@@ -111,7 +112,7 @@ class EventSelectionFragment : Fragment() {
             }
             //Edit an existing event
             else {
-                eventViewModel.modifyEvent(event)
+                eventViewModel.updateEvent(event)
                 recyclerView.adapter?.notifyItemChanged(position)
             }
         }
@@ -120,7 +121,7 @@ class EventSelectionFragment : Fragment() {
     private fun recyclerViewContextMenuActions(action: Int, position: Int, event: Event) {
         when (action) {
             0 -> findNavController().navigate(
-                EventSelectionFragmentDirections.eventModification(
+                EventSelectionFragmentDirections.eventCreateOfModify(
                     false, position, event
                 )
             )
