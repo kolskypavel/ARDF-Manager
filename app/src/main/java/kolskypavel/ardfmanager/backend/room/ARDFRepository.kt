@@ -2,13 +2,7 @@ package kolskypavel.ardfmanager.backend.room
 
 import android.content.Context
 import androidx.room.Room
-import kolskypavel.ardfmanager.backend.room.database.CategoryDatabase
-import kolskypavel.ardfmanager.backend.room.database.CompetitorDatabase
-import kolskypavel.ardfmanager.backend.room.database.ControlPointDatabase
 import kolskypavel.ardfmanager.backend.room.database.EventDatabase
-import kolskypavel.ardfmanager.backend.room.database.PunchDatabase
-import kolskypavel.ardfmanager.backend.room.database.ReadoutDatabase
-import kolskypavel.ardfmanager.backend.room.database.ResultDatabase
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
@@ -29,54 +23,6 @@ class ARDFRepository private constructor(context: Context) {
         )
         .build()
 
-    private val competitorDatabase: CompetitorDatabase = Room
-        .databaseBuilder(
-            context.applicationContext,
-            CompetitorDatabase::class.java,
-            "competitor-database"
-        )
-        .build()
-
-    private val categoryDatabase: CategoryDatabase = Room
-        .databaseBuilder(
-            context.applicationContext,
-            CategoryDatabase::class.java,
-            "category-database"
-        )
-        .build()
-
-    private val controlPointDatabase: ControlPointDatabase = Room
-        .databaseBuilder(
-            context.applicationContext,
-            ControlPointDatabase::class.java,
-            "control-point-database"
-        )
-        .build()
-
-    private val readoutDatabase: ReadoutDatabase = Room
-        .databaseBuilder(
-            context.applicationContext,
-            ReadoutDatabase::class.java,
-            "result-database"
-        )
-        .build()
-
-    private val punchDatabase: PunchDatabase = Room
-        .databaseBuilder(
-            context.applicationContext,
-            PunchDatabase::class.java,
-            "punch-database"
-        )
-        .build()
-
-    private val resultDatabase: ResultDatabase = Room
-        .databaseBuilder(
-            context.applicationContext,
-            ResultDatabase::class.java,
-            "result-database"
-        )
-        .build()
-
     //Events
     fun getEvents(): Flow<List<Event>> = eventDatabase.eventDao().getEvents()
     suspend fun getEvent(id: UUID): Event = eventDatabase.eventDao().getEvent(id)
@@ -87,109 +33,109 @@ class ARDFRepository private constructor(context: Context) {
 
     //Categories
     fun getCategoriesFlowForEvent(eventId: UUID): Flow<List<Category>> =
-        categoryDatabase.categoryDao().getCategoriesFlowForEvent(eventId)
+        eventDatabase.categoryDao().getCategoriesFlowForEvent(eventId)
 
     fun getCategoriesForEvent(eventId: UUID): List<Category> =
-        categoryDatabase.categoryDao().getCategoriesForEvent(eventId)
+        eventDatabase.categoryDao().getCategoriesForEvent(eventId)
 
-    suspend fun getCategory(id: UUID) = categoryDatabase.categoryDao().getCategory(id)
+    suspend fun getCategory(id: UUID) = eventDatabase.categoryDao().getCategory(id)
     suspend fun createCategory(category: Category) =
-        categoryDatabase.categoryDao().createCategory(category)
+        eventDatabase.categoryDao().createCategory(category)
 
     suspend fun updateCategory(category: Category) =
-        categoryDatabase.categoryDao().updateCategory(category)
+        eventDatabase.categoryDao().updateCategory(category)
 
-    suspend fun deleteCategory(id: UUID) = categoryDatabase.categoryDao().deleteCategory(id)
+    suspend fun deleteCategory(id: UUID) = eventDatabase.categoryDao().deleteCategory(id)
 
     suspend fun createControlPoint(cp: ControlPoint) =
-        controlPointDatabase.controlPointDao().createControlPoint(cp)
+        eventDatabase.controlPointDao().createControlPoint(cp)
 
 
     //Control point
     suspend fun getControlPointsByCategory(categoryId: UUID) =
-        controlPointDatabase.controlPointDao().getControlPointsByCategory(categoryId)
+        eventDatabase.controlPointDao().getControlPointsByCategory(categoryId)
 
     suspend fun getControlPointByName(eventId: UUID, name: String) =
-        controlPointDatabase.controlPointDao().getControlPointByName(eventId, name)
+        eventDatabase.controlPointDao().getControlPointByName(eventId, name)
 
     suspend fun deleteControlPointsByCategory(categoryId: UUID) =
-        controlPointDatabase.controlPointDao().deleteControlPointsByCategory(categoryId)
+        eventDatabase.controlPointDao().deleteControlPointsByCategory(categoryId)
 
 
     //Competitors
     suspend fun getCompetitor(id: UUID): Competitor =
-        competitorDatabase.competitorDao().getCompetitor(id)
+        eventDatabase.competitorDao().getCompetitor(id)
 
     suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
-        competitorDatabase.competitorDao().getCompetitorBySINumber(siNumber, eventId)
+        eventDatabase.competitorDao().getCompetitorBySINumber(siNumber, eventId)
 
     fun getCompetitorsByEvent(eventId: UUID): Flow<List<Competitor>> =
-        competitorDatabase.competitorDao().getCompetitorsByEvent(eventId)
+        eventDatabase.competitorDao().getCompetitorsByEvent(eventId)
 
     suspend fun getCompetitorsByCategory(categoryId: UUID) =
-        competitorDatabase.competitorDao().getCompetitorsByCategory(categoryId)
+        eventDatabase.competitorDao().getCompetitorsByCategory(categoryId)
 
     suspend fun createCompetitor(competitor: Competitor) =
-        competitorDatabase.competitorDao().createCompetitor(competitor)
+        eventDatabase.competitorDao().createCompetitor(competitor)
 
     suspend fun updateCompetitor(competitor: Competitor) =
-        competitorDatabase.competitorDao().updateCompetitor(competitor)
+        eventDatabase.competitorDao().updateCompetitor(competitor)
 
-    suspend fun deleteCompetitor(id: UUID) = competitorDatabase.competitorDao().deleteCompetitor(id)
+    suspend fun deleteCompetitor(id: UUID) = eventDatabase.competitorDao().deleteCompetitor(id)
 
     suspend fun checkIfSINumberExists(siNumber: Int, eventId: UUID): Int =
-        competitorDatabase.competitorDao().checkIfSINumberExists(siNumber, eventId)
+        eventDatabase.competitorDao().checkIfSINumberExists(siNumber, eventId)
 
     //READOUTS
     suspend fun getReadoutsByEvent(eventId: UUID) =
-        readoutDatabase.readoutDao().getReadoutsByEvent(eventId)
+        eventDatabase.readoutDao().getReadoutsByEvent(eventId)
 
     suspend fun getReadoutBySINumber(siNumber: Int, eventId: UUID) =
-        readoutDatabase.readoutDao().getReadoutForSINumber(siNumber, eventId)
+        eventDatabase.readoutDao().getReadoutForSINumber(siNumber, eventId)
 
     suspend fun getReadoutsByCompetitor(competitorId: UUID): Readout? =
-        readoutDatabase.readoutDao().getReadoutByCompetitor(competitorId)
+        eventDatabase.readoutDao().getReadoutByCompetitor(competitorId)
 
-    suspend fun getReadouts(id: UUID) = readoutDatabase.readoutDao().getReadout(id)
+    suspend fun getReadouts(id: UUID) = eventDatabase.readoutDao().getReadout(id)
 
     suspend fun getReadoutsByCategory(categoryId: UUID) =
-        readoutDatabase.readoutDao().getReadoutByCategory(categoryId)
+        eventDatabase.readoutDao().getReadoutByCategory(categoryId)
 
     suspend fun getReadoutsForNullCategory(eventId: UUID) =
-        readoutDatabase.readoutDao().getReadoutsForNullCategory(eventId)
+        eventDatabase.readoutDao().getReadoutsForNullCategory(eventId)
 
     suspend fun createReadout(readout: Readout) =
-        readoutDatabase.readoutDao().createReadout(readout)
+        eventDatabase.readoutDao().createReadout(readout)
 
     suspend fun checkIfReadoutExistsById(siNumber: Int, eventId: UUID) =
-        readoutDatabase.readoutDao().checkIfReadoutExistsById(siNumber, eventId)
+        eventDatabase.readoutDao().checkIfReadoutExistsById(siNumber, eventId)
 
-    suspend fun deleteReadout(id: UUID) = readoutDatabase.readoutDao().deleteReadout(id)
+    suspend fun deleteReadout(id: UUID) = eventDatabase.readoutDao().deleteReadout(id)
 
     //PUNCHES
-    suspend fun createPunch(punch: Punch) = punchDatabase.punchDao().createPunch(punch)
+    suspend fun createPunch(punch: Punch) = eventDatabase.punchDao().createPunch(punch)
 
     suspend fun getPunchesByReadout(readoutId: UUID) =
-        punchDatabase.punchDao().getPunchesByReadout(readoutId)
+        eventDatabase.punchDao().getPunchesByReadout(readoutId)
 
     suspend fun getPunchesByCompetitor(competitorId: UUID) =
-        punchDatabase.punchDao().getPunchesByCompetitor(competitorId)
+        eventDatabase.punchDao().getPunchesByCompetitor(competitorId)
 
     suspend fun deletePunchesByReadoutId(resultId: UUID) =
-        punchDatabase.punchDao().deletePunchesByReadoutId(resultId)
+        eventDatabase.punchDao().deletePunchesByReadoutId(resultId)
 
     suspend fun deletePunchesByEvent(eventId: UUID) =
-        punchDatabase.punchDao().deletePunchesByEvent(eventId)
+        eventDatabase.punchDao().deletePunchesByEvent(eventId)
 
 
     //Results
     suspend fun getResultsByCategory(categoryId: UUID) =
-        resultDatabase.resultDao().getResultByCategory(categoryId)
+        eventDatabase.resultDao().getResultByCategory(categoryId)
 
     suspend fun getResultByCompetitor(competitorId: UUID) =
-        resultDatabase.resultDao().getResultByCompetitor(competitorId)
+        eventDatabase.resultDao().getResultByCompetitor(competitorId)
 
-    suspend fun createResult(result: Result) = resultDatabase.resultDao().createResult(result)
+    suspend fun createResult(result: Result) = eventDatabase.resultDao().createResult(result)
 
     //Singleton instantiation
     companion object {

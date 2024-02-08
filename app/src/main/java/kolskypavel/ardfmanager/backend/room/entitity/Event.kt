@@ -14,7 +14,9 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
 
-@Entity(tableName = "event")
+@Entity(
+    tableName = "event"
+)
 @TypeConverters(DateTimeTypeConverter::class)
 data class Event(
     @PrimaryKey var id: UUID,

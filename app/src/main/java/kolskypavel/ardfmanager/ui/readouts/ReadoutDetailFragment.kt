@@ -75,7 +75,7 @@ class ReadoutDetailFragment : Fragment() {
             indexView.text = readoutDetail.competitor?.index
             competitorNameView.text =
                 "${readoutDetail.competitor?.firstName} ${readoutDetail.competitor?.lastName}"
-            pointsView.text = readoutDetail.result!!.points.toString()
+            //    pointsView.text = readoutDetail.result!!.points.toString()
         } else {
             competitorNameView.text = getText(R.string.unknown_competitor)
             pointsView.text = getText(R.string.unknown)

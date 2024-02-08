@@ -2,6 +2,7 @@ package kolskypavel.ardfmanager.backend.room.entitity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import java.io.Serializable
 import java.util.UUID
@@ -11,12 +12,12 @@ import java.util.UUID
  */
 @Entity(
     tableName = "control_point",
-//    foreignKeys = [ForeignKey(
-//        entity = Category::class,
-//        parentColumns = arrayOf("id"),
-//        childColumns = arrayOf("category_id"),
-//        onDelete = ForeignKey.CASCADE
-//    )]
+    foreignKeys = [ForeignKey(
+        entity = Category::class,
+        parentColumns = arrayOf("id"),
+        childColumns = arrayOf("category_id"),
+        onDelete = ForeignKey.CASCADE
+    )]
 )
 data class ControlPoint(
     @PrimaryKey var id: UUID,
