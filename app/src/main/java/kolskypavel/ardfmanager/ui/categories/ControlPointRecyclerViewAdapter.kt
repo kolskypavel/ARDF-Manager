@@ -50,6 +50,10 @@ class ControlPointRecyclerViewAdapter(
             nameWatcher(cs.toString(), holder.layoutPosition)
         }
 
+        holder.beacon.setOnCheckedChangeListener { _, checked ->
+            values[holder.adapterPosition].beacon = checked
+        }
+
         holder.addBtn.setOnClickListener {
             values.add(
                 holder.adapterPosition + 1,
@@ -66,17 +70,25 @@ class ControlPointRecyclerViewAdapter(
                     separator = false
                 )
             )
-            notifyItemInserted(position + 1)
+            notifyItemInserted(holder.adapterPosition + 1)
         }
 
         holder.deleteBtn.setOnClickListener {
             if (holder.adapterPosition != 0) {
+
+                //Change beacon
+                if (holder.adapterPosition == values.size - 1 && values.size > 2) {
+                    values[holder.adapterPosition - 1].beacon = holder.beacon.isChecked
+                    notifyItemChanged(holder.adapterPosition - 1)
+                }
+
                 values.removeAt(holder.adapterPosition)
                 notifyItemRemoved(holder.adapterPosition)
             }
         }
 
-        if (position == 0) {
+
+        if (holder.adapterPosition == 0) {
             holder.deleteBtn.visibility = View.GONE
             holder.points.visibility = View.GONE
             holder.name.visibility = View.GONE
@@ -89,7 +101,11 @@ class ControlPointRecyclerViewAdapter(
         } else if (eventType == EventType.SPRINT) {
             holder.points.visibility = View.GONE
         }
-
+        if (eventType != EventType.ORIENTEERING && holder.adapterPosition != 0 && holder.adapterPosition == values.size - 1) {
+            holder.beacon.visibility = View.VISIBLE
+            holder.addBtn.visibility = View.GONE
+            item.beacon = true
+        }
     }
 
     //TODO: Validate the control points
@@ -127,6 +143,7 @@ class ControlPointRecyclerViewAdapter(
         var siCode: EditText = view.findViewById(R.id.control_point_item_code)
         var points: EditText = view.findViewById(R.id.control_point_item_points)
         var separator: CheckBox = view.findViewById(R.id.control_point_item_separator)
+        var beacon: CheckBox = view.findViewById(R.id.control_point_item_beacon)
 
         var addBtn: ImageButton = view.findViewById(R.id.control_point_item_add_btn)
         var deleteBtn: ImageButton = view.findViewById(R.id.control_point_item_delete_btn)

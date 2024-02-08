@@ -12,12 +12,3 @@ data class ResultDisplayWrapper(
     var subList: MutableList<ReadoutDataWrapper> = ArrayList(),
     var isExpanded: Boolean = false
 ) : Serializable
-
-/**
- * Comparator used to display the data in a valid order
- */
-class ResultWrapperComparator : Comparator<ResultDisplayWrapper> {
-    override fun compare(r1: ResultDisplayWrapper, r2: ResultDisplayWrapper): Int {
-        return 1 //TODO:FIX
-    }
-}

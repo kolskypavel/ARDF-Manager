@@ -12,6 +12,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
@@ -111,11 +112,6 @@ class DataProcessor private constructor(context: Context) {
 
     suspend fun deleteEvent(id: UUID) {
         ardfRepository.deleteEvent(id)
-        ardfRepository.deleteCompetitorsByEvent(id)
-        ardfRepository.deleteCategoriesByEvent(id)
-        ardfRepository.deleteControlPointsByEvent(id)
-        ardfRepository.deleteResultsByEvent(id)
-        ardfRepository.deletePunchesByEvent(id)
     }
 
     //CATEGORIES
@@ -149,9 +145,8 @@ class DataProcessor private constructor(context: Context) {
 
     fun adjustControlPoints(
         controlPoints: ArrayList<ControlPoint>,
-        eventType: EventType,
-        isBeaconLast: Boolean
-    ) = ResultsProcessor.adjustControlPoints(controlPoints, eventType, isBeaconLast)
+        eventType: EventType
+    ) = ResultsProcessor.adjustControlPoints(controlPoints, eventType)
 
     private suspend fun createControlPoints(controlPoints: List<ControlPoint>) {
         controlPoints.forEach { cp ->
@@ -222,7 +217,7 @@ class DataProcessor private constructor(context: Context) {
             while (true) {
                 val temp = ArrayList<ReadoutDataWrapper>()
 
-                ardfRepository.getResultsByEvent(eventId).forEach { result ->
+                ardfRepository.getReadoutsByEvent(eventId).forEach { result ->
 
                     val competitor =
                         if (result.competitorID != null) {
@@ -260,7 +255,7 @@ class DataProcessor private constructor(context: Context) {
                 ardfRepository.getCategoriesForEvent(eventId).forEach { category ->
                     val res = ResultDisplayWrapper(category)
                     res.subList = ArrayList()
-                    ardfRepository.getResultsByCategory(category.id).forEach { result ->
+                    ardfRepository.getReadoutsByCategory(category.id).forEach { result ->
 
                         val competitor =
                             if (result.competitorID != null) {
@@ -277,7 +272,7 @@ class DataProcessor private constructor(context: Context) {
                 //Add competitors with no category
                 val noCatRes = ResultDisplayWrapper()
                 noCatRes.subList = ArrayList()
-                val results = ardfRepository.getResultsForNullCategory(eventId)
+                val results = ardfRepository.getReadoutsForNullCategory(eventId)
 
                 if (results.isNotEmpty()) {
 
@@ -301,39 +296,28 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    suspend fun getResultBySINumber(siNumber: Int, eventId: UUID): Result? =
-        ardfRepository.getResultBySINumber(siNumber, eventId)
+    suspend fun getReadoutBySINumber(siNumber: Int, eventId: UUID): Readout? =
+        ardfRepository.getReadoutBySINumber(siNumber, eventId)
 
-    suspend fun getResultByCompetitor(competitorId: UUID): Result? =
-        ardfRepository.getResultByCompetitor(competitorId)
+    suspend fun getReadoutByCompetitor(competitorId: UUID): Readout? =
+        ardfRepository.getReadoutsByCompetitor(competitorId)
 
-    suspend fun createResult(result: Result) = ardfRepository.createResult(result)
+    suspend fun createReadout(readout: Readout) = ardfRepository.createReadout(readout)
 
-    fun checkIfResultExistsBySI(siNumber: Int, eventId: UUID): Boolean {
+    fun checkIfReadoutExistsBySI(siNumber: Int, eventId: UUID): Boolean {
         return runBlocking {
-            return@runBlocking ardfRepository.checkIfResultExistsById(siNumber, eventId) > 0
+            return@runBlocking ardfRepository.checkIfReadoutExistsById(siNumber, eventId) > 0
         }
     }
 
-    private suspend fun updateResultsForCategory(categoryId: UUID, delete: Boolean) =
-        resultsProcessor?.updateResultsForCategory(categoryId, delete)
-
-    private suspend fun updateResultsForCompetitor(competitorId: UUID, delete: Boolean) =
-        resultsProcessor?.updateResultsForCompetitor(
-            competitorId,
-            currentState.value?.currentEvent!!.id,
-            delete
-        )
-
-
-    suspend fun deleteResult(id: UUID) {
-        ardfRepository.deleteResult(id)
-        ardfRepository.deletePunchesByResultId(id)
+    suspend fun deleteReadout(id: UUID) {
+        ardfRepository.deleteReadout(id)
+        ardfRepository.deletePunchesByReadoutId(id)
     }
 
     //PUNCHES
-    suspend fun getPunchesByResult(resultId: UUID) =
-        ardfRepository.getPunchesByResult(resultId)
+    suspend fun getPunchesByReadout(resultId: UUID) =
+        ardfRepository.getPunchesByReadout(resultId)
 
     suspend fun getPunchesByCompetitor(competitorId: UUID) =
         ardfRepository.getPunchesByCompetitor(competitorId)
@@ -348,8 +332,25 @@ class DataProcessor private constructor(context: Context) {
         appContext.get()?.let { resultsProcessor?.processCardData(cardData, event, it) }
 
 
-    suspend fun deletePunchesForResult(resultId: UUID) =
-        ardfRepository.deletePunchesByResultId(resultId)
+    suspend fun deletePunchesForReadout(resultId: UUID) =
+        ardfRepository.deletePunchesByReadoutId(resultId)
+
+
+    //RESULTS
+
+    suspend fun getResultByCompetitor(competitorId: UUID) =
+        ardfRepository.getResultByCompetitor(competitorId)
+
+    suspend fun createResult(result: Result) = ardfRepository.createResult(result)
+    private suspend fun updateResultsForCategory(categoryId: UUID, delete: Boolean) =
+        resultsProcessor?.updateResultsForCategory(categoryId, delete)
+
+    private suspend fun updateResultsForCompetitor(competitorId: UUID, delete: Boolean) =
+        resultsProcessor?.updateResultsForCompetitor(
+            competitorId,
+            currentState.value?.currentEvent!!.id,
+            delete
+        )
 
 
     //SportIdent manipulation

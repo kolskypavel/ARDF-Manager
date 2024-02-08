@@ -7,12 +7,14 @@ import kolskypavel.ardfmanager.backend.room.database.CompetitorDatabase
 import kolskypavel.ardfmanager.backend.room.database.ControlPointDatabase
 import kolskypavel.ardfmanager.backend.room.database.EventDatabase
 import kolskypavel.ardfmanager.backend.room.database.PunchDatabase
+import kolskypavel.ardfmanager.backend.room.database.ReadoutDatabase
 import kolskypavel.ardfmanager.backend.room.database.ResultDatabase
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
@@ -51,10 +53,10 @@ class ARDFRepository private constructor(context: Context) {
         )
         .build()
 
-    private val resultDatabase: ResultDatabase = Room
+    private val readoutDatabase: ReadoutDatabase = Room
         .databaseBuilder(
             context.applicationContext,
-            ResultDatabase::class.java,
+            ReadoutDatabase::class.java,
             "result-database"
         )
         .build()
@@ -64,6 +66,14 @@ class ARDFRepository private constructor(context: Context) {
             context.applicationContext,
             PunchDatabase::class.java,
             "punch-database"
+        )
+        .build()
+
+    private val resultDatabase: ResultDatabase = Room
+        .databaseBuilder(
+            context.applicationContext,
+            ResultDatabase::class.java,
+            "result-database"
         )
         .build()
 
@@ -91,9 +101,6 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun deleteCategory(id: UUID) = categoryDatabase.categoryDao().deleteCategory(id)
 
-    suspend fun deleteCategoriesByEvent(eventId: UUID) =
-        categoryDatabase.categoryDao().deleteCategoriesByEvent(eventId)
-
     suspend fun createControlPoint(cp: ControlPoint) =
         controlPointDatabase.controlPointDao().createControlPoint(cp)
 
@@ -107,9 +114,6 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun deleteControlPointsByCategory(categoryId: UUID) =
         controlPointDatabase.controlPointDao().deleteControlPointsByCategory(categoryId)
-
-    suspend fun deleteControlPointsByEvent(eventId: UUID) =
-        controlPointDatabase.controlPointDao().deleteControlPointsByEvent(eventId)
 
 
     //Competitors
@@ -133,59 +137,59 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun deleteCompetitor(id: UUID) = competitorDatabase.competitorDao().deleteCompetitor(id)
 
-    suspend fun deleteCompetitorsByEvent(id: UUID) =
-        competitorDatabase.competitorDao().deleteCompetitorsByEvent(id)
-
     suspend fun checkIfSINumberExists(siNumber: Int, eventId: UUID): Int =
         competitorDatabase.competitorDao().checkIfSINumberExists(siNumber, eventId)
 
     //READOUTS
-    suspend fun getResultsByEvent(eventId: UUID) =
-        resultDatabase.resultDao().getResultsByEvent(eventId)
+    suspend fun getReadoutsByEvent(eventId: UUID) =
+        readoutDatabase.readoutDao().getReadoutsByEvent(eventId)
 
-    suspend fun getResultBySINumber(siNumber: Int, eventId: UUID) =
-        resultDatabase.resultDao().getResultForSINumber(siNumber, eventId)
+    suspend fun getReadoutBySINumber(siNumber: Int, eventId: UUID) =
+        readoutDatabase.readoutDao().getReadoutForSINumber(siNumber, eventId)
 
-    suspend fun getResultByCompetitor(competitorId: UUID): Result? =
-        resultDatabase.resultDao().getResultByCompetitor(competitorId)
+    suspend fun getReadoutsByCompetitor(competitorId: UUID): Readout? =
+        readoutDatabase.readoutDao().getReadoutByCompetitor(competitorId)
 
-    suspend fun getResult(id: UUID) = resultDatabase.resultDao().getResult(id)
+    suspend fun getReadouts(id: UUID) = readoutDatabase.readoutDao().getReadout(id)
 
-    suspend fun getResultsByCategory(categoryId: UUID) =
-        resultDatabase.resultDao().getResultByCategory(categoryId)
+    suspend fun getReadoutsByCategory(categoryId: UUID) =
+        readoutDatabase.readoutDao().getReadoutByCategory(categoryId)
 
-    suspend fun getResultsForNullCategory(eventId: UUID) =
-        resultDatabase.resultDao().getResultsForNullCategory(eventId)
+    suspend fun getReadoutsForNullCategory(eventId: UUID) =
+        readoutDatabase.readoutDao().getReadoutsForNullCategory(eventId)
 
-    suspend fun createResult(result: Result) =
-        resultDatabase.resultDao().createResult(result)
+    suspend fun createReadout(readout: Readout) =
+        readoutDatabase.readoutDao().createReadout(readout)
 
-    suspend fun checkIfResultExistsById(siNumber: Int, eventId: UUID) =
-        resultDatabase.resultDao().checkIfResultExistsById(siNumber, eventId)
+    suspend fun checkIfReadoutExistsById(siNumber: Int, eventId: UUID) =
+        readoutDatabase.readoutDao().checkIfReadoutExistsById(siNumber, eventId)
 
-    suspend fun deleteResult(id: UUID) = resultDatabase.resultDao().deleteResult(id)
-
-    suspend fun deleteResultsByEvent(eventId: UUID) =
-        resultDatabase.resultDao().deleteResultsByEvent(eventId)
+    suspend fun deleteReadout(id: UUID) = readoutDatabase.readoutDao().deleteReadout(id)
 
     //PUNCHES
     suspend fun createPunch(punch: Punch) = punchDatabase.punchDao().createPunch(punch)
 
-    suspend fun getPunchesByResult(resultId: UUID) =
-        punchDatabase.punchDao().getPunchesByResult(resultId)
+    suspend fun getPunchesByReadout(readoutId: UUID) =
+        punchDatabase.punchDao().getPunchesByReadout(readoutId)
 
     suspend fun getPunchesByCompetitor(competitorId: UUID) =
         punchDatabase.punchDao().getPunchesByCompetitor(competitorId)
 
-    suspend fun deletePunchesByResultId(resultId: UUID) =
-        punchDatabase.punchDao().deletePunchesByResultId(resultId)
+    suspend fun deletePunchesByReadoutId(resultId: UUID) =
+        punchDatabase.punchDao().deletePunchesByReadoutId(resultId)
 
     suspend fun deletePunchesByEvent(eventId: UUID) =
         punchDatabase.punchDao().deletePunchesByEvent(eventId)
 
 
     //Results
+    suspend fun getResultsByCategory(categoryId: UUID) =
+        resultDatabase.resultDao().getResultByCategory(categoryId)
 
+    suspend fun getResultByCompetitor(competitorId: UUID) =
+        resultDatabase.resultDao().getResultByCompetitor(competitorId)
+
+    suspend fun createResult(result: Result) = resultDatabase.resultDao().createResult(result)
 
     //Singleton instantiation
     companion object {

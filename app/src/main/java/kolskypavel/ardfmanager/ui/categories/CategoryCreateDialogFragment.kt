@@ -46,7 +46,6 @@ class CategoryCreateDialogFragment : DialogFragment() {
     private lateinit var maxYearEditText: TextInputEditText
     private lateinit var lengthEditText: TextInputEditText
     private lateinit var climbEditText: TextInputEditText
-    private lateinit var beaconLastCheckBox: CheckBox
     private lateinit var controlPointRecyclerView: RecyclerView
 
     private lateinit var okButton: Button
@@ -80,7 +79,6 @@ class CategoryCreateDialogFragment : DialogFragment() {
         maxYearEditText = view.findViewById(R.id.category_dialog_max_year)
         lengthEditText = view.findViewById(R.id.category_dialog_length)
         climbEditText = view.findViewById(R.id.category_dialog_climb)
-        beaconLastCheckBox = view.findViewById(R.id.category_dialog_last_beacon_checkbox)
         controlPointRecyclerView =
             view.findViewById(R.id.category_dialog_control_point_recycler_view)
 
@@ -239,11 +237,6 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
     private fun eventTypeWatcher(position: Int) {
         category.eventType = EventType.getByValue(position)!!
-        if (category.eventType == EventType.ORIENTEERING) {
-            beaconLastCheckBox.visibility = View.GONE
-        } else {
-            beaconLastCheckBox.visibility = View.VISIBLE
-        }
         setAdapter(null)
     }
 
@@ -337,8 +330,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 //Get control points
                 val parsed = selectedEventViewModel.adjustControlPoints(
                     (controlPointRecyclerView.adapter as ControlPointRecyclerViewAdapter).getControlPoints(),
-                    category.eventType,
-                    beaconLastCheckBox.isChecked
+                    category.eventType
                 )
 
                 val names = selectedEventViewModel.getCodesNameFromControlPoints(parsed)

@@ -144,10 +144,12 @@
 
 
     <!--    Settings    -->
-    <string name="settings_general">General</string>
-    <string name="settings_results">Results</string>
-    <string name="settings_prints">Prints</string>
-    <string name="settings_help">Help</string>
+    <string name="preferences_general">General</string>
+    <string name="preferences_results">Results</string>
+    <string name="preferences_prints">Prints</string>
+    <string name="preferences_help">Help</string>
+
+    <string name="preferences_show_log">Show log</string>
 
     <!--    DATA ARRAYS-->
 

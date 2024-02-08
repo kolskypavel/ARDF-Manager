@@ -10,8 +10,8 @@ import java.util.UUID
 @Dao
 interface PunchDao {
 
-    @Query("SELECT * FROM punch WHERE result_id = (:resultId) ORDER BY `order` ASC")
-    suspend fun getPunchesByResult(resultId: UUID): List<Punch>
+    @Query("SELECT * FROM punch WHERE readout_id= (:resultId) ORDER BY `order` ASC")
+    suspend fun getPunchesByReadout(resultId: UUID): List<Punch>
 
     @Query("SELECT * FROM punch WHERE competitor_id = (:competitorId)")
     suspend fun getPunchesByCompetitor(competitorId: UUID): List<Punch>
@@ -29,6 +29,6 @@ interface PunchDao {
     @Query("DELETE FROM punch WHERE event_id=(:eventId)")
     suspend fun deletePunchesByEvent(eventId: UUID)
 
-    @Query("DELETE FROM punch WHERE result_id=(:resultId)")
-    suspend fun deletePunchesByResultId(resultId: UUID)
+    @Query("DELETE FROM punch WHERE readout_id=(:readoutId)")
+    suspend fun deletePunchesByReadoutId(readoutId: UUID)
 }

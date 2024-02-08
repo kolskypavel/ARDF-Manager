@@ -1,3 +1,12 @@
 package kolskypavel.ardfmanager.backend.files
 
-class IOFXMLProcessor
+class IOFXMLProcessor {
+
+    fun importCompetition() {
+
+    }
+
+    fun exportCompetition() {
+
+    }
+}

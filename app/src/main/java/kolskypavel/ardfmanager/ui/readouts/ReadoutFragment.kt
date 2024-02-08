@@ -129,11 +129,11 @@ class ReadoutFragment : Fragment() {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(getString(R.string.readout_delete_readout))
         val message =
-            getString(R.string.readout_delete_readout_confirmation, readoutData.result!!.siNumber)
+            getString(R.string.readout_delete_readout_confirmation, readoutData.readout!!.siNumber)
         builder.setMessage(message)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            selectedEventViewModel.deleteReadout(readoutData.result!!.id)
+            selectedEventViewModel.deleteReadout(readoutData.readout!!.id)
             dialog.dismiss()
         }
 

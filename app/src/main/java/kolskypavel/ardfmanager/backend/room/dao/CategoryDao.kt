@@ -27,7 +27,4 @@ interface CategoryDao {
 
     @Query("DELETE FROM category WHERE id=(:id) ")
     suspend fun deleteCategory(id: UUID)
-
-    @Query("DELETE FROM category WHERE event_id=(:eventId)")
-    suspend fun deleteCategoriesByEvent(eventId: UUID)
 }

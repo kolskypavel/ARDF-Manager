@@ -63,7 +63,7 @@ class ReadoutDetailFragment : Fragment() {
 
         readoutDetailToolbar.setNavigationIcon(R.drawable.ic_back)
         readoutDetailToolbar.setTitle(R.string.readout_detail_title)
-        readoutDetailToolbar.subtitle = readoutDetail.result!!.siNumber.toString()
+        readoutDetailToolbar.subtitle = readoutDetail.readout!!.siNumber.toString()
         readoutDetailToolbar.inflateMenu(R.menu.fragment_menu_readout_detail)
 
         readoutDetailToolbar.setNavigationOnClickListener {
@@ -91,14 +91,14 @@ class ReadoutDetailFragment : Fragment() {
             categoryView.text = getText(R.string.unknown)
         }
 
-        siNumberView.text = readoutDetail.result!!.siNumber.toString()
+        siNumberView.text = readoutDetail.readout!!.siNumber.toString()
         runTimeView.text =
-            readoutDetail.result!!.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
+            readoutDetail.readout!!.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
 
         placeView.text = getText(R.string.unknown) //TODO: Place
 
         setMenuActions()
-        setRecyclerViewAdapter(readoutDetail.result!!.id)
+        setRecyclerViewAdapter(readoutDetail.readout!!.id)
     }
 
     private fun setMenuActions() {
@@ -129,8 +129,8 @@ class ReadoutDetailFragment : Fragment() {
 
     private fun setRecyclerViewAdapter(resultId: UUID) {
 
-            val punches = selectedEventViewModel.getPunchesByResult(resultId)
-            punchRecyclerView.adapter = PunchRecyclerViewAdapter(punches, requireContext())
+        val punches = selectedEventViewModel.getPunchesByResult(resultId)
+        punchRecyclerView.adapter = PunchRecyclerViewAdapter(punches, requireContext())
 
     }
 }

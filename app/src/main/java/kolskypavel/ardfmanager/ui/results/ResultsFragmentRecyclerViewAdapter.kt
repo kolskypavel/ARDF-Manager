@@ -44,7 +44,8 @@ class ResultsFragmentRecyclerViewAdapter(
             holder as GroupViewHolder
             holder.apply {
                 if (dataList.category != null) {
-                    categoryName.text = dataList.category.name + " (" + dataList.category.controlPointsNames +")"
+                    categoryName.text =
+                        dataList.category.name + " (" + dataList.category.controlPointsNames + ")"
                 } else {
                     categoryName.text = context.getText(R.string.no_category)
                 }
@@ -74,7 +75,7 @@ class ResultsFragmentRecyclerViewAdapter(
                         "${singleResult.competitor!!.firstName} ${singleResult.competitor!!.lastName!!}"
                     competitorClub.text = singleResult.competitor!!.club
                     competitorTime.text =
-                        dataProcessor.durationToString(singleResult.result?.runTime!!)
+                        dataProcessor.durationToString(singleResult.readout?.runTime!!)
                     competitorPoints.text = singleResult.result?.points.toString()
                 }
             }

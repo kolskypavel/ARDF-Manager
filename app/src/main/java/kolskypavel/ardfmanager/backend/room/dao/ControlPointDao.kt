@@ -27,7 +27,4 @@ interface ControlPointDao {
     @Query("DELETE FROM control_point WHERE category_id=(:categoryId)")
     suspend fun deleteControlPointsByCategory(categoryId: UUID)
 
-    @Query("DELETE FROM control_point WHERE event_id=(:eventId)")
-    suspend fun deleteControlPointsByEvent(eventId: UUID)
-
 }

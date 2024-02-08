@@ -9,7 +9,15 @@ import java.util.UUID
 /**
  * Control point entity, used to define categories
  */
-@Entity(tableName = "control_point")
+@Entity(
+    tableName = "control_point",
+//    foreignKeys = [ForeignKey(
+//        entity = Category::class,
+//        parentColumns = arrayOf("id"),
+//        childColumns = arrayOf("category_id"),
+//        onDelete = ForeignKey.CASCADE
+//    )]
+)
 data class ControlPoint(
     @PrimaryKey var id: UUID,
     @ColumnInfo(name = "event_id") var eventId: UUID,

@@ -15,7 +15,7 @@
         android:inputType="numberSigned"
         android:maxLength="3"
         android:textColor="@color/black"
-        android:textColorHint="@color/grey"/>
+        android:textColorHint="@color/grey" />
 
     <EditText
         android:id="@+id/control_point_item_name"
@@ -40,16 +40,26 @@
         android:inputType="numberSigned"
         android:maxLength="3"
         android:textColor="@color/black"
-        android:textColorHint="@color/grey"/>
+        android:textColorHint="@color/grey" />
 
     <CheckBox
         android:id="@+id/control_point_item_separator"
+        style="@style/dialog_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="S"
-        style="@style/dialog_checkbox"
         android:textColor="@color/black" />
+
+    <CheckBox
+        android:id="@+id/control_point_item_beacon"
+        style="@style/dialog_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="B"
+        android:textColor="@color/black"
+        android:visibility="gone" />
 
     <ImageButton
         android:id="@+id/control_point_item_add_btn"

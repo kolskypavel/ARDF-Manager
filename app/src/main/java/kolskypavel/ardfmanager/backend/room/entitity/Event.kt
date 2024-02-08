@@ -3,6 +3,8 @@ package kolskypavel.ardfmanager.backend.room.entitity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import kolskypavel.ardfmanager.backend.room.database.DateTimeTypeConverter
 import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
 import kolskypavel.ardfmanager.backend.room.enums.EventType
@@ -13,6 +15,7 @@ import java.time.LocalTime
 import java.util.UUID
 
 @Entity(tableName = "event")
+@TypeConverters(DateTimeTypeConverter::class)
 data class Event(
     @PrimaryKey var id: UUID,
     var name: String,

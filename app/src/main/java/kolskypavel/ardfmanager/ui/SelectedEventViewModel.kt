@@ -129,9 +129,8 @@ class SelectedEventViewModel : ViewModel() {
 
     fun adjustControlPoints(
         controlPoints: ArrayList<ControlPoint>,
-        eventType: EventType,
-        isBeaconLast: Boolean
-    ) = dataProcessor.adjustControlPoints(controlPoints, eventType, isBeaconLast)
+        eventType: EventType
+    ) = dataProcessor.adjustControlPoints(controlPoints, eventType)
 
     fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): Pair<String, String> =
         dataProcessor.getCodesNameFromControlPoints(controlPoints)
@@ -225,13 +224,13 @@ class SelectedEventViewModel : ViewModel() {
 
     fun deleteReadout(id: UUID) {
         CoroutineScope(Dispatchers.IO).launch {
-            dataProcessor.deleteResult(id)
+            dataProcessor.deleteReadout(id)
         }
     }
 
     fun getPunchesByResult(resultId: UUID): List<Punch> {
         return runBlocking {
-            return@runBlocking dataProcessor.getPunchesByResult(resultId)
+            return@runBlocking dataProcessor.getPunchesByReadout(resultId)
         }
     }
 }

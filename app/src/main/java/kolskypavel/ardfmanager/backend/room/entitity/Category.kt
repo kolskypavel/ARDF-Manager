@@ -2,8 +2,11 @@ package kolskypavel.ardfmanager.backend.room.entitity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import kolskypavel.ardfmanager.backend.room.database.DateTimeTypeConverter
 import kolskypavel.ardfmanager.backend.room.enums.EventType
 import java.io.Serializable
 import java.time.Duration
@@ -13,8 +16,15 @@ import java.util.UUID
     tableName = "category", indices = [Index(
         value = ["name", "event_id"],
         unique = true
+    )],
+    foreignKeys = [ForeignKey(
+        entity = Event::class,
+        parentColumns = arrayOf("id"),
+        childColumns = arrayOf("event_id"),
+        onDelete = ForeignKey.CASCADE
     )]
 )
+@TypeConverters(DateTimeTypeConverter::class)
 data class Category(
     @PrimaryKey var id: UUID,
     @ColumnInfo(name = "event_id") var eventId: UUID,

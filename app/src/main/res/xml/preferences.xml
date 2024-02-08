@@ -4,26 +4,32 @@
     <PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/settings_general"/>
+        android:title="@string/preferences_general">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="preference_show_log"
+            android:title="@string/preferences_show_log" />
+    </PreferenceCategory>
 
     <PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/settings_results">
+        android:title="@string/preferences_results">
 
     </PreferenceCategory>
 
     <PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/settings_prints">
+        android:title="@string/preferences_prints">
 
     </PreferenceCategory>
 
     <PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/settings_help">
+        android:title="@string/preferences_help">
 
     </PreferenceCategory>
 </PreferenceScreen>

@@ -7,7 +7,22 @@ import java.io.Serializable
 import java.time.LocalTime
 import java.util.UUID
 
-@Entity(tableName = "competitor")
+@Entity(
+    tableName = "competitor",
+//    foreignKeys = [ForeignKey(
+//        entity = Category::class,
+//        parentColumns = arrayOf("id"),
+//        childColumns = arrayOf("category_id"),
+//        onDelete = ForeignKey.SET_NULL,
+//
+//        ),
+//        ForeignKey(
+//            entity = Event::class,
+//            parentColumns = arrayOf("id"),
+//            childColumns = arrayOf("event_id"),
+//            onDelete = ForeignKey.CASCADE
+//        )]
+)
 data class Competitor(
     @PrimaryKey var id: UUID,
     @ColumnInfo(name = "event_id") var eventId: UUID,
