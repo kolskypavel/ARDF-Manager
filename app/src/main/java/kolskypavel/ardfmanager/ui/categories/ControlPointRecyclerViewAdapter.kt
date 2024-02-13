@@ -11,13 +11,15 @@ import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.enums.EventType
+import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import java.util.UUID
 
 class ControlPointRecyclerViewAdapter(
     var values: ArrayList<ControlPoint>,
     val eventId: UUID,
     val categoryId: UUID,
-    private var eventType: EventType
+    private var eventType: EventType,
+    private var selectedEventViewModel: SelectedEventViewModel
 ) :
     RecyclerView.Adapter<ControlPointRecyclerViewAdapter.ControlPointViewHolder>() {
 
@@ -47,7 +49,7 @@ class ControlPointRecyclerViewAdapter(
             codeWatcher(cs.toString(), holder.layoutPosition)
         }
         holder.name.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
-            nameWatcher(cs.toString(), holder.layoutPosition)
+            nameWatcher(cs.toString(), holder.layoutPosition, holder.name)
         }
 
         holder.beacon.setOnCheckedChangeListener { _, checked ->
@@ -130,9 +132,19 @@ class ControlPointRecyclerViewAdapter(
         }
     }
 
-    private fun nameWatcher(string: String, position: Int) {
+    private fun nameWatcher(string: String, position: Int, name: EditText) {
         if (string.isNotBlank()) {
             values[position].name = string
+
+            //Already existing control point
+            if (selectedEventViewModel.checkIfControlPointNameExists(
+                    values[position].siCode,
+                    values[position].name!!
+                )
+            ) {
+                name.error = "Control point already exists"
+            }
+
         } else {
             values[position].name = null
         }

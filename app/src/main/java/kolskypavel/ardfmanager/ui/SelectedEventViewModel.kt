@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
+import kolskypavel.ardfmanager.backend.room.entitity.CompetitorCategory
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
@@ -47,6 +48,11 @@ class SelectedEventViewModel : ViewModel() {
         MutableStateFlow(emptyList())
     val resultData: StateFlow<List<ResultDisplayWrapper>> get() = _resultData.asStateFlow()
 
+    private val _competitorsCategories: MutableStateFlow<List<CompetitorCategory>> =
+        MutableStateFlow(emptyList())
+    val competitorsCategories: StateFlow<List<CompetitorCategory>>
+        get() =
+            _competitorsCategories.asStateFlow()
 
     /**
      * Updates the current selected event and corresponding data
@@ -64,6 +70,11 @@ class SelectedEventViewModel : ViewModel() {
             launch {
                 dataProcessor.getCategoriesForEvent(id).collect {
                     _categories.value = it
+                }
+            }
+            launch {
+                dataProcessor.getCompetitorCategoriesByEvent(id).collect {
+                    _competitorsCategories.value = it
                 }
             }
 
@@ -126,6 +137,12 @@ class SelectedEventViewModel : ViewModel() {
         return controlPoints
     }
 
+    fun checkIfControlPointNameExists(siCode: Int?, name: String): Boolean {
+        runBlocking {
+            dataProcessor.getControlPointByName(event.value!!.id, name)
+        }
+        return false
+    }
 
     fun adjustControlPoints(
         controlPoints: ArrayList<ControlPoint>,
@@ -233,4 +250,6 @@ class SelectedEventViewModel : ViewModel() {
             return@runBlocking dataProcessor.getPunchesByReadout(resultId)
         }
     }
+
+
 }

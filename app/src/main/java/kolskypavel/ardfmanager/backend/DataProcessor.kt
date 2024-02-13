@@ -143,6 +143,7 @@ class DataProcessor private constructor(context: Context) {
     suspend fun getControlPointsByCategory(categoryId: UUID) =
         ardfRepository.getControlPointsByCategory(categoryId)
 
+
     fun adjustControlPoints(
         controlPoints: ArrayList<ControlPoint>,
         eventType: EventType
@@ -158,6 +159,10 @@ class DataProcessor private constructor(context: Context) {
         ardfRepository.getControlPointByName(eventId, name)
 
 
+    suspend fun getControlPointByCode(eventId: UUID, code: Int) =
+        ardfRepository.getControlPointByCode(eventId, code)
+
+
     fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): Pair<String, String> =
         resultsProcessor!!.getCodesNameFromControlPoints(controlPoints)
 
@@ -166,6 +171,8 @@ class DataProcessor private constructor(context: Context) {
     fun getCompetitorsForEvent(eventId: UUID) =
         ardfRepository.getCompetitorsByEvent(eventId)
 
+    fun getCompetitorCategoriesByEvent(eventId: UUID) =
+        ardfRepository.getCompetitorCategoriesByEvent(eventId)
 
     suspend fun getCompetitor(id: UUID): Competitor = ardfRepository.getCompetitor(id)
 
@@ -437,4 +444,5 @@ class DataProcessor private constructor(context: Context) {
             String.format("%04d:%02d", (seconds % 3600) / 60, kotlin.math.abs(seconds) % 60)
         }
     }
+
 }

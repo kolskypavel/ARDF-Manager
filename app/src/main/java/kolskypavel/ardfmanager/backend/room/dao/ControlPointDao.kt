@@ -14,10 +14,11 @@ interface ControlPointDao {
     @Query("SELECT * FROM control_point WHERE id=(:id) LIMIT 1")
     suspend fun getControlPoint(id: UUID): ControlPoint
 
+    @Query("SELECT * FROM control_point WHERE event_id=(:eventId) AND name=(:name) LIMIT 1 ")
+    suspend fun getControlPointByName(eventId: UUID, name: String): ControlPoint
 
-    @Query("SELECT * FROM control_point WHERE event_id=(:eventId) AND name=(:name) LIMIT 1")
-    suspend fun getControlPointByName(eventId: UUID, name: String): ControlPoint?
-
+    @Query("SELECT * FROM control_point WHERE event_id=(:eventId) AND si_code=(:code) LIMIT 1 ")
+    suspend fun getControlPointByCode(eventId: UUID, code: Int): ControlPoint
     @Insert
     suspend fun createControlPoint(controlPoint: ControlPoint)
 

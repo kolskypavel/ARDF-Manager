@@ -222,7 +222,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                     values,
                     selectedEventViewModel.event.value!!.id,
                     category.id,
-                    category.eventType
+                    category.eventType, selectedEventViewModel
                 )
         } else {
             controlPointRecyclerView.adapter =
@@ -230,7 +230,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                     (controlPointRecyclerView.adapter as ControlPointRecyclerViewAdapter).getOriginalValues(),
                     selectedEventViewModel.event.value!!.id,
                     category.id,
-                    category.eventType
+                    category.eventType, selectedEventViewModel
                 )
         }
     }

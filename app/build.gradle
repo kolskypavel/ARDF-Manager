@@ -28,6 +28,7 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -42,19 +43,15 @@ android {
 
 
 dependencies {
-    implementation 'com.github.felHR85:UsbSerial:6.1.0'
 
     implementation("androidx.work:work-runtime-ktx:2.8.1")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation("com.github.pokercc:ExpandableRecyclerView:0.9.3")
     implementation 'androidx.preference:preference-ktx:1.2.1'
 
     def room_version = "2.6.1"
-
     implementation("androidx.room:room-runtime:$room_version")
     implementation("androidx.room:room-ktx:$room_version")
     ksp("androidx.room:room-compiler:2.6.1")
-
 
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -64,6 +61,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
     implementation('androidx.navigation:navigation-fragment-ktx:2.7.6')
     implementation('androidx.navigation:navigation-ui-ktx:2.7.6')
+
+    implementation 'com.github.ISchwarz23:SortableTableView:2.8.1'
+    implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.9.3")
+    implementation 'com.github.felHR85:UsbSerial:6.1.0'
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

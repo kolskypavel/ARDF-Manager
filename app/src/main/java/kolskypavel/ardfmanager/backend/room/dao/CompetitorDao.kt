@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
+import kolskypavel.ardfmanager.backend.room.entitity.CompetitorCategory
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -12,6 +13,9 @@ import java.util.UUID
 interface CompetitorDao {
     @Query("SELECT * FROM competitor WHERE event_id=(:eventId)")
     fun getCompetitorsByEvent(eventId: UUID): Flow<List<Competitor>>
+
+    @Query("SELECT * FROM competitor WHERE event_id=(:eventId) ")
+    fun getCompetitorsCategoriesByEvent(eventId: UUID): Flow<List<CompetitorCategory>>
 
     @Query("SELECT * FROM competitor WHERE id=(:id) LIMIT 1")
     suspend fun getCompetitor(id: UUID): Competitor

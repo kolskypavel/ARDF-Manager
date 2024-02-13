@@ -40,7 +40,8 @@
             style="@style/dialog_dropdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginEnd="5dp"
+            android:layout_weight="0.6"
             android:hint="@string/type"
             android:textColor="@color/black">
 

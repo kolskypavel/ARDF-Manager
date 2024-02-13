@@ -5,6 +5,7 @@ import androidx.room.Room
 import kolskypavel.ardfmanager.backend.room.database.EventDatabase
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
+import kolskypavel.ardfmanager.backend.room.entitity.CompetitorCategory
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
@@ -58,6 +59,9 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun getControlPointByName(eventId: UUID, name: String) =
         eventDatabase.controlPointDao().getControlPointByName(eventId, name)
 
+    suspend fun getControlPointByCode(eventId: UUID, code: Int) =
+        eventDatabase.controlPointDao().getControlPointByCode(eventId, code)
+
     suspend fun deleteControlPointsByCategory(categoryId: UUID) =
         eventDatabase.controlPointDao().deleteControlPointsByCategory(categoryId)
 
@@ -71,6 +75,9 @@ class ARDFRepository private constructor(context: Context) {
 
     fun getCompetitorsByEvent(eventId: UUID): Flow<List<Competitor>> =
         eventDatabase.competitorDao().getCompetitorsByEvent(eventId)
+
+    fun getCompetitorCategoriesByEvent(eventId: UUID): Flow<List<CompetitorCategory>> =
+        eventDatabase.competitorDao().getCompetitorsCategoriesByEvent(eventId)
 
     suspend fun getCompetitorsByCategory(categoryId: UUID) =
         eventDatabase.competitorDao().getCompetitorsByCategory(categoryId)

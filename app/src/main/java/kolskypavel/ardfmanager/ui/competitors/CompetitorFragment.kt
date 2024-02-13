@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
@@ -17,17 +18,25 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import de.codecrafters.tableview.SortableTableView
+import de.codecrafters.tableview.toolkit.SimpleTableHeaderAdapter
+import de.codecrafters.tableview.toolkit.TableDataRowBackgroundProviders
 import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.comparators.CompetitorCategoryComparator
+import kolskypavel.ardfmanager.backend.comparators.CompetitorClubComparator
+import kolskypavel.ardfmanager.backend.comparators.CompetitorFirstNameComparator
+import kolskypavel.ardfmanager.backend.comparators.CompetitorLastNameComparator
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
+import kolskypavel.ardfmanager.backend.room.entitity.CompetitorCategory
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.databinding.FragmentCompetitorsBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment
 import kotlinx.coroutines.launch
+
 
 class CompetitorFragment : Fragment() {
 
@@ -36,7 +45,7 @@ class CompetitorFragment : Fragment() {
     private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
     private val dataProcessor = DataProcessor.get()
     private lateinit var competitorToolbar: Toolbar
-    private lateinit var competitorRecyclerView: RecyclerView
+    private lateinit var competitorTableView: SortableTableView<CompetitorCategory>
     private lateinit var competitorAddFab: FloatingActionButton
     private var mLastClickTime: Long = 0
 
@@ -60,7 +69,7 @@ class CompetitorFragment : Fragment() {
 
         competitorToolbar = view.findViewById(R.id.competitor_toolbar)
         competitorAddFab = view.findViewById(R.id.competitor_btn_add)
-        competitorRecyclerView = view.findViewById(R.id.competitor_recycler_view)
+        competitorTableView = view.findViewById(R.id.competitor_table_view)
 
         competitorToolbar.inflateMenu(R.menu.fragment_menu_competitor)
         competitorToolbar.setOnMenuItemClickListener {
@@ -84,6 +93,7 @@ class CompetitorFragment : Fragment() {
             }
             mLastClickTime = SystemClock.elapsedRealtime()
         }
+        setTableHeaders()
         setRecyclerAdapter()
         setBackButton()
         setResultListener()
@@ -119,35 +129,79 @@ class CompetitorFragment : Fragment() {
         return false
     }
 
+    private fun setTableHeaders() {
+        val headers =
+            intArrayOf(
+                R.string.competitor_first_name,
+                R.string.last_name,
+                R.string.club,
+                R.string.category
+            )
+
+        val adapter = SimpleTableHeaderAdapter(
+            requireContext(),
+            *headers
+        )
+        adapter.setGravity(Gravity.CENTER)
+        adapter.setTextSize(14)
+
+        competitorTableView.headerAdapter = adapter
+        //Set comparators
+        competitorTableView.setColumnComparator(0, CompetitorFirstNameComparator())
+        competitorTableView.setColumnComparator(1, CompetitorLastNameComparator())
+        competitorTableView.setColumnComparator(2, CompetitorClubComparator())
+        competitorTableView.setColumnComparator(3, CompetitorCategoryComparator())
+
+
+        val colorEvenRows =
+            requireContext().resources.getColor(R.color.white, null)
+        val colorOddRows =
+            requireContext().resources.getColor(R.color.light_grey, null)
+
+        competitorTableView.setDataRowBackgroundProvider(
+            TableDataRowBackgroundProviders.alternatingRowColors(
+                colorEvenRows,
+                colorOddRows
+            )
+        )
+    }
+
     private fun setRecyclerAdapter() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                selectedEventViewModel.competitors.collect { competitors ->
-                    competitorRecyclerView.adapter =
-                        CompetitorRecyclerViewAdapter(competitors, { action, position, competitor ->
-                            recyclerViewContextMenuActions(
+                selectedEventViewModel.competitorsCategories.collect { competitorCategories ->
+                    competitorTableView.dataAdapter =
+                        CompetitorTableViewAdapter(
+                            competitorCategories,
+                            requireContext()
+                        ) { action, position, competitor ->
+                            tableViewContextMenuActions(
                                 action,
                                 position,
                                 competitor
                             )
-                        }, requireContext())
+                        }
                 }
             }
         }
     }
 
-    private fun recyclerViewContextMenuActions(action: Int, position: Int, competitor: Competitor) {
+    private fun tableViewContextMenuActions(
+        action: Int,
+        position: Int,
+        competitorCategory: CompetitorCategory
+    ) {
         when (action) {
             0 -> findNavController().navigate(
                 CompetitorFragmentDirections.modifyCompetitor(
                     false,
-                    competitor,
+                    competitorCategory.competitor,
                     position
                 )
             )
 
             1 -> {}
-            2 -> confirmCompetitorDeletion(competitor)
+            2 -> confirmCompetitorDeletion(competitorCategory.competitor)
         }
     }
 
@@ -191,10 +245,9 @@ class CompetitorFragment : Fragment() {
     private fun setResultListener() {
         setFragmentResultListener(CompetitorCreateDialogFragment.REQUEST_COMPETITOR_MODIFICATION) { _, bundle ->
             val create = bundle.getBoolean(CompetitorCreateDialogFragment.BUNDLE_KEY_CREATE)
-            val position = bundle.getInt(CompetitorCreateDialogFragment.BUNDLE_KEY_POSITION)
 
             if (!create) {
-                competitorRecyclerView.adapter?.notifyItemChanged(position)
+                competitorTableView.dataAdapter.notifyDataSetChanged()
             }
         }
 

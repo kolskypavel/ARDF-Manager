@@ -16,16 +16,12 @@
         android:theme="@style/Theme.ARDFManager"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/competitor_recycler_view"
+    <de.codecrafters.tableview.SortableTableView xmlns:table="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/competitor_table_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layoutManager="LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@+id/competitor_toolbar"
-        tools:context=".ui.event.EventSelectionFragment"
-        tools:layout_editor_absoluteX="0dp"
-        tools:listitem="@layout/recycler_item_event" />
-
+        table:layout_constraintTop_toBottomOf="@id/competitor_toolbar"
+        table:tableView_columnCount="4" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/competitor_btn_add"
