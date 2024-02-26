@@ -8,6 +8,6 @@ enum class EventType(val value: Int) {
     CUSTOM(4);
 
     companion object {
-        fun getByValue(value: Int) = values().firstOrNull { it.value == value }
+        fun getByValue(value: Int) = entries.firstOrNull { it.value == value }
     }
 }

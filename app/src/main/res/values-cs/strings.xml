@@ -17,8 +17,8 @@
     <string name="band_combined">Kombinované</string>
     <string name="name">Jméno</string>
     <string name="date">Datum</string>
-    <string name="level">Úroveň</string>
-    <string name="type">Typ</string>
+    <string name="event_level">Úroveň</string>
+    <string name="event_type">Typ</string>
     <string name="event_export">Exportovat závod</string>
     <string name="event_delete">Odstranit závod</string>
     <string name="event_edit">Upravit závod</string>
@@ -26,7 +26,7 @@
     <string name="limit">Limit (min)</string>
     <string name="event_create">Vytvořit událost</string>
     <string name="start_time">Čas startu</string>
-    <string name="band">Pásmo</string>
+    <string name="event_band">Pásmo</string>
     <string name="event_end">Ukončit závod</string>
     <string name="event_end_confirmation">Opravdu chcete ukončit závod?</string>
     <string name="event_type_0">Klasická trať</string>
@@ -41,8 +41,7 @@
     <string name="same_category_type">Stejný typ jako závod</string>
     <string name="category">Kategorie</string>
     <string name="categories_age_based">Podle věku</string>
-    <string name="min_year">Minimální ročník</string>
-    <string name="max_year">Maximalní ročník</string>
+    <string name="max_age">Maximalní věk</string>
     <string name="year_of_birth">Ročník</string>
     <string name="si_codes">SI kódy</string>
     <string name="category_import_text">Importovat kategorii ze souboru</string>
@@ -68,7 +67,7 @@
     <string name="length">Délka (km)</string>
     <string name="nonexistent_year">Nevalidní rok</string>
     <string name="invalid_codes">Nevalidní SI kódy</string>
-    <string name="invalid_year_range">Maximální ročník je menší než minimální</string>
+    <string name="invalid_max_age">Maximální věk je duplicitní s kategoriíí  %1$s? !</string>
     <string name="climb">Převýšení (m)</string>
     <string name="competitor_edit_punches">Upravit ražení</string>
     <string name="competitor_delete">Smazat závodníka</string>

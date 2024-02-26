@@ -5,10 +5,10 @@
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/competitor_dialog_main_layout"
         style="@style/add_dialog"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/competitor_dialog_main_layout"
+        android:layout_height="wrap_content"
         android:maxWidth="300dp"
         android:orientation="vertical"
         android:paddingHorizontal="10dp">
@@ -26,7 +26,9 @@
                 style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLength="100" />
+                android:inputType="text"
+                android:maxLength="100"
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -41,7 +43,9 @@
                 style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:maxLength="100" />
+                android:inputType="text"
+                android:maxLength="100"
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -55,9 +59,8 @@
                 style="@style/dialog_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
-                android:layout_weight="1"
+                android:layout_weight="0.6"
                 android:hint="@string/club">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -65,7 +68,9 @@
                     style="@style/dialog_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:maxLength="100" />
+                    android:inputType="text"
+                    android:maxLength="100"
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -74,7 +79,6 @@
                 style="@style/dialog_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:layout_weight="1"
                 android:hint="@string/index_callsign">
 
@@ -82,7 +86,10 @@
                     android:id="@+id/competitor_dialog_index_callsign"
                     style="@style/dialog_text"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLength="8"
+                    android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
@@ -165,7 +172,6 @@
                 style="@style/dialog_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="0.6"
 
@@ -181,15 +187,34 @@
                     android:inputType="number" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <CheckBox
-                android:id="@+id/competitor_dialog_si_rent"
-                style="@style/dialog_checkbox"
+            <com.google.android.material.textfield.TextInputLayout
+
+                style="@style/dialog_textView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/competitor_rent_chip" />
+                android:hint="@string/start_time_hint"
+                app:endIconDrawable="@drawable/ic_clock"
+                app:endIconMode="custom">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/competitor_dialog_start_time"
+                    style="@style/dialog_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="time"
+                    android:maxLength="5" />
+            </com.google.android.material.textfield.TextInputLayout>
+
         </LinearLayout>
 
+        <CheckBox
+            android:id="@+id/competitor_dialog_si_rent"
+            style="@style/dialog_checkbox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/competitor_rent_chip" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/competitor_dialog_edit_punches"

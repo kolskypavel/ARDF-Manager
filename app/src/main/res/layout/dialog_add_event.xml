@@ -18,24 +18,53 @@
             android:id="@+id/event_dialog_name"
             style="@style/dialog_text"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="text"
+            android:maxLines="1" />
     </com.google.android.material.textfield.TextInputLayout>
 
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/dialog_dropdown"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/type"
-        android:textColor="@color/black">
+        android:orientation="horizontal">
 
-        <AutoCompleteTextView
-            android:id="@+id/category_dialog_type"
-            style="@style/dialog_text"
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/dialog_dropdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="none"
-            app:simpleItems="@array/event_types_array" />
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_weight="1"
+            android:hint="@string/event_type"
+            android:textColor="@color/black">
+
+            <AutoCompleteTextView
+                android:id="@+id/category_dialog_type"
+                style="@style/dialog_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                app:simpleItems="@array/event_types_array" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/dialog_textView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/external_id"
+            android:textColor="@color/black">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/event_dialog_external_id"
+                style="@style/dialog_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:inputType="numberSigned"
+                android:maxLength="9" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -68,7 +97,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/start_time"
+            android:hint="@string/start_time_hint"
             app:endIconDrawable="@drawable/ic_clock"
             app:endIconMode="custom">
 
@@ -78,7 +107,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
-                android:focusable="false" />
+                android:inputType="time"
+                android:maxLength="5" />
 
         </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
@@ -95,7 +125,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:layout_weight="0.9"
-            android:hint="@string/level">
+            android:hint="@string/event_level">
 
             <AutoCompleteTextView
                 android:id="@+id/event_dialog_level"
@@ -111,7 +141,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/band">
+            android:hint="@string/event_band">
 
             <AutoCompleteTextView
                 android:id="@+id/event_dialog_band"
@@ -137,6 +167,47 @@
             android:layout_height="wrap_content"
             android:inputType="numberSigned" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/dialog_dropdown"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+
+            android:hint="@string/start_time_source">
+
+            <AutoCompleteTextView
+                android:id="@+id/event_dialog_start_time_source"
+                style="@style/dialog_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                app:simpleItems="@array/start_time_sources" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/dialog_dropdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_weight="1"
+            android:hint="@string/finish_time_source">
+
+            <AutoCompleteTextView
+                android:id="@+id/event_dialog_finish_time_source"
+                style="@style/dialog_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                app:simpleItems="@array/finish_time_sources" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </LinearLayout>
+
 
     <LinearLayout
         android:layout_width="wrap_content"

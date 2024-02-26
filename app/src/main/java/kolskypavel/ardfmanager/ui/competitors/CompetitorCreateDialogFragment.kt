@@ -12,6 +12,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
+import androidx.fragment.app.setFragmentResultListener
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -25,8 +27,10 @@ import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kolskypavel.ardfmanager.ui.pickers.TimePickerFragment
 import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
@@ -55,6 +59,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private lateinit var automaticCategoryButton: Button
     private lateinit var siNumberLayout: TextInputLayout
     private lateinit var siNumberTextView: TextInputEditText
+    private lateinit var startTimeTextView: TextInputEditText
     private lateinit var siRentCheckBox: CheckBox
     private lateinit var editPunchesSwitch: SwitchMaterial
     private lateinit var dataEditLinearLayout: LinearLayout
@@ -92,6 +97,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
             view.findViewById(R.id.competitor_dialog_automatic_category_checkbox)
         categoryPicker = view.findViewById(R.id.competitor_dialog_category)
         siNumberLayout = view.findViewById(R.id.competitor_dialog_si_layout)
+        startTimeTextView = view.findViewById(R.id.competitor_dialog_start_time)
         siNumberTextView = view.findViewById(R.id.competitor_dialog_si_number)
         siRentCheckBox = view.findViewById(R.id.competitor_dialog_si_rent)
         editPunchesSwitch = view.findViewById(R.id.competitor_dialog_edit_punches)
@@ -105,6 +111,20 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
         populateFields()
         setButtons()
+        setPicker()
+    }
+
+    private fun setPicker() {
+        startTimeTextView.setOnClickListener {
+            findNavController().navigate(
+                CompetitorCreateDialogFragmentDirections.pickStartTime(
+                    LocalTime.now()
+                )
+            )
+        }
+        setFragmentResultListener(TimePickerFragment.REQUEST_KEY_TIME) { _, bundle ->
+            startTimeTextView.setText(bundle.getString(TimePickerFragment.BUNDLE_KEY_TIME))
+        }
     }
 
     private fun populateFields() {
@@ -185,6 +205,13 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
         }
 
+        //Set startTime
+        if (competitor.drawnStartTime != null) {
+            startTimeTextView.setText(dataProcessor.getHoursMinutesFromTime(competitor.drawnStartTime!!))
+        }
+
+        // Punches setup
+
         //Set up the punch edit recycler view
         punchEditRecyclerView.adapter =
             PunchEditRecyclerViewAdapter(
@@ -226,6 +253,9 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 competitor.lastName = lastNameTextView.text.toString()
                 competitor.club = clubTextView.text.toString()
                 competitor.index = indexTextView.text.toString()
+                if (startTimeTextView.text.toString().isNotBlank()) {
+                    competitor.drawnStartTime = LocalTime.parse(startTimeTextView.text.toString())
+                }
                 if (birthYearTextView.text.toString().isNotEmpty()) {
                     competitor.birthYear = birthYearTextView.text.toString().toInt()
                 }
@@ -326,6 +356,15 @@ class CompetitorCreateDialogFragment : DialogFragment() {
             } catch (e: Exception) {
                 valid = false
                 siNumberTextView.error = getString(R.string.invalid)
+            }
+        }
+        //Check the start time
+        if (startTimeTextView.text.toString().isNotBlank()) {
+            try {
+                LocalTime.parse(startTimeTextView.text.toString())
+            } catch (e: Exception) {
+                startTimeTextView.error = getString(R.string.invalid)
+                valid = false
             }
         }
 

@@ -11,11 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.enums.EventType
+import kolskypavel.ardfmanager.backend.wrappers.ControlPointItemWrapper
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import java.util.UUID
 
 class ControlPointRecyclerViewAdapter(
-    var values: ArrayList<ControlPoint>,
+    var values: ArrayList<ControlPointItemWrapper>,
     val eventId: UUID,
     val categoryId: UUID,
     private var eventType: EventType,
@@ -35,15 +36,15 @@ class ControlPointRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ControlPointViewHolder, position: Int) {
         val item = values[position]
 
-        if (item.siCode != null) {
-            holder.siCode.setText(item.siCode.toString())
+        if (item.controlPoint.siCode != null) {
+            holder.siCode.setText(item.controlPoint.siCode.toString())
         }
-        if (item.name != null) {
-            holder.name.setText(item.name)
+        if (item.controlPoint.name != null) {
+            holder.name.setText(item.controlPoint.name)
         }
 
-        holder.points.setText(item.points.toString())
-        holder.separator.isChecked = item.separator
+        holder.points.setText(item.controlPoint.points.toString())
+        holder.separator.isChecked = item.controlPoint.separator
 
         holder.siCode.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
             codeWatcher(cs.toString(), holder.layoutPosition)
@@ -53,23 +54,25 @@ class ControlPointRecyclerViewAdapter(
         }
 
         holder.beacon.setOnCheckedChangeListener { _, checked ->
-            values[holder.adapterPosition].beacon = checked
+            values[holder.adapterPosition].controlPoint.beacon = checked
         }
 
         holder.addBtn.setOnClickListener {
             values.add(
-                holder.adapterPosition + 1,
-                ControlPoint(
-                    UUID.randomUUID(),
-                    eventId,
-                    categoryId,
-                    null,
-                    null,
-                    item.order++,
-                    0,
-                    1,
-                    beacon = false,
-                    separator = false
+                holder.adapterPosition + 1, ControlPointItemWrapper(
+                    ControlPoint(
+                        UUID.randomUUID(),
+                        eventId,
+                        categoryId,
+                        null,
+                        null,
+                        item.controlPoint.order++,
+                        0,
+                        1,
+                        beacon = false,
+                        separator = false
+                    ), isCodeValid = true,
+                    isNameValid = true
                 )
             )
             notifyItemInserted(holder.adapterPosition + 1)
@@ -80,7 +83,7 @@ class ControlPointRecyclerViewAdapter(
 
                 //Change beacon
                 if (holder.adapterPosition == values.size - 1 && values.size > 2) {
-                    values[holder.adapterPosition - 1].beacon = holder.beacon.isChecked
+                    values[holder.adapterPosition - 1].controlPoint.beacon = holder.beacon.isChecked
                     notifyItemChanged(holder.adapterPosition - 1)
                 }
 
@@ -106,7 +109,7 @@ class ControlPointRecyclerViewAdapter(
         if (eventType != EventType.ORIENTEERING && holder.adapterPosition != 0 && holder.adapterPosition == values.size - 1) {
             holder.beacon.visibility = View.VISIBLE
             holder.addBtn.visibility = View.GONE
-            item.beacon = true
+            item.controlPoint.beacon = true
         }
     }
 
@@ -121,32 +124,35 @@ class ControlPointRecyclerViewAdapter(
     fun getControlPoints(): ArrayList<ControlPoint> {
         val cps = values
         cps.removeAt(0)
-        return cps
+        return ControlPointItemWrapper.getControlPoints(cps)
     }
 
     private fun codeWatcher(string: String, position: Int) {
         if (string.isNotEmpty()) {
-            values[position].siCode = string.toInt()
+            values[position].controlPoint.siCode = string.toInt()
         } else {
-            values[position].siCode = null
+            values[position].controlPoint.siCode = null
+            values[position].isCodeValid = false
         }
     }
 
     private fun nameWatcher(string: String, position: Int, name: EditText) {
         if (string.isNotBlank()) {
-            values[position].name = string
+            values[position].controlPoint.name = string
 
             //Already existing control point
             if (selectedEventViewModel.checkIfControlPointNameExists(
-                    values[position].siCode,
-                    values[position].name!!
+                    values[position].controlPoint.siCode,
+                    values[position].controlPoint.name!!
                 )
             ) {
                 name.error = "Control point already exists"
+                values[position].isNameValid = false
             }
 
         } else {
-            values[position].name = null
+            values[position].controlPoint.name = null
+            values[position].isNameValid = true
         }
     }
 
@@ -158,6 +164,7 @@ class ControlPointRecyclerViewAdapter(
         var beacon: CheckBox = view.findViewById(R.id.control_point_item_beacon)
 
         var addBtn: ImageButton = view.findViewById(R.id.control_point_item_add_btn)
-        var deleteBtn: ImageButton = view.findViewById(R.id.control_point_item_delete_btn)
+        var deleteBtn: ImageButton =
+            view.findViewById(R.id.control_point_item_delete_btn)
     }
 }

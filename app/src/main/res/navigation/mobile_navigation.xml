@@ -39,6 +39,9 @@
             <argument
                 android:name="position"
                 app:argType="integer" />
+            <action
+                android:id="@+id/pickStartTime"
+                app:destination="@id/timePickerFragment" />
 
         </dialog>
         <fragment

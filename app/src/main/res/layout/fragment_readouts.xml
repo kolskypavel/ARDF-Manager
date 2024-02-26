@@ -25,7 +25,9 @@
         app:layout_constraintTop_toBottomOf="@+id/readouts_toolbar"
         tools:context=".ui.event.EventSelectionFragment"
         tools:layout_editor_absoluteX="0dp"
-        tools:listitem="@layout/recycler_item_event" />
+        tools:listitem="@layout/recycler_item_event" >
+
+    </androidx.recyclerview.widget.RecyclerView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

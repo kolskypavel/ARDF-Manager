@@ -19,6 +19,12 @@ interface CategoryDao {
     @Query("SELECT * FROM category WHERE id=(:id) LIMIT 1")
     suspend fun getCategory(id: UUID): Category
 
+    @Query("SELECT * FROM category WHERE name=(:name) AND event_id = (:eventId) LIMIT 1")
+    suspend fun getCategoryByName(name: String, eventId: UUID): Category?
+
+    @Query("SELECT * FROM category WHERE max_age = (:maxAge) AND event_id = (:eventId) LIMIT 1")
+    suspend fun getCategoryByMaxAge(maxAge: Int, eventId: UUID): Category?
+
     @Insert
     suspend fun createCategory(category: Category): Long
 

@@ -40,6 +40,12 @@ class ARDFRepository private constructor(context: Context) {
         eventDatabase.categoryDao().getCategoriesForEvent(eventId)
 
     suspend fun getCategory(id: UUID) = eventDatabase.categoryDao().getCategory(id)
+
+    suspend fun getCategoryByName(name: String, eventId: UUID) =
+        eventDatabase.categoryDao().getCategoryByName(name, eventId)
+
+   suspend fun getCategoryByMaxAge(maxAge: Int, eventId: UUID) =  eventDatabase.categoryDao().getCategoryByMaxAge(maxAge, eventId)
+
     suspend fun createCategory(category: Category) =
         eventDatabase.categoryDao().createCategory(category)
 
@@ -143,6 +149,7 @@ class ARDFRepository private constructor(context: Context) {
         eventDatabase.resultDao().getResultByCompetitor(competitorId)
 
     suspend fun createResult(result: Result) = eventDatabase.resultDao().createResult(result)
+
 
     //Singleton instantiation
     companion object {

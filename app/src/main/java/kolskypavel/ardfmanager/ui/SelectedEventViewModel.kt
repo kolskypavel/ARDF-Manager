@@ -101,6 +101,18 @@ class SelectedEventViewModel : ViewModel() {
     //Category
     suspend fun getCategory(id: UUID) = dataProcessor.getCategory(id)
 
+    fun getCategoryByName(string: String): Category? {
+        return runBlocking {
+            return@runBlocking dataProcessor.getCategoryByName(string, event.value!!.id)
+        }
+    }
+
+    fun getCategoryByMaxAge(maxAge: Int): Category? {
+        return runBlocking {
+            return@runBlocking dataProcessor.getCategoryByMaxAge(maxAge, event.value!!.id)
+        }
+    }
+
     fun createCategory(category: Category, controlPoints: List<ControlPoint>) {
         CoroutineScope(Dispatchers.IO).launch {
             dataProcessor.createCategory(category, controlPoints)
@@ -138,6 +150,7 @@ class SelectedEventViewModel : ViewModel() {
     }
 
     fun checkIfControlPointNameExists(siCode: Int?, name: String): Boolean {
+        //TODO: Fix
         runBlocking {
             dataProcessor.getControlPointByName(event.value!!.id, name)
         }

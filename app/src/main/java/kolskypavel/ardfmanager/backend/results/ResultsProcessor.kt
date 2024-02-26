@@ -70,9 +70,9 @@ class ResultsProcessor {
 
             //TODO: Based on options, set start time to the predefined value
             if (competitor != null) {
-                if (readout.startTime == null && competitor.defaultStartTime != null) {
+                if (readout.startTime == null && competitor.drawnStartTime != null) {
                     val startTime =
-                        SITime(competitor.defaultStartTime!!, event.date.dayOfWeek.value - 1)
+                        SITime(competitor.drawnStartTime!!, event.date.dayOfWeek.value - 1)
 
                     readout.startTime = startTime
                 }

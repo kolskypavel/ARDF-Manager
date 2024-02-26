@@ -17,7 +17,9 @@ import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
 import kolskypavel.ardfmanager.backend.room.enums.EventType
+import kolskypavel.ardfmanager.backend.room.enums.FinishTimeSource
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
+import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SIReaderService
 import kolskypavel.ardfmanager.backend.sportident.SIReaderState
@@ -118,6 +120,12 @@ class DataProcessor private constructor(context: Context) {
     fun getCategoriesForEvent(eventId: UUID) = ardfRepository.getCategoriesFlowForEvent(eventId)
 
     suspend fun getCategory(id: UUID) = ardfRepository.getCategory(id)
+
+    suspend fun getCategoryByName(string: String, eventId: UUID) =
+        ardfRepository.getCategoryByName(string, eventId)
+
+    suspend fun getCategoryByMaxAge(maxAge: Int, eventId: UUID) =
+        ardfRepository.getCategoryByMaxAge(maxAge, eventId)
 
     suspend fun createCategory(category: Category, controlPoints: List<ControlPoint>) {
         runBlocking {
@@ -431,6 +439,30 @@ class DataProcessor private constructor(context: Context) {
         val raceStatusStrings =
             appContext.get()?.resources?.getStringArray(R.array.race_status_array_short)!!
         return raceStatusStrings[raceStatus.value]
+    }
+
+    fun startTimeSourceToString(startTimeSource: StartTimeSource): String {
+        val startTimeSourceStrings =
+            appContext.get()?.resources?.getStringArray(R.array.start_time_sources)!!
+        return startTimeSourceStrings[startTimeSource.value]
+    }
+
+    fun startTimeSourceStringToEnum(string: String): StartTimeSource {
+        val startTimeSourceStrings =
+            appContext.get()?.resources?.getStringArray(R.array.start_time_sources)!!
+        return StartTimeSource.getByValue(startTimeSourceStrings.indexOf(string))!!
+    }
+
+    fun finishTimeSourceToString(finishTimeSource: FinishTimeSource): String {
+        val finishTimeSourceStrings =
+            appContext.get()?.resources?.getStringArray(R.array.finish_time_sources)!!
+        return finishTimeSourceStrings[finishTimeSource.value]
+    }
+
+    fun finishTimeSourceStringToEnum(string: String): FinishTimeSource {
+        val finishTimeSourceStrings =
+            appContext.get()?.resources?.getStringArray(R.array.finish_time_sources)!!
+        return FinishTimeSource.getByValue(finishTimeSourceStrings.indexOf(string))!!
     }
 
 

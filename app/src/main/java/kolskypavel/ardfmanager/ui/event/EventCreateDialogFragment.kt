@@ -19,6 +19,8 @@ import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
 import kolskypavel.ardfmanager.backend.room.enums.EventType
+import kolskypavel.ardfmanager.backend.room.enums.FinishTimeSource
+import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import kolskypavel.ardfmanager.ui.pickers.DatePickerFragment
 import kolskypavel.ardfmanager.ui.pickers.TimePickerFragment
 import java.time.Duration
@@ -31,12 +33,15 @@ class EventCreateDialogFragment : DialogFragment() {
     private val dataProcessor = DataProcessor.get()
 
     private lateinit var nameEditText: TextInputEditText
+    private lateinit var externalIdEditText: TextInputEditText
     private lateinit var dateView: TextInputEditText
     private lateinit var startTimeView: TextInputEditText
     private lateinit var limitEditText: TextInputEditText
     private lateinit var eventTypePicker: MaterialAutoCompleteTextView
     private lateinit var eventLevelPicker: MaterialAutoCompleteTextView
     private lateinit var eventBandPicker: MaterialAutoCompleteTextView
+    private lateinit var startTimeSourcePicker: MaterialAutoCompleteTextView
+    private lateinit var finishTimeSourcePicker: MaterialAutoCompleteTextView
 
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
@@ -56,18 +61,25 @@ class EventCreateDialogFragment : DialogFragment() {
         setStyle(STYLE_NORMAL, R.style.add_dialog)
 
         nameEditText = view.findViewById(R.id.event_dialog_name)
+        externalIdEditText = view.findViewById(R.id.event_dialog_external_id)
         dateView = view.findViewById(R.id.event_dialog_date)
         startTimeView = view.findViewById(R.id.event_dialog_start_time)
         limitEditText = view.findViewById(R.id.event_dialog_limit)
         eventTypePicker = view.findViewById(R.id.category_dialog_type)
         eventLevelPicker = view.findViewById(R.id.event_dialog_level)
         eventBandPicker = view.findViewById(R.id.event_dialog_band)
+        startTimeSourcePicker = view.findViewById(R.id.event_dialog_start_time_source)
+        finishTimeSourcePicker = view.findViewById(R.id.event_dialog_finish_time_source)
         cancelButton = view.findViewById(R.id.event_dialog_cancel)
         okButton = view.findViewById(R.id.event_dialog_ok)
 
+
+        //TODO: Process the saving - this is just to prevent the filtering after screen rotation
         eventTypePicker.isSaveEnabled = false
         eventLevelPicker.isSaveEnabled = false
         eventBandPicker.isSaveEnabled = false
+        startTimeSourcePicker.isSaveEnabled = false
+        finishTimeSourcePicker.isSaveEnabled = false
 
         populateFields()
         setButtons()
@@ -105,12 +117,14 @@ class EventCreateDialogFragment : DialogFragment() {
             dialog?.setTitle(R.string.event_create)
             event = Event(
                 UUID.randomUUID(),
-                "",
-                LocalDate.now(), LocalTime.now(),
+                "", null, LocalDate.now(),
+                LocalTime.now(),
                 EventType.CLASSICS,
                 EventLevel.PRACTICE,
                 EventBand.M80,
-                Duration.ofMinutes(120)
+                Duration.ofMinutes(120),
+                StartTimeSource.DRAWN_TIME,
+                FinishTimeSource.FINISH_CONTROL
             )
         } else {
             event = args.event!!
@@ -119,12 +133,24 @@ class EventCreateDialogFragment : DialogFragment() {
         }
 
         dateView.setText(event.date.toString())
+        if (event.externalId != null) {
+            externalIdEditText.setText(event.externalId.toString())
+        }
         startTimeView.setText(dataProcessor.getHoursMinutesFromTime(event.startTime))
         limitEditText.setText("120") //TODO: Fix with default values from settings
 
         eventTypePicker.setText(dataProcessor.eventTypeToString(event.eventType), false)
         eventLevelPicker.setText(dataProcessor.eventLevelToString(event.eventLevel), false)
         eventBandPicker.setText(dataProcessor.eventBandToString(event.eventBand), false)
+        startTimeSourcePicker.setText(
+            dataProcessor.startTimeSourceToString(event.startTimeSource),
+            false
+        )
+        finishTimeSourcePicker.setText(
+            dataProcessor.finishTimeSourceToString(event.finishTimeSource),
+            false
+        )
+
     }
 
     private fun setButtons() {
@@ -134,14 +160,22 @@ class EventCreateDialogFragment : DialogFragment() {
             if (checkValidity()) {
 
                 event.name = nameEditText.text.toString()
+                if (externalIdEditText.text.toString().isNotBlank()) {
+                    event.externalId = externalIdEditText.text.toString().toInt()
+                } else {
+                    event.externalId = null
+                }
                 event.eventType =
                     dataProcessor.eventTypeStringToEnum(eventTypePicker.text.toString())
                 event.eventLevel =
                     dataProcessor.eventLevelStringToEnum(eventLevelPicker.text.toString())
                 event.eventBand =
                     dataProcessor.eventBandStringToEnum(eventBandPicker.text.toString())
-
                 event.timeLimit = Duration.ofMinutes(limitEditText.text.toString().toLong())
+                event.startTimeSource =
+                    dataProcessor.startTimeSourceStringToEnum(startTimeSourcePicker.text.toString())
+                event.finishTimeSource =
+                    dataProcessor.finishTimeSourceStringToEnum(finishTimeSourcePicker.text.toString())
 
                 setFragmentResult(
                     REQUEST_EVENT_MODIFICATION, bundleOf(
@@ -167,6 +201,19 @@ class EventCreateDialogFragment : DialogFragment() {
         if (nameEditText.text?.isBlank() == true) {
             nameEditText.error = getString(R.string.required)
             valid = false
+        }
+
+        //Validate start time
+        if (startTimeView.text.toString().isBlank()) {
+            startTimeView.error = getString(R.string.required)
+            valid = false
+        } else {
+            try {
+                LocalTime.parse(startTimeView.text.toString())
+            } catch (e: Exception) {
+                startTimeView.error = getString(R.string.invalid)
+                valid = false
+            }
         }
 
         if (limitEditText.text?.isBlank() == false) {

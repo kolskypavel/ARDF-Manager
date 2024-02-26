@@ -20,9 +20,9 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.enums.EventType
+import kolskypavel.ardfmanager.backend.wrappers.ControlPointItemWrapper
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import java.time.Duration
-import java.time.format.DateTimeFormatter
 import java.util.UUID
 
 
@@ -39,11 +39,13 @@ class CategoryCreateDialogFragment : DialogFragment() {
     private lateinit var limitEditText: TextInputEditText
     private lateinit var limitLayout: TextInputLayout
     private lateinit var eventTypePicker: MaterialAutoCompleteTextView
+    private lateinit var startTimeSourceLayout: TextInputLayout
+    private lateinit var startTimeSourcePicker: MaterialAutoCompleteTextView
+    private lateinit var finishTimeSourceLayout: TextInputLayout
+    private lateinit var finishTimeSourcePicker: MaterialAutoCompleteTextView
     private lateinit var ageBasedCheckBox: CheckBox
-    private lateinit var minYearLayout: TextInputLayout
-    private lateinit var maxYearLayout: TextInputLayout
-    private lateinit var minYearEditText: TextInputEditText
-    private lateinit var maxYearEditText: TextInputEditText
+    private lateinit var maxAgeLayout: TextInputLayout
+    private lateinit var maxAgeEditText: TextInputEditText
     private lateinit var lengthEditText: TextInputEditText
     private lateinit var climbEditText: TextInputEditText
     private lateinit var controlPointRecyclerView: RecyclerView
@@ -72,11 +74,13 @@ class CategoryCreateDialogFragment : DialogFragment() {
         limitEditText = view.findViewById(R.id.category_dialog_limit)
         limitLayout = view.findViewById(R.id.category_dialog_limit_layout)
         eventTypePicker = view.findViewById(R.id.category_dialog_type)
+        startTimeSourceLayout = view.findViewById(R.id.category_dialog_start_time_source_layout)
+        startTimeSourcePicker = view.findViewById(R.id.category_dialog_start_time_source)
+        finishTimeSourceLayout = view.findViewById(R.id.category_dialog_finish_time_source_layout)
+        finishTimeSourcePicker = view.findViewById(R.id.category_dialog_finish_time_source)
         ageBasedCheckBox = view.findViewById(R.id.category_dialog_ageBased_checkbox)
-        minYearLayout = view.findViewById(R.id.category_dialog_min_year_layout)
-        maxYearLayout = view.findViewById(R.id.category_dialog_max_year_layout)
-        minYearEditText = view.findViewById(R.id.category_dialog_min_year)
-        maxYearEditText = view.findViewById(R.id.category_dialog_max_year)
+        maxAgeLayout = view.findViewById(R.id.category_dialog_max_age_layout)
+        maxAgeEditText = view.findViewById(R.id.category_dialog_max_age)
         lengthEditText = view.findViewById(R.id.category_dialog_length)
         climbEditText = view.findViewById(R.id.category_dialog_climb)
         controlPointRecyclerView =
@@ -108,9 +112,11 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 "",
                 false,
                 -1,
-                -1,
                 true,
-                event.eventType, event.timeLimit,
+                event.eventType,
+                event.timeLimit,
+                event.startTimeSource,
+                event.finishTimeSource,
                 "",
                 "",
                 0F,
@@ -118,17 +124,26 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 0
             )
 
-            //Preset the event type
+            //Preset the data from the event
             eventTypePicker.setText(
                 dataProcessor.eventTypeToString(event.eventType),
                 false
             )
             limitEditText.setText(event.timeLimit.toMinutes().toString())
+            startTimeSourcePicker.setText(
+                dataProcessor.startTimeSourceToString(event.startTimeSource),
+                false
+            )
+            finishTimeSourcePicker.setText(
+                dataProcessor.finishTimeSourceToString(event.finishTimeSource),
+                false
+            )
 
             eventTypeLayout.isEnabled = false
             limitLayout.isEnabled = false
-            minYearLayout.isEnabled = false
-            maxYearLayout.isEnabled = false
+            maxAgeLayout.isEnabled = false
+            startTimeSourceLayout.isEnabled = false
+            finishTimeSourceLayout.isEnabled = false
 
         }
 
@@ -142,7 +157,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 sameTypeCheckBox.isChecked = false
             } else {
                 eventTypeLayout.isEnabled = false
-                limitLayout.isEnabled = true
+                limitLayout.isEnabled = false
             }
 
             eventTypePicker.setText(
@@ -150,18 +165,23 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 false
             )
             limitEditText.setText(category.timeLimit.toMinutes().toString())
+            startTimeSourcePicker.setText(
+                dataProcessor.startTimeSourceToString(category.startTimeSource),
+                false
+            )
+            finishTimeSourcePicker.setText(
+                dataProcessor.finishTimeSourceToString(category.finishTimeSource),
+                false
+            )
 
             //Preset the age pickers
             if (category.ageBased) {
-                minYearEditText.setText(category.minYear.toString())
-                maxYearEditText.setText(category.maxYear.toString())
+                maxAgeEditText.setText(category.maxAge.toString())
                 ageBasedCheckBox.isChecked = true
-                minYearLayout.isEnabled = true
-                maxYearLayout.isEnabled = true
+                maxAgeLayout.isEnabled = true
             } else {
                 ageBasedCheckBox.isChecked = false
-                minYearLayout.isEnabled = false
-                maxYearLayout.isEnabled = false
+                maxAgeLayout.isEnabled = false
             }
 
             if (category.length != 0F) {
@@ -182,15 +202,27 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 )
                 eventTypeWatcher(event.eventType.value)
                 limitEditText.setText(event.timeLimit.toMinutes().toString())
+                startTimeSourcePicker.setText(
+                    dataProcessor.startTimeSourceToString(event.startTimeSource),
+                    false
+                )
+                finishTimeSourcePicker.setText(
+                    dataProcessor.finishTimeSourceToString(event.finishTimeSource),
+                    false
+                )
 
                 eventTypeLayout.isEnabled = false
                 limitLayout.isEnabled = false
+                startTimeSourceLayout.isEnabled = false
+                finishTimeSourceLayout.isEnabled = false
             }
 
             //Hide the shading and enable input
             else {
                 eventTypeLayout.isEnabled = true
                 limitLayout.isEnabled = true
+                startTimeSourceLayout.isEnabled = true
+                finishTimeSourceLayout.isEnabled = true
                 eventTypePicker.setOnItemClickListener { _, _, position, _ ->
                     eventTypeWatcher(position)
                 }
@@ -201,25 +233,27 @@ class CategoryCreateDialogFragment : DialogFragment() {
         //Set the minimal check box functionality
         ageBasedCheckBox.setOnClickListener {
             if (ageBasedCheckBox.isChecked) {
-                minYearLayout.isEnabled = true
-                maxYearLayout.isEnabled = true
+                maxAgeLayout.isEnabled = true
             } else {
-                minYearEditText.setText("")
-                maxYearEditText.setText("")
-                minYearLayout.isEnabled = false
-                maxYearLayout.isEnabled = false
+                maxAgeEditText.setText("")
+                maxAgeLayout.isEnabled = false
             }
         }
 
         //Set the punches
         setAdapter(ArrayList(selectedEventViewModel.getControlPointsByCategory(category.id)))
+
+        //TODO: Process the saving - this is just to prevent the filtering after screen rotation
+        eventTypePicker.isSaveEnabled = false
+        startTimeSourcePicker.isSaveEnabled = false
+        finishTimeSourcePicker.isSaveEnabled = false
     }
 
     private fun setAdapter(values: ArrayList<ControlPoint>?) {
         if (values != null) {
             controlPointRecyclerView.adapter =
                 ControlPointRecyclerViewAdapter(
-                    values,
+                    ControlPointItemWrapper.getWrappers(values),
                     selectedEventViewModel.event.value!!.id,
                     category.id,
                     category.eventType, selectedEventViewModel
@@ -247,6 +281,15 @@ class CategoryCreateDialogFragment : DialogFragment() {
             nameEditText.error = getString(R.string.required)
             valid = false
         }
+        //Check if the name is unique
+        else {
+            val name = nameEditText.text.toString()
+            val orig = selectedEventViewModel.getCategoryByName(name)
+            if (orig != null && orig.id != category.id) {
+                valid = false
+                nameEditText.error = getString(R.string.category_exists)
+            }
+        }
 
         if (!sameTypeCheckBox.isChecked) {
             if (limitEditText.text?.isBlank() == false) {
@@ -263,35 +306,16 @@ class CategoryCreateDialogFragment : DialogFragment() {
         }
 
         if (ageBasedCheckBox.isChecked) {
-            val minYear: String = minYearEditText.text.toString()
-            val maxYear: String = maxYearEditText.text.toString()
+            val maxYear: String = maxAgeEditText.text.toString()
 
-            if (minYear.isBlank()) {
-                minYearEditText.error = getString(R.string.required)
-                valid = false
-            }
             if (maxYear.isBlank()) {
-                maxYearEditText.error = getString(R.string.required)
+                maxAgeEditText.error = getString(R.string.required)
                 valid = false
             }
 
-            val formatter = DateTimeFormatter.ofPattern("yyyy")
-            try {
-                formatter.parse(minYear)
-            } catch (e: Exception) {
-                minYearEditText.error = getString(R.string.nonexistent_year)
-                valid = false
-            }
-
-            try {
-                formatter.parse(maxYear)
-            } catch (e: Exception) {
-                maxYearEditText.error = getString(R.string.nonexistent_year)
-                valid = false
-            }
-
-            if (maxYear < minYear) {
-                maxYearEditText.error = getString(R.string.invalid_year_range)
+            val orig = selectedEventViewModel.getCategoryByMaxAge(maxYear.toInt())
+            if (orig != null && orig.id != category.id) {
+                maxAgeEditText.error = getString(R.string.invalid_max_age, orig.name)
                 valid = false
             }
         }
@@ -310,14 +334,10 @@ class CategoryCreateDialogFragment : DialogFragment() {
             if (checkFields()) {
                 category.name = nameEditText.text.toString()
                 category.differentProperties = !sameTypeCheckBox.isChecked
-                category.eventType =
-                    dataProcessor.eventTypeStringToEnum(eventTypePicker.text.toString())
-                category.timeLimit = Duration.ofMinutes(limitEditText.text.toString().toLong())
                 category.ageBased = ageBasedCheckBox.isChecked
 
                 if (category.ageBased) {
-                    category.minYear = (minYearEditText.text.toString()).toInt()
-                    category.maxYear = (maxYearEditText.text.toString()).toInt()
+                    category.maxAge = (maxAgeEditText.text.toString()).toInt()
                 }
 
                 if (lengthEditText.text?.isBlank() == false) {
@@ -326,6 +346,15 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 if (climbEditText.text?.isBlank() == false) {
                     category.climb = climbEditText.text.toString().toFloat()
                 }
+
+                //Set the data from pickers
+                category.eventType =
+                    dataProcessor.eventTypeStringToEnum(eventTypePicker.text.toString())
+                category.timeLimit = Duration.ofMinutes(limitEditText.text.toString().toLong())
+                category.startTimeSource =
+                    dataProcessor.startTimeSourceStringToEnum(startTimeSourcePicker.text.toString())
+                category.finishTimeSource =
+                    dataProcessor.finishTimeSourceStringToEnum(finishTimeSourcePicker.text.toString())
 
                 //Get control points
                 val parsed = selectedEventViewModel.adjustControlPoints(
