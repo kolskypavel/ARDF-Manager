@@ -5,12 +5,12 @@ import androidx.room.Room
 import kolskypavel.ardfmanager.backend.room.database.EventDatabase
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.CompetitorCategory
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.Result
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -44,7 +44,11 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun getCategoryByName(name: String, eventId: UUID) =
         eventDatabase.categoryDao().getCategoryByName(name, eventId)
 
-   suspend fun getCategoryByMaxAge(maxAge: Int, eventId: UUID) =  eventDatabase.categoryDao().getCategoryByMaxAge(maxAge, eventId)
+    suspend fun getCategoryByMaxAge(maxAge: Int, eventId: UUID) =
+        eventDatabase.categoryDao().getCategoryByMaxAge(maxAge, eventId)
+
+    suspend fun getCategoryByBirthYear(birthYear: Int, woman: Boolean, eventId: UUID): Category? =
+        eventDatabase.categoryDao().getCategoryByAge(birthYear, woman, eventId)
 
     suspend fun createCategory(category: Category) =
         eventDatabase.categoryDao().createCategory(category)
@@ -82,8 +86,8 @@ class ARDFRepository private constructor(context: Context) {
     fun getCompetitorsByEvent(eventId: UUID): Flow<List<Competitor>> =
         eventDatabase.competitorDao().getCompetitorsByEvent(eventId)
 
-    fun getCompetitorCategoriesByEvent(eventId: UUID): Flow<List<CompetitorCategory>> =
-        eventDatabase.competitorDao().getCompetitorsCategoriesByEvent(eventId)
+    fun getCompetitorCategoriesByEvent(eventId: UUID): Flow<List<CompetitorData>> =
+        eventDatabase.competitorDao().getCompetitorData(eventId)
 
     suspend fun getCompetitorsByCategory(categoryId: UUID) =
         eventDatabase.competitorDao().getCompetitorsByCategory(categoryId)
@@ -96,12 +100,15 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun deleteCompetitor(id: UUID) = eventDatabase.competitorDao().deleteCompetitor(id)
 
+    suspend fun deleteAllCompetitors(eventId: UUID) =
+        eventDatabase.competitorDao().deleteAllCompetitors(eventId)
+
     suspend fun checkIfSINumberExists(siNumber: Int, eventId: UUID): Int =
         eventDatabase.competitorDao().checkIfSINumberExists(siNumber, eventId)
 
     //READOUTS
     suspend fun getReadoutsByEvent(eventId: UUID) =
-        eventDatabase.readoutDao().getReadoutsByEvent(eventId)
+        eventDatabase.readoutDao().getReadoutDataByEvent(eventId)
 
     suspend fun getReadoutBySINumber(siNumber: Int, eventId: UUID) =
         eventDatabase.readoutDao().getReadoutForSINumber(siNumber, eventId)
@@ -110,12 +117,6 @@ class ARDFRepository private constructor(context: Context) {
         eventDatabase.readoutDao().getReadoutByCompetitor(competitorId)
 
     suspend fun getReadouts(id: UUID) = eventDatabase.readoutDao().getReadout(id)
-
-    suspend fun getReadoutsByCategory(categoryId: UUID) =
-        eventDatabase.readoutDao().getReadoutByCategory(categoryId)
-
-    suspend fun getReadoutsForNullCategory(eventId: UUID) =
-        eventDatabase.readoutDao().getReadoutsForNullCategory(eventId)
 
     suspend fun createReadout(readout: Readout) =
         eventDatabase.readoutDao().createReadout(readout)

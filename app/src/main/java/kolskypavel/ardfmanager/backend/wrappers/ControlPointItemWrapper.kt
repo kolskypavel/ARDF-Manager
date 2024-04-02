@@ -5,7 +5,6 @@ import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 data class ControlPointItemWrapper(
     var controlPoint: ControlPoint,
     var isCodeValid: Boolean,
-    var isNameValid: Boolean
 ) {
 
     companion object {
@@ -13,7 +12,6 @@ data class ControlPointItemWrapper(
             return ArrayList(controlPoints.map { controlPoint ->
                 ControlPointItemWrapper(
                     controlPoint,
-                    true,
                     true
                 )
             })

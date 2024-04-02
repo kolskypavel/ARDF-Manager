@@ -19,8 +19,4 @@
 
         />
 
-    <item
-        android:id="@+id/category_menu_about_app"
-        android:title="@string/about_the_app" />
-
 </menu>

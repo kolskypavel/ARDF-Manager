@@ -35,9 +35,7 @@ class ResultsProcessor {
     ) {
         dataProcessor.createReadout(readout)
         dataProcessor.createPunches(punches)
-        if (result != null) {
-            dataProcessor.createResult(result)
-        }
+        dataProcessor.createResult(result)
     }
 
     /**
@@ -58,11 +56,9 @@ class ResultsProcessor {
                     cardData.cardType,
                     event.id,
                     competitor?.id,
-                    null,
                     cardData.checkTime,
                     cardData.startTime,
                     cardData.finishTime,
-                    null,
                     LocalDateTime.now()
                 )
 
@@ -88,7 +84,7 @@ class ResultsProcessor {
 
             //Adjust run time
             if (readout.startTime != null && readout.finishTime != null) {
-                readout.runTime = SITime.split(readout.startTime!!, readout.finishTime!!)
+                //  readout.runTime = SITime.split(readout.startTime!!, readout.finishTime!!)
             } else {
                 Log.d("Results processor", "Missing finish or start time")
             }
@@ -99,7 +95,7 @@ class ResultsProcessor {
                 competitor?.id,
                 RaceStatus.NOT_PROCESSED,
                 0,
-                readout.runTime
+                null
             )
 
             if (category != null) {
@@ -140,8 +136,6 @@ class ResultsProcessor {
                 0,
                 dataProcessor.getCurrentEvent().id,
                 competitorId,
-                categoryId,
-                null,
                 null,
                 null,
                 null,
@@ -155,7 +149,7 @@ class ResultsProcessor {
                 competitorId,
                 RaceStatus.NOT_PROCESSED,
                 0,
-                readout.runTime
+                null
             )
         }
 

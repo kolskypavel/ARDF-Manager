@@ -6,9 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".ui.competitors.CompetitorFragment">
 
-
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/competitor_toolbar"
+        android:id="@+id/competitor_fragment_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
@@ -16,12 +15,47 @@
         android:theme="@style/Theme.ARDFManager"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <de.codecrafters.tableview.SortableTableView xmlns:table="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/competitor_table_view"
+    <LinearLayout
+        android:id="@+id/competitor_fragment_view_type_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        table:layout_constraintTop_toBottomOf="@id/competitor_toolbar"
-        table:tableView_columnCount="4" />
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/competitor_fragment_toolbar">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:text="@string/display" />
+
+        <com.google.android.material.textfield.TextInputLayout
+
+            style="@style/dialog_dropdown"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/display"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <AutoCompleteTextView
+                android:id="@+id/competitor_fragment_display_type"
+                style="@style/dialog_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                app:simpleItems="@array/competitor_display_options" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </LinearLayout>
+
+    <de.codecrafters.tableview.SortableTableView xmlns:table="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/competitor_fragment_table_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        table:layout_constraintTop_toBottomOf="@id/competitor_fragment_view_type_layout"
+        table:tableView_columnCount="5" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/competitor_btn_add"

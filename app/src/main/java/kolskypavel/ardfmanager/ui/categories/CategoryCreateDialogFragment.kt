@@ -38,12 +38,12 @@ class CategoryCreateDialogFragment : DialogFragment() {
     private lateinit var eventTypeLayout: TextInputLayout
     private lateinit var limitEditText: TextInputEditText
     private lateinit var limitLayout: TextInputLayout
+    private lateinit var genderPicker: MaterialAutoCompleteTextView
     private lateinit var eventTypePicker: MaterialAutoCompleteTextView
     private lateinit var startTimeSourceLayout: TextInputLayout
     private lateinit var startTimeSourcePicker: MaterialAutoCompleteTextView
     private lateinit var finishTimeSourceLayout: TextInputLayout
     private lateinit var finishTimeSourcePicker: MaterialAutoCompleteTextView
-    private lateinit var ageBasedCheckBox: CheckBox
     private lateinit var maxAgeLayout: TextInputLayout
     private lateinit var maxAgeEditText: TextInputEditText
     private lateinit var lengthEditText: TextInputEditText
@@ -74,11 +74,11 @@ class CategoryCreateDialogFragment : DialogFragment() {
         limitEditText = view.findViewById(R.id.category_dialog_limit)
         limitLayout = view.findViewById(R.id.category_dialog_limit_layout)
         eventTypePicker = view.findViewById(R.id.category_dialog_type)
+        genderPicker = view.findViewById(R.id.category_gender)
         startTimeSourceLayout = view.findViewById(R.id.category_dialog_start_time_source_layout)
         startTimeSourcePicker = view.findViewById(R.id.category_dialog_start_time_source)
         finishTimeSourceLayout = view.findViewById(R.id.category_dialog_finish_time_source_layout)
         finishTimeSourcePicker = view.findViewById(R.id.category_dialog_finish_time_source)
-        ageBasedCheckBox = view.findViewById(R.id.category_dialog_ageBased_checkbox)
         maxAgeLayout = view.findViewById(R.id.category_dialog_max_age_layout)
         maxAgeEditText = view.findViewById(R.id.category_dialog_max_age)
         lengthEditText = view.findViewById(R.id.category_dialog_length)
@@ -94,9 +94,6 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
     }
 
-    /**
-     * Set the OK and Cancel buttons
-     */
 
     /**
      * Populate the data fields - text views, pickers
@@ -109,9 +106,8 @@ class CategoryCreateDialogFragment : DialogFragment() {
             category = Category(
                 UUID.randomUUID(),
                 event.id,
-                "",
-                false,
-                -1,
+                "", isWoman = null,
+                null,
                 true,
                 event.eventType,
                 event.timeLimit,
@@ -141,7 +137,6 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
             eventTypeLayout.isEnabled = false
             limitLayout.isEnabled = false
-            maxAgeLayout.isEnabled = false
             startTimeSourceLayout.isEnabled = false
             finishTimeSourceLayout.isEnabled = false
 
@@ -174,14 +169,8 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 false
             )
 
-            //Preset the age pickers
-            if (category.ageBased) {
+            if (category.maxAge != null) {
                 maxAgeEditText.setText(category.maxAge.toString())
-                ageBasedCheckBox.isChecked = true
-                maxAgeLayout.isEnabled = true
-            } else {
-                ageBasedCheckBox.isChecked = false
-                maxAgeLayout.isEnabled = false
             }
 
             if (category.length != 0F) {
@@ -191,6 +180,13 @@ class CategoryCreateDialogFragment : DialogFragment() {
             if (category.climb != 0F) {
                 climbEditText.setText(category.climb.toString())
             }
+        }
+
+        //Set gender
+        when (category.isWoman) {
+            null -> genderPicker.setText(getString(R.string.gender_not_specified), false)
+            true -> genderPicker.setText(getString(R.string.gender_woman), false)
+            false -> genderPicker.setText(getString(R.string.gender_man), false)
         }
 
         //Set the event type checkbox functionality
@@ -230,16 +226,6 @@ class CategoryCreateDialogFragment : DialogFragment() {
             setAdapter(null)
         }
 
-        //Set the minimal check box functionality
-        ageBasedCheckBox.setOnClickListener {
-            if (ageBasedCheckBox.isChecked) {
-                maxAgeLayout.isEnabled = true
-            } else {
-                maxAgeEditText.setText("")
-                maxAgeLayout.isEnabled = false
-            }
-        }
-
         //Set the punches
         setAdapter(ArrayList(selectedEventViewModel.getControlPointsByCategory(category.id)))
 
@@ -256,7 +242,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                     ControlPointItemWrapper.getWrappers(values),
                     selectedEventViewModel.event.value!!.id,
                     category.id,
-                    category.eventType, selectedEventViewModel
+                    category.eventType, requireContext()
                 )
         } else {
             controlPointRecyclerView.adapter =
@@ -264,7 +250,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                     (controlPointRecyclerView.adapter as ControlPointRecyclerViewAdapter).getOriginalValues(),
                     selectedEventViewModel.event.value!!.id,
                     category.id,
-                    category.eventType, selectedEventViewModel
+                    category.eventType, requireContext()
                 )
         }
     }
@@ -305,13 +291,9 @@ class CategoryCreateDialogFragment : DialogFragment() {
             }
         }
 
-        if (ageBasedCheckBox.isChecked) {
+        if (maxAgeEditText.text.toString().isNotBlank()) {
             val maxYear: String = maxAgeEditText.text.toString()
 
-            if (maxYear.isBlank()) {
-                maxAgeEditText.error = getString(R.string.required)
-                valid = false
-            }
 
             val orig = selectedEventViewModel.getCategoryByMaxAge(maxYear.toInt())
             if (orig != null && orig.id != category.id) {
@@ -334,10 +316,11 @@ class CategoryCreateDialogFragment : DialogFragment() {
             if (checkFields()) {
                 category.name = nameEditText.text.toString()
                 category.differentProperties = !sameTypeCheckBox.isChecked
-                category.ageBased = ageBasedCheckBox.isChecked
 
-                if (category.ageBased) {
+                if (maxAgeEditText.text.toString().isNotBlank()) {
                     category.maxAge = (maxAgeEditText.text.toString()).toInt()
+                } else {
+                    category.maxAge = null
                 }
 
                 if (lengthEditText.text?.isBlank() == false) {
@@ -348,6 +331,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 }
 
                 //Set the data from pickers
+                category.isWoman = dataProcessor.genderFromString(genderPicker.text.toString())
                 category.eventType =
                     dataProcessor.eventTypeStringToEnum(eventTypePicker.text.toString())
                 category.timeLimit = Duration.ofMinutes(limitEditText.text.toString().toLong())

@@ -8,6 +8,6 @@ enum class EventLevel(val value: Int) {
     PRACTICE(4);
 
     companion object {
-        fun getByValue(value: Int) = EventLevel.values().firstOrNull { it.value == value }
+        fun getByValue(value: Int) = entries.firstOrNull { it.value == value }
     }
 }

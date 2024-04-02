@@ -1,5 +1,6 @@
 package kolskypavel.ardfmanager.ui.categories;
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,6 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.enums.EventType
 import kolskypavel.ardfmanager.backend.wrappers.ControlPointItemWrapper
-import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import java.util.UUID
 
 class ControlPointRecyclerViewAdapter(
@@ -20,7 +20,7 @@ class ControlPointRecyclerViewAdapter(
     val eventId: UUID,
     val categoryId: UUID,
     private var eventType: EventType,
-    private var selectedEventViewModel: SelectedEventViewModel
+    val context: Context
 ) :
     RecyclerView.Adapter<ControlPointRecyclerViewAdapter.ControlPointViewHolder>() {
 
@@ -47,7 +47,7 @@ class ControlPointRecyclerViewAdapter(
         holder.separator.isChecked = item.controlPoint.separator
 
         holder.siCode.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
-            codeWatcher(cs.toString(), holder.layoutPosition)
+            codeWatcher(cs.toString(), holder.layoutPosition, holder.siCode)
         }
         holder.name.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
             nameWatcher(cs.toString(), holder.layoutPosition, holder.name)
@@ -71,8 +71,7 @@ class ControlPointRecyclerViewAdapter(
                         1,
                         beacon = false,
                         separator = false
-                    ), isCodeValid = true,
-                    isNameValid = true
+                    ), isCodeValid = true
                 )
             )
             notifyItemInserted(holder.adapterPosition + 1)
@@ -115,6 +114,11 @@ class ControlPointRecyclerViewAdapter(
 
     //TODO: Validate the control points
     fun checkCodes(): Boolean {
+        for (v in values) {
+            if (!v.isCodeValid) {
+                return false
+            }
+        }
         return true
     }
 
@@ -127,9 +131,31 @@ class ControlPointRecyclerViewAdapter(
         return ControlPointItemWrapper.getControlPoints(cps)
     }
 
-    private fun codeWatcher(string: String, position: Int) {
+    //Returns true if a code is valid - not duplicate - does not matter in Orienteering or Custom
+    //TODO: Further check for sprint
+    private fun checkCodeDuplicate(code: Int, position: Int): Boolean {
+        if (eventType == EventType.CLASSICS || eventType == EventType.FOXORING) {
+            for ((counter, v) in values.withIndex()) {
+                if (counter != position && v.controlPoint.siCode == code) {
+                    return false
+                }
+            }
+        }
+        return true
+    }
+
+    private fun codeWatcher(string: String, position: Int, codeView: EditText) {
         if (string.isNotEmpty()) {
-            values[position].controlPoint.siCode = string.toInt()
+            val code = string.toInt()
+
+            //Check for duplicates
+            if (checkCodeDuplicate(code, position)) {
+                values[position].controlPoint.siCode = code
+                values[position].isCodeValid = true
+            } else {
+                codeView.error = context.getString(R.string.duplicate)
+                values[position].isCodeValid = false
+            }
         } else {
             values[position].controlPoint.siCode = null
             values[position].isCodeValid = false
@@ -139,20 +165,8 @@ class ControlPointRecyclerViewAdapter(
     private fun nameWatcher(string: String, position: Int, name: EditText) {
         if (string.isNotBlank()) {
             values[position].controlPoint.name = string
-
-            //Already existing control point
-            if (selectedEventViewModel.checkIfControlPointNameExists(
-                    values[position].controlPoint.siCode,
-                    values[position].controlPoint.name!!
-                )
-            ) {
-                name.error = "Control point already exists"
-                values[position].isNameValid = false
-            }
-
         } else {
             values[position].controlPoint.name = null
-            values[position].isNameValid = true
         }
     }
 

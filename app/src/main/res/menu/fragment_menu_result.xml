@@ -10,8 +10,4 @@
         android:icon="@drawable/ic_settings"
         android:title="@string/global_settings" />
 
-    <item
-        android:id="@+id/result_menu_about_app"
-        android:title="@string/about_the_app" />
-
 </menu>

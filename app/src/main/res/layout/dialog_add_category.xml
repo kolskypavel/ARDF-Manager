@@ -36,13 +36,22 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-            <CheckBox
-                android:id="@+id/category_dialog_ageBased_checkbox"
-                style="@style/dialog_checkbox"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/dialog_dropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.95"
-                android:text="@string/categories_age_based" />
+                android:layout_weight="1"
+                android:hint="@string/gender"
+                android:textColor="@color/black">
+
+                <AutoCompleteTextView
+                    android:id="@+id/category_gender"
+                    style="@style/dialog_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    app:simpleItems="@array/genders" />
+            </com.google.android.material.textfield.TextInputLayout>
 
 
             <com.google.android.material.textfield.TextInputLayout
@@ -73,8 +82,7 @@
                 style="@style/dialog_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="5dp"
-                android:layout_weight="0.9"
+                android:layout_weight="1"
                 android:hint="@string/length">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -90,6 +98,7 @@
                 style="@style/dialog_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
                 android:layout_weight="1"
                 android:hint="@string/climb">
 
@@ -140,7 +149,7 @@
                 style="@style/dialog_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="5dp"
                 android:layout_weight="1"
                 android:hint="@string/limit">
 
@@ -181,7 +190,7 @@
                 style="@style/dialog_dropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="5dp"
                 android:layout_weight="1"
                 android:hint="@string/finish_time_source">
 

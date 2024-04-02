@@ -10,6 +10,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import java.util.UUID
 
@@ -35,7 +36,7 @@ class EventRecyclerViewAdapter(
         val item = values[position]
         holder.title.text = item.name
         holder.date.text =
-            item.date.toString() + " " + dataProcessor.getHoursMinutesFromTime(item.startTime)
+            item.date.toString() + " " + TimeProcessor.getHoursMinutesFromTime(item.startTime)
         holder.type.text = dataProcessor.eventTypeToString(item.eventType)
         holder.level.text = dataProcessor.eventLevelToString(
             item.eventLevel

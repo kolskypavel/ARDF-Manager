@@ -37,5 +37,6 @@ data class Competitor(
     @ColumnInfo(name = "birth_year") var birthYear: Int,
     @ColumnInfo(name = "si_number") var siNumber: Int? = null,
     @ColumnInfo(name = "si_rent") var siRent: Boolean = false,
+    @ColumnInfo(name = "start_number") var startNumber: Int,
     @ColumnInfo(name = "drawn_start_time") var drawnStartTime: LocalTime? = null,
 ) : Serializable

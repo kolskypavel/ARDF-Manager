@@ -92,8 +92,8 @@ class ReadoutDetailFragment : Fragment() {
         }
 
         siNumberView.text = readoutDetail.readout!!.siNumber.toString()
-        runTimeView.text =
-            readoutDetail.readout!!.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
+//        runTimeView.text =
+//            readoutDetail.readout!!.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
 
         placeView.text = getText(R.string.unknown) //TODO: Place
 

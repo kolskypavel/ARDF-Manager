@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import de.codecrafters.tableview.SortableTableView
 import de.codecrafters.tableview.toolkit.SimpleTableHeaderAdapter
 import de.codecrafters.tableview.toolkit.TableDataRowBackgroundProviders
@@ -27,11 +28,12 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.comparators.CompetitorCategoryComparator
 import kolskypavel.ardfmanager.backend.comparators.CompetitorClubComparator
-import kolskypavel.ardfmanager.backend.comparators.CompetitorFirstNameComparator
-import kolskypavel.ardfmanager.backend.comparators.CompetitorLastNameComparator
+import kolskypavel.ardfmanager.backend.comparators.CompetitorNameComparator
+import kolskypavel.ardfmanager.backend.comparators.CompetitorStartNumComparator
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.CompetitorCategory
 import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.enums.CompetitorTableDisplayType
 import kolskypavel.ardfmanager.databinding.FragmentCompetitorsBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment
@@ -45,7 +47,8 @@ class CompetitorFragment : Fragment() {
     private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
     private val dataProcessor = DataProcessor.get()
     private lateinit var competitorToolbar: Toolbar
-    private lateinit var competitorTableView: SortableTableView<CompetitorCategory>
+    private lateinit var competitorTableView: SortableTableView<CompetitorData>
+    private lateinit var competitorDisplayTypePicker: MaterialAutoCompleteTextView
     private lateinit var competitorAddFab: FloatingActionButton
     private var mLastClickTime: Long = 0
 
@@ -67,9 +70,10 @@ class CompetitorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        competitorToolbar = view.findViewById(R.id.competitor_toolbar)
+        competitorToolbar = view.findViewById(R.id.competitor_fragment_toolbar)
         competitorAddFab = view.findViewById(R.id.competitor_btn_add)
-        competitorTableView = view.findViewById(R.id.competitor_table_view)
+        competitorTableView = view.findViewById(R.id.competitor_fragment_table_view)
+        competitorDisplayTypePicker = view.findViewById(R.id.competitor_fragment_display_type)
 
         competitorToolbar.inflateMenu(R.menu.fragment_menu_competitor)
         competitorToolbar.setOnMenuItemClickListener {
@@ -79,6 +83,10 @@ class CompetitorFragment : Fragment() {
         selectedEventViewModel.event.observe(viewLifecycleOwner) { event ->
             competitorToolbar.title = event.name
             competitorToolbar.subtitle = dataProcessor.eventTypeToString(event.eventType)
+        }
+
+        competitorDisplayTypePicker.setOnItemClickListener { _, _, _, pos ->
+            toggleCompetitorDisplay(CompetitorTableDisplayType.getByValue(pos.toInt())!!)
         }
 
         competitorAddFab.setOnClickListener {
@@ -93,8 +101,8 @@ class CompetitorFragment : Fragment() {
             }
             mLastClickTime = SystemClock.elapsedRealtime()
         }
-        setTableHeaders()
-        setRecyclerAdapter()
+        competitorDisplayTypePicker.setText(getText(R.string.competitor_display_overview), false)
+        toggleCompetitorDisplay(CompetitorTableDisplayType.OVERVIEW)
         setBackButton()
         setResultListener()
     }
@@ -117,26 +125,74 @@ class CompetitorFragment : Fragment() {
                 return true
             }
 
-            R.id.competitor_menu_global_settings -> {
-                findNavController().navigate(BottomNavDirections.openSettingsFromEvent())
-                return true
+            R.id.competitor_menu_delete_all_competitors -> {
+                confirmAllCompetitorsDeletion()
             }
 
-            R.id.competitor_menu_about_app -> {
+            R.id.competitor_menu_global_settings -> {
+                findNavController().navigate(BottomNavDirections.openSettingsFromEvent())
                 return true
             }
         }
         return false
     }
 
-    private fun setTableHeaders() {
-        val headers =
-            intArrayOf(
-                R.string.competitor_first_name,
-                R.string.last_name,
-                R.string.club,
-                R.string.category
-            )
+    private fun setTableHeaders(displayType: CompetitorTableDisplayType) {
+
+        var headers = IntArray(5)
+        when (displayType) {
+            CompetitorTableDisplayType.OVERVIEW -> {
+
+                headers =
+                    intArrayOf(
+                        R.string.competitor_start_number_header,
+                        R.string.name,
+                        R.string.club,
+                        R.string.category,
+                        R.string.si_number
+                    )
+
+                //Set comparators
+                competitorTableView.setColumnComparator(0, CompetitorNameComparator())
+                competitorTableView.setColumnComparator(1, CompetitorStartNumComparator())
+                competitorTableView.setColumnComparator(2, CompetitorClubComparator())
+                competitorTableView.setColumnComparator(3, CompetitorCategoryComparator())
+
+            }
+
+            CompetitorTableDisplayType.START_LIST -> {
+                headers =
+                    intArrayOf(
+                        R.string.competitor_start_number_header,
+                        R.string.start_time,
+                        R.string.name,
+                        R.string.category,
+                        R.string.si_number
+                    )
+            }
+
+            CompetitorTableDisplayType.FINISH_REACHED -> {
+                headers =
+                    intArrayOf(
+                        R.string.name,
+                        R.string.run_time,
+                        R.string.start_time,
+                        R.string.finish_time,
+                        R.string.category,
+                    )
+            }
+
+            CompetitorTableDisplayType.ON_THE_WAY -> {
+                headers =
+                    intArrayOf(
+                        R.string.name,
+                        R.string.category,
+                        R.string.start_time,
+                        R.string.run_time,
+                        R.string.competitor_to_limit,
+                    )
+            }
+        }
 
         val adapter = SimpleTableHeaderAdapter(
             requireContext(),
@@ -146,12 +202,6 @@ class CompetitorFragment : Fragment() {
         adapter.setTextSize(14)
 
         competitorTableView.headerAdapter = adapter
-        //Set comparators
-        competitorTableView.setColumnComparator(0, CompetitorFirstNameComparator())
-        competitorTableView.setColumnComparator(1, CompetitorLastNameComparator())
-        competitorTableView.setColumnComparator(2, CompetitorClubComparator())
-        competitorTableView.setColumnComparator(3, CompetitorCategoryComparator())
-
 
         val colorEvenRows =
             requireContext().resources.getColor(R.color.white, null)
@@ -166,13 +216,19 @@ class CompetitorFragment : Fragment() {
         )
     }
 
-    private fun setRecyclerAdapter() {
+    private fun toggleCompetitorDisplay(displayType: CompetitorTableDisplayType) {
+        setTableHeaders(displayType)
+        setRecyclerAdapter(displayType)
+    }
+
+    private fun setRecyclerAdapter(displayType: CompetitorTableDisplayType) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 selectedEventViewModel.competitorsCategories.collect { competitorCategories ->
                     competitorTableView.dataAdapter =
                         CompetitorTableViewAdapter(
                             competitorCategories,
+                            displayType,
                             requireContext()
                         ) { action, position, competitor ->
                             tableViewContextMenuActions(
@@ -189,7 +245,7 @@ class CompetitorFragment : Fragment() {
     private fun tableViewContextMenuActions(
         action: Int,
         position: Int,
-        competitorCategory: CompetitorCategory
+        competitorCategory: CompetitorData
     ) {
         when (action) {
             0 -> findNavController().navigate(
@@ -201,7 +257,7 @@ class CompetitorFragment : Fragment() {
             )
 
             1 -> {}
-            2 -> confirmCompetitorDeletion(competitorCategory.competitor)
+            2 -> confirmCompetitorDeletion(competitorCategory.competitor!!)
         }
     }
 
@@ -214,6 +270,22 @@ class CompetitorFragment : Fragment() {
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
             selectedEventViewModel.deleteCompetitor(competitor.id)
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton(R.string.cancel) { dialog, _ ->
+            dialog.cancel()
+        }
+        builder.show()
+    }
+
+    private fun confirmAllCompetitorsDeletion() {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(getString(R.string.competitor_delete_all))
+        builder.setMessage(R.string.competitor_delete_all_confirmation)
+
+        builder.setPositiveButton(R.string.ok) { dialog, _ ->
+            selectedEventViewModel.deleteAllCompetitors()
             dialog.dismiss()
         }
 

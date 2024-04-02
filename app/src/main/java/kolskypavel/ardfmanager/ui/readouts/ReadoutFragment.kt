@@ -89,9 +89,7 @@ class ReadoutFragment : Fragment() {
                 return true
             }
 
-            R.id.readout_menu_about_app -> {
-                return true
-            }
+
         }
         return false
     }

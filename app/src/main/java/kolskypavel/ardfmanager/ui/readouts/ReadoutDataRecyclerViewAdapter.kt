@@ -46,8 +46,8 @@ class ReadoutDataRecyclerViewAdapter(
         }
 
         holder.siNumberView.text = item.readout!!.siNumber.toString()
-        holder.runTimeView.text =
-            item.readout!!.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
+//        holder.runTimeView.text =
+//            item.readout!!.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
         holder.placementView.text = ""
 
         //Set readout detail navigation

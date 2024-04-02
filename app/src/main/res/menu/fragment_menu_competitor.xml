@@ -12,14 +12,14 @@
         android:id="@+id/competitor_menu_edit_event"
         android:title="@string/event_edit" />
     <item
+        android:id="@+id/competitor_menu_delete_all_competitors"
+        android:title="@string/competitor_delete_all" />
+    <item
         android:id="@+id/competitor_menu_global_settings"
         android:icon="@drawable/ic_settings"
         android:title="@string/global_settings"
 
         />
 
-    <item
-        android:id="@+id/competitor_menu_about_app"
-        android:title="@string/about_the_app" />
 
 </menu>

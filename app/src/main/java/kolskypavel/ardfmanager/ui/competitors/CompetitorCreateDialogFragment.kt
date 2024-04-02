@@ -22,6 +22,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
@@ -139,6 +140,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 LocalDate.now().year,
                 null,
                 siRent = false,
+                0,
                 null
             )
             categoryPicker.setText(getString(R.string.no_category), false)
@@ -190,6 +192,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
         }
 
+
         //Populate the list of categories
         for (cat in categories) {
             categoryArr.add(cat.name)
@@ -200,14 +203,43 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
         categoryPicker.setAdapter(categoriesAdapter)
 
+        womanCheckBox.setOnCheckedChangeListener { _, checked ->
+            competitor.isWoman = checked
+        }
+
         //TODO: Enable the automatic category, based on the year of birth
         automaticCategoryButton.setOnClickListener {
+            if (birthYearTextView.text.toString().isNotBlank()) {
 
+                val formatter = DateTimeFormatter.ofPattern("yyyy")
+                val year = birthYearTextView.text.toString()
+                try {
+                    formatter.parse(year)
+                    if (year.toInt() > LocalDate.now().year) {
+                        throw IllegalArgumentException("Invalid year")
+                    }
+                    runBlocking {
+                        val calc = dataProcessor.getCategoryByBirthYear(
+                            year.toInt(),
+                            competitor.isWoman,
+                            selectedEventViewModel.event.value!!.id
+                        )
+                        if (calc != null) {
+                            categoryPicker.setText(calc.name, false)
+                        } else {
+                            categoryLayout.error = getString(R.string.automatic_category_not_found)
+                        }
+                    }
+
+                } catch (e: Exception) {
+                    birthYearTextView.error = getString(R.string.nonexistent_year)
+                }
+            }
         }
 
         //Set startTime
         if (competitor.drawnStartTime != null) {
-            startTimeTextView.setText(dataProcessor.getHoursMinutesFromTime(competitor.drawnStartTime!!))
+            startTimeTextView.setText(TimeProcessor.getHoursMinutesFromTime(competitor.drawnStartTime!!))
         }
 
         // Punches setup
@@ -239,7 +271,11 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
         statusArr.add(0, getString(R.string.automatic))
         val statusAdapter: ArrayAdapter<String> =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, statusArr)
+            ArrayAdapter(
+                requireContext(),
+                android.R.layout.simple_spinner_dropdown_item,
+                statusArr
+            )
 
         statusPicker.setAdapter(statusAdapter)
         statusPicker.setText(getString(R.string.automatic), false)
@@ -254,7 +290,8 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 competitor.club = clubTextView.text.toString()
                 competitor.index = indexTextView.text.toString()
                 if (startTimeTextView.text.toString().isNotBlank()) {
-                    competitor.drawnStartTime = LocalTime.parse(startTimeTextView.text.toString())
+                    competitor.drawnStartTime =
+                        LocalTime.parse(startTimeTextView.text.toString())
                 }
                 if (birthYearTextView.text.toString().isNotEmpty()) {
                     competitor.birthYear = birthYearTextView.text.toString().toInt()
@@ -350,7 +387,8 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                     //Already existing
                     else if (selectedEventViewModel.checkIfSINumberExists(siNumber)) {
                         valid = false
-                        siNumberTextView.error = getString(R.string.competitor_duplicate_si_number)
+                        siNumberTextView.error =
+                            getString(R.string.competitor_duplicate_si_number)
                     }
                 }
             } catch (e: Exception) {

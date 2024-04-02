@@ -25,15 +25,11 @@ import kolskypavel.ardfmanager.backend.sportident.SIReaderService
 import kolskypavel.ardfmanager.backend.sportident.SIReaderState
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
 import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
-import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
-import java.time.Duration
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
+import java.time.LocalDate
 import java.util.UUID
 
 
@@ -123,6 +119,12 @@ class DataProcessor private constructor(context: Context) {
 
     suspend fun getCategoryByName(string: String, eventId: UUID) =
         ardfRepository.getCategoryByName(string, eventId)
+
+    suspend fun getCategoryByBirthYear(birthYear: Int, isWoman: Boolean, eventId: UUID): Category? {
+        //Calculate the age difference
+        val age = LocalDate.now().year - birthYear
+        return ardfRepository.getCategoryByBirthYear(age, isWoman, eventId)
+    }
 
     suspend fun getCategoryByMaxAge(maxAge: Int, eventId: UUID) =
         ardfRepository.getCategoryByMaxAge(maxAge, eventId)
@@ -224,93 +226,66 @@ class DataProcessor private constructor(context: Context) {
         updateResultsForCompetitor(id, true)
     }
 
+    suspend fun deleteAllCompetitors(eventId: UUID) {
+        ardfRepository.deleteAllCompetitors(eventId)
+    }
+
 
     //READOUTS
-
     suspend fun getReadoutDataByEvent(eventId: UUID): Flow<List<ReadoutDataWrapper>> {
-        return flow {
-            while (true) {
-                val temp = ArrayList<ReadoutDataWrapper>()
-
-                ardfRepository.getReadoutsByEvent(eventId).forEach { result ->
-
-                    val competitor =
-                        if (result.competitorID != null) {
-                            getCompetitor(result.competitorID!!)
-                        } else if (result.siNumber != null) {
-                            getCompetitorBySINumber(result.siNumber!!, eventId)
-                        } else null
-
-
-                    var category: Category? = null
-                    if (competitor?.categoryId != null) {
-                        category = getCategory(competitor.categoryId!!)
-                    }
-                    temp.add(
-                        ReadoutDataWrapper(
-                            result,
-                            competitor,
-                            category
-                        )
-                    )
-                }
-
-                emit(temp)
-                delay(1000) //TODO: FIX
-            }
-        }
+        return emptyFlow()
     }
 
-    suspend fun getResultDataByEvent(eventId: UUID): Flow<List<ResultDisplayWrapper>> {
-        return flow {
-            while (true) {
-
-                val temp = ArrayList<ResultDisplayWrapper>()
-
-                ardfRepository.getCategoriesForEvent(eventId).forEach { category ->
-                    val res = ResultDisplayWrapper(category)
-                    res.subList = ArrayList()
-                    ardfRepository.getReadoutsByCategory(category.id).forEach { result ->
-
-                        val competitor =
-                            if (result.competitorID != null) {
-                                getCompetitor(result.competitorID!!)
-                            } else if (result.siNumber != null) {
-                                getCompetitorBySINumber(result.siNumber!!, eventId)
-                            } else null
-
-                        res.subList.add(ReadoutDataWrapper(result, competitor, category))
-                    }
-                    temp.add(res)
-                }
-
-                //Add competitors with no category
-                val noCatRes = ResultDisplayWrapper()
-                noCatRes.subList = ArrayList()
-                val results = ardfRepository.getReadoutsForNullCategory(eventId)
-
-                if (results.isNotEmpty()) {
-
-                    results.forEach { result ->
-                        val competitor =
-                            if (result.competitorID != null) {
-                                getCompetitor(result.competitorID!!)
-                            } else if (result.siNumber != null) {
-                                getCompetitorBySINumber(result.siNumber!!, eventId)
-                            } else null
-
-                        noCatRes.subList.add(ReadoutDataWrapper(result, competitor, null))
-                    }
-                    temp.add(noCatRes)
-                }
-
-                emit(temp)
-                delay(1000) //TODO: FIX
-
-            }
-        }
-    }
-
+    //    suspend fun getResultDataByEvent(eventId: UUID): Flow<List<ResultDisplayWrapper>> {
+//        return flow {
+//            while (true) {
+//
+//                val temp = ArrayList<ResultDisplayWrapper>()
+//
+//                ardfRepository.getCategoriesForEvent(eventId).forEach { category ->
+//                    val res = ResultDisplayWrapper(category)
+//                    res.subList = ArrayList()
+//                    ardfRepository.getReadoutsByCategory(category.id).forEach { result ->
+//
+//                        val competitor =
+//                            if (result.competitorID != null) {
+//                                getCompetitor(result.competitorID!!)
+//                            } else if (result.siNumber != null) {
+//                                getCompetitorBySINumber(result.siNumber!!, eventId)
+//                            } else null
+//
+//                        res.subList.add(ReadoutDataWrapper(result, competitor, category))
+//                    }
+//                    temp.add(res)
+//                }
+//
+//                //Add competitors with no category
+//                val noCatRes = ResultDisplayWrapper()
+//                noCatRes.subList = ArrayList()
+//                val results = ardfRepository.getReadoutsForNullCategory(eventId)
+//
+//                if (results.isNotEmpty()) {
+//
+//                    results.forEach { result ->
+//                        val competitor =
+//                            if (result.competitorID != null) {
+//                                getCompetitor(result.competitorID!!)
+//                            } else if (result.siNumber != null) {
+//                                getCompetitorBySINumber(result.siNumber!!, eventId)
+//                            } else null
+//
+//                        noCatRes.subList.add(ReadoutDataWrapper(result, competitor, null))
+//                    }
+//                    temp.add(noCatRes)
+//                }
+//
+//                emit(temp)
+//                delay(1000) //TODO: FIX
+//
+//            }
+//        }
+//    }
+//
     suspend fun getReadoutBySINumber(siNumber: Int, eventId: UUID): Readout? =
         ardfRepository.getReadoutBySINumber(siNumber, eventId)
 
@@ -388,9 +363,6 @@ class DataProcessor private constructor(context: Context) {
     fun getLastReadCard(): Int? = currentState.value?.siReaderState?.lastCard
 
     //GENERAL HELPER METHODS
-    fun getHoursMinutesFromTime(time: LocalTime): String {
-        return DateTimeFormatter.ofPattern("HH:mm").format(time).toString()
-    }
 
     //Enums manipulation
     fun eventTypeToString(eventType: EventType): String {
@@ -465,16 +437,21 @@ class DataProcessor private constructor(context: Context) {
         return FinishTimeSource.getByValue(finishTimeSourceStrings.indexOf(string))!!
     }
 
-
-    fun durationToString(duration: Duration): String {
-        val seconds = duration.seconds
-        return if (kotlin.math.abs(seconds / 60) <= 99) {
-            String.format("%02d:%02d", (seconds % 3600) / 60, kotlin.math.abs(seconds) % 60);
-        } else if (kotlin.math.abs(seconds / 60) <= 999) {
-            String.format("%03d:%02d", (seconds % 3600) / 60, kotlin.math.abs(seconds) % 60)
-        } else {
-            String.format("%04d:%02d", (seconds % 3600) / 60, kotlin.math.abs(seconds) % 60)
+    fun genderToString(gender: Boolean?): String {
+        return when (gender) {
+            false -> appContext.get()!!.resources.getString(R.string.gender_man)
+            true -> appContext.get()!!.resources.getString(R.string.gender_woman)
+            else -> appContext.get()!!.resources.getString(R.string.gender_not_specified)
         }
     }
 
+    fun genderFromString(string: String): Boolean? {
+        val genderStrings =
+            appContext.get()?.resources?.getStringArray(R.array.genders)!!
+        return when (genderStrings.indexOf(string)) {
+            0 -> false
+            1 -> true
+            else -> null
+        }
+    }
 }

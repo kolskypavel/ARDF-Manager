@@ -113,9 +113,7 @@ class CategoryFragment : Fragment() {
                 return true
             }
 
-            R.id.category_menu_about_app -> {
-                return true
-            }
+
         }
         return false
     }

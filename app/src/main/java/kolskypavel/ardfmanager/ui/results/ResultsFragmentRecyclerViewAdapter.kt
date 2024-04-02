@@ -74,9 +74,9 @@ class ResultsFragmentRecyclerViewAdapter(
                     competitorName.text =
                         "${singleResult.competitor!!.firstName} ${singleResult.competitor!!.lastName!!}"
                     competitorClub.text = singleResult.competitor!!.club
-                    competitorTime.text =
-                        dataProcessor.durationToString(singleResult.readout?.runTime!!)
-                    competitorPoints.text = singleResult.result?.points.toString()
+//                    competitorTime.text =
+//                        dataProcessor.durationToString(singleResult.readout?.runTime!!)
+//                    competitorPoints.text = singleResult.result?.points.toString()
                 }
             }
         }

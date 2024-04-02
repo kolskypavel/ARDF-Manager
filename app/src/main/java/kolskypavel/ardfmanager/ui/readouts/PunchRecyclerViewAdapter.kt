@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
@@ -32,7 +33,7 @@ class PunchRecyclerViewAdapter(
         val item = values[position]
 
         holder.punchRealTime.text = item.siTime!!.getTime().toString()
-        holder.punchSplit.text = item.split?.let { dataProcessor.durationToString(it) }
+        holder.punchSplit.text = item.split?.let { TimeProcessor.durationToMinuteString(it) }
 
         //Set the fields, based on the type of the punch
         when (item.punchType) {

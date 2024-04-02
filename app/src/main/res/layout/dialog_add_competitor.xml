@@ -124,7 +124,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/competitor_woman" />
+                android:text="@string/gender_woman" />
         </LinearLayout>
 
         <LinearLayout
@@ -193,6 +193,30 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:hint="@string/competitor_start_number">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/competitor_dialog_start_number"
+                    style="@style/dialog_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberSigned"
+                    android:maxLength="5" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+
+                style="@style/dialog_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="0.6"
                 android:hint="@string/start_time_hint"
                 app:endIconDrawable="@drawable/ic_clock"
                 app:endIconMode="custom">
@@ -206,15 +230,15 @@
                     android:maxLength="5" />
             </com.google.android.material.textfield.TextInputLayout>
 
-        </LinearLayout>
+            <CheckBox
+                android:id="@+id/competitor_dialog_si_rent"
+                style="@style/dialog_checkbox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/competitor_rent_chip" />
 
-        <CheckBox
-            android:id="@+id/competitor_dialog_si_rent"
-            style="@style/dialog_checkbox"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/competitor_rent_chip" />
+        </LinearLayout>
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/competitor_dialog_edit_punches"

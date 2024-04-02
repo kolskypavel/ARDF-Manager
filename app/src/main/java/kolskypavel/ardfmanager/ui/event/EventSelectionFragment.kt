@@ -82,10 +82,7 @@ class EventSelectionFragment : Fragment() {
                     true
                 }
 
-                R.id.event_menu_about_the_app -> {
-                    // Display about app dialog
-                    true
-                }
+
 
                 else -> false
             }

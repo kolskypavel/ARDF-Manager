@@ -1,29 +1,36 @@
 package kolskypavel.ardfmanager.backend.comparators
 
-import kolskypavel.ardfmanager.backend.room.entitity.CompetitorCategory
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 
-class CompetitorFirstNameComparator : Comparator<CompetitorCategory> {
-    override fun compare(o1: CompetitorCategory, o2: CompetitorCategory): Int {
-        return o1.competitor.firstName.compareTo(o2.competitor.firstName)
+class CompetitorNameComparator : Comparator<CompetitorData> {
+    override fun compare(o1: CompetitorData, o2: CompetitorData): Int {
+        return o2.competitor?.let { o1.competitor?.lastName?.compareTo(it.lastName) } ?: 0
     }
 }
 
-class CompetitorLastNameComparator : Comparator<CompetitorCategory> {
-    override fun compare(o1: CompetitorCategory, o2: CompetitorCategory): Int {
-        return o1.competitor.lastName.compareTo(o2.competitor.lastName)
+class CompetitorStartNumComparator : Comparator<CompetitorData> {
+    override fun compare(o1: CompetitorData, o2: CompetitorData): Int {
+        return o2.competitor?.let { o1.competitor?.startNumber?.compareTo(it.startNumber) } ?: 0
     }
 }
 
-class CompetitorClubComparator : Comparator<CompetitorCategory> {
-    override fun compare(o1: CompetitorCategory, o2: CompetitorCategory): Int {
-        return o1.competitor.club.compareTo(o2.competitor.club)
+class CompetitorClubComparator : Comparator<CompetitorData> {
+    override fun compare(o1: CompetitorData, o2: CompetitorData): Int {
+        return o2.competitor?.let { o1.competitor?.club?.compareTo(it.club) } ?: 0
     }
 }
 
-class CompetitorCategoryComparator : Comparator<CompetitorCategory> {
-    override fun compare(o1: CompetitorCategory?, o2: CompetitorCategory?): Int {
+class CompetitorCategoryComparator : Comparator<CompetitorData> {
+    override fun compare(o1: CompetitorData?, o2: CompetitorData?): Int {
 
-        return compareBy<CompetitorCategory?> { it?.category?.name }
+        return compareBy<CompetitorData?> { it?.category?.name }
             .compare(o1, o2)
+    }
+}
+
+class CompetitorSINumberComparator : Comparator<CompetitorData> {
+    override fun compare(o1: CompetitorData, o2: CompetitorData): Int {
+
+        return o2.competitor?.siNumber?.let { o1.competitor?.siNumber?.compareTo(it) } ?: 0
     }
 }

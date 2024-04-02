@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModel
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.CompetitorCategory
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.EventType
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
@@ -48,9 +48,9 @@ class SelectedEventViewModel : ViewModel() {
         MutableStateFlow(emptyList())
     val resultData: StateFlow<List<ResultDisplayWrapper>> get() = _resultData.asStateFlow()
 
-    private val _competitorsCategories: MutableStateFlow<List<CompetitorCategory>> =
+    private val _competitorsCategories: MutableStateFlow<List<CompetitorData>> =
         MutableStateFlow(emptyList())
-    val competitorsCategories: StateFlow<List<CompetitorCategory>>
+    val competitorsCategories: StateFlow<List<CompetitorData>>
         get() =
             _competitorsCategories.asStateFlow()
 
@@ -81,11 +81,6 @@ class SelectedEventViewModel : ViewModel() {
             launch {
                 dataProcessor.getReadoutDataByEvent(id).collect {
                     _readoutData.value = it
-                }
-            }
-            launch {
-                dataProcessor.getResultDataByEvent(id).collect {
-                    _resultData.value = it
                 }
             }
         }
@@ -190,6 +185,15 @@ class SelectedEventViewModel : ViewModel() {
 
     fun deleteCompetitor(competitorId: UUID) =
         CoroutineScope(Dispatchers.IO).launch { dataProcessor.deleteCompetitor(competitorId) }
+
+    fun deleteAllCompetitors() =
+        CoroutineScope(Dispatchers.IO).launch {
+            event.value?.let {
+                dataProcessor.deleteAllCompetitors(
+                    it.id
+                )
+            }
+        }
 
     /**
      * Checks if the SI number is unique

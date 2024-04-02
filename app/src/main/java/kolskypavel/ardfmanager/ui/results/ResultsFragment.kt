@@ -92,9 +92,6 @@ class ResultsFragment : Fragment() {
                 return true
             }
 
-            R.id.result_menu_about_app -> {
-                return true
-            }
         }
         return false
     }

@@ -34,9 +34,13 @@ class CategoryRecyclerViewAdapter(
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val item = values[position]
         holder.title.text = item.name
-        holder.competitors.text = "TODO"
         holder.type.text = dataProcessor.eventTypeToString(item.eventType)
+        holder.gender.text = dataProcessor.genderToString(item.isWoman)
         holder.siCodes.text = item.controlPointsCodes
+
+        if (item.maxAge != null) {
+            holder.maxAge.text = item.maxAge.toString()
+        }
 
         holder.moreBtn.setOnClickListener {
 
@@ -72,7 +76,8 @@ class CategoryRecyclerViewAdapter(
     inner class CategoryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var title: TextView = view.findViewById(R.id.category_item_title)
         var type: TextView = view.findViewById(R.id.category_item_type)
-        var competitors: TextView = view.findViewById(R.id.category_item_type)
+        var gender: TextView = view.findViewById(R.id.category_item_gender)
+        var maxAge: TextView = view.findViewById(R.id.category_item_max_age)
         var siCodes: TextView = view.findViewById(R.id.category_item_codes)
         var moreBtn: ImageButton = view.findViewById(R.id.category_item_more_btn)
     }

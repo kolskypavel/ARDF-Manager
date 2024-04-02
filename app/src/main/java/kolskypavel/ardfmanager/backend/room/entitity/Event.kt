@@ -23,7 +23,7 @@ import java.util.UUID
 data class Event(
     @PrimaryKey var id: UUID,
     var name: String,
-    @ColumnInfo(name = "external_id") var externalId: Int?,
+    @ColumnInfo(name = "external_id") var externalId: Long?,
     @ColumnInfo(name = "date") var date: LocalDate,
     @ColumnInfo(name = "start_time") var startTime: LocalTime,
     @ColumnInfo(name = "event_type") var eventType: EventType,

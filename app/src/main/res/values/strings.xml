@@ -9,19 +9,35 @@
     <string name="description_file_import">Import a file</string>
     <string name="unknown" translatable="false">\?</string>
 
+    <!--General strings -->
+    <string name="name">Name</string>
+    <string name="date">Date</string>
+    <string name="gender">Gender</string>
+    <string name="gender_man">Man</string>
+    <string name="gender_woman">Woman</string>
+    <string name="gender_not_specified">Not specified</string>
+    <string name="max_age">Maximal age</string>
+    <string name="year_of_birth">Year of birth</string>
+    <string name="band">Band</string>
+    <string name="display">Display</string>
+    <string name="preview">Preview</string>
+    <string name="duplicate">Duplicate</string>
+
     <!--Event-->
     <string name="event_import_text">Import event from a file</string>
     <string name="event_toolbar_title">Events overview</string>
-    <string name="name">Name</string>
-    <string name="date">Date</string>
     <string name="event_level">Level</string>
     <string name="event_type">Event type</string>
-    <string name="event_band">Band</string>
     <string name="limit">Limit (min)</string>
     <string name="start_time_hint">Start time (hh:mm)</string>
     <string name="external_id">External ID</string>
     <string name="start_time_source"> Start time source</string>
     <string name="finish_time_source"> Finish time source</string>
+    <string name="start_time_source_drawn">Drawn</string>
+    <string name="start_time_source_start_control">Start control</string>
+    <string name="start_time_source_first_control">First control</string>
+    <string name="finish_time_source_finish_control">Finish control</string>
+    <string name="finish_time_source_last_control">Last control</string>
 
     <string name="event_create">Create event</string>
     <string name="event_edit">Edit event</string>
@@ -42,8 +58,6 @@
     <!--Categories-->
     <string name="category">Category</string>
     <string name="categories_age_based">Age based</string>
-    <string name="max_age">Maximal age</string>
-    <string name="year_of_birth">Year of birth</string>
     <string name="si_codes">SI codes</string>
     <string name="category_import_text">Import category from a file</string>
     <string name="no_category">No category</string>
@@ -69,19 +83,24 @@
     <string name="competitor">Competitor</string>
     <string name="competitor_first_name">First name</string>
     <string name="competitor_last_name">First name</string>
+    <string name="competitor_start_number">Start number</string>
+    <string name="competitor_start_time">Start time</string>
+    <string name="competitor_start_number_header">Start #</string>
+    <string name="competitor_to_limit">To limit</string>
     <string name="competitor_import_file">Import competitors from a file</string>
     <string name="club">Club</string>
     <string name="competitor_create">Create competitor</string>
     <string name="competitor_edit">Edit competitor</string>
     <string name="competitor_delete">Delete competitor</string>
+    <string name="competitor_delete_all">Delete all competitors</string>
     <string name="competitor_delete_confirmation">Do you really want to delete this competitor?</string>
+    <string name="competitor_delete_all_confirmation">Do you really want to delete all competitors?</string>
     <string name="index_callsign">Index/Callsign</string>
     <string name="si_number">SI number</string>
     <string name="automatic">Automatic</string>
+    <string name="automatic_category_not_found">Automatic category not found!</string>
     <string name="competitor_rent_chip">Rent chip</string>
     <string name="competitor_edit_punches">Edit punches</string>
-    <string name="competitor_man">Man</string>
-    <string name="competitor_woman">Woman</string>
     <string name="no_si_card">No SI card!</string>
     <string name="competitor_duplicate_si_number">Duplicate SI number!</string>
     <string name="competitor_si_number_out_of_range">SI number out of range!</string>
@@ -90,6 +109,11 @@
     <string name="competitor_hint_time_format" translatable="false">HH:MM:SS</string>
     <string name="competitor_hint_day" translatable="false">D</string>
     <string name="competitor_hint_week" translatable="false">W</string>
+
+    <string name="competitor_display_overview">Overview</string>
+    <string name="competitor_display_start_list">Start list</string>
+    <string name="competitor_display_finish_reached">Finish reached</string>
+    <string name="competitor_display_on_the_way">On the way</string>
 
     <!--SI station display-->
     <string name="si_ready">SI service started</string>
@@ -172,13 +196,6 @@
     <string name="band_2m" translatable="false">2m</string>
     <string name="band_combined">Combined</string>
 
-    <string name="start_time_source_drawn">Drawn</string>
-    <string name="start_time_source_start_control">Start control</string>
-    <string name="start_time_source_first_control">First control</string>
-
-    <string name="finish_time_source_finish_control">Finish control</string>
-    <string name="finish_time_source_last_control">Last control</string>
-
     <string-array name="event_types_array">
         <item>@string/event_type_0</item>
         <item>@string/event_type_1</item>
@@ -199,6 +216,30 @@
         <item>@string/band_80m</item>
         <item>@string/band_2m</item>
         <item>@string/band_combined</item>
+    </string-array>
+
+    <string-array name="genders">
+        <item>@string/gender_man</item>
+        <item>@string/gender_woman</item>
+        <item>@string/gender_not_specified</item>
+    </string-array>
+
+    <string-array name="start_time_sources">
+        <item>@string/start_time_source_drawn</item>
+        <item>@string/start_time_source_start_control</item>
+        <item>@string/start_time_source_first_control</item>
+    </string-array>
+
+    <string-array name="finish_time_sources">
+        <item>@string/finish_time_source_finish_control</item>
+        <item>@string/finish_time_source_last_control</item>
+    </string-array>
+
+    <string-array name="competitor_display_options">
+        <item>@string/competitor_display_overview</item>
+        <item>@string/competitor_display_start_list</item>
+        <item>@string/competitor_display_finish_reached</item>
+        <item>@string/competitor_display_on_the_way</item>
     </string-array>
 
     <string-array name="race_status_array">
@@ -222,15 +263,5 @@
         <item>@string/race_status_not_processed_short</item>
         <item>@string/race_status_error_short</item>
     </string-array>
-
-    <string-array name="start_time_sources">
-        <item>@string/start_time_source_drawn</item>
-        <item>@string/start_time_source_start_control</item>
-        <item>@string/start_time_source_first_control</item>
-    </string-array>
-
-    <string-array name="finish_time_sources">
-        <item>@string/finish_time_source_finish_control</item>
-        <item>@string/finish_time_source_last_control</item>
-    </string-array>
+    <string name="start_time">Start time</string>
 </resources>

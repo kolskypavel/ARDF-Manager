@@ -26,7 +26,7 @@
     <string name="limit">Limit (min)</string>
     <string name="event_create">Vytvořit událost</string>
     <string name="start_time">Čas startu</string>
-    <string name="event_band">Pásmo</string>
+    <string name="band">Pásmo</string>
     <string name="event_end">Ukončit závod</string>
     <string name="event_end_confirmation">Opravdu chcete ukončit závod?</string>
     <string name="event_type_0">Klasická trať</string>
@@ -55,8 +55,8 @@
     <string name="competitor_last_name">Příjmení</string>
     <string name="competitor_import_file">Importovat závodníky ze souboru</string>
     <string name="club">Klub</string>
-    <string name="competitor_man">Muž</string>
-    <string name="competitor_woman">Žena</string>
+    <string name="gender_man">Muž</string>
+    <string name="gender_woman">Žena</string>
     <string name="competitor_create">Vytvořit závodníka</string>
     <string name="competitor_edit">Upravit závodníka</string>
     <string name="competitor_delete_confirmation">Opravdu chcete smazat tohoto závodníka?</string>

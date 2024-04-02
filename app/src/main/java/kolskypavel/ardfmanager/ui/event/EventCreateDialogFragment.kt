@@ -15,6 +15,7 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
@@ -136,7 +137,7 @@ class EventCreateDialogFragment : DialogFragment() {
         if (event.externalId != null) {
             externalIdEditText.setText(event.externalId.toString())
         }
-        startTimeView.setText(dataProcessor.getHoursMinutesFromTime(event.startTime))
+        startTimeView.setText(TimeProcessor.getHoursMinutesFromTime(event.startTime))
         limitEditText.setText("120") //TODO: Fix with default values from settings
 
         eventTypePicker.setText(dataProcessor.eventTypeToString(event.eventType), false)
@@ -161,7 +162,7 @@ class EventCreateDialogFragment : DialogFragment() {
 
                 event.name = nameEditText.text.toString()
                 if (externalIdEditText.text.toString().isNotBlank()) {
-                    event.externalId = externalIdEditText.text.toString().toInt()
+                    event.externalId = externalIdEditText.text.toString().toLong()
                 } else {
                     event.externalId = null
                 }

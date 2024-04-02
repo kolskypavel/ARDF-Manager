@@ -3,9 +3,11 @@ package kolskypavel.ardfmanager.backend.room.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.RewriteQueriesToDropUnusedColumns
+import androidx.room.Transaction
 import androidx.room.Update
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.CompetitorCategory
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -15,7 +17,9 @@ interface CompetitorDao {
     fun getCompetitorsByEvent(eventId: UUID): Flow<List<Competitor>>
 
     @Query("SELECT * FROM competitor WHERE event_id=(:eventId) ")
-    fun getCompetitorsCategoriesByEvent(eventId: UUID): Flow<List<CompetitorCategory>>
+    @Transaction
+    @RewriteQueriesToDropUnusedColumns
+    fun getCompetitorData(eventId: UUID): Flow<List<CompetitorData>>
 
     @Query("SELECT * FROM competitor WHERE id=(:id) LIMIT 1")
     suspend fun getCompetitor(id: UUID): Competitor
@@ -38,4 +42,6 @@ interface CompetitorDao {
     @Query("DELETE FROM competitor WHERE id =(:id)")
     suspend fun deleteCompetitor(id: UUID)
 
+    @Query("DELETE FROM competitor WHERE event_id =(:eventId)")
+    suspend fun deleteAllCompetitors(eventId: UUID)
 }

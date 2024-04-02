@@ -25,6 +25,9 @@ interface CategoryDao {
     @Query("SELECT * FROM category WHERE max_age = (:maxAge) AND event_id = (:eventId) LIMIT 1")
     suspend fun getCategoryByMaxAge(maxAge: Int, eventId: UUID): Category?
 
+    @Query("SELECT * FROM category WHERE event_id=(:eventId) AND is_woman = (:woman) AND (:age) <= max_age ORDER BY max_age ASC LIMIT 1 ")
+    suspend fun getCategoryByAge(age: Int, woman: Boolean, eventId: UUID): Category?
+
     @Insert
     suspend fun createCategory(category: Category): Long
 
@@ -33,4 +36,6 @@ interface CategoryDao {
 
     @Query("DELETE FROM category WHERE id=(:id) ")
     suspend fun deleteCategory(id: UUID)
+
+
 }
