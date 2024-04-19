@@ -12,8 +12,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -27,11 +25,10 @@ import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
+import kolskypavel.ardfmanager.backend.wrappers.PunchEditItemWrapper
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
-import kolskypavel.ardfmanager.ui.pickers.TimePickerFragment
 import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
 
@@ -112,20 +109,6 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
         populateFields()
         setButtons()
-        setPicker()
-    }
-
-    private fun setPicker() {
-        startTimeTextView.setOnClickListener {
-            findNavController().navigate(
-                CompetitorCreateDialogFragmentDirections.pickStartTime(
-                    LocalTime.now()
-                )
-            )
-        }
-        setFragmentResultListener(TimePickerFragment.REQUEST_KEY_TIME) { _, bundle ->
-            startTimeTextView.setText(bundle.getString(TimePickerFragment.BUNDLE_KEY_TIME))
-        }
     }
 
     private fun populateFields() {
@@ -192,7 +175,6 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
         }
 
-
         //Populate the list of categories
         for (cat in categories) {
             categoryArr.add(cat.name)
@@ -238,8 +220,15 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         }
 
         //Set startTime
-        if (competitor.drawnStartTime != null) {
-            startTimeTextView.setText(TimeProcessor.getHoursMinutesFromTime(competitor.drawnStartTime!!))
+        if (competitor.drawnRelativeStartTime != null) {
+            startTimeTextView.setText(
+                TimeProcessor.getHoursMinutesFromTime(
+                    TimeProcessor.getAbsoluteDateTimeFromRelativeTime(
+                        dataProcessor.getCurrentEvent().startDateTime,
+                        competitor.drawnRelativeStartTime!!
+                    )
+                )
+            )
         }
 
         // Punches setup
@@ -290,8 +279,8 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 competitor.club = clubTextView.text.toString()
                 competitor.index = indexTextView.text.toString()
                 if (startTimeTextView.text.toString().isNotBlank()) {
-                    competitor.drawnStartTime =
-                        LocalTime.parse(startTimeTextView.text.toString())
+                    competitor.drawnRelativeStartTime =
+                        TimeProcessor.minuteStringToDuration(startTimeTextView.text.toString())
                 }
                 if (birthYearTextView.text.toString().isNotEmpty()) {
                     competitor.birthYear = birthYearTextView.text.toString().toInt()
@@ -313,7 +302,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                     selectedEventViewModel.createCompetitor(
                         competitor,
                         modifiedPunches,
-                        (punchEditRecyclerView.adapter as PunchEditRecyclerViewAdapter).values,
+                        PunchEditItemWrapper.getPunches((punchEditRecyclerView.adapter as PunchEditRecyclerViewAdapter).values),
                         null
                     )
                 } else {
@@ -399,7 +388,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         //Check the start time
         if (startTimeTextView.text.toString().isNotBlank()) {
             try {
-                LocalTime.parse(startTimeTextView.text.toString())
+                TimeProcessor.minuteStringToDuration(startTimeTextView.text.toString())
             } catch (e: Exception) {
                 startTimeTextView.error = getString(R.string.invalid)
                 valid = false

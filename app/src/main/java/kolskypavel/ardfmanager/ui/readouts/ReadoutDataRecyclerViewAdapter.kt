@@ -10,13 +10,13 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 
 class ReadoutDataRecyclerViewAdapter(
-    private var values: List<ReadoutDataWrapper>,
+    private var values: List<ReadoutData>,
     private val context: Context,
-    private val onReadoutClicked: (readoutData: ReadoutDataWrapper) -> Unit,
-    private val onMoreClicked: (action: Int, position: Int, readoutData: ReadoutDataWrapper) -> Unit
+    private val onReadoutClicked: (readoutData: ReadoutData) -> Unit,
+    private val onMoreClicked: (action: Int, position: Int, readoutData: ReadoutData) -> Unit
 ) : RecyclerView.Adapter<ReadoutDataRecyclerViewAdapter.ReadoutViewHolder>() {
     val dataProcessor = DataProcessor.get()
 
@@ -32,15 +32,15 @@ class ReadoutDataRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ReadoutViewHolder, position: Int) {
         val item = values[position]
 
-        if (item.competitor != null) {
+        if (item.competitorCategory?.competitor != null) {
             holder.competitorView.text =
-                "${item.competitor!!.firstName} ${item.competitor!!.lastName}"
+                "${item.competitorCategory!!.competitor!!.firstName} ${item.competitorCategory!!.competitor.lastName}"
         } else {
             holder.competitorView.setText(R.string.unknown_competitor)
         }
 
-        if (item.category != null) {
-            holder.categoryView.text = item.category!!.name
+        if (item.competitorCategory?.category != null) {
+            holder.categoryView.text = item.competitorCategory!!.category!!.name
         } else {
             holder.categoryView.text = "?"
         }

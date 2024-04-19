@@ -10,12 +10,15 @@ import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.enums.EventType
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
-import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
+import kolskypavel.ardfmanager.backend.sportident.SITime
+import kolskypavel.ardfmanager.backend.wrappers.PunchEditItemWrapper
 import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
+import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import java.time.LocalTime
 import java.util.UUID
 
 /**
@@ -39,9 +43,9 @@ class SelectedEventViewModel : ViewModel() {
     private val _competitors: MutableStateFlow<List<Competitor>> = MutableStateFlow(emptyList())
     val competitors: StateFlow<List<Competitor>> get() = _competitors.asStateFlow()
 
-    private val _readoutData: MutableStateFlow<List<ReadoutDataWrapper>> =
+    private val _readoutData: MutableStateFlow<List<ReadoutData>> =
         MutableStateFlow(emptyList())
-    val readoutData: StateFlow<List<ReadoutDataWrapper>> get() = _readoutData.asStateFlow()
+    val readoutData: StateFlow<List<ReadoutData>> get() = _readoutData.asStateFlow()
 
 
     private val _resultData: MutableStateFlow<List<ResultDisplayWrapper>> =
@@ -54,6 +58,13 @@ class SelectedEventViewModel : ViewModel() {
         get() =
             _competitorsCategories.asStateFlow()
 
+    fun getCurrentEvent(): Event {
+        if (event.value != null) {
+            return event.value!!
+        }
+        throw IllegalStateException("Event value accessed without event set")
+    }
+
     /**
      * Updates the current selected event and corresponding data
      */
@@ -63,7 +74,7 @@ class SelectedEventViewModel : ViewModel() {
             _event.postValue(event)
 
             launch {
-                dataProcessor.getCompetitorsForEvent(id).collect {
+                dataProcessor.getCompetitorFlowForEvent(id).collect {
                     _competitors.value = it
                 }
             }
@@ -73,7 +84,7 @@ class SelectedEventViewModel : ViewModel() {
                 }
             }
             launch {
-                dataProcessor.getCompetitorCategoriesByEvent(id).collect {
+                dataProcessor.getCompetitorDataFlowByEvent(id).collect {
                     _competitorsCategories.value = it
                 }
             }
@@ -98,13 +109,13 @@ class SelectedEventViewModel : ViewModel() {
 
     fun getCategoryByName(string: String): Category? {
         return runBlocking {
-            return@runBlocking dataProcessor.getCategoryByName(string, event.value!!.id)
+            return@runBlocking dataProcessor.getCategoryByName(string, getCurrentEvent().id)
         }
     }
 
     fun getCategoryByMaxAge(maxAge: Int): Category? {
         return runBlocking {
-            return@runBlocking dataProcessor.getCategoryByMaxAge(maxAge, event.value!!.id)
+            return@runBlocking dataProcessor.getCategoryByMaxAge(maxAge, getCurrentEvent().id)
         }
     }
 
@@ -144,8 +155,8 @@ class SelectedEventViewModel : ViewModel() {
         return controlPoints
     }
 
+    //TODO: Complete / remove
     fun checkIfControlPointNameExists(siCode: Int?, name: String): Boolean {
-        //TODO: Fix
         runBlocking {
             dataProcessor.getControlPointByName(event.value!!.id, name)
         }
@@ -195,6 +206,9 @@ class SelectedEventViewModel : ViewModel() {
             }
         }
 
+    suspend fun getStatistics(eventId: UUID): StatisticsWrapper =
+        dataProcessor.getStatisticsByEvent(eventId)
+
     /**
      * Checks if the SI number is unique
      */
@@ -209,46 +223,52 @@ class SelectedEventViewModel : ViewModel() {
     fun getPunchRecordsForCompetitor(
         create: Boolean,
         competitor: Competitor
-    ): ArrayList<Punch> {
-        var punchRecords = ArrayList<Punch>()
-//
+    ): ArrayList<PunchEditItemWrapper> {
+        var punchRecords = ArrayList<PunchEditItemWrapper>()
+
         //New or existing competitor
         if (create) {
             //Add start and finish punch
             punchRecords.add(
-                Punch(
-                    UUID.randomUUID(),
-                    dataProcessor.getCurrentEvent().id,
-                    null,
-                    competitor.id,
-                    null,
-                    SIRecordType.START,
-                    0,
-                    0,
-                    null,
-                    null,
-                    PunchStatus.VALID
+                PunchEditItemWrapper(
+                    Punch(
+                        UUID.randomUUID(),
+                        dataProcessor.getCurrentEvent().id,
+                        null,
+                        competitor.id,
+                        null,
+                        SIRecordType.START,
+                        0,
+                        0,
+                        SITime(LocalTime.MIN),
+                        null,
+                        PunchStatus.VALID
+                    ), true, true, true, true
                 )
             )
             punchRecords.add(
-                Punch(
-                    UUID.randomUUID(),
-                    dataProcessor.getCurrentEvent().id,
-                    null,
-                    competitor.id,
-                    null,
-                    SIRecordType.FINISH,
-                    0,
-                    0,
-                    null,
-                    null,
-                    PunchStatus.VALID
+                PunchEditItemWrapper(
+                    Punch(
+                        UUID.randomUUID(),
+                        dataProcessor.getCurrentEvent().id,
+                        null,
+                        competitor.id,
+                        null,
+                        SIRecordType.FINISH,
+                        0,
+                        0,
+                        SITime(LocalTime.MIN),
+                        null,
+                        PunchStatus.VALID
+                    ), true, true, true, true
                 )
             )
 
         } else {
             runBlocking {
-                punchRecords = ArrayList(dataProcessor.getPunchesByCompetitor(competitor.id))
+                punchRecords = PunchEditItemWrapper.getWrappers(
+                    ArrayList(dataProcessor.getPunchesByCompetitor(competitor.id))
+                )
             }
         }
         return punchRecords
@@ -268,5 +288,7 @@ class SelectedEventViewModel : ViewModel() {
         }
     }
 
+    fun importCompetitors() {
 
+    }
 }

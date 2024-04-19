@@ -16,7 +16,6 @@ class SITime(
 
     private var seconds: Long = 0
 
-
     constructor() : this(LocalTime.MIDNIGHT)
 
     private fun calculateSeconds() {
@@ -54,6 +53,13 @@ class SITime(
     fun setWeek(newWeek: Int) {
         week = newWeek
         calculateSeconds()
+    }
+
+    /**
+     * Checks if another SITime is after or equal to this SI time
+     */
+    fun isAtOrAfter(other: SITime): Boolean {
+        return this.seconds >= other.seconds
     }
 
     companion object {

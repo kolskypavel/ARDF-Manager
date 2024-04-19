@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
 
 class ResultsFragmentRecyclerViewAdapter(
@@ -70,10 +70,10 @@ class ResultsFragmentRecyclerViewAdapter(
 
             holder.apply {
                 val singleResult = dataList.subList.first()
-                if (singleResult.competitor != null) {
+                if (singleResult.competitorCategory?.competitor != null) {
                     competitorName.text =
-                        "${singleResult.competitor!!.firstName} ${singleResult.competitor!!.lastName!!}"
-                    competitorClub.text = singleResult.competitor!!.club
+                        "${singleResult.competitorCategory!!.competitor!!.firstName} ${singleResult.competitorCategory!!.competitor!!.lastName!!}"
+                    competitorClub.text = singleResult.competitorCategory!!.competitor.club
 //                    competitorTime.text =
 //                        dataProcessor.durationToString(singleResult.readout?.runTime!!)
 //                    competitorPoints.text = singleResult.result?.points.toString()
@@ -101,7 +101,7 @@ class ResultsFragmentRecyclerViewAdapter(
             services.forEach { service ->
                 val parentModel = ResultDisplayWrapper()
                 parentModel.isChild = 1
-                val subList: ArrayList<ReadoutDataWrapper> = ArrayList()
+                val subList: ArrayList<ReadoutData> = ArrayList()
                 subList.add(service)
                 parentModel.subList = subList
                 values.add(++nextPosition, parentModel)

@@ -7,7 +7,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 
-class RunTimesTest {
+class RunTimesUnitTest {
 
     @Test
     fun durationToMinuteStringTest() {
@@ -23,6 +23,9 @@ class RunTimesTest {
             TimeProcessor.durationToMinuteString(Duration.ofHours(2) + Duration.ofSeconds(25))
         )
         assertEquals("1000:00", TimeProcessor.durationToMinuteString(Duration.ofMinutes(1000)))
+        assertEquals("-10:00", TimeProcessor.durationToMinuteString(Duration.ofMinutes(-10)))
+        assertEquals("-100:00", TimeProcessor.durationToMinuteString(Duration.ofMinutes(-100)))
+        assertEquals("-10000:00", TimeProcessor.durationToMinuteString(Duration.ofMinutes(-10000)))
     }
 
     @Test

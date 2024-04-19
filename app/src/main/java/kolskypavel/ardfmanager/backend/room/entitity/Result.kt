@@ -24,7 +24,7 @@ data class Result(
     @ColumnInfo(name = "competitor_id") var competitorID: UUID? = null,
     @ColumnInfo(name = "race_status") var raceStatus: RaceStatus,
     @ColumnInfo(name = "points") var points: Int,
-    @ColumnInfo(name = "run_time") var runTime: Duration?,
+    @ColumnInfo(name = "run_time") var runTime: Duration,
 
     ) : Serializable, Comparable<Result> {
     override operator fun compareTo(other: Result): Int {
@@ -39,8 +39,7 @@ data class Result(
         }
         //Compare times
         else {
-            //runTime.compareTo(other.runTime)
-            return 0 //TODO: FIX
+            runTime.compareTo(other.runTime)
         }
     }
 }

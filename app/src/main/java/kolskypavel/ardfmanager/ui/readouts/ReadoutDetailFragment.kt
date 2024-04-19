@@ -70,11 +70,11 @@ class ReadoutDetailFragment : Fragment() {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
 
-        if (readoutDetail.competitor != null) {
-            clubView.text = readoutDetail.competitor?.club
-            indexView.text = readoutDetail.competitor?.index
+        if (readoutDetail.competitorCategory?.competitor != null) {
+            clubView.text = readoutDetail.competitorCategory!!.competitor!!.club
+            indexView.text = readoutDetail.competitorCategory!!.competitor.index
             competitorNameView.text =
-                "${readoutDetail.competitor?.firstName} ${readoutDetail.competitor?.lastName}"
+                "${readoutDetail.competitorCategory!!.competitor.firstName} ${readoutDetail.competitorCategory!!.competitor?.lastName}"
             //    pointsView.text = readoutDetail.result!!.points.toString()
         } else {
             competitorNameView.text = getText(R.string.unknown_competitor)
@@ -85,20 +85,20 @@ class ReadoutDetailFragment : Fragment() {
         raceStatusView.text =
             dataProcessor.raceStatusToString(readoutDetail.result!!.raceStatus)
 
-        if (readoutDetail.category != null) {
-            categoryView.text = readoutDetail.category!!.name
+        if (readoutDetail.competitorCategory?.category != null) {
+            categoryView.text = readoutDetail.competitorCategory!!.category!!.name
         } else {
             categoryView.text = getText(R.string.unknown)
         }
 
-        siNumberView.text = readoutDetail.readout!!.siNumber.toString()
+        siNumberView.text = readoutDetail.readout.siNumber.toString()
 //        runTimeView.text =
 //            readoutDetail.readout!!.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
 
         placeView.text = getText(R.string.unknown) //TODO: Place
 
         setMenuActions()
-        setRecyclerViewAdapter(readoutDetail.readout!!.id)
+        setRecyclerViewAdapter(readoutDetail.readout.id)
     }
 
     private fun setMenuActions() {

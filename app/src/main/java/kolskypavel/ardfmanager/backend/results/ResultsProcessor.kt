@@ -20,6 +20,7 @@ import kolskypavel.ardfmanager.backend.sportident.SITime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.time.Duration
 import java.time.LocalDateTime
 import java.util.TreeSet
 import java.util.UUID
@@ -66,11 +67,11 @@ class ResultsProcessor {
 
             //TODO: Based on options, set start time to the predefined value
             if (competitor != null) {
-                if (readout.startTime == null && competitor.drawnStartTime != null) {
-                    val startTime =
-                        SITime(competitor.drawnStartTime!!, event.date.dayOfWeek.value - 1)
-
-                    readout.startTime = startTime
+                if (readout.startTime == null && competitor.drawnRelativeStartTime != null) {
+//                    val startTime =
+//                        SITime(TimeProcessor.getAbsoluteDateTimeFromRelativeTime(competitor.drawnRelativeStartTime!!), event.date.dayOfWeek.value - 1)
+//
+//                    readout.startTime = startTime
                 }
             }
 
@@ -95,7 +96,7 @@ class ResultsProcessor {
                 competitor?.id,
                 RaceStatus.NOT_PROCESSED,
                 0,
-                null
+                Duration.ZERO
             )
 
             if (category != null) {
@@ -149,7 +150,7 @@ class ResultsProcessor {
                 competitorId,
                 RaceStatus.NOT_PROCESSED,
                 0,
-                null
+                Duration.ZERO
             )
         }
 

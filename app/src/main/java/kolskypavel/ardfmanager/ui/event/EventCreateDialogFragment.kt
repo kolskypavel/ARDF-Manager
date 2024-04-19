@@ -26,6 +26,7 @@ import kolskypavel.ardfmanager.ui.pickers.DatePickerFragment
 import kolskypavel.ardfmanager.ui.pickers.TimePickerFragment
 import java.time.Duration
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.UUID
 
@@ -92,22 +93,29 @@ class EventCreateDialogFragment : DialogFragment() {
      */
     private fun setPickers() {
         dateView.setOnClickListener {
-            findNavController().navigate(EventCreateDialogFragmentDirections.selectDate(event.date))
+            findNavController().navigate(EventCreateDialogFragmentDirections.selectDate(event.startDateTime.toLocalDate()))
         }
         setFragmentResultListener(
             DatePickerFragment.REQUEST_KEY_DATE
         ) { _, bundle ->
 
-            event.date = LocalDate.parse(bundle.getString(DatePickerFragment.BUNDLE_KEY_DATE))
-            dateView.setText(event.date.toString())
+            event.startDateTime =
+                LocalDateTime.of(
+                    LocalDate.parse(bundle.getString(DatePickerFragment.BUNDLE_KEY_DATE)),
+                    event.startDateTime.toLocalTime()
+                )
+
+            dateView.setText(event.startDateTime.toLocalDate().toString())
         }
 
         startTimeView.setOnClickListener {
-            findNavController().navigate(EventCreateDialogFragmentDirections.selectTime(event.startTime))
+            findNavController().navigate(EventCreateDialogFragmentDirections.selectTime(event.startDateTime.toLocalTime()))
         }
         setFragmentResultListener(TimePickerFragment.REQUEST_KEY_TIME) { _, bundle ->
-            event.startTime = LocalTime.parse(bundle.getString(TimePickerFragment.BUNDLE_KEY_TIME))
-            startTimeView.setText(event.startTime.toString())
+            event.startDateTime = event.startDateTime.with(
+                LocalTime.parse(bundle.getString(TimePickerFragment.BUNDLE_KEY_TIME))
+            )
+            startTimeView.setText(event.startDateTime.toLocalTime().toString())
         }
     }
 
@@ -118,8 +126,8 @@ class EventCreateDialogFragment : DialogFragment() {
             dialog?.setTitle(R.string.event_create)
             event = Event(
                 UUID.randomUUID(),
-                "", null, LocalDate.now(),
-                LocalTime.now(),
+                "", null,
+                LocalDateTime.now(),
                 EventType.CLASSICS,
                 EventLevel.PRACTICE,
                 EventBand.M80,
@@ -133,11 +141,11 @@ class EventCreateDialogFragment : DialogFragment() {
             nameEditText.setText(event.name)
         }
 
-        dateView.setText(event.date.toString())
+        dateView.setText(event.startDateTime.toLocalDate().toString())
         if (event.externalId != null) {
             externalIdEditText.setText(event.externalId.toString())
         }
-        startTimeView.setText(TimeProcessor.getHoursMinutesFromTime(event.startTime))
+        startTimeView.setText(TimeProcessor.getHoursMinutesFromTime(event.startDateTime))
         limitEditText.setText("120") //TODO: Fix with default values from settings
 
         eventTypePicker.setText(dataProcessor.eventTypeToString(event.eventType), false)

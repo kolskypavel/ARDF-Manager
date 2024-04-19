@@ -36,7 +36,8 @@ class EventRecyclerViewAdapter(
         val item = values[position]
         holder.title.text = item.name
         holder.date.text =
-            item.date.toString() + " " + TimeProcessor.getHoursMinutesFromTime(item.startTime)
+            item.startDateTime.toLocalDate()
+                .toString() + " " + TimeProcessor.getHoursMinutesFromTime(item.startDateTime)
         holder.type.text = dataProcessor.eventTypeToString(item.eventType)
         holder.level.text = dataProcessor.eventLevelToString(
             item.eventLevel

@@ -5,8 +5,8 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import java.io.Serializable
-import java.time.LocalTime
 import java.util.UUID
+import java.time.Duration
 
 @Entity(
     tableName = "competitor",
@@ -38,5 +38,5 @@ data class Competitor(
     @ColumnInfo(name = "si_number") var siNumber: Int? = null,
     @ColumnInfo(name = "si_rent") var siRent: Boolean = false,
     @ColumnInfo(name = "start_number") var startNumber: Int,
-    @ColumnInfo(name = "drawn_start_time") var drawnStartTime: LocalTime? = null,
+    @ColumnInfo(name = "drawn_start_time") var drawnRelativeStartTime: Duration? = null,
 ) : Serializable

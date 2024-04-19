@@ -46,7 +46,6 @@ class PunchRecyclerViewAdapter(
             }
 
             else -> {
-
                 holder.punchOrder.text = position.toString()
                 holder.punchSiCode.text = item.siCode.toString()
                 holder.punchStatus.text = when (item.punchStatus) {

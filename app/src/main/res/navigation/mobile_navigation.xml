@@ -55,6 +55,9 @@
             <action
                 android:id="@+id/editEvent"
                 app:destination="@id/eventCreateDialogFragment" />
+            <action
+                android:id="@+id/importExportData"
+                app:destination="@id/dataExportImportDialogFragment" />
         </fragment>
 
         <fragment
@@ -69,6 +72,10 @@
                 android:id="@+id/modifyCategory"
                 app:destination="@id/categoryCreateDialogFragment" />
         </fragment>
+        <dialog
+            android:id="@+id/dataExportImportDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.files.DataExportImportDialogFragment"
+            android:label="DataExportImportDialogFragment" />
 
         <fragment
             android:id="@+id/navigation_readouts"
@@ -117,7 +124,7 @@
             android:label="ReadoutDetailFragment">
             <argument
                 android:name="readoutDetail"
-                app:argType="kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper" />
+                app:argType="kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData" />
         </fragment>
 
         <action

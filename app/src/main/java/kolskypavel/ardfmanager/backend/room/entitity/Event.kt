@@ -12,8 +12,7 @@ import kolskypavel.ardfmanager.backend.room.enums.FinishTimeSource
 import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import java.io.Serializable
 import java.time.Duration
-import java.time.LocalDate
-import java.time.LocalTime
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity(
@@ -24,8 +23,7 @@ data class Event(
     @PrimaryKey var id: UUID,
     var name: String,
     @ColumnInfo(name = "external_id") var externalId: Long?,
-    @ColumnInfo(name = "date") var date: LocalDate,
-    @ColumnInfo(name = "start_time") var startTime: LocalTime,
+    @ColumnInfo(name = "start_date_time") var startDateTime: LocalDateTime,
     @ColumnInfo(name = "event_type") var eventType: EventType,
     @ColumnInfo(name = "event_level") var eventLevel: EventLevel,
     @ColumnInfo(name = "event_band") var eventBand: EventBand,

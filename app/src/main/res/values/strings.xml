@@ -23,6 +23,12 @@
     <string name="preview">Preview</string>
     <string name="duplicate">Duplicate</string>
 
+    <!--Files-->
+    <string name="files">Files</string>
+    <string name="file_import">Import</string>
+    <string name="file_export">Export</string>
+    <string name="file_preview">Preview</string>
+    <string name="file_import_export_title">Import/Export data</string>
     <!--Event-->
     <string name="event_import_text">Import event from a file</string>
     <string name="event_toolbar_title">Events overview</string>
@@ -127,6 +133,9 @@
     <string name="no_cards_yet">No cards yet </string>
 
     <!--Readout-->
+    <string name="readout_started">Started</string>
+    <string name="readout_finished">Finished</string>
+    <string name="readout_in_limit">In limit</string>
     <string name="readout_detail_title">Readout detail</string>
     <string name="readout_detail_order">Order</string>
     <string name="readout_detail_code">Code</string>
@@ -177,6 +186,10 @@
     <string name="preferences_help">Help</string>
 
     <string name="preferences_show_log">Show log</string>
+    <string name="preferences_language">Language</string>
+    <string name="preferences_file_import_skip">Skip invalid lines during import</string>
+    <string name="preferences_file_import_skip_description">If not selected, an invalid line stops the import.</string>
+
 
     <!--    DATA ARRAYS-->
 

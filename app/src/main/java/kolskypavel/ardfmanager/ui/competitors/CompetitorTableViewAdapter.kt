@@ -10,13 +10,16 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.CompetitorTableDisplayType
-import java.time.LocalDate
+import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import java.time.Duration
+import java.time.LocalDateTime
 
 
 class CompetitorTableViewAdapter(
     private var values: List<CompetitorData>,
     private var display: CompetitorTableDisplayType,
     private val context: Context,
+    private val selectedEventViewModel: SelectedEventViewModel,
     private val onMoreClicked: (action: Int, position: Int, competitor: CompetitorData) -> Unit,
 ) : TableDataAdapter<CompetitorData>(context, values) {
 
@@ -50,8 +53,8 @@ class CompetitorTableViewAdapter(
                 when (columnIndex) {
                     0 -> text.text = item.competitor!!.startNumber.toString()
                     1 -> {
-                        if (item.competitor!!.drawnStartTime != null) {
-                            text.text = item.competitor!!.drawnStartTime.toString()
+                        if (item.competitor!!.drawnRelativeStartTime != null) {
+                            text.text = item.competitor!!.drawnRelativeStartTime.toString()
                         } else {
                             text.text = "-"
                         }
@@ -85,20 +88,20 @@ class CompetitorTableViewAdapter(
 
                     1 -> text.text = item.category?.name ?: context.getString(R.string.no_category)
                     2 -> {
-                        if (item.competitor!!.drawnStartTime != null) {
-                            text.text = item.competitor!!.drawnStartTime.toString()
+                        if (item.competitor!!.drawnRelativeStartTime != null) {
+                            text.text = item.competitor!!.drawnRelativeStartTime.toString()
                         } else {
                             text.text = "-"
                         }
                     }
 
                     3 -> {
-                        if (item.competitor?.drawnStartTime != null) {
-                            if (item.readout == null) {
+                        if (item.competitor.drawnRelativeStartTime != null) {
+                            if (item.result == null) {
                                 val runDuration = TimeProcessor
                                     .runDurationFromStart(
-                                        LocalDate.now(),
-                                        item.competitor!!.drawnStartTime!!
+                                        selectedEventViewModel.getCurrentEvent().startDateTime,
+                                        item.competitor.drawnRelativeStartTime!!
                                     )
                                 if (runDuration != null) {
                                     text.text = TimeProcessor.durationToMinuteString(runDuration)
@@ -106,7 +109,35 @@ class CompetitorTableViewAdapter(
                                     text.text = "-"
                                 }
                             } else {
-                                text.text = "-"
+                                text.text =
+                                    TimeProcessor.durationToMinuteString(item.result!!.runTime)
+                            }
+                        } else {
+                            text.text = "-"
+                        }
+                    }
+
+                    4 -> {
+                        if (item.competitor.drawnRelativeStartTime != null) {
+                            if (item.result == null) {
+
+                                val limit: Duration = if (item.category != null) {
+                                    item.category!!.timeLimit
+                                } else {
+                                    selectedEventViewModel.getCurrentEvent().timeLimit
+                                }
+                                val toLimit =
+                                    TimeProcessor.durationToLimit(
+                                        selectedEventViewModel.getCurrentEvent().startDateTime,
+                                        item.competitor.drawnRelativeStartTime!!,
+                                        limit, LocalDateTime.now()
+                                    )
+
+                                if (toLimit != null) {
+                                    text.text = TimeProcessor.durationToMinuteString(toLimit)
+                                } else {
+                                    text.text = "-"
+                                }
                             }
                         }
                     }

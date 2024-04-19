@@ -28,7 +28,7 @@ data class Punch(
     @ColumnInfo(name = "punch_type") var punchType: SIRecordType,
     @ColumnInfo(name = "si_code") var siCode: Int,
     @ColumnInfo(name = "order") var order: Int,
-    @ColumnInfo(name = "si_time") var siTime: SITime?,
+    @ColumnInfo(name = "si_time") var siTime: SITime,
     @ColumnInfo(name = "orig_si_time") val origSiTime: SITime?,      //Holds the original SI Time in case a punch was modified
     @ColumnInfo(name = "punch_status") var punchStatus: PunchStatus,
     var split: Duration? = null

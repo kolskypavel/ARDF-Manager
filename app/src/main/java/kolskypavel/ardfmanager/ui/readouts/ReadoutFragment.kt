@@ -7,6 +7,8 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -21,10 +23,13 @@ import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
-import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.databinding.FragmentReadoutsBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ReadoutFragment : Fragment() {
@@ -34,6 +39,12 @@ class ReadoutFragment : Fragment() {
     private val dataProcessor = DataProcessor.get()
 
     private lateinit var readoutToolbar: Toolbar
+    private lateinit var startedTextView: TextView
+    private lateinit var limitTextView: TextView
+    private lateinit var finishedTextView: TextView
+    private lateinit var startedProgressBar: ProgressBar
+    private lateinit var limitProgressBar: ProgressBar
+    private lateinit var finishedProgressBar: ProgressBar
     private lateinit var readoutRecyclerView: RecyclerView
 
     // This property is only valid between onCreateView and
@@ -55,6 +66,13 @@ class ReadoutFragment : Fragment() {
         readoutToolbar = view.findViewById(R.id.readouts_toolbar)
         readoutRecyclerView = view.findViewById(R.id.readout_recycler_view)
 
+        startedTextView = view.findViewById(R.id.readouts_started_text)
+        finishedTextView = view.findViewById(R.id.readouts_finished_text)
+        limitTextView = view.findViewById(R.id.readouts_limit_text)
+        startedProgressBar = view.findViewById(R.id.readouts_started_progress_bar)
+        finishedProgressBar = view.findViewById(R.id.readouts_finished_progress_bar)
+        limitProgressBar = view.findViewById(R.id.readouts_limit_progress_bar)
+
         readoutToolbar.inflateMenu(R.menu.fragment_menu_readout)
         readoutToolbar.setOnMenuItemClickListener {
             return@setOnMenuItemClickListener setFragmentMenuActions(it)
@@ -67,6 +85,7 @@ class ReadoutFragment : Fragment() {
         setResultListener()
         setRecyclerAdapter()
         setBackButton()
+        setStatusLayout()
     }
 
     private fun setFragmentMenuActions(menuItem: MenuItem): Boolean {
@@ -88,7 +107,6 @@ class ReadoutFragment : Fragment() {
                 findNavController().navigate(BottomNavDirections.openSettingsFromEvent())
                 return true
             }
-
 
         }
         return false
@@ -112,7 +130,7 @@ class ReadoutFragment : Fragment() {
     private fun recyclerViewContextMenuActions(
         action: Int,
         position: Int,
-        readoutData: ReadoutDataWrapper
+        readoutData: ReadoutData
     ) {
         when (action) {
             0 -> {}
@@ -123,7 +141,42 @@ class ReadoutFragment : Fragment() {
         }
     }
 
-    private fun confirmReadoutDeletion(readoutData: ReadoutDataWrapper) {
+    private fun setStatusLayout() {
+        CoroutineScope(Dispatchers.Main).launch {
+            while (true) {
+                val statistics =
+                    selectedEventViewModel.getStatistics(selectedEventViewModel.getCurrentEvent().id)
+
+                startedTextView.text = "${statistics.startedCompetitors}/${statistics.competitors}"
+                startedProgressBar.progress = if (statistics.startedCompetitors != 0) {
+                    ((statistics.startedCompetitors / statistics.competitors.toDouble()) * 100).toInt()
+                } else {
+                    0
+                }
+
+                finishedTextView.text =
+                    "${statistics.finishedCompetitors}/${statistics.competitors}"
+                finishedProgressBar.progress = if (statistics.finishedCompetitors != 0) {
+                    ((statistics.finishedCompetitors / statistics.competitors.toDouble()) * 100).toInt()
+                } else {
+                    0
+                }
+
+                limitTextView.text =
+                    "${statistics.inLimitCompetitors}/${
+                        statistics.competitors - statistics.inLimitCompetitors
+                    }/${statistics.competitors}"
+                limitProgressBar.progress = if (statistics.inLimitCompetitors != 0) {
+                    ((statistics.inLimitCompetitors / statistics.competitors.toDouble()) * 100).toInt()
+                } else {
+                    0
+                }
+                delay(3000)
+            }
+        }
+    }
+
+    private fun confirmReadoutDeletion(readoutData: ReadoutData) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(getString(R.string.readout_delete_readout))
         val message =
@@ -162,7 +215,7 @@ class ReadoutFragment : Fragment() {
         }
     }
 
-    private fun openReadoutDetail(readoutData: ReadoutDataWrapper) {
+    private fun openReadoutDetail(readoutData: ReadoutData) {
         findNavController().navigate(ReadoutFragmentDirections.openReadoutDetail(readoutData))
     }
 

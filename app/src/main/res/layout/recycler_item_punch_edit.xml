@@ -38,9 +38,18 @@
             android:layout_height="wrap_content"
             android:hint="@string/competitor_hint_time_format"
             android:inputType="time"
+            android:maxLength="8"
             android:paddingEnd="5dp"
             android:textColor="@color/black"
             android:textColorHint="@color/grey" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="D:"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
 
         <EditText
             android:id="@+id/punch_edit_item_weekday"
@@ -53,6 +62,13 @@
             android:paddingEnd="5dp"
             android:textColor="@color/black"
             android:textColorHint="@color/grey" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="W:"
+            android:textColor="@color/black"
+            android:textSize="18sp" />
 
         <EditText
             android:id="@+id/punch_edit_item_week"

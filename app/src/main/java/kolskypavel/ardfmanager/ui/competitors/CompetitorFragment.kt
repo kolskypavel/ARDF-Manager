@@ -1,5 +1,6 @@
 package kolskypavel.ardfmanager.ui.competitors
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -52,6 +54,14 @@ class CompetitorFragment : Fragment() {
     private lateinit var competitorAddFab: FloatingActionButton
     private var mLastClickTime: Long = 0
 
+    private val getResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            val value = it.data
+        }
+    }
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
@@ -61,7 +71,6 @@ class CompetitorFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
         _binding = FragmentCompetitorsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -111,6 +120,9 @@ class CompetitorFragment : Fragment() {
 
         when (menuItem.itemId) {
             R.id.competitor_menu_import_file -> {
+                findNavController().navigate(
+                    CompetitorFragmentDirections.importExportData()
+                )
                 return true
             }
 
@@ -180,6 +192,9 @@ class CompetitorFragment : Fragment() {
                         R.string.finish_time,
                         R.string.category,
                     )
+                for (i in 1..5) {
+                    competitorTableView.setColumnComparator(i, null)
+                }
             }
 
             CompetitorTableDisplayType.ON_THE_WAY -> {
@@ -229,7 +244,7 @@ class CompetitorFragment : Fragment() {
                         CompetitorTableViewAdapter(
                             competitorCategories,
                             displayType,
-                            requireContext()
+                            requireContext(), selectedEventViewModel
                         ) { action, position, competitor ->
                             tableViewContextMenuActions(
                                 action,

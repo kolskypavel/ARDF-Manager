@@ -13,12 +13,12 @@ import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
-import kolskypavel.ardfmanager.backend.sportident.SITime
+import kolskypavel.ardfmanager.backend.wrappers.PunchEditItemWrapper
 import java.time.LocalTime
 import java.util.UUID
 
 class PunchEditRecyclerViewAdapter(
-    var values: ArrayList<Punch>,
+    var values: ArrayList<PunchEditItemWrapper>,
     private val context: Context
 ) :
     RecyclerView.Adapter<PunchEditRecyclerViewAdapter.PunchViewHolder>() {
@@ -36,14 +36,9 @@ class PunchEditRecyclerViewAdapter(
     override fun onBindViewHolder(holder: PunchViewHolder, position: Int) {
         val item = values[position]
 
-        if (item.siTime != null) {
-            holder.time.setText(item.siTime?.getTimeString())
-            holder.weekday.setText(item.siTime?.getDayOfWeek().toString())
-            holder.week.setText(item.siTime?.getWeek().toString())
-        } else {
-            holder.weekday.setText("0")
-            holder.week.setText("0")
-        }
+        holder.time.setText(item.punch.siTime.getTimeString())
+        holder.weekday.setText(item.punch.siTime.getDayOfWeek().toString())
+        holder.week.setText(item.punch.siTime.getWeek().toString())
 
         holder.addBtn.setOnClickListener {
             addPunch(holder.layoutPosition)
@@ -54,7 +49,7 @@ class PunchEditRecyclerViewAdapter(
         }
 
         //Set the start punch
-        when (item.punchType) {
+        when (item.punch.punchType) {
             SIRecordType.CHECK -> {}
 
             SIRecordType.START -> {
@@ -71,8 +66,8 @@ class PunchEditRecyclerViewAdapter(
             }
 
             SIRecordType.CONTROL -> {
-                if (item.siCode != 0) {
-                    holder.code.setText(item.siCode.toString())
+                if (item.punch.siCode != 0) {
+                    holder.code.setText(item.punch.siCode.toString())
                 } else {
                     holder.code.setText("")
                 }
@@ -110,18 +105,20 @@ class PunchEditRecyclerViewAdapter(
 
     private fun addPunch(position: Int) {
         values.add(
-            position + 1, Punch(
-                UUID.randomUUID(),
-                values[0].eventId,
-                null,
-                values[0].competitorId,
-                null,
-                SIRecordType.CONTROL,
-                0,
-                values[position].order++,
-                values[position].siTime,
-                null,
-                PunchStatus.UNKNOWN
+            position + 1, PunchEditItemWrapper(
+                Punch(
+                    UUID.randomUUID(),
+                    values[0].punch.eventId,
+                    null,
+                    values[0].punch.competitorId,
+                    null,
+                    SIRecordType.CONTROL,
+                    0,
+                    values[position].punch.order++,
+                    values[position].punch.siTime,
+                    null,
+                    PunchStatus.UNKNOWN
+                ), true, true, true, true
             )
         )
         notifyItemInserted(position + 1)
@@ -137,9 +134,11 @@ class PunchEditRecyclerViewAdapter(
         try {
             val code = text.toInt()
             if (code >= SIConstants.SI_MIN_CODE && code <= SIConstants.SI_MAX_CODE) {
-                values[position].siCode = code
+                values[position].punch.siCode = code
+                values[position].isCodeValid = true
             }
         } catch (e: Exception) {
+            values[position].isCodeValid = false
             return false
         }
         return true
@@ -150,12 +149,10 @@ class PunchEditRecyclerViewAdapter(
         //Try parsing the time into SI time
         try {
             val time = LocalTime.parse(text)
-            if (values[position].siTime != null) {
-                values[position].siTime?.setTime(time)
-            } else {
-                values[position].siTime = SITime(time)
-            }
+            values[position].punch.siTime.setTime(time)
+            values[position].isTimeValid = true
         } catch (e: Exception) {
+            values[position].isTimeValid = false
             return false
         }
         return true
@@ -165,13 +162,11 @@ class PunchEditRecyclerViewAdapter(
         try {
             val day = text.toInt()
             if (day in 0..7) {
-                if (values[position].siTime != null) {
-                    values[position].siTime?.setDayOfWeek(day)
-                } else {
-                    values[position].siTime = SITime(LocalTime.MIDNIGHT, day)
-                }
+                values[position].punch.siTime.setDayOfWeek(day)
+                values[position].isDayValid = true
             }
         } catch (e: Exception) {
+            values[position].isDayValid = false
             return false
         }
         return true
@@ -181,20 +176,22 @@ class PunchEditRecyclerViewAdapter(
         try {
             val week = text.toInt()
             if (week in 0..3) {
-                if (values[position].siTime != null) {
-                    values[position].siTime?.setWeek(week)
-                } else {
-                    values[position].siTime = SITime(LocalTime.MIDNIGHT, 0, week)
-                }
+                values[position].punch.siTime.setWeek(week)
+                values[position].isWeekValid = true
             }
         } catch (e: Exception) {
+            values[position].isWeekValid = false
             return false
         }
         return true
     }
 
     fun isValid(): Boolean {
-        //TODO: Validate punches
+        for (item in values) {
+            if (!item.isCodeValid || !item.isTimeValid || !item.isDayValid || !item.isWeekValid) {
+                return false
+            }
+        }
         return true
     }
 

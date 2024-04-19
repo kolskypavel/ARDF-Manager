@@ -83,10 +83,13 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
         eventDatabase.competitorDao().getCompetitorBySINumber(siNumber, eventId)
 
-    fun getCompetitorsByEvent(eventId: UUID): Flow<List<Competitor>> =
-        eventDatabase.competitorDao().getCompetitorsByEvent(eventId)
+    fun getCompetitorFlowByEvent(eventId: UUID): Flow<List<Competitor>> =
+        eventDatabase.competitorDao().getCompetitorFlowByEvent(eventId)
 
-    fun getCompetitorCategoriesByEvent(eventId: UUID): Flow<List<CompetitorData>> =
+    fun getCompetitorDataFlowByEvent(eventId: UUID): Flow<List<CompetitorData>> =
+        eventDatabase.competitorDao().getCompetitorDataFlow(eventId)
+
+    suspend fun getCompetitorDataByEvent(eventId: UUID): List<CompetitorData> =
         eventDatabase.competitorDao().getCompetitorData(eventId)
 
     suspend fun getCompetitorsByCategory(categoryId: UUID) =
@@ -107,7 +110,7 @@ class ARDFRepository private constructor(context: Context) {
         eventDatabase.competitorDao().checkIfSINumberExists(siNumber, eventId)
 
     //READOUTS
-    suspend fun getReadoutsByEvent(eventId: UUID) =
+    fun getReadoutDataByEvent(eventId: UUID) =
         eventDatabase.readoutDao().getReadoutDataByEvent(eventId)
 
     suspend fun getReadoutBySINumber(siNumber: Int, eventId: UUID) =

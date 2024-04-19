@@ -9,7 +9,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Result
 
 //Main embedded class, providing data
 data class CompetitorData(
-    @Embedded var competitor: Competitor?,
+    @Embedded var competitor: Competitor,
 
     @Relation(
         parentColumn = "category_id",
@@ -18,6 +18,6 @@ data class CompetitorData(
     var category: Category?,
     @Relation(parentColumn = "id", entityColumn = "competitor_id")
     var readout: Readout?,
-    @Relation(parentColumn = "id", entityColumn = "readout_id")
+    @Relation(parentColumn = "id", entityColumn = "competitor_id")
     var result: Result?,
 )

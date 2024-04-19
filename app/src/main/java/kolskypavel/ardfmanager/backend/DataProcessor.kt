@@ -5,6 +5,8 @@ import android.content.Intent
 import android.hardware.usb.UsbDevice
 import androidx.lifecycle.MutableLiveData
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.backend.files.FileHandler
+import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.room.entitity.Category
@@ -14,6 +16,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.Result
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
 import kolskypavel.ardfmanager.backend.room.enums.EventType
@@ -24,12 +27,12 @@ import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SIReaderService
 import kolskypavel.ardfmanager.backend.sportident.SIReaderState
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
-import kolskypavel.ardfmanager.backend.wrappers.ReadoutDataWrapper
+import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.UUID
 
 
@@ -41,9 +44,9 @@ class DataProcessor private constructor(context: Context) {
     private val ardfRepository = ARDFRepository.get()
     private var appContext: WeakReference<Context>
 
-    //private val siReaderService: SIReaderService
     var currentState = MutableLiveData<AppState>()
     var resultsProcessor: ResultsProcessor? = null
+    var fileProcessor: FileHandler? = null
 
     companion object {
         private var INSTANCE: DataProcessor? = null
@@ -178,11 +181,11 @@ class DataProcessor private constructor(context: Context) {
 
 
     //COMPETITORS
-    fun getCompetitorsForEvent(eventId: UUID) =
-        ardfRepository.getCompetitorsByEvent(eventId)
+    fun getCompetitorFlowForEvent(eventId: UUID) =
+        ardfRepository.getCompetitorFlowByEvent(eventId)
 
-    fun getCompetitorCategoriesByEvent(eventId: UUID) =
-        ardfRepository.getCompetitorCategoriesByEvent(eventId)
+    fun getCompetitorDataFlowByEvent(eventId: UUID) =
+        ardfRepository.getCompetitorDataFlowByEvent(eventId)
 
     suspend fun getCompetitor(id: UUID): Competitor = ardfRepository.getCompetitor(id)
 
@@ -191,6 +194,42 @@ class DataProcessor private constructor(context: Context) {
 
     suspend fun getCompetitorsByCategory(categoryId: UUID): List<Competitor> =
         ardfRepository.getCompetitorsByCategory(categoryId)
+
+    suspend fun getStatisticsByEvent(eventId: UUID): StatisticsWrapper {
+        val competitors = ardfRepository.getCompetitorDataByEvent(eventId)
+        val statistics = StatisticsWrapper(competitors.size, 0, competitors.size, 0)
+
+        for (cd in competitors) {
+            val competitor = cd.competitor
+            val category = cd.category
+            if (competitor.drawnRelativeStartTime != null) {
+                //Count started
+                if (TimeProcessor.hasStarted(
+                        getCurrentEvent().startDateTime,
+                        competitor.drawnRelativeStartTime!!,
+                        LocalDateTime.now()
+                    )
+                ) {
+                    statistics.startedCompetitors++
+                }
+                val limit = category?.timeLimit ?: getCurrentEvent().timeLimit
+
+                if (cd.readout == null) {
+                    if (!TimeProcessor.isInLimit(
+                            getCurrentEvent().startDateTime,
+                            competitor.drawnRelativeStartTime!!,
+                            limit, LocalDateTime.now()
+                        )
+                    ) {
+                        statistics.inLimitCompetitors--
+                    }
+                } else {
+                    statistics.finishedCompetitors++
+                }
+            }
+        }
+        return statistics
+    }
 
     fun checkIfSINumberExists(siNumber: Int, eventId: UUID): Boolean {
         return runBlocking {
@@ -230,10 +269,9 @@ class DataProcessor private constructor(context: Context) {
         ardfRepository.deleteAllCompetitors(eventId)
     }
 
-
     //READOUTS
-    suspend fun getReadoutDataByEvent(eventId: UUID): Flow<List<ReadoutDataWrapper>> {
-        return emptyFlow()
+    suspend fun getReadoutDataByEvent(eventId: UUID): Flow<List<ReadoutData>> {
+       return ardfRepository.getReadoutDataByEvent(eventId)
     }
 
     //    suspend fun getResultDataByEvent(eventId: UUID): Flow<List<ResultDisplayWrapper>> {
@@ -342,6 +380,9 @@ class DataProcessor private constructor(context: Context) {
             delete
         )
 
+    fun importCompetitors() {
+
+    }
 
     //SportIdent manipulation
     fun connectDevice(usbDevice: UsbDevice) {
