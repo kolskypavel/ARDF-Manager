@@ -1,11 +1,10 @@
 package kolskypavel.ardfmanager.backend.room.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
-import androidx.room.Update
+import androidx.room.Upsert
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kotlinx.coroutines.flow.Flow
@@ -38,11 +37,10 @@ interface CompetitorDao {
     @Query("SELECT COUNT(*) FROM competitor WHERE si_number=(:siNumber) AND event_id =(:eventId)  LIMIT 1")
     suspend fun checkIfSINumberExists(siNumber: Int, eventId: UUID): Int
 
-    @Insert
+    @Query("SELECT COUNT(*) FROM competitor WHERE start_number=(:startNumber) AND event_id =(:eventId)  LIMIT 1")
+    suspend fun checkIfStartNumberExists(startNumber: Int, eventId: UUID): Int
+    @Upsert
     suspend fun createCompetitor(competitor: Competitor)
-
-    @Update
-    suspend fun updateCompetitor(competitor: Competitor)
 
     @Query("DELETE FROM competitor WHERE id =(:id)")
     suspend fun deleteCompetitor(id: UUID)

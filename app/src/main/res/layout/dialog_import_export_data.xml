@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/textInputLayout"
+        android:id="@+id/file_format_selection_layout"
         style="@style/dialog_dropdown"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,7 +17,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <AutoCompleteTextView
-            android:id="@+id/category_dialog_type"
+            android:id="@+id/file_format_selection"
             style="@style/dialog_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -26,42 +26,51 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:id="@+id/file_dialog_preview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/preview"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/file_button_import" />
-
-    <TableLayout
-        android:id="@+id/file_dialog_preview_table"
+    <LinearLayout
+        android:id="@+id/file_preview_layout"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_margin="8dp"
-        app:layout_constraintTop_toBottomOf="@id/file_dialog_preview"
-        tools:layout_editor_absoluteX="1dp"
-        tools:layout_editor_absoluteY="182dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/file_button_import">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <TextView
+            android:id="@+id/file_dialog_preview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/preview"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/file_button_import" />
 
-        <TableRow
+        <TableLayout
+            android:id="@+id/file_dialog_preview_table"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="200dp"
+            android:layout_margin="8dp"
+            app:layout_constraintTop_toBottomOf="@id/file_dialog_preview"
+            tools:layout_editor_absoluteX="1dp"
+            tools:layout_editor_absoluteY="182dp">
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </TableLayout>
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </TableLayout>
+    </LinearLayout>
 
     <Button
         android:id="@+id/file_button_import"
@@ -74,7 +83,7 @@
         android:text="@string/file_import"
         app:layout_constraintEnd_toStartOf="@+id/file_button_export"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/file_format_selection_layout" />
 
     <Button
         android:id="@+id/file_button_export"
@@ -87,28 +96,28 @@
         android:text="@string/file_export"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/file_format_selection_layout" />
 
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/file_dialog_preview_table">
+        app:layout_constraintTop_toBottomOf="@id/file_preview_layout">
 
         <Button
-            android:id="@+id/file_dialog_cancel"
+            android:id="@+id/file_dialog_ok"
             style="@style/dialog_ok_cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_weight="1"
-            android:text="@string/cancel"
+            android:text="@string/ok"
             app:layout_constraintEnd_toEndOf="parent"
             tools:layout_editor_absoluteY="217dp" />
 
         <Button
-            android:id="@+id/file_dialog_ok"
+            android:id="@+id/file_dialog_cancel"
             style="@style/dialog_ok_cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

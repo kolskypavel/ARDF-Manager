@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <PreferenceCategory
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="@string/preferences_general">
 
@@ -17,9 +17,14 @@
             android:defaultValue="1"
             android:title="@string/preferences_language" />
 
-
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:title="@string/preferences_event">
+
+    </PreferenceCategory>
     <PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

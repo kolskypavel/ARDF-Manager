@@ -94,6 +94,11 @@ class SelectedEventViewModel : ViewModel() {
                     _readoutData.value = it
                 }
             }
+            launch {
+                dataProcessor.getResultDataByEvent(id).collect {
+                    _resultData.value = it
+                }
+            }
         }
     }
 
@@ -172,7 +177,7 @@ class SelectedEventViewModel : ViewModel() {
         dataProcessor.getCodesNameFromControlPoints(controlPoints)
 
     //Competitor
-    fun createCompetitor(
+    fun createOrUpdateCompetitor(
         competitor: Competitor,
         modifiedPunches: Boolean,
         punches: ArrayList<Punch>,
@@ -184,13 +189,6 @@ class SelectedEventViewModel : ViewModel() {
                 modifiedPunches,
                 punches,
                 manualStatus
-            )
-        }
-
-    fun updateCompetitor(competitor: Competitor, changed: Boolean) =
-        CoroutineScope(Dispatchers.IO).launch {
-            dataProcessor.updateCompetitor(
-                competitor
             )
         }
 
@@ -219,6 +217,12 @@ class SelectedEventViewModel : ViewModel() {
         return true
     }
 
+    fun checkIfStartNumberExists(siNumber: Int): Boolean {
+        if (event.value != null) {
+            return dataProcessor.checkIfStartNumberExists(siNumber, event.value!!.id)
+        }
+        return true
+    }
 
     fun getPunchRecordsForCompetitor(
         create: Boolean,

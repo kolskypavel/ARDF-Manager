@@ -1,6 +1,5 @@
 package kolskypavel.ardfmanager.ui.competitors
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,8 +17,7 @@ import java.time.LocalTime
 import java.util.UUID
 
 class PunchEditRecyclerViewAdapter(
-    var values: ArrayList<PunchEditItemWrapper>,
-    private val context: Context
+    var values: ArrayList<PunchEditItemWrapper>
 ) :
     RecyclerView.Adapter<PunchEditRecyclerViewAdapter.PunchViewHolder>() {
 
@@ -31,7 +29,6 @@ class PunchEditRecyclerViewAdapter(
     }
 
     override fun getItemCount() = values.size
-
 
     override fun onBindViewHolder(holder: PunchViewHolder, position: Int) {
         val item = values[position]
@@ -80,25 +77,25 @@ class PunchEditRecyclerViewAdapter(
         //Set watchers
         holder.code.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
             if (!codeWatcher(position, cs.toString())) {
-                holder.code.error = context.getString(R.string.invalid)
+                holder.code.error = holder.code.context.getString(R.string.invalid)
             }
         }
 
         holder.time.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
             if (!timeWatcher(position, cs.toString())) {
-                holder.time.error = context.getString(R.string.invalid)
+                holder.time.error = holder.code.context.getString(R.string.invalid)
             }
         }
 
         holder.weekday.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
             if (!dayWatcher(position, cs.toString())) {
-                holder.weekday.error = context.getString(R.string.invalid)
+                holder.weekday.error = holder.code.context.getString(R.string.invalid)
             }
         }
 
         holder.week.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
             if (!weekWatcher(position, cs.toString())) {
-                holder.week.error = context.getString(R.string.invalid)
+                holder.week.error = holder.code.context.getString(R.string.invalid)
             }
         }
     }

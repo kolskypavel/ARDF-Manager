@@ -27,4 +27,5 @@ data class Readout(
     @ColumnInfo(name = "start_time") var startTime: SITime?,
     @ColumnInfo(name = "finish_time") var finishTime: SITime?,
     @ColumnInfo(name = "readout_time") var readoutTime: LocalDateTime = LocalDateTime.now(),
+    @ColumnInfo(name = "modified") var modified: Boolean
 ) : Serializable

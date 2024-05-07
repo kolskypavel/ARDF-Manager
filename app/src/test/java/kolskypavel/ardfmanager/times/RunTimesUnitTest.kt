@@ -1,4 +1,4 @@
-package kolskypavel.ardfmanager
+package kolskypavel.ardfmanager.times
 
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import org.junit.Assert.assertEquals

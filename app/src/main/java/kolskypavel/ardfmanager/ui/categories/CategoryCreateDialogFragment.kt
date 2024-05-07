@@ -34,7 +34,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
     private lateinit var category: Category
 
     private lateinit var nameEditText: TextInputEditText
-    private lateinit var sameTypeCheckBox: CheckBox
+    private lateinit var samePropertiesCheckBox: CheckBox
     private lateinit var eventTypeLayout: TextInputLayout
     private lateinit var limitEditText: TextInputEditText
     private lateinit var limitLayout: TextInputLayout
@@ -69,7 +69,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
         setStyle(STYLE_NORMAL, R.style.add_dialog)
 
         nameEditText = view.findViewById(R.id.category_dialog_name)
-        sameTypeCheckBox = view.findViewById(R.id.category_dialog_same_type_checkbox)
+        samePropertiesCheckBox = view.findViewById(R.id.category_dialog_same_properties_checkbox)
         eventTypeLayout = view.findViewById(R.id.category_dialog_type_layout)
         limitEditText = view.findViewById(R.id.category_dialog_limit)
         limitLayout = view.findViewById(R.id.category_dialog_limit_layout)
@@ -99,21 +99,20 @@ class CategoryCreateDialogFragment : DialogFragment() {
      * Populate the data fields - text views, pickers
      */
     private fun populateFields() {
-        val event = selectedEventViewModel.event.value!!
+        val event = selectedEventViewModel.getCurrentEvent()
 
         if (args.create) {
             dialog?.setTitle(R.string.category_create)
             category = Category(
                 UUID.randomUUID(),
                 event.id,
-                "", isWoman = null,
+                "", isWoman = false,
                 null,
-                true,
+                false,
                 event.eventType,
                 event.timeLimit,
                 event.startTimeSource,
                 event.finishTimeSource,
-                "",
                 "",
                 0F,
                 0F,
@@ -149,23 +148,29 @@ class CategoryCreateDialogFragment : DialogFragment() {
             nameEditText.setText(category.name)
 
             if (category.differentProperties) {
-                sameTypeCheckBox.isChecked = false
+                samePropertiesCheckBox.isChecked = false
             } else {
                 eventTypeLayout.isEnabled = false
                 limitLayout.isEnabled = false
+                startTimeSourceLayout.isEnabled = false
+                finishTimeSourceLayout.isEnabled = false
             }
 
             eventTypePicker.setText(
-                dataProcessor.eventTypeToString(category.eventType),
+                dataProcessor.eventTypeToString(category.eventType ?: event.eventType),
                 false
             )
-            limitEditText.setText(category.timeLimit.toMinutes().toString())
+            limitEditText.setText(category.timeLimit?.toMinutes().toString())
             startTimeSourcePicker.setText(
-                dataProcessor.startTimeSourceToString(category.startTimeSource),
+                dataProcessor.startTimeSourceToString(
+                    category.startTimeSource ?: event.startTimeSource
+                ),
                 false
             )
             finishTimeSourcePicker.setText(
-                dataProcessor.finishTimeSourceToString(category.finishTimeSource),
+                dataProcessor.finishTimeSourceToString(
+                    category.finishTimeSource ?: event.finishTimeSource
+                ),
                 false
             )
 
@@ -184,14 +189,13 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
         //Set gender
         when (category.isWoman) {
-            null -> genderPicker.setText(getString(R.string.gender_not_specified), false)
             true -> genderPicker.setText(getString(R.string.gender_woman), false)
             false -> genderPicker.setText(getString(R.string.gender_man), false)
         }
 
         //Set the event type checkbox functionality
-        sameTypeCheckBox.setOnClickListener {
-            if (sameTypeCheckBox.isChecked) {
+        samePropertiesCheckBox.setOnClickListener {
+            if (samePropertiesCheckBox.isChecked) {
                 eventTypePicker.setText(
                     dataProcessor.eventTypeToString(event.eventType),
                     false
@@ -236,13 +240,15 @@ class CategoryCreateDialogFragment : DialogFragment() {
     }
 
     private fun setAdapter(values: ArrayList<ControlPoint>?) {
+        val event = selectedEventViewModel.getCurrentEvent()
+
         if (values != null) {
             controlPointRecyclerView.adapter =
                 ControlPointRecyclerViewAdapter(
                     ControlPointItemWrapper.getWrappers(values),
                     selectedEventViewModel.event.value!!.id,
                     category.id,
-                    category.eventType, requireContext()
+                    category.eventType ?: event.eventType, requireContext()
                 )
         } else {
             controlPointRecyclerView.adapter =
@@ -250,7 +256,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                     (controlPointRecyclerView.adapter as ControlPointRecyclerViewAdapter).getOriginalValues(),
                     selectedEventViewModel.event.value!!.id,
                     category.id,
-                    category.eventType, requireContext()
+                    category.eventType ?: event.eventType, requireContext()
                 )
         }
     }
@@ -277,7 +283,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
             }
         }
 
-        if (!sameTypeCheckBox.isChecked) {
+        if (!samePropertiesCheckBox.isChecked) {
             if (limitEditText.text?.isBlank() == false) {
                 try {
                     Duration.ofMinutes(limitEditText.text.toString().toLong())
@@ -293,7 +299,6 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
         if (maxAgeEditText.text.toString().isNotBlank()) {
             val maxYear: String = maxAgeEditText.text.toString()
-
 
             val orig = selectedEventViewModel.getCategoryByMaxAge(maxYear.toInt())
             if (orig != null && orig.id != category.id) {
@@ -315,7 +320,6 @@ class CategoryCreateDialogFragment : DialogFragment() {
         okButton.setOnClickListener {
             if (checkFields()) {
                 category.name = nameEditText.text.toString()
-                category.differentProperties = !sameTypeCheckBox.isChecked
 
                 if (maxAgeEditText.text.toString().isNotBlank()) {
                     category.maxAge = (maxAgeEditText.text.toString()).toInt()
@@ -332,23 +336,31 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
                 //Set the data from pickers
                 category.isWoman = dataProcessor.genderFromString(genderPicker.text.toString())
-                category.eventType =
-                    dataProcessor.eventTypeStringToEnum(eventTypePicker.text.toString())
-                category.timeLimit = Duration.ofMinutes(limitEditText.text.toString().toLong())
-                category.startTimeSource =
-                    dataProcessor.startTimeSourceStringToEnum(startTimeSourcePicker.text.toString())
-                category.finishTimeSource =
-                    dataProcessor.finishTimeSourceStringToEnum(finishTimeSourcePicker.text.toString())
+
+                category.differentProperties = !samePropertiesCheckBox.isChecked
+                if (category.differentProperties) {
+                    category.eventType =
+                        dataProcessor.eventTypeStringToEnum(eventTypePicker.text.toString())
+                    category.timeLimit = Duration.ofMinutes(limitEditText.text.toString().toLong())
+                    category.startTimeSource =
+                        dataProcessor.startTimeSourceStringToEnum(startTimeSourcePicker.text.toString())
+                    category.finishTimeSource =
+                        dataProcessor.finishTimeSourceStringToEnum(finishTimeSourcePicker.text.toString())
+                } else {
+                    category.eventType = null
+                    category.timeLimit = null
+                    category.startTimeSource = null
+                    category.finishTimeSource = null
+                }
 
                 //Get control points
                 val parsed = selectedEventViewModel.adjustControlPoints(
                     (controlPointRecyclerView.adapter as ControlPointRecyclerViewAdapter).getControlPoints(),
-                    category.eventType
+                    category.eventType ?: selectedEventViewModel.getCurrentEvent().eventType
                 )
 
                 val names = selectedEventViewModel.getCodesNameFromControlPoints(parsed)
                 //Set the code names
-                category.controlPointsNames = names.first
                 category.controlPointsCodes = names.second
 
                 //Create or update the category

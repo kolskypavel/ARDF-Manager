@@ -63,7 +63,7 @@ class ReadoutDetailFragment : Fragment() {
 
         readoutDetailToolbar.setNavigationIcon(R.drawable.ic_back)
         readoutDetailToolbar.setTitle(R.string.readout_detail_title)
-        readoutDetailToolbar.subtitle = readoutDetail.readout!!.siNumber.toString()
+        readoutDetailToolbar.subtitle = readoutDetail.readoutResult.readout.siNumber?.toString()
         readoutDetailToolbar.inflateMenu(R.menu.fragment_menu_readout_detail)
 
         readoutDetailToolbar.setNavigationOnClickListener {
@@ -83,7 +83,7 @@ class ReadoutDetailFragment : Fragment() {
             indexView.text = getText(R.string.unknown)
         }
         raceStatusView.text =
-            dataProcessor.raceStatusToString(readoutDetail.result!!.raceStatus)
+            dataProcessor.raceStatusToString(readoutDetail.readoutResult.result.raceStatus)
 
         if (readoutDetail.competitorCategory?.category != null) {
             categoryView.text = readoutDetail.competitorCategory!!.category!!.name
@@ -91,14 +91,14 @@ class ReadoutDetailFragment : Fragment() {
             categoryView.text = getText(R.string.unknown)
         }
 
-        siNumberView.text = readoutDetail.readout.siNumber.toString()
+        siNumberView.text = readoutDetail.readoutResult.readout.siNumber.toString()
 //        runTimeView.text =
 //            readoutDetail.readout!!.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
 
         placeView.text = getText(R.string.unknown) //TODO: Place
 
         setMenuActions()
-        setRecyclerViewAdapter(readoutDetail.readout.id)
+        setRecyclerViewAdapter(readoutDetail.readoutResult.readout.id)
     }
 
     private fun setMenuActions() {

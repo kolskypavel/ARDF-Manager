@@ -138,7 +138,6 @@ class ResultsFragment : Fragment() {
                     resultsRecyclerView.adapter =
                         ResultsFragmentRecyclerViewAdapter(ArrayList(results), requireContext())
                 }
-
             }
         }
     }

@@ -48,13 +48,13 @@ object CSVProcessor {
                                         UUID.randomUUID(),
                                         event.id,
                                         row[3],
-                                        null,
+                                        false,
                                         null,
                                         false,
                                         event.eventType,
                                         event.timeLimit,
                                         event.startTimeSource,
-                                        event.finishTimeSource, "", "",
+                                        event.finishTimeSource, "", 
                                         0F, 0F, 0
                                     )
                                 categories[row[3]] = category

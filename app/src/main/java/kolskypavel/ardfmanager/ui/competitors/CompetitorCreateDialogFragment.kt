@@ -57,11 +57,12 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private lateinit var automaticCategoryButton: Button
     private lateinit var siNumberLayout: TextInputLayout
     private lateinit var siNumberTextView: TextInputEditText
+    private lateinit var startNumberTextView: TextInputEditText
     private lateinit var startTimeTextView: TextInputEditText
     private lateinit var siRentCheckBox: CheckBox
     private lateinit var editPunchesSwitch: SwitchMaterial
     private lateinit var dataEditLinearLayout: LinearLayout
-    private lateinit var statusPicker: MaterialAutoCompleteTextView
+    private lateinit var raceStatusPicker: MaterialAutoCompleteTextView
     private lateinit var punchEditRecyclerView: RecyclerView
 
     private lateinit var okButton: Button
@@ -97,11 +98,13 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         siNumberLayout = view.findViewById(R.id.competitor_dialog_si_layout)
         startTimeTextView = view.findViewById(R.id.competitor_dialog_start_time)
         siNumberTextView = view.findViewById(R.id.competitor_dialog_si_number)
+        startNumberTextView = view.findViewById(R.id.competitor_dialog_start_number)
         siRentCheckBox = view.findViewById(R.id.competitor_dialog_si_rent)
-        editPunchesSwitch = view.findViewById(R.id.competitor_dialog_edit_punches)
 
+
+        editPunchesSwitch = view.findViewById(R.id.competitor_dialog_edit_punches)
         dataEditLinearLayout = view.findViewById(R.id.competitor_dialog_data_edit_layout)
-        statusPicker = view.findViewById(R.id.competitor_dialog_status)
+        raceStatusPicker = view.findViewById(R.id.competitor_dialog_status)
         punchEditRecyclerView = view.findViewById(R.id.competitor_dialog_punch_recycler_view)
 
         cancelButton = view.findViewById(R.id.competitor_dialog_cancel)
@@ -239,8 +242,9 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 selectedEventViewModel.getPunchRecordsForCompetitor(
                     args.create,
                     competitor
-                ), requireContext()
+                )
             )
+
         dataEditLinearLayout.visibility = View.GONE
         //Toggle the visibility of the punch switch
         editPunchesSwitch.setOnCheckedChangeListener { _, checked ->
@@ -266,8 +270,9 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 statusArr
             )
 
-        statusPicker.setAdapter(statusAdapter)
-        statusPicker.setText(getString(R.string.automatic), false)
+        raceStatusPicker.setAdapter(statusAdapter)
+        raceStatusPicker.setText(getString(R.string.automatic), false)
+
     }
 
     private fun setButtons() {
@@ -290,6 +295,10 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                     competitor.siNumber = siNumberTextView.text.toString().toInt()
                 }
 
+                if (startNumberTextView.text.toString().isNotEmpty()) {
+                    competitor.startNumber = startNumberTextView.text.toString().toInt()
+                }
+
                 //0 is reserved for no category
                 val catPos = categoryArr.indexOf(categoryPicker.text.toString()).or(0)
                 if (catPos > 0 && catPos <= categories.size) {
@@ -298,25 +307,12 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                     competitor.categoryId = null
                 }
 
-                if (args.create) {
-                    selectedEventViewModel.createCompetitor(
-                        competitor,
-                        modifiedPunches,
-                        PunchEditItemWrapper.getPunches((punchEditRecyclerView.adapter as PunchEditRecyclerViewAdapter).values),
-                        null
-                    )
-                } else {
-
-                    //Detect SI number / category change
-                    if (competitor.siNumber != origSiNumber ||
-                        competitor.categoryId != origCategory
-                    ) {
-                        selectedEventViewModel.updateCompetitor(competitor, true)
-                    } else {
-                        selectedEventViewModel.updateCompetitor(competitor, false)
-                    }
-
-                }
+                selectedEventViewModel.createOrUpdateCompetitor(
+                    competitor,
+                    modifiedPunches,
+                    PunchEditItemWrapper.getPunches((punchEditRecyclerView.adapter as PunchEditRecyclerViewAdapter).values),
+                    getRaceStatusFromPicker()
+                )
                 //Send back the result to update the recycler view
                 setFragmentResult(
                     REQUEST_COMPETITOR_MODIFICATION, bundleOf(
@@ -330,6 +326,15 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
         cancelButton.setOnClickListener {
             dialog?.cancel()
+        }
+    }
+
+    private fun getRaceStatusFromPicker(): RaceStatus? {
+        val raceStatusString = raceStatusPicker.text.toString()
+        return if (raceStatusString == requireContext().getString(R.string.automatic)) {
+            null
+        } else {
+            dataProcessor.raceStatusStringToEnum(raceStatusString)
         }
     }
 
@@ -385,6 +390,23 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 siNumberTextView.error = getString(R.string.invalid)
             }
         }
+
+        //Check if the start number is valid
+        if (startNumberTextView.text.toString().isNotEmpty()) {
+            try {
+                val startNumber = startNumberTextView.text.toString().toInt()
+                if (selectedEventViewModel.checkIfStartNumberExists(startNumber)) {
+                    valid = false
+                    startNumberTextView.error =
+                        getString(R.string.duplicate)
+                }
+
+            } catch (e: Exception) {
+                valid = false
+                startNumberTextView.error = getString(R.string.invalid)
+            }
+        }
+
         //Check the start time
         if (startTimeTextView.text.toString().isNotBlank()) {
             try {

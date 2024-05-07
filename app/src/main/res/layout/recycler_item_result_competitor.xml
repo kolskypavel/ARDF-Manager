@@ -30,6 +30,7 @@
             android:layout_marginStart="48dp"
             android:text="Text"
             android:textSize="14sp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/result_competitor_place"
             app:layout_constraintTop_toTopOf="parent"

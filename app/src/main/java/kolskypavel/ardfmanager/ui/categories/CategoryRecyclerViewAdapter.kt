@@ -34,7 +34,9 @@ class CategoryRecyclerViewAdapter(
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val item = values[position]
         holder.title.text = item.name
-        holder.type.text = dataProcessor.eventTypeToString(item.eventType)
+        holder.type.text = dataProcessor.eventTypeToString(
+            item.eventType ?: dataProcessor.getCurrentEvent().eventType
+        ) //TODO: fix crash
         holder.gender.text = dataProcessor.genderToString(item.isWoman)
         holder.siCodes.text = item.controlPointsCodes
 

@@ -91,7 +91,6 @@ class ControlPointRecyclerViewAdapter(
             }
         }
 
-
         if (holder.adapterPosition == 0) {
             holder.deleteBtn.visibility = View.GONE
             holder.points.visibility = View.GONE
@@ -99,16 +98,21 @@ class ControlPointRecyclerViewAdapter(
             holder.siCode.visibility = View.GONE
             holder.separator.visibility = View.GONE
         }
-        if (eventType == EventType.CLASSICS || eventType == EventType.FOXORING || eventType == EventType.ORIENTEERING) {
+        if (eventType == EventType.CLASSICS ||
+            eventType == EventType.FOXORING ||
+            eventType == EventType.ORIENTEERING
+        ) {
             holder.separator.visibility = View.GONE
             holder.points.visibility = View.GONE
         } else if (eventType == EventType.SPRINT) {
             holder.points.visibility = View.GONE
         }
-        if (eventType != EventType.ORIENTEERING && holder.adapterPosition != 0 && holder.adapterPosition == values.size - 1) {
+        if (eventType != EventType.ORIENTEERING &&
+            holder.adapterPosition != 0 &&
+            holder.adapterPosition == values.size - 1
+        ) {
             holder.beacon.visibility = View.VISIBLE
             holder.addBtn.visibility = View.GONE
-            item.controlPoint.beacon = true
         }
     }
 

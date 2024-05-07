@@ -9,7 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
 
 class ResultsFragmentRecyclerViewAdapter(
@@ -45,7 +45,7 @@ class ResultsFragmentRecyclerViewAdapter(
             holder.apply {
                 if (dataList.category != null) {
                     categoryName.text =
-                        dataList.category.name + " (" + dataList.category.controlPointsNames + ")"
+                        dataList.category.name + " (" + dataList.category.controlPointsCodes + ")"
                 } else {
                     categoryName.text = context.getText(R.string.no_category)
                 }
@@ -70,14 +70,19 @@ class ResultsFragmentRecyclerViewAdapter(
 
             holder.apply {
                 val singleResult = dataList.subList.first()
-                if (singleResult.competitorCategory?.competitor != null) {
-                    competitorName.text =
-                        "${singleResult.competitorCategory!!.competitor!!.firstName} ${singleResult.competitorCategory!!.competitor!!.lastName!!}"
-                    competitorClub.text = singleResult.competitorCategory!!.competitor.club
+//                competitorPlace.text =
+                competitorName.text =
+                    " ${singleResult.competitorCategory.competitor.lastName.uppercase()} ${singleResult.competitorCategory.competitor.firstName}"
+                competitorClub.text =
+                    singleResult.competitorCategory.competitor.club.ifEmpty {
+                        "-"
+                    }
 //                    competitorTime.text =
 //                        dataProcessor.durationToString(singleResult.readout?.runTime!!)
 //                    competitorPoints.text = singleResult.result?.points.toString()
-                }
+                competitorPoints.text =
+                    singleResult.readoutResult?.result?.points.toString()
+
             }
         }
     }
@@ -101,7 +106,7 @@ class ResultsFragmentRecyclerViewAdapter(
             services.forEach { service ->
                 val parentModel = ResultDisplayWrapper()
                 parentModel.isChild = 1
-                val subList: ArrayList<ReadoutData> = ArrayList()
+                val subList: ArrayList<CompetitorData> = ArrayList()
                 subList.add(service)
                 parentModel.subList = subList
                 values.add(++nextPosition, parentModel)

@@ -1,9 +1,9 @@
 package kolskypavel.ardfmanager.backend.room.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
+import androidx.room.Upsert
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +15,7 @@ interface ReadoutDao {
     suspend fun getReadout(id: UUID): Readout
 
     @Query("SELECT * FROM readout WHERE event_id = (:eventId) ")
+    @Transaction
     fun getReadoutDataByEvent(eventId: UUID): Flow<List<ReadoutData>>
 
     @Query("SELECT * FROM readout WHERE si_number=(:siNumber) AND event_id=(:eventId) LIMIT 1")
@@ -23,7 +24,7 @@ interface ReadoutDao {
     @Query("SELECT * FROM readout WHERE competitor_id=(:competitorId)")
     suspend fun getReadoutByCompetitor(competitorId: UUID): Readout?
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun createReadout(readout: Readout)
 
     @Query("DELETE FROM readout WHERE id =(:id) ")

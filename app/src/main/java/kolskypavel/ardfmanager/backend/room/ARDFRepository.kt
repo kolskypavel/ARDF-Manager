@@ -2,6 +2,7 @@ package kolskypavel.ardfmanager.backend.room
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.withTransaction
 import kolskypavel.ardfmanager.backend.room.database.EventDatabase
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
@@ -98,9 +99,6 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun createCompetitor(competitor: Competitor) =
         eventDatabase.competitorDao().createCompetitor(competitor)
 
-    suspend fun updateCompetitor(competitor: Competitor) =
-        eventDatabase.competitorDao().updateCompetitor(competitor)
-
     suspend fun deleteCompetitor(id: UUID) = eventDatabase.competitorDao().deleteCompetitor(id)
 
     suspend fun deleteAllCompetitors(eventId: UUID) =
@@ -108,6 +106,10 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun checkIfSINumberExists(siNumber: Int, eventId: UUID): Int =
         eventDatabase.competitorDao().checkIfSINumberExists(siNumber, eventId)
+
+    suspend fun checkIfStartNumberExists(startNumber: Int, eventId: UUID): Int =
+        eventDatabase.competitorDao().checkIfStartNumberExists(startNumber, eventId)
+
 
     //READOUTS
     fun getReadoutDataByEvent(eventId: UUID) =
@@ -138,12 +140,6 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun getPunchesByCompetitor(competitorId: UUID) =
         eventDatabase.punchDao().getPunchesByCompetitor(competitorId)
 
-    suspend fun deletePunchesByReadoutId(resultId: UUID) =
-        eventDatabase.punchDao().deletePunchesByReadoutId(resultId)
-
-    suspend fun deletePunchesByEvent(eventId: UUID) =
-        eventDatabase.punchDao().deletePunchesByEvent(eventId)
-
 
     //Results
     suspend fun getResultsByCategory(categoryId: UUID) =
@@ -153,7 +149,17 @@ class ARDFRepository private constructor(context: Context) {
         eventDatabase.resultDao().getResultByCompetitor(competitorId)
 
     suspend fun createResult(result: Result) = eventDatabase.resultDao().createResult(result)
-
+    suspend fun saveReadoutAndResult(
+        readout: Readout,
+        punches: ArrayList<Punch>,
+        result: Result
+    ) {
+        eventDatabase.withTransaction {
+            eventDatabase.readoutDao().createReadout(readout)
+            punches.forEach { punch -> eventDatabase.punchDao().createPunch(punch) }
+            eventDatabase.resultDao().createResult(result)
+        }
+    }
 
     //Singleton instantiation
     companion object {

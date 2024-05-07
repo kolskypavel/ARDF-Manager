@@ -4,7 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.files.constants.FileFormat
+import kolskypavel.ardfmanager.backend.files.constants.FileExportFormat
+import kolskypavel.ardfmanager.backend.files.constants.FileImportFormat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,23 +36,17 @@ class FileHandler(val appContext: WeakReference<Context>) {
         return null
     }
 
-    fun importData(uri: Uri, format: FileFormat): Boolean {
+    fun importData(uri: Uri, format: FileImportFormat): Boolean {
         var ret = true
         CoroutineScope(Dispatchers.IO).launch {
             val inStream = openInputStream(uri)
             if (inStream != null) {
                 when (format) {
-                    FileFormat.CSV_CHEB -> {
-                       // val competitorData = CSVProcessor.parseCompetitorDataCsv(inStream)
+                    FileImportFormat.CSV_OCM_COMPETITORS -> {
+                        // val competitorData = CSVProcessor.parseCompetitorDataCsv(inStream)
 
                     }
 
-                    FileFormat.FJW_JSON -> {
-
-                    }
-
-                    FileFormat.IOF_XML -> {
-                    }
 
                     else -> {
                         TODO()
@@ -64,20 +59,12 @@ class FileHandler(val appContext: WeakReference<Context>) {
         return ret
     }
 
-    fun exportData(format: FileFormat, eventId: UUID): Boolean {
+    fun exportData(format: FileExportFormat, eventId: UUID): Boolean {
         CoroutineScope(Dispatchers.IO).launch {
             // val competitorData = dataProcessor.getCompetitorDataFlowByEvent()
             when (format) {
-                FileFormat.CSV_CHEB -> {
+                FileExportFormat.IOF_XML -> {}
 
-                }
-
-                FileFormat.FJW_JSON -> {
-                }
-
-                FileFormat.IOF_XML -> {
-
-                }
 
                 else -> {
                     TODO()

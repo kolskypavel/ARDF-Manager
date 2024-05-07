@@ -1,9 +1,8 @@
 package kolskypavel.ardfmanager.backend.room.dao
 
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Upsert
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import java.util.UUID
 
@@ -20,7 +19,7 @@ interface PunchDao {
     @Query("SELECT * FROM punch WHERE id=(:id)")
     suspend fun getPunch(id: UUID): Punch
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun createPunch(punch: Punch)
 
     @Query("DELETE FROM punch WHERE id =(:id) ")
@@ -29,6 +28,4 @@ interface PunchDao {
     @Query("DELETE FROM punch WHERE event_id=(:eventId)")
     suspend fun deletePunchesByEvent(eventId: UUID)
 
-    @Query("DELETE FROM punch WHERE readout_id=(:readoutId)")
-    suspend fun deletePunchesByReadoutId(readoutId: UUID)
 }

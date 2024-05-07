@@ -29,15 +29,6 @@ import java.util.UUID
 class ResultsProcessor {
     val dataProcessor = DataProcessor.get()
 
-    private suspend fun saveReadoutAndResult(
-        readout: Readout,
-        punches: ArrayList<Punch>,
-        result: Result
-    ) {
-        dataProcessor.createReadout(readout)
-        dataProcessor.createPunches(punches)
-        dataProcessor.createResult(result)
-    }
 
     /**
      * Processes the given result - saves the data into the db
@@ -60,10 +51,20 @@ class ResultsProcessor {
                     cardData.checkTime,
                     cardData.startTime,
                     cardData.finishTime,
-                    LocalDateTime.now()
+                    LocalDateTime.now(),
+                    false
                 )
 
-            var result: Result? = null
+            val result = Result(
+                UUID.randomUUID(),
+                readout.id,
+                category?.id,
+                competitor?.id,
+                true,
+                RaceStatus.NOT_PROCESSED,
+                0,
+                Duration.ZERO
+            )
 
             //TODO: Based on options, set start time to the predefined value
             if (competitor != null) {
@@ -89,22 +90,13 @@ class ResultsProcessor {
             } else {
                 Log.d("Results processor", "Missing finish or start time")
             }
-            result = Result(
-                UUID.randomUUID(),
-                readout.id,
-                category?.id,
-                competitor?.id,
-                RaceStatus.NOT_PROCESSED,
-                0,
-                Duration.ZERO
-            )
 
             if (category != null) {
                 evaluatePunches(punches, category, result)
             }
 
             //Save to db
-            saveReadoutAndResult(readout, punches, result)
+            dataProcessor.saveReadoutAndResult(readout, punches, result)
             return true
         }
         //Duplicate readout
@@ -140,7 +132,8 @@ class ResultsProcessor {
                 null,
                 null,
                 null,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                true
             )
 
             result = Result(
@@ -148,11 +141,13 @@ class ResultsProcessor {
                 readout.id,
                 categoryId,
                 competitorId,
+                true,
                 RaceStatus.NOT_PROCESSED,
                 0,
                 Duration.ZERO
             )
         }
+        readout.modified = true //Mark the readout punches were modified
 
         if (punches.isNotEmpty()) {
             //Modify the start and finish times
@@ -172,9 +167,12 @@ class ResultsProcessor {
 
             // Set the result status based on user preference
             if (manualStatus != null) {
-                result!!.raceStatus = manualStatus
+                result!!.automaticStatus = false
+                result.raceStatus = manualStatus
+            } else {
+                result!!.automaticStatus = true
             }
-            saveReadoutAndResult(readout, punches, result!!)
+            dataProcessor.saveReadoutAndResult(readout, punches, result)
         }
     }
 
@@ -253,7 +251,7 @@ class ResultsProcessor {
         //Calculate splits
         punches.forEach { punch ->
             if (punch.order != 0) {
-                punch.split = SITime.split(punches[punch.order - 1].siTime!!, punch.siTime!!)
+                punch.split = SITime.split(punches[punch.order - 1].siTime, punch.siTime)
             }
         }
     }
@@ -270,7 +268,14 @@ class ResultsProcessor {
             Log.d("ResultsProcess", e.message.toString())
         }
         result.points = 0
-        when (category.eventType) {
+
+        //Decies
+        val eventType = if (category.differentProperties) {
+            category.eventType!!
+        } else {
+            dataProcessor.getCurrentEvent().eventType
+        }
+        when (eventType) {
             EventType.CLASSICS, EventType.FOXORING -> evaluateClassics(
                 punches,
                 controlPoints,
@@ -294,6 +299,7 @@ class ResultsProcessor {
                 controlPoints,
                 result
             )
+
         }
     }
 
@@ -453,18 +459,17 @@ class ResultsProcessor {
                 } else {
                     clearEvaluation(punches, result!!)
                 }
-
-                saveReadoutAndResult(readout, punches, result)
+                dataProcessor.saveReadoutAndResult(readout, punches, result)
             }
         }
     }
 
-    suspend fun updateResultsForCompetitor(competitorId: UUID, eventId: UUID, delete: Boolean) {
+    suspend fun updateResultsForCompetitor(competitorId: UUID, eventId: UUID) {
         var readout = dataProcessor.getReadoutByCompetitor(competitorId)
         val competitor = dataProcessor.getCompetitor(competitorId)
 
         //Try to get result by SI instead and update competitor ID
-        if (readout == null && !delete) {
+        if (readout == null) {
             readout = competitor.siNumber?.let { dataProcessor.getReadoutBySINumber(it, eventId) }
             if (readout != null) {
                 readout.competitorID = competitorId
@@ -474,7 +479,7 @@ class ResultsProcessor {
         if (readout != null) {
             val result = dataProcessor.getResultByCompetitor(competitorId)
             val punches = ArrayList(dataProcessor.getPunchesByReadout(readout.id))
-            if (!delete && competitor.categoryId != null) {
+            if (competitor.categoryId != null) {
                 val category = dataProcessor.getCategory(competitor.categoryId!!)
                 evaluatePunches(punches, category, result!!)
             } else {
@@ -482,7 +487,7 @@ class ResultsProcessor {
             }
 
             //Save into db
-            saveReadoutAndResult(readout, punches, result)
+            dataProcessor.saveReadoutAndResult(readout, punches, result)
         }
     }
 

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -16,53 +18,184 @@
         android:padding="7dp">
 
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/linearLayout3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_weight="1">
+
+            <TextView
+                android:id="@+id/readout_item_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:gravity="start"
+                android:text="TEST"
+                app:layout_constraintStart_toEndOf="@+id/readout_title_category"
+                app:layout_constraintTop_toBottomOf="@+id/readout_item_club" />
+
+            <TextView
+                android:id="@+id/readout_item_placement"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:gravity="start"
+                android:text="1."
+                app:layout_constraintStart_toEndOf="@+id/readout_title_place"
+                app:layout_constraintTop_toBottomOf="@+id/readout_title_category" />
 
             <TextView
                 android:id="@+id/readout_item_competitor"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-
-                android:gravity="start" />
+                android:gravity="start"
+                android:text="TEST MAN"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed" />
 
             <TextView
                 android:id="@+id/readout_item_si_number"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
 
-                android:gravity="start" />
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:gravity="start"
+                android:text="000000"
+                app:layout_constraintStart_toEndOf="@+id/readout_title_si_number"
+                app:layout_constraintTop_toBottomOf="@+id/readout_item_competitor" />
 
             <TextView
                 android:id="@+id/readout_item_run_time"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-
-                android:gravity="start" />
-
-            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/readout_item_category"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="start" />
+                android:gravity="start"
+                android:text="00:00"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-                    android:id="@+id/readout_item_placement"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="start" />
-            </LinearLayout>
-        </LinearLayout>
+            <TextView
+                android:id="@+id/readout_title_start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="96dp"
+                android:text="@string/start_time"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/readout_item_run_time" />
 
+            <TextView
+                android:id="@+id/readout_title_finish_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/finish_time"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/readout_title_start_time"
+                app:layout_constraintTop_toBottomOf="@+id/readout_title_start_time" />
+
+            <TextView
+                android:id="@+id/readout_title_readout_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/readout_time"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="@+id/readout_title_finish_time"
+                app:layout_constraintTop_toBottomOf="@+id/readout_title_finish_time" />
+
+            <TextView
+                android:id="@+id/readout_title_category"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/category"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/readout_title_club" />
+
+            <TextView
+                android:id="@+id/readout_title_place"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/placement"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/readout_title_category" />
+
+            <TextView
+                android:id="@+id/readout_title_si_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/si_number"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/readout_item_competitor" />
+
+            <TextView
+                android:id="@+id/readout_title_club"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/club"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/readout_item_si_number" />
+
+            <TextView
+                android:id="@+id/readout_item_club"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+
+                android:text="SC TEST"
+                app:layout_constraintStart_toEndOf="@id/readout_title_club"
+                app:layout_constraintTop_toBottomOf="@+id/readout_title_si_number" />
+
+            <TextView
+                android:id="@+id/readout_item_start_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:text="TextView"
+                app:layout_constraintStart_toEndOf="@+id/readout_title_start_time"
+                app:layout_constraintTop_toBottomOf="@+id/readout_item_run_time" />
+
+            <TextView
+                android:id="@+id/readout_item_finish_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:text="TextView"
+                app:layout_constraintStart_toEndOf="@+id/readout_title_finish_time"
+                app:layout_constraintTop_toBottomOf="@+id/readout_item_start_time" />
+
+            <TextView
+                android:id="@+id/readout_item_readout_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="TextView"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="@+id/readout_title_readout_time"
+                app:layout_constraintStart_toEndOf="@+id/readout_title_readout_time"
+                app:layout_constraintTop_toTopOf="@+id/readout_title_readout_time" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <ImageButton
             android:id="@+id/readout_item_more_btn"
@@ -73,4 +206,9 @@
             android:minWidth="0dp"
             android:src="@drawable/icon_more" />
     </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/black" />
 </LinearLayout>

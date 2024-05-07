@@ -1,7 +1,7 @@
 package kolskypavel.ardfmanager.backend.wrappers
 
 import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import java.io.Serializable
 
 /**
@@ -10,6 +10,6 @@ import java.io.Serializable
 data class ResultDisplayWrapper(
     val category: Category? = null,
     var isChild: Int = 0,
-    var subList: MutableList<ReadoutData> = ArrayList(),
+    var subList: MutableList<CompetitorData> = ArrayList(),
     var isExpanded: Boolean = false
 ) : Serializable

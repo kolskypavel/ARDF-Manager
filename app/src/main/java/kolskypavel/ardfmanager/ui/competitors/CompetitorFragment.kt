@@ -1,6 +1,5 @@
 package kolskypavel.ardfmanager.ui.competitors
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
@@ -11,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -53,14 +51,6 @@ class CompetitorFragment : Fragment() {
     private lateinit var competitorDisplayTypePicker: MaterialAutoCompleteTextView
     private lateinit var competitorAddFab: FloatingActionButton
     private var mLastClickTime: Long = 0
-
-    private val getResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
-        if (it.resultCode == Activity.RESULT_OK) {
-            val value = it.data
-        }
-    }
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -260,27 +250,28 @@ class CompetitorFragment : Fragment() {
     private fun tableViewContextMenuActions(
         action: Int,
         position: Int,
-        competitorCategory: CompetitorData
+        competitorData: CompetitorData
     ) {
         when (action) {
             0 -> findNavController().navigate(
                 CompetitorFragmentDirections.modifyCompetitor(
                     false,
-                    competitorCategory.competitor,
+                    competitorData.competitorCategory.competitor,
                     position
                 )
             )
 
             1 -> {}
-            2 -> confirmCompetitorDeletion(competitorCategory.competitor!!)
+            2 -> confirmCompetitorDeletion(competitorData.competitorCategory.competitor)
         }
     }
 
     private fun confirmCompetitorDeletion(competitor: Competitor) {
+        //TODO: Add prompt for readout removal
         val builder = AlertDialog.Builder(context)
         builder.setTitle(getString(R.string.competitor_delete))
         val message =
-            "${getString(R.string.competitor_delete_confirmation)} ${competitor.firstName}  ${competitor.lastName}"
+            "${getString(R.string.competitor_delete_confirmation)} ${competitor.firstName} ${competitor.lastName}"
         builder.setMessage(message)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->

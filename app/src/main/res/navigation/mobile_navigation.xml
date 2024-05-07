@@ -74,7 +74,7 @@
         </fragment>
         <dialog
             android:id="@+id/dataExportImportDialogFragment"
-            android:name="kolskypavel.ardfmanager.ui.files.DataExportImportDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.files.ImportDialogFragment"
             android:label="DataExportImportDialogFragment" />
 
         <fragment

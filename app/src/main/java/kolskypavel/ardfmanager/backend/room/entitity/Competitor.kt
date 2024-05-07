@@ -3,13 +3,17 @@ package kolskypavel.ardfmanager.backend.room.entitity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.io.Serializable
-import java.util.UUID
 import java.time.Duration
+import java.util.UUID
 
 @Entity(
-    tableName = "competitor",
+    tableName = "competitor", indices = [Index(
+        value = ["start_number", "event_id"],
+        unique = true
+    ), Index("category_id")],
     foreignKeys = [
         ForeignKey(
             entity = Category::class,
@@ -31,8 +35,8 @@ data class Competitor(
     @ColumnInfo(name = "category_id") var categoryId: UUID? = null,
     @ColumnInfo(name = "first_name") var firstName: String,
     @ColumnInfo(name = "last_name") var lastName: String,
-    var club: String,
-    var index: String,
+    @ColumnInfo(name = "club") var club: String,
+    @ColumnInfo(name = "index") var index: String,
     @ColumnInfo(name = "is_woman") var isWoman: Boolean = false,
     @ColumnInfo(name = "birth_year") var birthYear: Int,
     @ColumnInfo(name = "si_number") var siNumber: Int? = null,

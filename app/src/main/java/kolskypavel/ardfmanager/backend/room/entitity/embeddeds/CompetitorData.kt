@@ -2,22 +2,17 @@ package kolskypavel.ardfmanager.backend.room.entitity.embeddeds
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
-import kolskypavel.ardfmanager.backend.room.entitity.Result
 
-//Main embedded class, providing data
+/**
+Used to get data for the competitor table + results
+ */
 data class CompetitorData(
-    @Embedded var competitor: Competitor,
-
+    @Embedded var competitorCategory: CompetitorCategory,
     @Relation(
-        parentColumn = "category_id",
-        entityColumn = "id"
+        parentColumn = "id",
+        entityColumn = "competitor_id",
+        entity = Readout::class
     )
-    var category: Category?,
-    @Relation(parentColumn = "id", entityColumn = "competitor_id")
-    var readout: Readout?,
-    @Relation(parentColumn = "id", entityColumn = "competitor_id")
-    var result: Result?,
+    var readoutResult: ReadoutResult?,
 )

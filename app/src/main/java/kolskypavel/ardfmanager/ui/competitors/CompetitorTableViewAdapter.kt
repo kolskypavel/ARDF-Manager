@@ -32,39 +32,52 @@ class CompetitorTableViewAdapter(
 
             CompetitorTableDisplayType.OVERVIEW -> {
                 when (columnIndex) {
-                    0 -> text.text = item.competitor!!.startNumber.toString()
+                    0 -> text.text =
+                        item.competitorCategory.competitor!!.startNumber.toString()
+
                     1 -> {
-                        if (item.competitor != null) {
+                        if (item.competitorCategory.competitor != null) {
                             text.text =
-                                item.competitor!!.lastName.uppercase() + " " + item.competitor!!.firstName
+                                item.competitorCategory.competitor!!.lastName.uppercase() + " " + item.competitorCategory.competitor!!.firstName
 
                         } else {
                             text.text = context.getString(R.string.unknown_competitor)
                         }
                     }
 
-                    2 -> text.text = item.competitor!!.club
-                    3 -> text.text = item.category?.name ?: context.getString(R.string.no_category)
-                    4 -> text.text = item.competitor!!.siNumber?.toString() ?: "-"
+                    2 -> text.text = item.competitorCategory.competitor!!.club
+                    3 -> text.text = item.competitorCategory.category?.name
+                        ?: context.getString(R.string.no_category)
+
+                    4 -> text.text =
+                        item.competitorCategory.competitor.siNumber?.toString()
+                            ?: "-"
                 }
             }
 
             CompetitorTableDisplayType.START_LIST -> {
                 when (columnIndex) {
-                    0 -> text.text = item.competitor!!.startNumber.toString()
+                    0 -> text.text =
+                        item.competitorCategory.competitor.startNumber.toString()
+
                     1 -> {
-                        if (item.competitor!!.drawnRelativeStartTime != null) {
-                            text.text = item.competitor!!.drawnRelativeStartTime.toString()
+                        if (item.competitorCategory.competitor.drawnRelativeStartTime != null) {
+                            text.text =
+                                item.competitorCategory.competitor.drawnRelativeStartTime.toString()
                         } else {
                             text.text = "-"
                         }
                     }
 
                     2 -> text.text =
-                        item.competitor!!.lastName.uppercase() + " " + item.competitor!!.firstName
+                        item.competitorCategory.competitor!!.lastName.uppercase() + " " + item.competitorCategory.competitor!!.firstName
 
-                    3 -> text.text = item.category?.name ?: context.getString(R.string.no_category)
-                    4 -> text.text = item.competitor!!.siNumber?.toString() ?: "-"
+                    3 -> text.text = item.competitorCategory.category?.name
+                        ?: context.getString(R.string.no_category)
+
+                    4 -> text.text =
+                        item.competitorCategory.competitor.siNumber?.toString()
+                            ?: "-"
                 }
             }
 
@@ -79,29 +92,32 @@ class CompetitorTableViewAdapter(
             CompetitorTableDisplayType.ON_THE_WAY -> {
                 when (columnIndex) {
                     0 -> {
-                        if (item.competitor != null) {
+                        if (item.competitorCategory.competitor != null) {
                             text.text =
-                                item.competitor!!.lastName.uppercase() + " " + item.competitor!!.firstName
+                                item.competitorCategory.competitor!!.lastName.uppercase() + " " + item.competitorCategory.competitor!!.firstName
 
                         }
                     }
 
-                    1 -> text.text = item.category?.name ?: context.getString(R.string.no_category)
+                    1 -> text.text = item.competitorCategory.category?.name
+                        ?: context.getString(R.string.no_category)
+
                     2 -> {
-                        if (item.competitor!!.drawnRelativeStartTime != null) {
-                            text.text = item.competitor!!.drawnRelativeStartTime.toString()
+                        if (item.competitorCategory.competitor!!.drawnRelativeStartTime != null) {
+                            text.text =
+                                item.competitorCategory.competitor!!.drawnRelativeStartTime.toString()
                         } else {
                             text.text = "-"
                         }
                     }
 
                     3 -> {
-                        if (item.competitor.drawnRelativeStartTime != null) {
-                            if (item.result == null) {
+                        if (item.competitorCategory.competitor.drawnRelativeStartTime != null) {
+                            if (item.readoutResult == null) {
                                 val runDuration = TimeProcessor
                                     .runDurationFromStart(
                                         selectedEventViewModel.getCurrentEvent().startDateTime,
-                                        item.competitor.drawnRelativeStartTime!!
+                                        item.competitorCategory.competitor.drawnRelativeStartTime!!
                                     )
                                 if (runDuration != null) {
                                     text.text = TimeProcessor.durationToMinuteString(runDuration)
@@ -110,7 +126,7 @@ class CompetitorTableViewAdapter(
                                 }
                             } else {
                                 text.text =
-                                    TimeProcessor.durationToMinuteString(item.result!!.runTime)
+                                    TimeProcessor.durationToMinuteString(item.readoutResult!!.result.runTime)
                             }
                         } else {
                             text.text = "-"
@@ -118,18 +134,19 @@ class CompetitorTableViewAdapter(
                     }
 
                     4 -> {
-                        if (item.competitor.drawnRelativeStartTime != null) {
-                            if (item.result == null) {
+                        if (item.competitorCategory.competitor.drawnRelativeStartTime != null) {
+                            if (item.readoutResult == null) {
 
-                                val limit: Duration = if (item.category != null) {
-                                    item.category!!.timeLimit
-                                } else {
-                                    selectedEventViewModel.getCurrentEvent().timeLimit
-                                }
+                                val limit: Duration =
+                                    if (item.competitorCategory.category?.timeLimit != null) {
+                                        item.competitorCategory.category!!.timeLimit!!
+                                    } else {
+                                        selectedEventViewModel.getCurrentEvent().timeLimit
+                                    }
                                 val toLimit =
                                     TimeProcessor.durationToLimit(
                                         selectedEventViewModel.getCurrentEvent().startDateTime,
-                                        item.competitor.drawnRelativeStartTime!!,
+                                        item.competitorCategory.competitor.drawnRelativeStartTime!!,
                                         limit, LocalDateTime.now()
                                     )
 

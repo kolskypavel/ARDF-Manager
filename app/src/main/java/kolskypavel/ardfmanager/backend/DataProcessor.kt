@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.files.FileHandler
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
+import kolskypavel.ardfmanager.backend.results.ResultDataComparator
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.room.entitity.Category
@@ -16,6 +17,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.Result
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
@@ -27,8 +29,10 @@ import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SIReaderService
 import kolskypavel.ardfmanager.backend.sportident.SIReaderState
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
+import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
 import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
 import java.time.LocalDate
@@ -73,7 +77,7 @@ class DataProcessor private constructor(context: Context) {
 
         if (stateToUpdate != null) {
             stateToUpdate.siReaderState = newSIState
-            currentState.postValue(stateToUpdate!!)
+            currentState.postValue(stateToUpdate)
         }
     }
 
@@ -200,8 +204,8 @@ class DataProcessor private constructor(context: Context) {
         val statistics = StatisticsWrapper(competitors.size, 0, competitors.size, 0)
 
         for (cd in competitors) {
-            val competitor = cd.competitor
-            val category = cd.category
+            val competitor = cd.competitorCategory.competitor
+            val category = cd.competitorCategory.category
             if (competitor.drawnRelativeStartTime != null) {
                 //Count started
                 if (TimeProcessor.hasStarted(
@@ -214,7 +218,7 @@ class DataProcessor private constructor(context: Context) {
                 }
                 val limit = category?.timeLimit ?: getCurrentEvent().timeLimit
 
-                if (cd.readout == null) {
+                if (cd.readoutResult == null) {
                     if (!TimeProcessor.isInLimit(
                             getCurrentEvent().startDateTime,
                             competitor.drawnRelativeStartTime!!,
@@ -237,6 +241,12 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
+    fun checkIfStartNumberExists(startNumber: Int, eventId: UUID): Boolean {
+        return runBlocking {
+            return@runBlocking ardfRepository.checkIfStartNumberExists(startNumber, eventId) > 0
+        }
+    }
+
     suspend fun createOrUpdateCompetitor(
         competitor: Competitor,
         modifiedPunches: Boolean,
@@ -253,16 +263,13 @@ class DataProcessor private constructor(context: Context) {
                 punches,
                 manualStatus
             )
+            updateResultsForCompetitor(competitor.id)
         }
-        updateResultsForCompetitor(competitor.id, false)
     }
-
-    suspend fun updateCompetitor(competitor: Competitor) =
-        ardfRepository.updateCompetitor(competitor)
 
     suspend fun deleteCompetitor(id: UUID) {
         ardfRepository.deleteCompetitor(id)
-        updateResultsForCompetitor(id, true)
+        // TODO: solve the removal of the readout
     }
 
     suspend fun deleteAllCompetitors(eventId: UUID) {
@@ -270,60 +277,10 @@ class DataProcessor private constructor(context: Context) {
     }
 
     //READOUTS
-    suspend fun getReadoutDataByEvent(eventId: UUID): Flow<List<ReadoutData>> {
-       return ardfRepository.getReadoutDataByEvent(eventId)
+    fun getReadoutDataByEvent(eventId: UUID): Flow<List<ReadoutData>> {
+        return ardfRepository.getReadoutDataByEvent(eventId)
     }
 
-    //    suspend fun getResultDataByEvent(eventId: UUID): Flow<List<ResultDisplayWrapper>> {
-//        return flow {
-//            while (true) {
-//
-//                val temp = ArrayList<ResultDisplayWrapper>()
-//
-//                ardfRepository.getCategoriesForEvent(eventId).forEach { category ->
-//                    val res = ResultDisplayWrapper(category)
-//                    res.subList = ArrayList()
-//                    ardfRepository.getReadoutsByCategory(category.id).forEach { result ->
-//
-//                        val competitor =
-//                            if (result.competitorID != null) {
-//                                getCompetitor(result.competitorID!!)
-//                            } else if (result.siNumber != null) {
-//                                getCompetitorBySINumber(result.siNumber!!, eventId)
-//                            } else null
-//
-//                        res.subList.add(ReadoutDataWrapper(result, competitor, category))
-//                    }
-//                    temp.add(res)
-//                }
-//
-//                //Add competitors with no category
-//                val noCatRes = ResultDisplayWrapper()
-//                noCatRes.subList = ArrayList()
-//                val results = ardfRepository.getReadoutsForNullCategory(eventId)
-//
-//                if (results.isNotEmpty()) {
-//
-//                    results.forEach { result ->
-//                        val competitor =
-//                            if (result.competitorID != null) {
-//                                getCompetitor(result.competitorID!!)
-//                            } else if (result.siNumber != null) {
-//                                getCompetitorBySINumber(result.siNumber!!, eventId)
-//                            } else null
-//
-//                        noCatRes.subList.add(ReadoutDataWrapper(result, competitor, null))
-//                    }
-//                    temp.add(noCatRes)
-//                }
-//
-//                emit(temp)
-//                delay(1000) //TODO: FIX
-//
-//            }
-//        }
-//    }
-//
     suspend fun getReadoutBySINumber(siNumber: Int, eventId: UUID): Readout? =
         ardfRepository.getReadoutBySINumber(siNumber, eventId)
 
@@ -332,16 +289,16 @@ class DataProcessor private constructor(context: Context) {
 
     suspend fun createReadout(readout: Readout) = ardfRepository.createReadout(readout)
 
+    suspend fun saveReadoutAndResult(readout: Readout, punches: ArrayList<Punch>, result: Result) =
+        ardfRepository.saveReadoutAndResult(readout, punches, result)
+
     fun checkIfReadoutExistsBySI(siNumber: Int, eventId: UUID): Boolean {
         return runBlocking {
             return@runBlocking ardfRepository.checkIfReadoutExistsById(siNumber, eventId) > 0
         }
     }
 
-    suspend fun deleteReadout(id: UUID) {
-        ardfRepository.deleteReadout(id)
-        ardfRepository.deletePunchesByReadoutId(id)
-    }
+    suspend fun deleteReadout(id: UUID) = ardfRepository.deleteReadout(id)
 
     //PUNCHES
     suspend fun getPunchesByReadout(resultId: UUID) =
@@ -359,12 +316,22 @@ class DataProcessor private constructor(context: Context) {
     suspend fun processCardData(cardData: CardData, event: Event) =
         appContext.get()?.let { resultsProcessor?.processCardData(cardData, event, it) }
 
-
-    suspend fun deletePunchesForReadout(resultId: UUID) =
-        ardfRepository.deletePunchesByReadoutId(resultId)
-
-
     //RESULTS
+    private fun List<CompetitorData>.toResultDisplayWrappers(): List<ResultDisplayWrapper> {
+        // Transform each ReadoutData item into a ResultDisplayWrapper
+        return this.groupBy { it.competitorCategory.category }.map { result ->
+            ResultDisplayWrapper(
+                category = result.key,
+                subList = result.value.sortedWith(ResultDataComparator()).toMutableList()
+            )
+        }
+    }
+
+    fun getResultDataByEvent(eventId: UUID): Flow<List<ResultDisplayWrapper>> {
+        return ardfRepository.getCompetitorDataFlowByEvent(eventId).map { readoutDataList ->
+            readoutDataList.toResultDisplayWrappers()
+        }
+    }
 
     suspend fun getResultByCompetitor(competitorId: UUID) =
         ardfRepository.getResultByCompetitor(competitorId)
@@ -373,11 +340,10 @@ class DataProcessor private constructor(context: Context) {
     private suspend fun updateResultsForCategory(categoryId: UUID, delete: Boolean) =
         resultsProcessor?.updateResultsForCategory(categoryId, delete)
 
-    private suspend fun updateResultsForCompetitor(competitorId: UUID, delete: Boolean) =
+    private suspend fun updateResultsForCompetitor(competitorId: UUID) =
         resultsProcessor?.updateResultsForCompetitor(
             competitorId,
-            currentState.value?.currentEvent!!.id,
-            delete
+            currentState.value?.currentEvent!!.id
         )
 
     fun importCompetitors() {
@@ -448,6 +414,12 @@ class DataProcessor private constructor(context: Context) {
         return raceStatusStrings[raceStatus.value]
     }
 
+    fun raceStatusStringToEnum(string: String): RaceStatus {
+        val raceStatusStrings =
+            appContext.get()?.resources?.getStringArray(R.array.race_status_array)!!
+        return RaceStatus.getByValue(raceStatusStrings.indexOf(string))!!
+    }
+
     fun raceStatusToShortString(raceStatus: RaceStatus): String {
         val raceStatusStrings =
             appContext.get()?.resources?.getStringArray(R.array.race_status_array_short)!!
@@ -480,19 +452,18 @@ class DataProcessor private constructor(context: Context) {
 
     fun genderToString(gender: Boolean?): String {
         return when (gender) {
-            false -> appContext.get()!!.resources.getString(R.string.gender_man)
             true -> appContext.get()!!.resources.getString(R.string.gender_woman)
-            else -> appContext.get()!!.resources.getString(R.string.gender_not_specified)
+            else -> appContext.get()!!.resources.getString(R.string.gender_man)
         }
     }
 
-    fun genderFromString(string: String): Boolean? {
+    fun genderFromString(string: String): Boolean {
         val genderStrings =
             appContext.get()?.resources?.getStringArray(R.array.genders)!!
         return when (genderStrings.indexOf(string)) {
             0 -> false
             1 -> true
-            else -> null
+            else -> false
         }
     }
 }

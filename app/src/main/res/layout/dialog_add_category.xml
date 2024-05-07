@@ -69,7 +69,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberSigned"
-                    android:maxLength="4" />
+                    android:maxLength="3" />
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
@@ -114,7 +114,7 @@
         </LinearLayout>
 
         <CheckBox
-            android:id="@+id/category_dialog_same_type_checkbox"
+            android:id="@+id/category_dialog_same_properties_checkbox"
             style="@style/dialog_checkbox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

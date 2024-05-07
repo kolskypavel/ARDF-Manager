@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">ARDFManager</string>
+    <string name="title_events">Events</string>
     <string name="title_competitors">Competitors</string>
     <string name="title_categories">Categories</string>
     <string name="title_readouts">Readouts</string>
@@ -15,7 +16,6 @@
     <string name="gender">Gender</string>
     <string name="gender_man">Man</string>
     <string name="gender_woman">Woman</string>
-    <string name="gender_not_specified">Not specified</string>
     <string name="max_age">Maximal age</string>
     <string name="year_of_birth">Year of birth</string>
     <string name="band">Band</string>
@@ -29,6 +29,7 @@
     <string name="file_export">Export</string>
     <string name="file_preview">Preview</string>
     <string name="file_import_export_title">Import/Export data</string>
+
     <!--Event-->
     <string name="event_import_text">Import event from a file</string>
     <string name="event_toolbar_title">Events overview</string>
@@ -97,6 +98,7 @@
     <string name="club">Club</string>
     <string name="competitor_create">Create competitor</string>
     <string name="competitor_edit">Edit competitor</string>
+    <string name="competitor_duplicate">Duplicate competitor</string>
     <string name="competitor_delete">Delete competitor</string>
     <string name="competitor_delete_all">Delete all competitors</string>
     <string name="competitor_delete_confirmation">Do you really want to delete this competitor?</string>
@@ -146,6 +148,7 @@
     <string name="unknown_competitor">Unknown competitor!</string>
     <string name="points">Points</string>
     <string name="placement">Place</string>
+    <string name="readout_time">Readout time</string>
     <string name="readout_edit_readout">Edit readout</string>
     <string name="readout_print_ticket">Print ticket</string>
     <string name="readout_delete_readout">Delete readout</string>
@@ -179,8 +182,9 @@
     <string name="race_status_error_short" translatable="false">ERR</string>
 
 
-    <!--    Settings    -->
+    <!--    Preferences    -->
     <string name="preferences_general">General</string>
+    <string name="preferences_event">Event</string>
     <string name="preferences_results">Results</string>
     <string name="preferences_prints">Prints</string>
     <string name="preferences_help">Help</string>
@@ -234,7 +238,6 @@
     <string-array name="genders">
         <item>@string/gender_man</item>
         <item>@string/gender_woman</item>
-        <item>@string/gender_not_specified</item>
     </string-array>
 
     <string-array name="start_time_sources">

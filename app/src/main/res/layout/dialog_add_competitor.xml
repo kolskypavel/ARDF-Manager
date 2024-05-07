@@ -104,7 +104,6 @@
                 style="@style/dialog_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="0.6"
                 android:hint="@string/year_of_birth">
