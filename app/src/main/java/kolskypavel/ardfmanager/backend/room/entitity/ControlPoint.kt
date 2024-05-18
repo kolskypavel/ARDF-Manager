@@ -23,11 +23,11 @@ data class ControlPoint(
     @PrimaryKey var id: UUID,
     @ColumnInfo(name = "event_id") var eventId: UUID,
     @ColumnInfo(name = "category_id") var categoryId: UUID,
-    @ColumnInfo(name = "si_code") var siCode: Int?,
+    @ColumnInfo(name = "si_code") var siCode: Int,
+    @ColumnInfo(name = "order") var order: Int,
     @ColumnInfo(name = "name") var name: String?,
-    var order: Int,
-    var round: Int,
-    var points: Int,
-    var beacon: Boolean,
-    var separator: Boolean   //Separates rounds - S control
+    @ColumnInfo(name = "round") var round: Int,
+    @ColumnInfo(name = "points") var points: Int,
+    @ColumnInfo(name = "beacon") var beacon: Boolean,
+    @ColumnInfo(name = "separator") var separator: Boolean   //Separates rounds - S control){}
 ) : Serializable

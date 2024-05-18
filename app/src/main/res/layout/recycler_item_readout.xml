@@ -37,17 +37,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/readout_item_club" />
 
             <TextView
-                android:id="@+id/readout_item_placement"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                android:layout_marginTop="4dp"
-                android:gravity="start"
-                android:text="1."
-                app:layout_constraintStart_toEndOf="@+id/readout_title_place"
-                app:layout_constraintTop_toBottomOf="@+id/readout_title_category" />
-
-            <TextView
                 android:id="@+id/readout_item_competitor"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -123,16 +112,6 @@
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/readout_title_club" />
-
-            <TextView
-                android:id="@+id/readout_title_place"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="@string/placement"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/readout_title_category" />
 
             <TextView
                 android:id="@+id/readout_title_si_number"

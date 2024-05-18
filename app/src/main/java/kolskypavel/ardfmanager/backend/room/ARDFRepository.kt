@@ -40,7 +40,7 @@ class ARDFRepository private constructor(context: Context) {
     fun getCategoriesForEvent(eventId: UUID): List<Category> =
         eventDatabase.categoryDao().getCategoriesForEvent(eventId)
 
-    suspend fun getCategory(id: UUID) = eventDatabase.categoryDao().getCategory(id)
+    suspend fun getCategory(id: UUID?) = eventDatabase.categoryDao().getCategory(id)
 
     suspend fun getCategoryByName(name: String, eventId: UUID) =
         eventDatabase.categoryDao().getCategoryByName(name, eventId)
@@ -84,6 +84,9 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
         eventDatabase.competitorDao().getCompetitorBySINumber(siNumber, eventId)
 
+    suspend fun getHighestStartNumberByEvent(eventId: UUID) =
+        eventDatabase.competitorDao().getHighestStartNumberByEvent(eventId)
+
     fun getCompetitorFlowByEvent(eventId: UUID): Flow<List<Competitor>> =
         eventDatabase.competitorDao().getCompetitorFlowByEvent(eventId)
 
@@ -121,8 +124,6 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun getReadoutsByCompetitor(competitorId: UUID): Readout? =
         eventDatabase.readoutDao().getReadoutByCompetitor(competitorId)
 
-    suspend fun getReadouts(id: UUID) = eventDatabase.readoutDao().getReadout(id)
-
     suspend fun createReadout(readout: Readout) =
         eventDatabase.readoutDao().createReadout(readout)
 
@@ -130,6 +131,9 @@ class ARDFRepository private constructor(context: Context) {
         eventDatabase.readoutDao().checkIfReadoutExistsById(siNumber, eventId)
 
     suspend fun deleteReadout(id: UUID) = eventDatabase.readoutDao().deleteReadout(id)
+
+    suspend fun deleteReadoutForCompetitor(competitorId: UUID) =
+        eventDatabase.readoutDao().deleteReadoutByCompetitor(competitorId)
 
     //PUNCHES
     suspend fun createPunch(punch: Punch) = eventDatabase.punchDao().createPunch(punch)
@@ -160,6 +164,7 @@ class ARDFRepository private constructor(context: Context) {
             eventDatabase.resultDao().createResult(result)
         }
     }
+
 
     //Singleton instantiation
     companion object {

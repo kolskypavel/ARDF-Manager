@@ -152,8 +152,8 @@ class SelectedEventViewModel : ViewModel() {
                 UUID.randomUUID(),
                 dataProcessor.getCurrentEvent().id,
                 categoryId,
-                null,
-                null, 0, 0, 1,
+                -1,
+                0, null, 0, 1,
                 beacon = false, separator = false
             )
         )
@@ -192,8 +192,13 @@ class SelectedEventViewModel : ViewModel() {
             )
         }
 
-    fun deleteCompetitor(competitorId: UUID) =
-        CoroutineScope(Dispatchers.IO).launch { dataProcessor.deleteCompetitor(competitorId) }
+    fun deleteCompetitor(competitorId: UUID, deleteReadout: Boolean) =
+        CoroutineScope(Dispatchers.IO).launch {
+            dataProcessor.deleteCompetitor(
+                competitorId,
+                deleteReadout
+            )
+        }
 
     fun deleteAllCompetitors() =
         CoroutineScope(Dispatchers.IO).launch {
@@ -286,9 +291,9 @@ class SelectedEventViewModel : ViewModel() {
         }
     }
 
-    fun getPunchesByResult(resultId: UUID): List<Punch> {
+    fun getPunchesByReadout(readoutId: UUID): List<Punch> {
         return runBlocking {
-            return@runBlocking dataProcessor.getPunchesByReadout(resultId)
+            return@runBlocking dataProcessor.getPunchesByReadout(readoutId)
         }
     }
 

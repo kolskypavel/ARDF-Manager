@@ -9,7 +9,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
 
 class ResultsFragmentRecyclerViewAdapter(
@@ -45,7 +47,13 @@ class ResultsFragmentRecyclerViewAdapter(
             holder.apply {
                 if (dataList.category != null) {
                     categoryName.text =
-                        dataList.category.name + " (" + dataList.category.controlPointsCodes + ")"
+                        "${dataList.category.name} (${
+                            dataList.subList.size
+                        } ${
+                            categoryName.context.getString(
+                                R.string.title_competitors
+                            ).lowercase()
+                        })"
                 } else {
                     categoryName.text = context.getText(R.string.no_category)
                 }
@@ -53,7 +61,7 @@ class ResultsFragmentRecyclerViewAdapter(
                     expandButton.visibility = View.VISIBLE
 
                     //Set on click expansion + icon
-                    expandButton.setOnClickListener {
+                   holder.itemView.setOnClickListener {
                         if (dataList.isExpanded) {
                             expandButton.setImageResource(R.drawable.ic_expand)
                         } else {
@@ -70,19 +78,36 @@ class ResultsFragmentRecyclerViewAdapter(
 
             holder.apply {
                 val singleResult = dataList.subList.first()
-//                competitorPlace.text =
+
+                //Set the competitor place
+                if (singleResult.readoutResult != null) {
+                    val res = singleResult.readoutResult!!.result
+                    competitorPlace.text =
+                        if (res.raceStatus == RaceStatus.VALID && res.place != null) {
+                            res.place.toString()
+                        } else {
+                            dataProcessor.raceStatusToShortString(res.raceStatus)
+                        }
+                } else {
+                    competitorPlace.text = "-"
+                }
+
                 competitorName.text =
                     " ${singleResult.competitorCategory.competitor.lastName.uppercase()} ${singleResult.competitorCategory.competitor.firstName}"
                 competitorClub.text =
                     singleResult.competitorCategory.competitor.club.ifEmpty {
                         "-"
                     }
-//                    competitorTime.text =
-//                        dataProcessor.durationToString(singleResult.readout?.runTime!!)
-//                    competitorPoints.text = singleResult.result?.points.toString()
-                competitorPoints.text =
+                competitorTime.text = if (singleResult.readoutResult != null) {
+                    TimeProcessor.durationToMinuteString(singleResult.readoutResult!!.result.runTime)
+                } else {
+                    "-"
+                }
+                competitorPoints.text = if (singleResult.readoutResult?.result?.points != null) {
                     singleResult.readoutResult?.result?.points.toString()
-
+                } else {
+                    "-"
+                }
             }
         }
     }

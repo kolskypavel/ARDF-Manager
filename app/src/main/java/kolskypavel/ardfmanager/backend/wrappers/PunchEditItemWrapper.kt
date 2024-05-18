@@ -23,7 +23,11 @@ data class PunchEditItemWrapper(
         }
 
         fun getPunches(punchEditItemWrappers: ArrayList<PunchEditItemWrapper>): ArrayList<Punch> {
-            return ArrayList(punchEditItemWrappers.map { it.punch })
+            val punches = ArrayList<Punch>()
+            punchEditItemWrappers.forEach { wrapper ->
+                punches.add(wrapper.punch)
+            }
+            return punches
         }
     }
 }

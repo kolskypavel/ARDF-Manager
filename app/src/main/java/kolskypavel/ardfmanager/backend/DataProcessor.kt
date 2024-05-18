@@ -122,7 +122,7 @@ class DataProcessor private constructor(context: Context) {
     //CATEGORIES
     fun getCategoriesForEvent(eventId: UUID) = ardfRepository.getCategoriesFlowForEvent(eventId)
 
-    suspend fun getCategory(id: UUID) = ardfRepository.getCategory(id)
+    suspend fun getCategory(id: UUID?) = ardfRepository.getCategory(id)
 
     suspend fun getCategoryByName(string: String, eventId: UUID) =
         ardfRepository.getCategoryByName(string, eventId)
@@ -180,9 +180,10 @@ class DataProcessor private constructor(context: Context) {
         ardfRepository.getControlPointByCode(eventId, code)
 
 
-    fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): Pair<String, String> =
-        resultsProcessor!!.getCodesNameFromControlPoints(controlPoints)
-
+    fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): Pair<String, String> {
+        return Pair("", "")
+        //    ResultsProcessor.getCodesNameFromControlPoints(controlPoints)
+    }
 
     //COMPETITORS
     fun getCompetitorFlowForEvent(eventId: UUID) =
@@ -201,36 +202,39 @@ class DataProcessor private constructor(context: Context) {
 
     suspend fun getStatisticsByEvent(eventId: UUID): StatisticsWrapper {
         val competitors = ardfRepository.getCompetitorDataByEvent(eventId)
-        val statistics = StatisticsWrapper(competitors.size, 0, competitors.size, 0)
+        val statistics = StatisticsWrapper(competitors.size, 0, 0, 0)
 
         for (cd in competitors) {
             val competitor = cd.competitorCategory.competitor
             val category = cd.competitorCategory.category
-            if (competitor.drawnRelativeStartTime != null) {
-                //Count started
-                if (TimeProcessor.hasStarted(
-                        getCurrentEvent().startDateTime,
-                        competitor.drawnRelativeStartTime!!,
-                        LocalDateTime.now()
-                    )
-                ) {
-                    statistics.startedCompetitors++
-                }
-                val limit = category?.timeLimit ?: getCurrentEvent().timeLimit
 
-                if (cd.readoutResult == null) {
-                    if (!TimeProcessor.isInLimit(
+            if (cd.readoutResult == null) {
+                if (competitor.drawnRelativeStartTime != null) {
+                    //Count started
+                    if (TimeProcessor.hasStarted(
+                            getCurrentEvent().startDateTime,
+                            competitor.drawnRelativeStartTime!!,
+                            LocalDateTime.now()
+                        )
+                    ) {
+                        statistics.startedCompetitors++
+                    }
+
+                    val limit = category?.timeLimit ?: getCurrentEvent().timeLimit
+                    if (TimeProcessor.isInLimit(
                             getCurrentEvent().startDateTime,
                             competitor.drawnRelativeStartTime!!,
                             limit, LocalDateTime.now()
                         )
                     ) {
-                        statistics.inLimitCompetitors--
+                        statistics.inLimitCompetitors++
                     }
-                } else {
-                    statistics.finishedCompetitors++
                 }
+            } else {
+                statistics.startedCompetitors++
+                statistics.finishedCompetitors++
             }
+
         }
         return statistics
     }
@@ -246,6 +250,9 @@ class DataProcessor private constructor(context: Context) {
             return@runBlocking ardfRepository.checkIfStartNumberExists(startNumber, eventId) > 0
         }
     }
+
+    suspend fun getHighestStartNumberByEvent(eventId: UUID) =
+        ardfRepository.getHighestStartNumberByEvent(eventId)
 
     suspend fun createOrUpdateCompetitor(
         competitor: Competitor,
@@ -267,9 +274,12 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    suspend fun deleteCompetitor(id: UUID) {
+    suspend fun deleteCompetitor(id: UUID, deleteReadout: Boolean) {
         ardfRepository.deleteCompetitor(id)
         // TODO: solve the removal of the readout
+        if (deleteReadout) {
+            ardfRepository.deleteReadoutForCompetitor(id)
+        }
     }
 
     suspend fun deleteAllCompetitors(eventId: UUID) {
@@ -301,8 +311,8 @@ class DataProcessor private constructor(context: Context) {
     suspend fun deleteReadout(id: UUID) = ardfRepository.deleteReadout(id)
 
     //PUNCHES
-    suspend fun getPunchesByReadout(resultId: UUID) =
-        ardfRepository.getPunchesByReadout(resultId)
+    suspend fun getPunchesByReadout(readoutId: UUID) =
+        ardfRepository.getPunchesByReadout(readoutId)
 
     suspend fun getPunchesByCompetitor(competitorId: UUID) =
         ardfRepository.getPunchesByCompetitor(competitorId)
@@ -317,21 +327,7 @@ class DataProcessor private constructor(context: Context) {
         appContext.get()?.let { resultsProcessor?.processCardData(cardData, event, it) }
 
     //RESULTS
-    private fun List<CompetitorData>.toResultDisplayWrappers(): List<ResultDisplayWrapper> {
-        // Transform each ReadoutData item into a ResultDisplayWrapper
-        return this.groupBy { it.competitorCategory.category }.map { result ->
-            ResultDisplayWrapper(
-                category = result.key,
-                subList = result.value.sortedWith(ResultDataComparator()).toMutableList()
-            )
-        }
-    }
-
-    fun getResultDataByEvent(eventId: UUID): Flow<List<ResultDisplayWrapper>> {
-        return ardfRepository.getCompetitorDataFlowByEvent(eventId).map { readoutDataList ->
-            readoutDataList.toResultDisplayWrappers()
-        }
-    }
+    fun getResultDataByEvent(eventId: UUID) = resultsProcessor!!.getResultDataByEvent(eventId)
 
     suspend fun getResultByCompetitor(competitorId: UUID) =
         ardfRepository.getResultByCompetitor(competitorId)

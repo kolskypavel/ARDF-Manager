@@ -73,13 +73,38 @@
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
 
-
             <com.google.android.material.textfield.TextInputLayout
 
                 style="@style/dialog_textView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:hint="@string/year_of_birth">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/competitor_dialog_year_of_birth"
+                    style="@style/dialog_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberSigned"
+                    android:maxLength="4" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+
+                style="@style/dialog_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="0.6"
                 android:hint="@string/index_callsign">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -91,31 +116,7 @@
                     android:maxLength="8"
                     android:maxLines="1" />
             </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-
-            <com.google.android.material.textfield.TextInputLayout
-
-                style="@style/dialog_textView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_weight="0.6"
-                android:hint="@string/year_of_birth">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/competitor_dialog_year_of_birth"
-                    style="@style/dialog_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberSigned"
-                    android:maxLength="4" />
-            </com.google.android.material.textfield.TextInputLayout>
 
             <CheckBox
                 android:id="@+id/competitor_dialog_woman_checkbox"

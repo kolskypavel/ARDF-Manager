@@ -32,7 +32,7 @@ class PunchRecyclerViewAdapter(
     override fun onBindViewHolder(holder: PunchViewHolder, position: Int) {
         val item = values[position]
 
-        holder.punchRealTime.text = item.siTime!!.getTime().toString()
+        holder.punchRealTime.text = item.siTime.getTimeString()
         holder.punchSplit.text = item.split?.let { TimeProcessor.durationToMinuteString(it) }
 
         //Set the fields, based on the type of the punch

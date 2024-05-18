@@ -29,7 +29,9 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.comparators.CompetitorCategoryComparator
 import kolskypavel.ardfmanager.backend.comparators.CompetitorClubComparator
 import kolskypavel.ardfmanager.backend.comparators.CompetitorNameComparator
+import kolskypavel.ardfmanager.backend.comparators.CompetitorSINumberComparator
 import kolskypavel.ardfmanager.backend.comparators.CompetitorStartNumComparator
+import kolskypavel.ardfmanager.backend.comparators.CompetitorStartTimeComparator
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
@@ -155,10 +157,11 @@ class CompetitorFragment : Fragment() {
                     )
 
                 //Set comparators
-                competitorTableView.setColumnComparator(0, CompetitorNameComparator())
-                competitorTableView.setColumnComparator(1, CompetitorStartNumComparator())
+                competitorTableView.setColumnComparator(0, CompetitorStartNumComparator())
+                competitorTableView.setColumnComparator(1, CompetitorNameComparator())
                 competitorTableView.setColumnComparator(2, CompetitorClubComparator())
                 competitorTableView.setColumnComparator(3, CompetitorCategoryComparator())
+                competitorTableView.setColumnComparator(4, CompetitorSINumberComparator())
 
             }
 
@@ -171,6 +174,11 @@ class CompetitorFragment : Fragment() {
                         R.string.category,
                         R.string.si_number
                     )
+                competitorTableView.setColumnComparator(0, CompetitorStartNumComparator())
+                competitorTableView.setColumnComparator(1, CompetitorStartTimeComparator())
+                competitorTableView.setColumnComparator(2, CompetitorNameComparator())
+                competitorTableView.setColumnComparator(3, CompetitorCategoryComparator())
+                competitorTableView.setColumnComparator(4, CompetitorSINumberComparator())
             }
 
             CompetitorTableDisplayType.FINISH_REACHED -> {
@@ -196,6 +204,9 @@ class CompetitorFragment : Fragment() {
                         R.string.run_time,
                         R.string.competitor_to_limit,
                     )
+                for (i in 1..5) {
+                    competitorTableView.setColumnComparator(i, null)
+                }
             }
         }
 
@@ -267,15 +278,15 @@ class CompetitorFragment : Fragment() {
     }
 
     private fun confirmCompetitorDeletion(competitor: Competitor) {
-        //TODO: Add prompt for readout removal
         val builder = AlertDialog.Builder(context)
         builder.setTitle(getString(R.string.competitor_delete))
         val message =
             "${getString(R.string.competitor_delete_confirmation)} ${competitor.firstName} ${competitor.lastName}"
         builder.setMessage(message)
 
+        //TODO: Fix the readout removal
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            selectedEventViewModel.deleteCompetitor(competitor.id)
+            selectedEventViewModel.deleteCompetitor(competitor.id, false)
             dialog.dismiss()
         }
 

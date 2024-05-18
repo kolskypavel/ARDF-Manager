@@ -17,7 +17,7 @@ interface CategoryDao {
     fun getCategoriesForEvent(eventId: UUID): List<Category>
 
     @Query("SELECT * FROM category WHERE id=(:id) LIMIT 1")
-    suspend fun getCategory(id: UUID): Category
+    suspend fun getCategory(id: UUID?): Category
 
     @Query("SELECT * FROM category WHERE name=(:name) AND event_id = (:eventId) LIMIT 1")
     suspend fun getCategoryByName(name: String, eventId: UUID): Category?

@@ -163,14 +163,13 @@ class ReadoutFragment : Fragment() {
                 }
 
                 limitTextView.text =
-                    "${statistics.inLimitCompetitors}/${
-                        statistics.competitors - statistics.inLimitCompetitors
-                    }/${statistics.competitors}"
-                limitProgressBar.progress = if (statistics.inLimitCompetitors != 0) {
-                    ((statistics.inLimitCompetitors / statistics.competitors.toDouble()) * 100).toInt()
-                } else {
-                    0
-                }
+                    "${statistics.inLimitCompetitors}/${statistics.startedCompetitors - statistics.finishedCompetitors}"
+                limitProgressBar.progress =
+                    if (statistics.startedCompetitors - statistics.finishedCompetitors != 0) {
+                        ((statistics.inLimitCompetitors / (statistics.startedCompetitors - statistics.finishedCompetitors).toDouble()) * 100).toInt()
+                    } else {
+                        100
+                    }
                 delay(3000)
             }
         }

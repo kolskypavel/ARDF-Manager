@@ -12,6 +12,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import java.util.UUID
 
@@ -71,11 +72,11 @@ class ReadoutDetailFragment : Fragment() {
         }
 
         if (readoutDetail.competitorCategory?.competitor != null) {
-            clubView.text = readoutDetail.competitorCategory!!.competitor!!.club
+            clubView.text = readoutDetail.competitorCategory!!.competitor.club
             indexView.text = readoutDetail.competitorCategory!!.competitor.index
             competitorNameView.text =
                 "${readoutDetail.competitorCategory!!.competitor.firstName} ${readoutDetail.competitorCategory!!.competitor?.lastName}"
-            //    pointsView.text = readoutDetail.result!!.points.toString()
+            pointsView.text = readoutDetail.readoutResult.result.points.toString()
         } else {
             competitorNameView.text = getText(R.string.unknown_competitor)
             pointsView.text = getText(R.string.unknown)
@@ -91,9 +92,13 @@ class ReadoutDetailFragment : Fragment() {
             categoryView.text = getText(R.string.unknown)
         }
 
-        siNumberView.text = readoutDetail.readoutResult.readout.siNumber.toString()
-//        runTimeView.text =
-//            readoutDetail.readout!!.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
+        siNumberView.text = if (readoutDetail.readoutResult.readout.siNumber != null) {
+            readoutDetail.readoutResult.readout.siNumber.toString()
+        } else {
+            "-"
+        }
+        runTimeView.text =
+            TimeProcessor.durationToMinuteString(readoutDetail.readoutResult.result.runTime)
 
         placeView.text = getText(R.string.unknown) //TODO: Place
 
@@ -127,9 +132,8 @@ class ReadoutDetailFragment : Fragment() {
         }
     }
 
-    private fun setRecyclerViewAdapter(resultId: UUID) {
-
-        val punches = selectedEventViewModel.getPunchesByResult(resultId)
+    private fun setRecyclerViewAdapter(readoutId: UUID) {
+        val punches = selectedEventViewModel.getPunchesByReadout(readoutId)
         punchRecyclerView.adapter = PunchRecyclerViewAdapter(punches, requireContext())
 
     }

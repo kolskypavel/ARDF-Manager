@@ -9,8 +9,8 @@ import java.util.UUID
 @Dao
 interface PunchDao {
 
-    @Query("SELECT * FROM punch WHERE readout_id= (:resultId) ORDER BY `order` ASC")
-    suspend fun getPunchesByReadout(resultId: UUID): List<Punch>
+    @Query("SELECT * FROM punch WHERE readout_id= (:readoutId) ORDER BY `order` ASC")
+    suspend fun getPunchesByReadout(readoutId: UUID): List<Punch>
 
     @Query("SELECT * FROM punch WHERE competitor_id = (:competitorId)")
     suspend fun getPunchesByCompetitor(competitorId: UUID): List<Punch>

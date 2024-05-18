@@ -64,9 +64,9 @@ class ControlPointRecyclerViewAdapter(
                         UUID.randomUUID(),
                         eventId,
                         categoryId,
-                        null,
-                        null,
+                        -1,
                         item.controlPoint.order++,
+                        null,
                         0,
                         1,
                         beacon = false,
@@ -161,7 +161,7 @@ class ControlPointRecyclerViewAdapter(
                 values[position].isCodeValid = false
             }
         } else {
-            values[position].controlPoint.siCode = null
+            values[position].controlPoint.siCode = -1
             values[position].isCodeValid = false
         }
     }

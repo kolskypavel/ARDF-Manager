@@ -133,6 +133,9 @@ class PunchEditRecyclerViewAdapter(
             if (code >= SIConstants.SI_MIN_CODE && code <= SIConstants.SI_MAX_CODE) {
                 values[position].punch.siCode = code
                 values[position].isCodeValid = true
+            } else {
+                values[position].isCodeValid = false
+                return false
             }
         } catch (e: Exception) {
             values[position].isCodeValid = false

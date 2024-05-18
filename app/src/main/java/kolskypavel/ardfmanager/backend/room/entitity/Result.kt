@@ -3,6 +3,7 @@ package kolskypavel.ardfmanager.backend.room.entitity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import java.io.Serializable
@@ -20,7 +21,7 @@ import java.util.UUID
 data class Result(
     @PrimaryKey var id: UUID,
     @ColumnInfo(name = "readout_id") var readoutId: UUID,
-    @ColumnInfo(name = "category_id") var categoryId: UUID?,
+    @ColumnInfo(name = "category_id") var categoryId: UUID? = null,
     @ColumnInfo(name = "competitor_id") var competitorID: UUID? = null,
     var automaticStatus: Boolean,
     @ColumnInfo(name = "race_status") var raceStatus: RaceStatus,
@@ -28,6 +29,8 @@ data class Result(
     @ColumnInfo(name = "run_time") var runTime: Duration,
 
     ) : Serializable, Comparable<Result> {
+    @Ignore
+    var place: Int? = null
     override operator fun compareTo(other: Result): Int {
 
         //Compare race status

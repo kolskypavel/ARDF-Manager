@@ -16,10 +16,15 @@ class SITime(
 
     private var seconds: Long = 0
 
-    constructor() : this(LocalTime.MIDNIGHT)
+    constructor() : this(LocalTime.MIDNIGHT, 0, 0)
+    constructor(time: LocalTime) : this() {
+        this.time = time
+        calculateSeconds()
+    }
 
     private fun calculateSeconds() {
-        seconds += week * SIConstants.SECONDS_WEEK + dayOfWeek * SIConstants.SECONDS_DAY + time.toSecondOfDay()
+        this.seconds =
+            week * SIConstants.SECONDS_WEEK + dayOfWeek * SIConstants.SECONDS_DAY + time.toSecondOfDay()
     }
 
     override fun toString(): String {
@@ -27,7 +32,7 @@ class SITime(
     }
 
     fun addHalfDay() {
-        time = time.plusHours(12)
+        this.time = time.plusHours(12)
         calculateSeconds()
     }
 
@@ -36,22 +41,24 @@ class SITime(
     fun getDayOfWeek() = dayOfWeek
     fun getWeek() = week
 
+    fun getSeconds() = seconds
+
     fun getTimeString(): String {
-        return time.format(DateTimeFormatter.ofPattern("hh:mm:ss"))
+        return time.format(DateTimeFormatter.ofPattern("HH:mm:ss"))
     }
 
     fun setTime(newTime: LocalTime) {
-        time = newTime
+        this.time = newTime
         calculateSeconds()
     }
 
     fun setDayOfWeek(newDayOfWeek: Int) {
-        dayOfWeek = newDayOfWeek
+        this.dayOfWeek = newDayOfWeek
         calculateSeconds()
     }
 
     fun setWeek(newWeek: Int) {
-        week = newWeek
+        this.week = newWeek
         calculateSeconds()
     }
 

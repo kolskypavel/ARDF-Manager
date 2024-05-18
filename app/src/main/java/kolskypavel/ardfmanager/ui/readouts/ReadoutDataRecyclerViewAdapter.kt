@@ -10,6 +10,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 
 class ReadoutDataRecyclerViewAdapter(
@@ -48,26 +49,27 @@ class ReadoutDataRecyclerViewAdapter(
         holder.siNumberView.text = if (item.readoutResult.readout.siNumber != null) {
             item.readoutResult.readout.siNumber.toString()
         } else {
-            context.getString(R.string.unknown)
+            "-"
         }
-//        holder.runTimeView.text =
-//            item.readout!!.runTime?.let { dataProcessor.durationToString(it) }.orEmpty()
-        holder.placementView.text = ""
+        holder.runTimeView.text = "${
+            TimeProcessor.durationToMinuteString(item.readoutResult.result.runTime)
+        } (${dataProcessor.raceStatusToShortString(item.readoutResult.result.raceStatus)})"
 
         //Set the start + finish + readout time
         holder.startTimeView.text = if (item.readoutResult.readout.startTime != null) {
-            item.readoutResult.readout.startTime.toString()
+            item.readoutResult.readout.startTime!!.getTime().toString()
         } else {
             context.getString(R.string.unknown)
         }
 
         holder.finishTimeView.text = if (item.readoutResult.readout.finishTime != null) {
-            item.readoutResult.readout.finishTime.toString()
+            item.readoutResult.readout.finishTime!!.getTime().toString()
         } else {
             context.getString(R.string.unknown)
         }
 
-        holder.readoutTimeView.text = item.readoutResult.readout.readoutTime.toString()
+        holder.readoutTimeView.text =
+            item.readoutResult.readout.readoutTime.toLocalTime().toString()
 
         //Set readout detail navigation
         holder.itemView.setOnClickListener {
@@ -110,7 +112,6 @@ class ReadoutDataRecyclerViewAdapter(
         var finishTimeView: TextView = view.findViewById(R.id.readout_item_finish_time)
         var readoutTimeView: TextView = view.findViewById(R.id.readout_item_readout_time)
         var categoryView: TextView = view.findViewById(R.id.readout_item_category)
-        var placementView: TextView = view.findViewById(R.id.readout_item_placement)
         var moreBtn: ImageButton = view.findViewById(R.id.readout_item_more_btn)
     }
 }

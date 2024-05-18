@@ -101,7 +101,6 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         startNumberTextView = view.findViewById(R.id.competitor_dialog_start_number)
         siRentCheckBox = view.findViewById(R.id.competitor_dialog_si_rent)
 
-
         editPunchesSwitch = view.findViewById(R.id.competitor_dialog_edit_punches)
         dataEditLinearLayout = view.findViewById(R.id.competitor_dialog_data_edit_layout)
         raceStatusPicker = view.findViewById(R.id.competitor_dialog_status)
@@ -117,24 +116,28 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private fun populateFields() {
         if (args.create) {
             dialog?.setTitle(R.string.competitor_create)
+
+            val event = selectedEventViewModel.getCurrentEvent()
+            val startNumber = runBlocking {
+                return@runBlocking dataProcessor.getHighestStartNumberByEvent(event.id)
+            } + 1
+
             competitor = Competitor(
                 UUID.randomUUID(),
-                selectedEventViewModel.event.value!!.id,
+                event.id,
                 null,
                 "", "", "", "",
                 false,
                 LocalDate.now().year,
                 null,
                 siRent = false,
-                0,
+                startNumber,
                 null
             )
             categoryPicker.setText(getString(R.string.no_category), false)
         } else {
             dialog?.setTitle(R.string.competitor_edit)
             competitor = args.competitor!!
-            origSiNumber = competitor.siNumber
-            origCategory = competitor.categoryId
 
             firstNameTextView.setText(competitor.firstName)
             lastNameTextView.setText(competitor.lastName)
@@ -146,6 +149,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
             if (competitor.siNumber != null) {
                 siNumberTextView.setText(competitor.siNumber.toString())
             }
+            startNumberTextView.setText(competitor.startNumber.toString())
 
             //Auto insertion of the last card read
             siNumberLayout.setEndIconOnClickListener {
@@ -187,6 +191,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
             ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, categoryArr)
 
         categoryPicker.setAdapter(categoriesAdapter)
+        startNumberTextView.setText(competitor.startNumber.toString())
 
         womanCheckBox.setOnCheckedChangeListener { _, checked ->
             competitor.isWoman = checked
@@ -278,7 +283,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private fun setButtons() {
 
         okButton.setOnClickListener {
-            if (validateFields(competitor.siNumber)) {
+            if (validateFields(competitor.siNumber, competitor.startNumber)) {
                 competitor.firstName = firstNameTextView.text.toString()
                 competitor.lastName = lastNameTextView.text.toString()
                 competitor.club = clubTextView.text.toString()
@@ -338,7 +343,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         }
     }
 
-    private fun validateFields(origSiNumber: Int?): Boolean {
+    private fun validateFields(origSiNumber: Int?, origStartNumber: Int): Boolean {
         var valid = true
 
         if (firstNameTextView.text.toString().isBlank()) {
@@ -395,7 +400,10 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         if (startNumberTextView.text.toString().isNotEmpty()) {
             try {
                 val startNumber = startNumberTextView.text.toString().toInt()
-                if (selectedEventViewModel.checkIfStartNumberExists(startNumber)) {
+                if (startNumber != origStartNumber && selectedEventViewModel.checkIfStartNumberExists(
+                        startNumber
+                    )
+                ) {
                     valid = false
                     startNumberTextView.error =
                         getString(R.string.duplicate)
@@ -405,6 +413,9 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 valid = false
                 startNumberTextView.error = getString(R.string.invalid)
             }
+        } else {
+            valid = false
+            startNumberTextView.error = getString(R.string.required)
         }
 
         //Check the start time

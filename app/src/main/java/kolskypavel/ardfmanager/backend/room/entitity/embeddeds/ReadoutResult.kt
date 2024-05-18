@@ -10,5 +10,5 @@ data class ReadoutResult(
     @Relation(
         entityColumn = "readout_id",
         parentColumn = "id"
-    ) var result: Result
+    ) var result: Result,
 )

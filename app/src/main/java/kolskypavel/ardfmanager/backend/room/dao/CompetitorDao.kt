@@ -31,6 +31,9 @@ interface CompetitorDao {
     @Query("SELECT * FROM competitor WHERE si_number=(:siNumber) AND event_id = (:eventId) LIMIT 1")
     suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor?
 
+    @Query("SELECT start_number FROM competitor WHERE event_id=(:eventId) ORDER BY start_number DESC LIMIT 1 ")
+    suspend fun getHighestStartNumberByEvent(eventId: UUID): Int
+
     @Query("SELECT * FROM competitor WHERE category_id=(:categoryId)")
     fun getCompetitorsByCategory(categoryId: UUID): List<Competitor>
 
@@ -39,8 +42,9 @@ interface CompetitorDao {
 
     @Query("SELECT COUNT(*) FROM competitor WHERE start_number=(:startNumber) AND event_id =(:eventId)  LIMIT 1")
     suspend fun checkIfStartNumberExists(startNumber: Int, eventId: UUID): Int
-    @Upsert
-    suspend fun createCompetitor(competitor: Competitor)
+
+    @Upsert(entity = Competitor::class)
+    fun createCompetitor(competitor: Competitor)
 
     @Query("DELETE FROM competitor WHERE id =(:id)")
     suspend fun deleteCompetitor(id: UUID)

@@ -30,6 +30,9 @@ interface ReadoutDao {
     @Query("DELETE FROM readout WHERE id =(:id) ")
     suspend fun deleteReadout(id: UUID)
 
+    @Query("DELETE FROM readout WHERE competitor_id =(:competitorId) ")
+    suspend fun deleteReadoutByCompetitor(competitorId: UUID)
+
     @Query("SELECT COUNT(*) from readout WHERE si_number=(:siNumber) AND event_id= (:eventId)")
     suspend fun checkIfReadoutExistsById(siNumber: Int, eventId: UUID): Int
 }
