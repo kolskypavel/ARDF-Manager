@@ -24,6 +24,7 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.databinding.FragmentCategoriesBinding
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment
@@ -94,6 +95,7 @@ class CategoryFragment : Fragment() {
 
         when (menuItem.itemId) {
             R.id.category_menu_import_file -> {
+                findNavController().navigate(CategoryFragmentDirections.importExportCategories())
                 return true
             }
 
@@ -148,13 +150,16 @@ class CategoryFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 selectedEventViewModel.categories.collect { categories ->
                     categoryRecyclerView.adapter =
-                        CategoryRecyclerViewAdapter(categories, { action, position, category ->
-                            recyclerViewContextMenuActions(
-                                action,
-                                position,
-                                category
-                            )
-                        }, requireContext())
+                        CategoryRecyclerViewAdapter(
+                            categories, { action, position, categoryData ->
+                                recyclerViewContextMenuActions(
+                                    action,
+                                    position,
+                                    categoryData
+                                )
+                            }, requireContext(),
+                            selectedEventViewModel
+                        )
                 }
             }
         }
@@ -167,7 +172,7 @@ class CategoryFragment : Fragment() {
         builder.setMessage(message)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            selectedEventViewModel.deleteCategory(category.id)
+            selectedEventViewModel.deleteCategory(category.id, category.eventId)
             dialog.dismiss()
         }
 
@@ -177,18 +182,22 @@ class CategoryFragment : Fragment() {
         builder.show()
     }
 
-    private fun recyclerViewContextMenuActions(action: Int, position: Int, category: Category) {
+    private fun recyclerViewContextMenuActions(
+        action: Int,
+        position: Int,
+        categoryData: CategoryData
+    ) {
         when (action) {
             0 -> findNavController().navigate(
                 CategoryFragmentDirections.modifyCategory(
                     false,
                     position,
-                    category
+                    categoryData.category
                 )
             )
 
-            1 -> {}
-            2 -> confirmCategoryDeletion(category)
+            1 -> selectedEventViewModel.duplicateCategory(categoryData)
+            2 -> confirmCategoryDeletion(categoryData.category)
         }
     }
 

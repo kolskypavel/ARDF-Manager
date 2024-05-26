@@ -5,7 +5,7 @@ import kolskypavel.ardfmanager.backend.sportident.SITime
 import org.junit.Test
 import java.time.LocalTime
 
-class SITimeUnitTest {
+class SITimeUnitTests {
 
     @Test
     fun checkBasicSeconds() {

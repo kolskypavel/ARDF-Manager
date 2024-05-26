@@ -54,8 +54,8 @@ object CSVProcessor {
                                         event.eventType,
                                         event.timeLimit,
                                         event.startTimeSource,
-                                        event.finishTimeSource, "", 
-                                        0F, 0F, 0
+                                        event.finishTimeSource, 0F,
+                                        0F, 0
                                     )
                                 categories[row[3]] = category
                             }

@@ -102,6 +102,8 @@ class CategoryCreateDialogFragment : DialogFragment() {
         val event = selectedEventViewModel.getCurrentEvent()
 
         if (args.create) {
+            val order = selectedEventViewModel.getHighestCategoryOrder(event.id) + 1
+
             dialog?.setTitle(R.string.category_create)
             category = Category(
                 UUID.randomUUID(),
@@ -113,10 +115,9 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 event.timeLimit,
                 event.startTimeSource,
                 event.finishTimeSource,
-                "",
                 0F,
                 0F,
-                0
+                order
             )
 
             //Preset the data from the event
@@ -160,7 +161,13 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 dataProcessor.eventTypeToString(category.eventType ?: event.eventType),
                 false
             )
-            limitEditText.setText(category.timeLimit?.toMinutes().toString())
+            limitEditText.setText(
+                if (category.timeLimit != null) {
+                    category.timeLimit!!.toMinutes().toString()
+                } else {
+                    event.timeLimit.toMinutes().toString()
+                }
+            )
             startTimeSourcePicker.setText(
                 dataProcessor.startTimeSourceToString(
                     category.startTimeSource ?: event.startTimeSource
@@ -358,10 +365,6 @@ class CategoryCreateDialogFragment : DialogFragment() {
                     (controlPointRecyclerView.adapter as ControlPointRecyclerViewAdapter).getControlPoints(),
                     category.eventType ?: selectedEventViewModel.getCurrentEvent().eventType
                 )
-
-                val names = selectedEventViewModel.getCodesNameFromControlPoints(parsed)
-                //Set the code names
-                category.controlPointsCodes = names.second
 
                 //Create or update the category
                 if (args.create) {

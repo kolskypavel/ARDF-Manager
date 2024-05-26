@@ -117,7 +117,6 @@ class SIPort(
         var valid = false
 
         if (waitForCardInsert(cardData)) {
-
             setStatusReading(cardData.siNumber)
 
             when (cardData.cardType) {

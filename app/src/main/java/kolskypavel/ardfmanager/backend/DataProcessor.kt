@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.files.FileHandler
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
-import kolskypavel.ardfmanager.backend.results.ResultDataComparator
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.room.entitity.Category
@@ -17,7 +16,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.Result
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.enums.EventBand
 import kolskypavel.ardfmanager.backend.room.enums.EventLevel
@@ -29,10 +28,8 @@ import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SIReaderService
 import kolskypavel.ardfmanager.backend.sportident.SIReaderState
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
-import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
 import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
 import java.time.LocalDate
@@ -120,9 +117,13 @@ class DataProcessor private constructor(context: Context) {
     }
 
     //CATEGORIES
-    fun getCategoriesForEvent(eventId: UUID) = ardfRepository.getCategoriesFlowForEvent(eventId)
+    fun getCategoryDataFlowForEvent(eventId: UUID) =
+        ardfRepository.getCategoryDataFlowForEvent(eventId)
 
-    suspend fun getCategory(id: UUID?) = ardfRepository.getCategory(id)
+    suspend fun getCategory(id: UUID): Category? = ardfRepository.getCategory(id)
+    suspend fun getCategoryData(id: UUID, eventId: UUID): CategoryData? {
+        return ardfRepository.getCategoryData(id, eventId)
+    }
 
     suspend fun getCategoryByName(string: String, eventId: UUID) =
         ardfRepository.getCategoryByName(string, eventId)
@@ -133,27 +134,58 @@ class DataProcessor private constructor(context: Context) {
         return ardfRepository.getCategoryByBirthYear(age, isWoman, eventId)
     }
 
+    suspend fun getHighestCategoryOrder(eventId: UUID) =
+        ardfRepository.getHighestCategoryOrder(eventId)
+
     suspend fun getCategoryByMaxAge(maxAge: Int, eventId: UUID) =
         ardfRepository.getCategoryByMaxAge(maxAge, eventId)
 
     suspend fun createCategory(category: Category, controlPoints: List<ControlPoint>) {
-        runBlocking {
-            ardfRepository.createCategory(category)
+        ardfRepository.createOrUpdateCategory(category)
+        createControlPoints(controlPoints)
+    }
+
+    /**
+     * Creates a duplicate of the category
+     */
+    suspend fun duplicateCategory(categoryData: CategoryData) {
+        categoryData.category.name += "_" + (appContext.get()?.getString(R.string.copy) ?: "_copy")
+        categoryData.category.order = getHighestCategoryOrder(categoryData.category.eventId) + 1
+
+        //Adjust the IDs
+        categoryData.category.id = UUID.randomUUID()
+        for (cp in categoryData.controlPoints) {
+            cp.id = UUID.randomUUID()
+            cp.categoryId = categoryData.category.id
+        }
+
+        createCategory(categoryData.category, categoryData.controlPoints)
+    }
+
+    suspend fun updateCategory(category: Category, controlPoints: List<ControlPoint>?) {
+        ardfRepository.createOrUpdateCategory(category)
+
+        if (controlPoints != null) {
+            ardfRepository.deleteControlPointsByCategory(category.id)
             createControlPoints(controlPoints)
+            updateResultsForCategory(category.id, false)
         }
     }
 
-    suspend fun updateCategory(category: Category, controlPoints: List<ControlPoint>) {
-        ardfRepository.deleteControlPointsByCategory(category.id)
-        ardfRepository.updateCategory(category)
-        createControlPoints(controlPoints)
-        updateResultsForCategory(category.id, false)
-    }
-
-    suspend fun deleteCategory(id: UUID) {
+    suspend fun deleteCategory(id: UUID, eventId: UUID) {
         ardfRepository.deleteCategory(id)
         ardfRepository.deleteControlPointsByCategory(id)
         updateResultsForCategory(id, true)
+        updateCategoryOrder(eventId)
+    }
+
+    //Updates category order after one is deleted - starts at 0
+    private suspend fun updateCategoryOrder(eventId: UUID) {
+        val categories = ardfRepository.getCategoriesForEvent(eventId)
+        for (c in categories.withIndex()) {
+            c.value.order = c.index
+            ardfRepository.createOrUpdateCategory(c.value)
+        }
     }
 
     //CONTROL POINTS
@@ -180,9 +212,8 @@ class DataProcessor private constructor(context: Context) {
         ardfRepository.getControlPointByCode(eventId, code)
 
 
-    fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): Pair<String, String> {
-        return Pair("", "")
-        //    ResultsProcessor.getCodesNameFromControlPoints(controlPoints)
+    fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): String {
+        return ResultsProcessor.getCodesNameFromControlPoints(controlPoints)
     }
 
     //COMPETITORS
@@ -270,6 +301,7 @@ class DataProcessor private constructor(context: Context) {
                 punches,
                 manualStatus
             )
+        } else {
             updateResultsForCompetitor(competitor.id)
         }
     }
@@ -296,8 +328,6 @@ class DataProcessor private constructor(context: Context) {
 
     suspend fun getReadoutByCompetitor(competitorId: UUID): Readout? =
         ardfRepository.getReadoutsByCompetitor(competitorId)
-
-    suspend fun createReadout(readout: Readout) = ardfRepository.createReadout(readout)
 
     suspend fun saveReadoutAndResult(readout: Readout, punches: ArrayList<Punch>, result: Result) =
         ardfRepository.saveReadoutAndResult(readout, punches, result)

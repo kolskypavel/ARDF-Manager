@@ -4,8 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.files.constants.FileExportFormat
-import kolskypavel.ardfmanager.backend.files.constants.FileImportFormat
+import kolskypavel.ardfmanager.backend.files.constants.ResultDataFormat
+import kolskypavel.ardfmanager.backend.files.constants.CompetitorDataFormat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,13 +36,13 @@ class FileHandler(val appContext: WeakReference<Context>) {
         return null
     }
 
-    fun importData(uri: Uri, format: FileImportFormat): Boolean {
+    fun importData(uri: Uri, format: CompetitorDataFormat): Boolean {
         var ret = true
         CoroutineScope(Dispatchers.IO).launch {
             val inStream = openInputStream(uri)
             if (inStream != null) {
                 when (format) {
-                    FileImportFormat.CSV_OCM_COMPETITORS -> {
+                    CompetitorDataFormat.CSV_OCM_COMPETITORS -> {
                         // val competitorData = CSVProcessor.parseCompetitorDataCsv(inStream)
 
                     }
@@ -59,11 +59,11 @@ class FileHandler(val appContext: WeakReference<Context>) {
         return ret
     }
 
-    fun exportData(format: FileExportFormat, eventId: UUID): Boolean {
+    fun exportData(format: ResultDataFormat, eventId: UUID): Boolean {
         CoroutineScope(Dispatchers.IO).launch {
             // val competitorData = dataProcessor.getCompetitorDataFlowByEvent()
             when (format) {
-                FileExportFormat.IOF_XML -> {}
+                ResultDataFormat.IOF_XML -> {}
 
 
                 else -> {

@@ -17,11 +17,26 @@ Currently availabe functions:
 - Classics
 - Foxoring
 - Orienteering
+- Sprint
 
-Other formats (Sprint, Long, Custom) are to be implemented.
+Other formats (Long, Custom) are to be implemented.
 
 ## Supported file formats
-- File import / export is not supported yet.
+### Category import / export
+- CSV
+- TLN
+- IOF XML
+
+### Competitor import / export
+- CSV CHEB
+- TLN
+- IOF XML
+
+### Results
+- CSV CHEB
+- PDF (basic or splits)
+- HTML (basic or splits)
+- IOF XML
 
 ## Icons
 SportIdent by Gonzo from <a href="https://thenounproject.com/browse/icons/term/sportident/" target="_blank" title="SportIdent Icons">Noun Project</a> (CC BY 3.0)

@@ -16,7 +16,7 @@ import java.util.UUID
 
 @Entity(
     tableName = "category", indices = [Index(
-        value = ["name", "event_id"],
+        value = ["name", "event_id", "order"],
         unique = true
     )],
     foreignKeys = [ForeignKey(
@@ -38,7 +38,6 @@ data class Category(
     @ColumnInfo(name = "limit") var timeLimit: Duration?,
     @ColumnInfo(name = "start_source") var startTimeSource: StartTimeSource?,
     @ColumnInfo(name = "finish_source") var finishTimeSource: FinishTimeSource?,
-    @ColumnInfo(name = "cp_codes") var controlPointsCodes: String,
     @ColumnInfo(name = "length") var length: Float,
     @ColumnInfo(name = "climb") var climb: Float,
     @ColumnInfo(name = "order") var order: Int

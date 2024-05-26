@@ -28,7 +28,7 @@
 
     <style name="add_dialog" parent="@style/Theme.AppCompat.Dialog">
         <item name="android:windowNoTitle">false</item>
-<!--        <item name="android:textColor">@color/black</item>-->
+        <!--        <item name="android:textColor">@color/black</item>-->
 
     </style>
 
@@ -77,6 +77,11 @@
 
     <style name="punch_record_recycler">
         <item name="android:textColor">"@color/black"</item>>
+    </style>
+
+
+    <style name="results_recyclerview_category">
+        <item name="backgroundColor">@color/yellow_warning</item>
     </style>
 
 </resources>

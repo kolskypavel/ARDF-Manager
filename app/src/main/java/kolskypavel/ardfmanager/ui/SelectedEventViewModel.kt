@@ -9,6 +9,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.enums.EventType
@@ -37,11 +38,9 @@ class SelectedEventViewModel : ViewModel() {
     private val _event = MutableLiveData<Event>()
 
     val event: LiveData<Event> get() = _event
-    private val _categories: MutableStateFlow<List<Category>> = MutableStateFlow(emptyList())
-    val categories: StateFlow<List<Category>> get() = _categories.asStateFlow()
+    private val _categories: MutableStateFlow<List<CategoryData>> = MutableStateFlow(emptyList())
+    val categories: StateFlow<List<CategoryData>> get() = _categories.asStateFlow()
 
-    private val _competitors: MutableStateFlow<List<Competitor>> = MutableStateFlow(emptyList())
-    val competitors: StateFlow<List<Competitor>> get() = _competitors.asStateFlow()
 
     private val _readoutData: MutableStateFlow<List<ReadoutData>> =
         MutableStateFlow(emptyList())
@@ -52,11 +51,11 @@ class SelectedEventViewModel : ViewModel() {
         MutableStateFlow(emptyList())
     val resultData: StateFlow<List<ResultDisplayWrapper>> get() = _resultData.asStateFlow()
 
-    private val _competitorsCategories: MutableStateFlow<List<CompetitorData>> =
+    private val _competitorData: MutableStateFlow<List<CompetitorData>> =
         MutableStateFlow(emptyList())
-    val competitorsCategories: StateFlow<List<CompetitorData>>
+    val competitorData: StateFlow<List<CompetitorData>>
         get() =
-            _competitorsCategories.asStateFlow()
+            _competitorData.asStateFlow()
 
     fun getCurrentEvent(): Event {
         if (event.value != null) {
@@ -74,18 +73,13 @@ class SelectedEventViewModel : ViewModel() {
             _event.postValue(event)
 
             launch {
-                dataProcessor.getCompetitorFlowForEvent(id).collect {
-                    _competitors.value = it
-                }
-            }
-            launch {
-                dataProcessor.getCategoriesForEvent(id).collect {
+                dataProcessor.getCategoryDataFlowForEvent(id).collect {
                     _categories.value = it
                 }
             }
             launch {
                 dataProcessor.getCompetitorDataFlowByEvent(id).collect {
-                    _competitorsCategories.value = it
+                    _competitorData.value = it
                 }
             }
 
@@ -112,6 +106,7 @@ class SelectedEventViewModel : ViewModel() {
     //Category
     suspend fun getCategory(id: UUID) = dataProcessor.getCategory(id)
 
+    fun getCategories(): List<Category> = categories.value.map { it.category }
     fun getCategoryByName(string: String): Category? {
         return runBlocking {
             return@runBlocking dataProcessor.getCategoryByName(string, getCurrentEvent().id)
@@ -124,19 +119,36 @@ class SelectedEventViewModel : ViewModel() {
         }
     }
 
+    fun getHighestCategoryOrder(eventId: UUID): Int {
+        return runBlocking {
+            return@runBlocking dataProcessor.getHighestCategoryOrder(eventId)
+        }
+    }
+
     fun createCategory(category: Category, controlPoints: List<ControlPoint>) {
         CoroutineScope(Dispatchers.IO).launch {
             dataProcessor.createCategory(category, controlPoints)
         }
     }
 
-    fun updateCategory(category: Category, controlPoints: List<ControlPoint>) =
+    fun updateCategory(category: Category, controlPoints: List<ControlPoint>?) =
         CoroutineScope(Dispatchers.IO).launch {
             dataProcessor.updateCategory(category, controlPoints)
         }
 
-    fun deleteCategory(categoryId: UUID) =
-        CoroutineScope(Dispatchers.IO).launch { dataProcessor.deleteCategory(categoryId) }
+    fun duplicateCategory(categoryData: CategoryData) {
+        CoroutineScope(Dispatchers.IO).launch {
+            dataProcessor.duplicateCategory(categoryData)
+        }
+    }
+
+    fun deleteCategory(categoryId: UUID, eventId: UUID) =
+        CoroutineScope(Dispatchers.IO).launch {
+            dataProcessor.deleteCategory(
+                categoryId,
+                eventId
+            )
+        }
 
 
     fun getControlPointsByCategory(categoryId: UUID): ArrayList<ControlPoint> {
@@ -173,8 +185,6 @@ class SelectedEventViewModel : ViewModel() {
         eventType: EventType
     ) = dataProcessor.adjustControlPoints(controlPoints, eventType)
 
-    fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): Pair<String, String> =
-        dataProcessor.getCodesNameFromControlPoints(controlPoints)
 
     //Competitor
     fun createOrUpdateCompetitor(
@@ -230,53 +240,55 @@ class SelectedEventViewModel : ViewModel() {
     }
 
     fun getPunchRecordsForCompetitor(
-        create: Boolean,
         competitor: Competitor
     ): ArrayList<PunchEditItemWrapper> {
         var punchRecords = ArrayList<PunchEditItemWrapper>()
+        runBlocking {
 
-        //New or existing competitor
-        if (create) {
-            //Add start and finish punch
-            punchRecords.add(
-                PunchEditItemWrapper(
-                    Punch(
-                        UUID.randomUUID(),
-                        dataProcessor.getCurrentEvent().id,
-                        null,
-                        competitor.id,
-                        null,
-                        SIRecordType.START,
-                        0,
-                        0,
-                        SITime(LocalTime.MIN),
-                        null,
-                        PunchStatus.VALID
-                    ), true, true, true, true
-                )
-            )
-            punchRecords.add(
-                PunchEditItemWrapper(
-                    Punch(
-                        UUID.randomUUID(),
-                        dataProcessor.getCurrentEvent().id,
-                        null,
-                        competitor.id,
-                        null,
-                        SIRecordType.FINISH,
-                        0,
-                        0,
-                        SITime(LocalTime.MIN),
-                        null,
-                        PunchStatus.VALID
-                    ), true, true, true, true
-                )
-            )
+            val punches = dataProcessor.getPunchesByCompetitor(competitor.id)
 
-        } else {
-            runBlocking {
+            //New or existing competitor
+            if (punches.isEmpty()) {
+                //Add start and finish punch
+                punchRecords.add(
+                    PunchEditItemWrapper(
+                        Punch(
+                            UUID.randomUUID(),
+                            dataProcessor.getCurrentEvent().id,
+                            null,
+                            competitor.id,
+                            null,
+                            SIRecordType.START,
+                            0,
+                            0,
+                            SITime(LocalTime.MIN),
+                            null,
+                            PunchStatus.VALID
+                        ), true, true, true, true
+                    )
+                )
+                punchRecords.add(
+                    PunchEditItemWrapper(
+                        Punch(
+                            UUID.randomUUID(),
+                            dataProcessor.getCurrentEvent().id,
+                            null,
+                            competitor.id,
+                            null,
+                            SIRecordType.FINISH,
+                            0,
+                            0,
+                            SITime(LocalTime.MIN),
+                            null,
+                            PunchStatus.VALID
+                        ), true, true, true, true
+                    )
+                )
+
+            } else {
+
                 punchRecords = PunchEditItemWrapper.getWrappers(
-                    ArrayList(dataProcessor.getPunchesByCompetitor(competitor.id))
+                    ArrayList(punches)
                 )
             }
         }

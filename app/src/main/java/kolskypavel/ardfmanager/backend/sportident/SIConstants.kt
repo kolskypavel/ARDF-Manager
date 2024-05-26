@@ -3,7 +3,7 @@ package kolskypavel.ardfmanager.backend.sportident
 object SIConstants {
     const val SI_VENDOR_ID = 4292
     const val SI_PRODUCT_ID = 32778
-    const val SI_MIN_NUMBER = 1
+    const val SI_MIN_NUMBER = 999
     const val SI_MAX_NUMBER = 9999999
 
     const val STX: Byte = 0x02 //Transmission start

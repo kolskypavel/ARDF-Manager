@@ -36,7 +36,7 @@ class ControlPointRecyclerViewAdapter(
     override fun onBindViewHolder(holder: ControlPointViewHolder, position: Int) {
         val item = values[position]
 
-        if (item.controlPoint.siCode != null) {
+        if (item.controlPoint.siCode != -1) {
             holder.siCode.setText(item.controlPoint.siCode.toString())
         }
         if (item.controlPoint.name != null) {
@@ -71,13 +71,14 @@ class ControlPointRecyclerViewAdapter(
                         1,
                         beacon = false,
                         separator = false
-                    ), isCodeValid = true
+                    ), isCodeValid = false
                 )
             )
             notifyItemInserted(holder.adapterPosition + 1)
         }
 
         holder.deleteBtn.setOnClickListener {
+            //TODO: Fix the crash when deleting
             if (holder.adapterPosition != 0) {
 
                 //Change beacon
@@ -90,6 +91,8 @@ class ControlPointRecyclerViewAdapter(
                 notifyItemRemoved(holder.adapterPosition)
             }
         }
+        holder.beacon.visibility = View.GONE
+        holder.addBtn.visibility = View.VISIBLE
 
         if (holder.adapterPosition == 0) {
             holder.deleteBtn.visibility = View.GONE
@@ -97,19 +100,22 @@ class ControlPointRecyclerViewAdapter(
             holder.name.visibility = View.GONE
             holder.siCode.visibility = View.GONE
             holder.separator.visibility = View.GONE
-        }
-        if (eventType == EventType.CLASSICS ||
-            eventType == EventType.FOXORING ||
-            eventType == EventType.ORIENTEERING
+        } else if (eventType == EventType.CLASSICS ||
+            eventType == EventType.FOXORING
         ) {
             holder.separator.visibility = View.GONE
             holder.points.visibility = View.GONE
+        } else if (eventType == EventType.ORIENTEERING) {
+            holder.separator.visibility = View.GONE
+            holder.points.visibility = View.GONE
+            holder.name.visibility = View.GONE
         } else if (eventType == EventType.SPRINT) {
             holder.points.visibility = View.GONE
         }
+
         if (eventType != EventType.ORIENTEERING &&
             holder.adapterPosition != 0 &&
-            holder.adapterPosition == values.size - 1
+            holder.layoutPosition == values.size - 1
         ) {
             holder.beacon.visibility = View.VISIBLE
             holder.addBtn.visibility = View.GONE
@@ -150,14 +156,19 @@ class ControlPointRecyclerViewAdapter(
 
     private fun codeWatcher(string: String, position: Int, codeView: EditText) {
         if (string.isNotEmpty()) {
-            val code = string.toInt()
+            try {
+                val code = string.toInt()
 
-            //Check for duplicates
-            if (checkCodeDuplicate(code, position)) {
-                values[position].controlPoint.siCode = code
-                values[position].isCodeValid = true
-            } else {
-                codeView.error = context.getString(R.string.duplicate)
+                //Check for duplicates
+                if (checkCodeDuplicate(code, position)) {
+                    values[position].controlPoint.siCode = code
+                    values[position].isCodeValid = true
+                } else {
+                    codeView.error = context.getString(R.string.duplicate)
+                    values[position].isCodeValid = false
+                }
+            } catch (exception: Exception) {
+                codeView.error = context.getString(R.string.invalid)
                 values[position].isCodeValid = false
             }
         } else {

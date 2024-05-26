@@ -113,7 +113,7 @@ class CompetitorFragment : Fragment() {
         when (menuItem.itemId) {
             R.id.competitor_menu_import_file -> {
                 findNavController().navigate(
-                    CompetitorFragmentDirections.importExportData()
+                    CompetitorFragmentDirections.importExportDataCompetitors()
                 )
                 return true
             }
@@ -240,7 +240,7 @@ class CompetitorFragment : Fragment() {
     private fun setRecyclerAdapter(displayType: CompetitorTableDisplayType) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                selectedEventViewModel.competitorsCategories.collect { competitorCategories ->
+                selectedEventViewModel.competitorData.collect { competitorCategories ->
                     competitorTableView.dataAdapter =
                         CompetitorTableViewAdapter(
                             competitorCategories,
@@ -272,8 +272,7 @@ class CompetitorFragment : Fragment() {
                 )
             )
 
-            1 -> {}
-            2 -> confirmCompetitorDeletion(competitorData.competitorCategory.competitor)
+            1 -> confirmCompetitorDeletion(competitorData.competitorCategory.competitor)
         }
     }
 

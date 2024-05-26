@@ -140,7 +140,7 @@
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="4dp"
 
-                android:text="SC TEST"
+                android:text="-"
                 app:layout_constraintStart_toEndOf="@id/readout_title_club"
                 app:layout_constraintTop_toBottomOf="@+id/readout_title_si_number" />
 
@@ -183,7 +183,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:minWidth="0dp"
-            android:src="@drawable/icon_more" />
+            android:src="@drawable/ic_more" />
     </LinearLayout>
 
     <View

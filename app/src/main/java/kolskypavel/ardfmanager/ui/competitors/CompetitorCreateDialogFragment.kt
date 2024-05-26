@@ -80,7 +80,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val sl: SelectedEventViewModel by activityViewModels()
         selectedEventViewModel = sl
-        categories = selectedEventViewModel.categories.value
+        categories = selectedEventViewModel.getCategories()
 
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.add_dialog)
@@ -168,7 +168,9 @@ class CompetitorCreateDialogFragment : DialogFragment() {
             if (competitor.categoryId != null) {
                 runBlocking {
                     val category = selectedEventViewModel.getCategory(competitor.categoryId!!)
-                    categoryPicker.setText(category.name, false)
+                    if (category != null) {
+                        categoryPicker.setText(category.name, false)
+                    }
                 }
 
             } else {
@@ -244,14 +246,12 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         //Set up the punch edit recycler view
         punchEditRecyclerView.adapter =
             PunchEditRecyclerViewAdapter(
-                selectedEventViewModel.getPunchRecordsForCompetitor(
-                    args.create,
-                    competitor
-                )
+                selectedEventViewModel.getPunchRecordsForCompetitor(competitor)
             )
 
         dataEditLinearLayout.visibility = View.GONE
         //Toggle the visibility of the punch switch
+
         editPunchesSwitch.setOnCheckedChangeListener { _, checked ->
             if (checked) {
                 dataEditLinearLayout.visibility = View.VISIBLE

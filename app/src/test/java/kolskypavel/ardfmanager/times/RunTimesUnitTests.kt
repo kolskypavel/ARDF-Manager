@@ -5,7 +5,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.time.Duration
 
-class RunTimesUnitTest {
+class RunTimesUnitTests {
 
     @Test
     fun durationToMinuteStringTest() {

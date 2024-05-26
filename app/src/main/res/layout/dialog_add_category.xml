@@ -27,6 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
+                android:maxLength="50"
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -91,7 +92,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberDecimal"
-                    android:maxLength="4" />
+                    android:maxLength="6" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
@@ -108,7 +109,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="numberSigned"
-                    android:maxLength="4" />
+                    android:maxLength="5" />
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>

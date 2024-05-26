@@ -1,4 +1,4 @@
-package kolskypavel.ardfmanager.ui.files
+package kolskypavel.ardfmanager.ui.competitors
 
 import android.app.Activity
 import android.os.Bundle
@@ -10,13 +10,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import kolskypavel.ardfmanager.R
 
-class ImportDialogFragment : DialogFragment() {
+class CompetitorFileDialogFragment : DialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.dialog_import_export_data, container, false)
+        return inflater.inflate(R.layout.dialog_files_competitors, container, false)
     }
 
     private lateinit var importButton: Button
@@ -35,12 +35,12 @@ class ImportDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.add_dialog)
-        dialog?.setTitle(R.string.file_import_export_title)
+        dialog?.setTitle(R.string.category_file_import_export)
 
-        importButton = view.findViewById(R.id.file_button_import)
-        exportButton = view.findViewById(R.id.file_button_export)
-        okButton = view.findViewById(R.id.file_dialog_ok)
-        cancelButton = view.findViewById(R.id.file_dialog_cancel)
+        importButton = view.findViewById(R.id.competitor_file_import_btn)
+        exportButton = view.findViewById(R.id.competitor_file_export_button)
+        okButton = view.findViewById(R.id.competitor_file_ok)
+        cancelButton = view.findViewById(R.id.competitor_file_cancel)
 
 
 //        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)

@@ -18,7 +18,7 @@ import java.util.UUID
  * Tests the correct evaluation of the punches
  * TODO: Add more random data
  */
-class ResultsEvaluationUnitTest {
+class ResultsEvaluationUnitTests {
 
     @Test
     fun testClassicsCorrectData() {

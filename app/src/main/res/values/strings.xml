@@ -22,13 +22,15 @@
     <string name="display">Display</string>
     <string name="preview">Preview</string>
     <string name="duplicate">Duplicate</string>
+    <string name="copy">Copy</string>
+    <string name="start_time">Start time</string>
 
     <!--Files-->
     <string name="files">Files</string>
+    <string name="file_format">File format</string>
     <string name="file_import">Import</string>
     <string name="file_export">Export</string>
     <string name="file_preview">Preview</string>
-    <string name="file_import_export_title">Import/Export data</string>
 
     <!--Event-->
     <string name="event_import_text">Import event from a file</string>
@@ -72,6 +74,7 @@
     <string name="category_edit">Edit category</string>
     <string name="category_duplicate">Duplicate category</string>
     <string name="category_delete">Delete category</string>
+    <string name="category_file_import_export">Import/Export categories</string>
     <string name="category_delete_confirmation">Do you really want to delete this category?</string>
     <string name="last_name">Last name</string>
     <string name="length">Length (km)</string>
@@ -81,7 +84,6 @@
     <string name="nonexistent_year">Invalid year</string>
     <string name="invalid_codes">Invalid SI codes</string>
     <string name="invalid_max_age">Max age is already taken for category %1$s!</string>
-    <string name="last_beacon">Last control is a beacon</string>
 
     <string name="separator">Separator</string>
     <string name="beacon">Beacon</string>
@@ -181,19 +183,35 @@
     <string name="race_status_not_processed_short" translatable="false">NPR</string>
     <string name="race_status_error_short" translatable="false">ERR</string>
 
+    <string name="file_format_csv" translatable="false">CSV</string>
+    <string name="file_format_json" translatable="false">JSON</string>
+    <string name="file_format_xml" translatable="false">XML</string>
+    <string name="file_format_tln" translatable="false">TLN</string>
+    <string name="file_format_pdf_simple" translatable="false">PDF</string>
+    <string name="file_format_pdf_splits">PDF splits</string>
+    <string name="file_format_html" translatable="false">HTML</string>
+    <string name="file_format_html_splits">HTML splits</string>
 
     <!--    Preferences    -->
     <string name="preferences_general">General</string>
     <string name="preferences_event">Event</string>
     <string name="preferences_results">Results</string>
     <string name="preferences_prints">Prints</string>
+    <string name="preferences_sportident">Sportident</string>
     <string name="preferences_help">Help</string>
 
-    <string name="preferences_show_log">Show log</string>
-    <string name="preferences_language">Language</string>
-    <string name="preferences_file_import_skip">Skip invalid lines during import</string>
+    <!--Preferences:general-->
+    <string name="preferences_general_keep_screen_open">Prevent system from locking screen</string>
+    <string name="preferences_general_show_log">Show log</string>
+    <string name="preferences_general_language">Language</string>
+
+    <!--Preferences:files-->
+    <string name="preferences_files_file_import_skip">Skip invalid lines during import</string>
     <string name="preferences_file_import_skip_description">If not selected, an invalid line stops the import.</string>
 
+    <!--Preferences:print-->
+    <string name="preferences_print_select_printer">Select printer</string>
+    <string name="preferences_print_when_to_print">Select when to print the tickets </string>
 
     <!--    DATA ARRAYS-->
 
@@ -279,5 +297,18 @@
         <item>@string/race_status_not_processed_short</item>
         <item>@string/race_status_error_short</item>
     </string-array>
-    <string name="start_time">Start time</string>
+
+    <string-array name="category_data_formats">
+        <item>@string/file_format_csv</item>
+        <item>@string/file_format_json</item>
+        <item>@string/file_format_xml</item>
+    </string-array>
+
+    <string-array name="competitor_data_formats">
+        <item>@string/file_format_csv</item>
+        <item>@string/file_format_tln</item>
+        <item>@string/file_format_json</item>
+        <item>@string/file_format_xml</item>
+    </string-array>
+
 </resources>

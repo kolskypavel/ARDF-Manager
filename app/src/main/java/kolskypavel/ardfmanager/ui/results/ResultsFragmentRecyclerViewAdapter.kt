@@ -61,7 +61,7 @@ class ResultsFragmentRecyclerViewAdapter(
                     expandButton.visibility = View.VISIBLE
 
                     //Set on click expansion + icon
-                   holder.itemView.setOnClickListener {
+                    holder.itemView.setOnClickListener {
                         if (dataList.isExpanded) {
                             expandButton.setImageResource(R.drawable.ic_expand)
                         } else {

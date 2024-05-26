@@ -1,4 +1,4 @@
 package kolskypavel.ardfmanager.results
 
-class ResultComparatorUnitTest {
+class ResultComparatorUnitTests {
 }

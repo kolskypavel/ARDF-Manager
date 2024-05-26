@@ -247,11 +247,15 @@ class ResultsProcessor {
             if (punches.last().punchType == SIRecordType.FINISH) {
                 readout.finishTime = punches.last().siTime
             }
-
+            val category = if (categoryId != null) {
+                dataProcessor.getCategory(categoryId)
+            } else {
+                null
+            }
             calculateResult(
                 readout,
                 result!!,
-                dataProcessor.getCategory(categoryId),
+                category,
                 punches,
                 manualStatus
             )
@@ -345,7 +349,7 @@ class ResultsProcessor {
 
                 if (!delete) {
                     val category = dataProcessor.getCategory(categoryId)
-                    evaluatePunches(punches, category, result!!)
+                    evaluatePunches(punches, category!!, result!!)
                 } else {
                     clearEvaluation(punches, result!!)
                 }
@@ -372,7 +376,7 @@ class ResultsProcessor {
             val punches = ArrayList(dataProcessor.getPunchesByReadout(readout.id))
             if (competitor.categoryId != null) {
                 val category = dataProcessor.getCategory(competitor.categoryId!!)
-                evaluatePunches(punches, category, result!!)
+                evaluatePunches(punches, category!!, result!!)
             } else {
                 clearEvaluation(punches, result!!)
             }
@@ -649,29 +653,25 @@ class ResultsProcessor {
             }
             return controlPoints.toList()
         }
-    }
 
-    fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): Pair<String, String> {
-        var names = ""
-        var codes = ""
+        fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): String {
+            var codes = ""
 
-        for (cp in controlPoints) {
-            codes += cp.siCode
+            for (cp in controlPoints) {
+                codes += cp.siCode
 
-            if (cp.beacon) {
-                codes += "B"
+                if (cp.beacon) {
+                    codes += "B"
+                }
+                if (cp.separator) {
+                    codes += "!"
+                }
+                if (cp.name != null) {
+                    codes += " (" + cp.name + "), "
+
+                }
             }
-            if (cp.separator) {
-                codes += "!"
-            }
-            if (cp.name != null) {
-                codes += " (" + cp.name + "), "
-                names += cp.name + " "
-            } else {
-                names += cp.siCode
-                names += " "
-            }
+            return codes
         }
-        return Pair(names, codes)
     }
 }

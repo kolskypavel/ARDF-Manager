@@ -7,7 +7,7 @@
 
     <EditText
         android:id="@+id/control_point_item_code"
-        android:layout_width="40dp"
+        android:layout_width="15dp"
         android:layout_height="45dp"
         android:layout_weight="1"
         android:ems="10"

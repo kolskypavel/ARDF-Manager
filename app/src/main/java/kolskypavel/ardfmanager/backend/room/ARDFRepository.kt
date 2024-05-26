@@ -34,13 +34,20 @@ class ARDFRepository private constructor(context: Context) {
 
 
     //Categories
-    fun getCategoriesFlowForEvent(eventId: UUID): Flow<List<Category>> =
-        eventDatabase.categoryDao().getCategoriesFlowForEvent(eventId)
+    fun getCategoryDataFlowForEvent(eventId: UUID) =
+        eventDatabase.categoryDao().getCategoryFlowForEvent(eventId)
 
     fun getCategoriesForEvent(eventId: UUID): List<Category> =
         eventDatabase.categoryDao().getCategoriesForEvent(eventId)
 
-    suspend fun getCategory(id: UUID?) = eventDatabase.categoryDao().getCategory(id)
+    suspend fun getCategory(id: UUID) =
+        eventDatabase.categoryDao().getCategory(id)
+
+    suspend fun getCategoryData(id: UUID, eventId: UUID) =
+        eventDatabase.categoryDao().getCategoryData(id, eventId)
+
+    suspend fun getHighestCategoryOrder(eventId: UUID) =
+        eventDatabase.categoryDao().getHighestCategoryOrder(eventId)
 
     suspend fun getCategoryByName(name: String, eventId: UUID) =
         eventDatabase.categoryDao().getCategoryByName(name, eventId)
@@ -51,11 +58,8 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun getCategoryByBirthYear(birthYear: Int, woman: Boolean, eventId: UUID): Category? =
         eventDatabase.categoryDao().getCategoryByAge(birthYear, woman, eventId)
 
-    suspend fun createCategory(category: Category) =
-        eventDatabase.categoryDao().createCategory(category)
-
-    suspend fun updateCategory(category: Category) =
-        eventDatabase.categoryDao().updateCategory(category)
+    suspend fun createOrUpdateCategory(category: Category) =
+        eventDatabase.categoryDao().createOrUpdateCategory(category)
 
     suspend fun deleteCategory(id: UUID) = eventDatabase.categoryDao().deleteCategory(id)
 
@@ -164,7 +168,6 @@ class ARDFRepository private constructor(context: Context) {
             eventDatabase.resultDao().createResult(result)
         }
     }
-
 
     //Singleton instantiation
     companion object {

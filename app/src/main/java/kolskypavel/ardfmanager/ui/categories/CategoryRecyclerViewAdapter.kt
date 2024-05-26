@@ -10,12 +10,14 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Category
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
+import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 
 class CategoryRecyclerViewAdapter(
-    private var values: List<Category>,
-    private val onMoreClicked: (action: Int, position: Int, category: Category) -> Unit,
-    private val context: Context
+    private var values: List<CategoryData>,
+    private val onMoreClicked: (action: Int, position: Int, categoryData: CategoryData) -> Unit,
+    private val context: Context,
+    private val selectedEventViewModel: SelectedEventViewModel
 ) :
     RecyclerView.Adapter<CategoryRecyclerViewAdapter.CategoryViewHolder>() {
 
@@ -33,15 +35,20 @@ class CategoryRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val item = values[position]
-        holder.title.text = item.name
+        holder.title.text = item.category.name
+        holder.numCompeititors.text =
+            "(${item.competitors.size.toString()} ${
+                context.getString(R.string.title_competitors).lowercase()
+            })"
         holder.type.text = dataProcessor.eventTypeToString(
-            item.eventType ?: dataProcessor.getCurrentEvent().eventType
+            item.category.eventType ?: dataProcessor.getCurrentEvent().eventType
         ) //TODO: fix crash
-        holder.gender.text = dataProcessor.genderToString(item.isWoman)
-        holder.siCodes.text = item.controlPointsCodes
+        holder.gender.text = dataProcessor.genderToString(item.category.isWoman)
+        holder.siCodes.text =
+            dataProcessor.getCodesNameFromControlPoints(item.controlPoints).ifEmpty { "-" }
 
-        if (item.maxAge != null) {
-            holder.maxAge.text = item.maxAge.toString()
+        if (item.category.maxAge != null) {
+            holder.maxAge.text = item.category.maxAge.toString()
         }
 
         holder.moreBtn.setOnClickListener {
@@ -56,7 +63,7 @@ class CategoryRecyclerViewAdapter(
                         true
                     }
 
-                    R.id.menu_item_edit_category -> {
+                    R.id.menu_item_duplicate_category -> {
                         onMoreClicked(1, position, item)
                         true
                     }
@@ -73,14 +80,54 @@ class CategoryRecyclerViewAdapter(
             }
             popupMenu.show()
         }
+
+        holder.upBtn.setOnClickListener {
+            if (holder.layoutPosition != 0) {
+                moveCategory(holder.layoutPosition, true)
+            }
+        }
+
+        holder.downBtn.setOnClickListener {
+            if (holder.layoutPosition != values.size - 1)
+                moveCategory(holder.layoutPosition, false)
+        }
+
+        //Hide the buttons for last and first item
+        if (position == 0) {
+            holder.upBtn.visibility = View.GONE
+        } else if (position == values.size - 1) {
+            holder.downBtn.visibility = View.GONE
+        }
+    }
+
+    /**
+     * Changes the category's order and saves it to database
+     */
+    private fun moveCategory(position: Int, up: Boolean) {
+        if (up) {
+            values[position - 1].category.order++
+            values[position].category.order--
+            selectedEventViewModel.updateCategory(values[position - 1].category, null)
+            selectedEventViewModel.updateCategory(values[position].category, null)
+            notifyItemMoved(position, position - 1)
+        } else {
+            values[position + 1].category.order--
+            values[position].category.order++
+            selectedEventViewModel.updateCategory(values[position + 1].category, null)
+            selectedEventViewModel.updateCategory(values[position].category, null)
+            notifyItemMoved(position, position + 1)
+        }
     }
 
     inner class CategoryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var title: TextView = view.findViewById(R.id.category_item_title)
         var type: TextView = view.findViewById(R.id.category_item_type)
+        var numCompeititors: TextView = view.findViewById(R.id.category_item_competitor_number)
         var gender: TextView = view.findViewById(R.id.category_item_gender)
         var maxAge: TextView = view.findViewById(R.id.category_item_max_age)
         var siCodes: TextView = view.findViewById(R.id.category_item_codes)
+        var upBtn: ImageButton = view.findViewById(R.id.category_item_up_btn)
         var moreBtn: ImageButton = view.findViewById(R.id.category_item_more_btn)
+        var downBtn: ImageButton = view.findViewById(R.id.category_item_down_btn)
     }
 }

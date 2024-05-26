@@ -1,4 +1,4 @@
-package kolskypavel.ardfmanager.ui.files
+package kolskypavel.ardfmanager.ui.results
 
 import androidx.fragment.app.DialogFragment
 

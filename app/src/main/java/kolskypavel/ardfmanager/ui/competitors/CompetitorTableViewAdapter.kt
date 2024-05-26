@@ -174,13 +174,8 @@ class CompetitorTableViewAdapter(
                         true
                     }
 
-                    R.id.menu_item_edit_competitor -> {
-                        onMoreClicked(1, rowIndex, item)
-                        true
-                    }
-
                     R.id.menu_item_delete_competitor -> {
-                        onMoreClicked(2, rowIndex, item)
+                        onMoreClicked(1, rowIndex, item)
                         true
                     }
 
