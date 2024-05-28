@@ -14,6 +14,9 @@ interface ResultDao {
     @Query("SELECT * FROM result WHERE competitor_id=(:competitorId)")
     suspend fun getResultByCompetitor(competitorId: UUID): Result?
 
+    @Query("SELECT * FROM result WHERE readout_id=(:readoutId)")
+    suspend fun getResultByReadout(readoutId: UUID): Result?
+
     @Query("SELECT * FROM result WHERE category_id = (:categoryId)")
     suspend fun getResultByCategory(categoryId: UUID?): List<Result>
 

@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/result_file_format_layout"
+        android:id="@+id/results_file_format_layout"
         style="@style/dialog_dropdown"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -27,7 +27,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/result_file_import_btn"
+        android:id="@+id/results_file_import_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="180dp"
@@ -35,12 +35,12 @@
         android:layout_marginEnd="12dp"
         android:layout_weight="1"
         android:text="@string/file_import"
-        app:layout_constraintEnd_toStartOf="@+id/result_file_export_button"
+        app:layout_constraintEnd_toStartOf="@+id/results_file_export_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/result_file_format_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/results_file_format_layout" />
 
     <Button
-        android:id="@+id/result_file_export_button"
+        android:id="@+id/results_file_export_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="191dp"
@@ -50,7 +50,7 @@
         android:text="@string/file_export"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintTop_toBottomOf="@+id/result_file_format_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/results_file_format_layout" />
 
 
     <LinearLayout
@@ -60,7 +60,7 @@
         tools:layout_editor_absoluteY="146dp">
 
         <Button
-            android:id="@+id/result_file_ok"
+            android:id="@+id/results_file_ok"
             style="@style/dialog_ok_cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
             tools:layout_editor_absoluteY="217dp" />
 
         <Button
-            android:id="@+id/result_file_cancel"
+            android:id="@+id/results_file_cancel"
             style="@style/dialog_ok_cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

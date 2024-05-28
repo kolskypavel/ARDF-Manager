@@ -25,6 +25,25 @@
         app:startDestination="@id/navigation_categories">
 
         <dialog
+            android:id="@+id/readoutEditDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutEditDialogFragment"
+            android:label="ReadoutEditDialogFragment" >
+            <argument
+                android:name="create"
+                app:argType="boolean" />
+            <argument
+                android:name="readoutData"
+                app:argType="kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData"
+                app:nullable="true" />
+            <argument
+                android:name="position"
+                app:argType="integer" />
+        </dialog>
+        <dialog
+            android:id="@+id/ResultsShareDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.results.ResultsExportDialogFragment"
+            android:label="ResultsExportDialogFragment" />
+        <dialog
             android:id="@+id/categoryFileDialogFragment"
             android:name="kolskypavel.ardfmanager.ui.categories.CategoryFileDialogFragment"
             android:label="CategoryFileDialogFragment" />
@@ -95,6 +114,9 @@
             <action
                 android:id="@+id/editEvent"
                 app:destination="@id/eventCreateDialogFragment" />
+            <action
+                android:id="@+id/editOrCreateReadout"
+                app:destination="@id/readoutEditDialogFragment" />
         </fragment>
         <fragment
             android:id="@+id/navigation_results"
@@ -104,6 +126,9 @@
             <action
                 android:id="@+id/editEvent"
                 app:destination="@id/eventCreateDialogFragment" />
+            <action
+                android:id="@+id/exportResults"
+                app:destination="@id/ResultsShareDialogFragment" />
         </fragment>
 
         <dialog
@@ -132,6 +157,9 @@
             <argument
                 android:name="readoutDetail"
                 app:argType="kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData" />
+            <action
+                android:id="@+id/editReadout"
+                app:destination="@id/readoutEditDialogFragment" />
         </fragment>
 
         <action

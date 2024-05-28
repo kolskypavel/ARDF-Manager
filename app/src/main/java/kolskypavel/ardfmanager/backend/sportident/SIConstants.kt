@@ -50,4 +50,8 @@ object SIConstants {
     //Code ranges
     const val SI_MIN_CODE = 31
     const val SI_MAX_CODE = 255
+
+    fun isSINumberValid(siNumber: Int): Boolean {
+        return (siNumber in (SI_MIN_NUMBER + 1)..SI_MAX_NUMBER)
+    }
 }

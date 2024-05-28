@@ -3,6 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/result_menu_share_results"
+        android:icon="@drawable/ic_share"
+        android:title="@string/results_share"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/result_menu_results_service"
+        android:title="@string/results_service" />
+    <item
         android:id="@+id/result_menu_edit_event"
         android:title="@string/event_edit" />
     <item

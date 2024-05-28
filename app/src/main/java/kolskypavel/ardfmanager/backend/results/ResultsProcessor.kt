@@ -187,7 +187,7 @@ class ResultsProcessor {
             CoroutineScope(Dispatchers.Main).launch {
                 Toast.makeText(
                     context,
-                    context.getText(R.string.readout_exists),
+                    context.getText(R.string.readout_si_exists),
                     Toast.LENGTH_LONG
                 )
                     .show()
@@ -196,70 +196,61 @@ class ResultsProcessor {
         }
     }
 
-    suspend fun processManualPunches(
-        competitorId: UUID,
-        categoryId: UUID?,
+    suspend fun processManualPunchData(
+        readout: Readout,
         punches: ArrayList<Punch>,
         manualStatus: RaceStatus?
     ) {
-        var readout = dataProcessor.getReadoutByCompetitor(competitorId)
-        var result = dataProcessor.getResultByCompetitor(competitorId)
 
-        if (punches.isNotEmpty()) {
-            //New readout
-            if (readout == null) {
+        var result = dataProcessor.getResultByReadout(readout.id)
 
-                readout = Readout(
-                    UUID.randomUUID(),
-                    null,
-                    0,
-                    dataProcessor.getCurrentEvent().id,
-                    competitorId,
-                    null,
-                    null,
-                    null,
-                    LocalDateTime.now(),
-                    true
-                )
+        val competitor = if (readout.competitorID != null) {
+            dataProcessor.getCompetitor(readout.competitorID!!)
+        } else {
+            null
+        }
+        val category = if (competitor?.categoryId != null) {
+            dataProcessor.getCategory(competitor.categoryId!!)
+        } else {
+            null
+        }
 
-                result = Result(
-                    UUID.randomUUID(),
-                    readout.id,
-                    categoryId,
-                    competitorId,
-                    true,
-                    RaceStatus.NOT_PROCESSED,
-                    0,
-                    Duration.ZERO
-                )
-            }
-            readout.modified = true //Mark the readout punches were modified
-
-            punches.forEachIndexed { order, punch ->
-                punch.readoutId = readout.id
-                punch.order = order
-            }
-
-            //Modify the start and finish times
-            if (punches[0].punchType == SIRecordType.START) {
-                readout.startTime = punches.first().siTime
-            }
-            if (punches.last().punchType == SIRecordType.FINISH) {
-                readout.finishTime = punches.last().siTime
-            }
-            val category = if (categoryId != null) {
-                dataProcessor.getCategory(categoryId)
-            } else {
-                null
-            }
-            calculateResult(
-                readout,
-                result!!,
-                category,
-                punches,
-                manualStatus
+        //Create new result
+        if (result == null) {
+            result = Result(
+                UUID.randomUUID(),
+                readout.id,
+                category?.id,
+                competitor?.id,
+                true,
+                RaceStatus.NOT_PROCESSED,
+                0,
+                Duration.ZERO
             )
         }
+
+        readout.modified = true //Mark the readout punches were modified
+
+        punches.forEachIndexed { order, punch ->
+            punch.readoutId = readout.id
+            punch.order = order
+        }
+
+        //Modify the start and finish times
+        if (punches[0].punchType == SIRecordType.START) {
+            readout.startTime = punches.first().siTime
+        }
+        if (punches.last().punchType == SIRecordType.FINISH) {
+            readout.finishTime = punches.last().siTime
+        }
+
+        calculateResult(
+            readout,
+            result,
+            category,
+            punches,
+            manualStatus
+        )
     }
 
     private suspend fun calculateResult(
@@ -364,8 +355,10 @@ class ResultsProcessor {
 
         //Try to get result by SI instead and update competitor ID
         if (readout == null) {
-            readout =
-                competitor.siNumber?.let { dataProcessor.getReadoutBySINumber(it, eventId) }
+            if (competitor != null) {
+                readout =
+                    competitor.siNumber?.let { dataProcessor.getReadoutBySINumber(it, eventId) }
+            }
             if (readout != null) {
                 readout.competitorID = competitorId
             }
@@ -374,7 +367,7 @@ class ResultsProcessor {
         if (readout != null) {
             val result = dataProcessor.getResultByCompetitor(competitorId)
             val punches = ArrayList(dataProcessor.getPunchesByReadout(readout.id))
-            if (competitor.categoryId != null) {
+            if (competitor?.categoryId != null) {
                 val category = dataProcessor.getCategory(competitor.categoryId!!)
                 evaluatePunches(punches, category!!, result!!)
             } else {

@@ -9,15 +9,12 @@ import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.enums.EventType
-import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
-import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
-import kolskypavel.ardfmanager.backend.sportident.SITime
-import kolskypavel.ardfmanager.backend.wrappers.PunchEditItemWrapper
 import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
 import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
 import kotlinx.coroutines.CoroutineScope
@@ -27,7 +24,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import java.time.LocalTime
 import java.util.UUID
 
 /**
@@ -187,19 +183,16 @@ class SelectedEventViewModel : ViewModel() {
 
 
     //Competitor
-    fun createOrUpdateCompetitor(
-        competitor: Competitor,
-        modifiedPunches: Boolean,
-        punches: ArrayList<Punch>,
-        manualStatus: RaceStatus?
-    ) =
+    fun getCompetitors(): List<Competitor> =
+        competitorData.value.map { it.competitorCategory.competitor }
+
+    fun getCompetitor(id: UUID) = runBlocking {
+        return@runBlocking dataProcessor.getCompetitor(id)
+    }
+
+    fun createOrUpdateCompetitor(competitor: Competitor) =
         CoroutineScope(Dispatchers.IO).launch {
-            dataProcessor.createOrUpdateCompetitor(
-                competitor,
-                modifiedPunches,
-                punches,
-                manualStatus
-            )
+            dataProcessor.createOrUpdateCompetitor(competitor)
         }
 
     fun deleteCompetitor(competitorId: UUID, deleteReadout: Boolean) =
@@ -239,63 +232,24 @@ class SelectedEventViewModel : ViewModel() {
         return true
     }
 
-    fun getPunchRecordsForCompetitor(
-        competitor: Competitor
-    ): ArrayList<PunchEditItemWrapper> {
-        var punchRecords = ArrayList<PunchEditItemWrapper>()
-        runBlocking {
+    fun getLastReadCard() = dataProcessor.getLastReadCard()
 
-            val punches = dataProcessor.getPunchesByCompetitor(competitor.id)
-
-            //New or existing competitor
-            if (punches.isEmpty()) {
-                //Add start and finish punch
-                punchRecords.add(
-                    PunchEditItemWrapper(
-                        Punch(
-                            UUID.randomUUID(),
-                            dataProcessor.getCurrentEvent().id,
-                            null,
-                            competitor.id,
-                            null,
-                            SIRecordType.START,
-                            0,
-                            0,
-                            SITime(LocalTime.MIN),
-                            null,
-                            PunchStatus.VALID
-                        ), true, true, true, true
-                    )
-                )
-                punchRecords.add(
-                    PunchEditItemWrapper(
-                        Punch(
-                            UUID.randomUUID(),
-                            dataProcessor.getCurrentEvent().id,
-                            null,
-                            competitor.id,
-                            null,
-                            SIRecordType.FINISH,
-                            0,
-                            0,
-                            SITime(LocalTime.MIN),
-                            null,
-                            PunchStatus.VALID
-                        ), true, true, true, true
-                    )
-                )
-
-            } else {
-
-                punchRecords = PunchEditItemWrapper.getWrappers(
-                    ArrayList(punches)
-                )
-            }
-        }
-        return punchRecords
+    fun processManualPunches(
+        readout: Readout,
+        punches: ArrayList<Punch>,
+        manualStatus: RaceStatus?
+    ) = CoroutineScope(Dispatchers.IO).launch {
+        dataProcessor.processManualPunches(readout, punches, manualStatus)
     }
 
-    fun getLastReadCard() = dataProcessor.getLastReadCard()
+    fun getReadoutBySINumber(siNumber: Int, eventId: UUID) =
+        runBlocking {
+            return@runBlocking dataProcessor.getReadoutBySINumber(siNumber, eventId)
+        }
+
+    fun getReadoutByCompetitor(competitorId: UUID) = runBlocking {
+        return@runBlocking dataProcessor.getReadoutByCompetitor(competitorId)
+    }
 
     fun deleteReadout(id: UUID) {
         CoroutineScope(Dispatchers.IO).launch {

@@ -82,7 +82,7 @@ class ARDFRepository private constructor(context: Context) {
 
 
     //Competitors
-    suspend fun getCompetitor(id: UUID): Competitor =
+    suspend fun getCompetitor(id: UUID) =
         eventDatabase.competitorDao().getCompetitor(id)
 
     suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
@@ -90,9 +90,6 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun getHighestStartNumberByEvent(eventId: UUID) =
         eventDatabase.competitorDao().getHighestStartNumberByEvent(eventId)
-
-    fun getCompetitorFlowByEvent(eventId: UUID): Flow<List<Competitor>> =
-        eventDatabase.competitorDao().getCompetitorFlowByEvent(eventId)
 
     fun getCompetitorDataFlowByEvent(eventId: UUID): Flow<List<CompetitorData>> =
         eventDatabase.competitorDao().getCompetitorDataFlow(eventId)
@@ -155,6 +152,10 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun getResultByCompetitor(competitorId: UUID) =
         eventDatabase.resultDao().getResultByCompetitor(competitorId)
+
+    suspend fun getResultByReadout(readoutId: UUID) =
+        eventDatabase.resultDao().getResultByReadout(readoutId)
+
 
     suspend fun createResult(result: Result) = eventDatabase.resultDao().createResult(result)
     suspend fun saveReadoutAndResult(

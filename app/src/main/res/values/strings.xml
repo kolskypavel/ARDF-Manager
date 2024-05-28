@@ -24,6 +24,14 @@
     <string name="duplicate">Duplicate</string>
     <string name="copy">Copy</string>
     <string name="start_time">Start time</string>
+    <string name="automatic">Automatic</string>
+
+
+    <!--    Sportident-->
+    <string name="no_si_card">No SI card!</string>
+    <string name="duplicate_si_number">Duplicate SI number!</string>
+    <string name="si_number_invalid_range">Invalid SI number range!</string>
+    <string name="si_number">SI number</string>
 
     <!--Files-->
     <string name="files">Files</string>
@@ -106,14 +114,9 @@
     <string name="competitor_delete_confirmation">Do you really want to delete this competitor?</string>
     <string name="competitor_delete_all_confirmation">Do you really want to delete all competitors?</string>
     <string name="index_callsign">Index/Callsign</string>
-    <string name="si_number">SI number</string>
-    <string name="automatic">Automatic</string>
     <string name="automatic_category_not_found">Automatic category not found!</string>
     <string name="competitor_rent_chip">Rent chip</string>
     <string name="competitor_edit_punches">Edit punches</string>
-    <string name="no_si_card">No SI card!</string>
-    <string name="competitor_duplicate_si_number">Duplicate SI number!</string>
-    <string name="competitor_si_number_out_of_range">SI number out of range!</string>
 
     <string name="competitor_hint_code">Code</string>
     <string name="competitor_hint_time_format" translatable="false">HH:MM:SS</string>
@@ -146,11 +149,13 @@
     <string name="readout_detail_real_time">Real time</string>
     <string name="readout_detail_split">Split</string>
     <string name="readout_detail_status">Status</string>
-    <string name="readout_exists">Readout with the same SI number already exists!</string>
-    <string name="unknown_competitor">Unknown competitor!</string>
+    <string name="readout_si_exists">Readout with this SI number already exists!</string>
+    <string name="readout_competitor_exists">Readout for this competitor already exists!</string>
+    <string name="unknown_competitor">Unknown competitor</string>
     <string name="points">Points</string>
     <string name="placement">Place</string>
     <string name="readout_time">Readout time</string>
+    <string name="readout_create_readout">Create readout</string>
     <string name="readout_edit_readout">Edit readout</string>
     <string name="readout_print_ticket">Print ticket</string>
     <string name="readout_delete_readout">Delete readout</string>
@@ -182,6 +187,10 @@
     <string name="race_status_unofficial_short" translatable="false">UNF</string>
     <string name="race_status_not_processed_short" translatable="false">NPR</string>
     <string name="race_status_error_short" translatable="false">ERR</string>
+
+    <!--Results-->
+    <string name="results_share">Share results</string>
+    <string name="results_service">Results service</string>
 
     <string name="file_format_csv" translatable="false">CSV</string>
     <string name="file_format_json" translatable="false">JSON</string>

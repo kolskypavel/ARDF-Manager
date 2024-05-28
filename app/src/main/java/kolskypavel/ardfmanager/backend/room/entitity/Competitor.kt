@@ -43,4 +43,12 @@ data class Competitor(
     @ColumnInfo(name = "si_rent") var siRent: Boolean = false,
     @ColumnInfo(name = "start_number") var startNumber: Int,
     @ColumnInfo(name = "drawn_start_time") var drawnRelativeStartTime: Duration? = null,
-) : Serializable
+) : Serializable {
+    fun getFullName(): String {
+        return "${lastName.uppercase()} $firstName"
+    }
+
+    fun getNameWithStartNumber(): String {
+        return "${lastName.uppercase()} $firstName (${startNumber})"
+    }
+}

@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
@@ -46,6 +47,8 @@ class ReadoutFragment : Fragment() {
     private lateinit var limitProgressBar: ProgressBar
     private lateinit var finishedProgressBar: ProgressBar
     private lateinit var readoutRecyclerView: RecyclerView
+    private lateinit var readoutAddFab: FloatingActionButton
+
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -72,6 +75,7 @@ class ReadoutFragment : Fragment() {
         startedProgressBar = view.findViewById(R.id.readouts_started_progress_bar)
         finishedProgressBar = view.findViewById(R.id.readouts_finished_progress_bar)
         limitProgressBar = view.findViewById(R.id.readouts_limit_progress_bar)
+        readoutAddFab = view.findViewById(R.id.readout_btn_add)
 
         readoutToolbar.inflateMenu(R.menu.fragment_menu_readout)
         readoutToolbar.setOnMenuItemClickListener {
@@ -82,6 +86,17 @@ class ReadoutFragment : Fragment() {
             readoutToolbar.title = event.name
             readoutToolbar.subtitle = dataProcessor.eventTypeToString(event.eventType)
         }
+
+        readoutAddFab.setOnClickListener {
+            findNavController().navigate(
+                ReadoutFragmentDirections.editOrCreateReadout(
+                    true,
+                    null,
+                    -1
+                )
+            )
+        }
+
         setResultListener()
         setRecyclerAdapter()
         setBackButton()
@@ -133,7 +148,15 @@ class ReadoutFragment : Fragment() {
         readoutData: ReadoutData
     ) {
         when (action) {
-            0 -> {}
+            0 -> {
+                if (readoutData.competitorCategory != null) {
+                    findNavController().navigate(
+                        ReadoutFragmentDirections.editOrCreateReadout(
+                            false, readoutData, position
+                        )
+                    )
+                }
+            }
 
             1 -> {
                 confirmReadoutDeletion(readoutData)
@@ -186,7 +209,7 @@ class ReadoutFragment : Fragment() {
         builder.setMessage(message)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            selectedEventViewModel.deleteReadout(readoutData.readoutResult.readout!!.id)
+            selectedEventViewModel.deleteReadout(readoutData.readoutResult.readout.id)
             dialog.dismiss()
         }
 
@@ -238,9 +261,7 @@ class ReadoutFragment : Fragment() {
             }
             builder.show()
         }
-
     }
-
 
     override fun onDestroyView() {
         super.onDestroyView()

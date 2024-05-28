@@ -1,4 +1,4 @@
-package kolskypavel.ardfmanager.ui.competitors
+package kolskypavel.ardfmanager.ui.readouts
 
 import android.view.LayoutInflater
 import android.view.View

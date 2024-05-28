@@ -7,14 +7,11 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.CheckBox
-import android.widget.LinearLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -23,9 +20,7 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
-import kolskypavel.ardfmanager.backend.wrappers.PunchEditItemWrapper
 import kolskypavel.ardfmanager.ui.SelectedEventViewModel
 import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
@@ -38,13 +33,10 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private val dataProcessor = DataProcessor.get()
 
     private lateinit var competitor: Competitor
-    private var origSiNumber: Int? = null
-    private var origCategory: UUID? = null
     private var modifiedPunches = false
 
     private lateinit var categories: List<Category>
     private val categoryArr = ArrayList<String>()
-    private val statusArr = ArrayList<String>()
 
     private lateinit var firstNameTextView: TextInputEditText
     private lateinit var lastNameTextView: TextInputEditText
@@ -60,10 +52,6 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private lateinit var startNumberTextView: TextInputEditText
     private lateinit var startTimeTextView: TextInputEditText
     private lateinit var siRentCheckBox: CheckBox
-    private lateinit var editPunchesSwitch: SwitchMaterial
-    private lateinit var dataEditLinearLayout: LinearLayout
-    private lateinit var raceStatusPicker: MaterialAutoCompleteTextView
-    private lateinit var punchEditRecyclerView: RecyclerView
 
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
@@ -100,11 +88,6 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         siNumberTextView = view.findViewById(R.id.competitor_dialog_si_number)
         startNumberTextView = view.findViewById(R.id.competitor_dialog_start_number)
         siRentCheckBox = view.findViewById(R.id.competitor_dialog_si_rent)
-
-        editPunchesSwitch = view.findViewById(R.id.competitor_dialog_edit_punches)
-        dataEditLinearLayout = view.findViewById(R.id.competitor_dialog_data_edit_layout)
-        raceStatusPicker = view.findViewById(R.id.competitor_dialog_status)
-        punchEditRecyclerView = view.findViewById(R.id.competitor_dialog_punch_recycler_view)
 
         cancelButton = view.findViewById(R.id.competitor_dialog_cancel)
         okButton = view.findViewById(R.id.competitor_dialog_ok)
@@ -241,43 +224,6 @@ class CompetitorCreateDialogFragment : DialogFragment() {
             )
         }
 
-        // Punches setup
-
-        //Set up the punch edit recycler view
-        punchEditRecyclerView.adapter =
-            PunchEditRecyclerViewAdapter(
-                selectedEventViewModel.getPunchRecordsForCompetitor(competitor)
-            )
-
-        dataEditLinearLayout.visibility = View.GONE
-        //Toggle the visibility of the punch switch
-
-        editPunchesSwitch.setOnCheckedChangeListener { _, checked ->
-            if (checked) {
-                dataEditLinearLayout.visibility = View.VISIBLE
-                modifiedPunches = true
-            } else {
-                dataEditLinearLayout.visibility = View.GONE
-                modifiedPunches = false
-            }
-        }
-
-        //Populate the status options
-        for (status in RaceStatus.entries) {
-            statusArr.add(dataProcessor.raceStatusToString(status))
-        }
-
-        statusArr.add(0, getString(R.string.automatic))
-        val statusAdapter: ArrayAdapter<String> =
-            ArrayAdapter(
-                requireContext(),
-                android.R.layout.simple_spinner_dropdown_item,
-                statusArr
-            )
-
-        raceStatusPicker.setAdapter(statusAdapter)
-        raceStatusPicker.setText(getString(R.string.automatic), false)
-
     }
 
     private fun setButtons() {
@@ -312,12 +258,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                     competitor.categoryId = null
                 }
 
-                selectedEventViewModel.createOrUpdateCompetitor(
-                    competitor,
-                    modifiedPunches,
-                    PunchEditItemWrapper.getPunches((punchEditRecyclerView.adapter as PunchEditRecyclerViewAdapter).values),
-                    getRaceStatusFromPicker()
-                )
+                selectedEventViewModel.createOrUpdateCompetitor(competitor)
                 //Send back the result to update the recycler view
                 setFragmentResult(
                     REQUEST_COMPETITOR_MODIFICATION, bundleOf(
@@ -331,15 +272,6 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
         cancelButton.setOnClickListener {
             dialog?.cancel()
-        }
-    }
-
-    private fun getRaceStatusFromPicker(): RaceStatus? {
-        val raceStatusString = raceStatusPicker.text.toString()
-        return if (raceStatusString == requireContext().getString(R.string.automatic)) {
-            null
-        } else {
-            dataProcessor.raceStatusStringToEnum(raceStatusString)
         }
     }
 
@@ -378,16 +310,16 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
                 if (siNumber != origSiNumber) {
                     //Invalid range
-                    if (siNumber < SIConstants.SI_MIN_NUMBER || siNumber > SIConstants.SI_MAX_NUMBER) {
+                    if (!SIConstants.isSINumberValid(siNumber)) {
                         valid = false
                         siNumberTextView.error =
-                            getString(R.string.competitor_si_number_out_of_range)
+                            getString(R.string.si_number_invalid_range)
                     }
                     //Already existing
                     else if (selectedEventViewModel.checkIfSINumberExists(siNumber)) {
                         valid = false
                         siNumberTextView.error =
-                            getString(R.string.competitor_duplicate_si_number)
+                            getString(R.string.duplicate_si_number)
                     }
                 }
             } catch (e: Exception) {
@@ -426,11 +358,6 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 startTimeTextView.error = getString(R.string.invalid)
                 valid = false
             }
-        }
-
-        //Check if the modified punches are valid
-        if (modifiedPunches && !(punchEditRecyclerView.adapter as PunchEditRecyclerViewAdapter).isValid()) {
-            valid = false
         }
 
         return valid

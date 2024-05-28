@@ -12,9 +12,6 @@ import java.util.UUID
 
 @Dao
 interface CompetitorDao {
-    @Query("SELECT * FROM competitor WHERE event_id=(:eventId)")
-    fun getCompetitorFlowByEvent(eventId: UUID): Flow<List<Competitor>>
-
     @Query("SELECT * FROM competitor WHERE event_id=(:eventId) ")
     @Transaction
     @RewriteQueriesToDropUnusedColumns
@@ -26,7 +23,7 @@ interface CompetitorDao {
     suspend fun getCompetitorData(eventId: UUID): List<CompetitorData>
 
     @Query("SELECT * FROM competitor WHERE id=(:id) LIMIT 1")
-    suspend fun getCompetitor(id: UUID): Competitor
+    suspend fun getCompetitor(id: UUID): Competitor?
 
     @Query("SELECT * FROM competitor WHERE si_number=(:siNumber) AND event_id = (:eventId) LIMIT 1")
     suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor?

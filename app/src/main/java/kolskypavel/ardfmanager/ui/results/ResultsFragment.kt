@@ -75,6 +75,9 @@ class ResultsFragment : Fragment() {
     private fun setFragmentMenuActions(menuItem: MenuItem): Boolean {
 
         when (menuItem.itemId) {
+            R.id.result_menu_share_results -> {
+                findNavController().navigate(ResultsFragmentDirections.exportResults())
+            }
 
             R.id.result_menu_edit_event -> {
                 findNavController().navigate(

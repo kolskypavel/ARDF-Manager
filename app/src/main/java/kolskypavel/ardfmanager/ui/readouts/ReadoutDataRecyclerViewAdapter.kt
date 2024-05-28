@@ -34,8 +34,7 @@ class ReadoutDataRecyclerViewAdapter(
         val item = values[position]
 
         if (item.competitorCategory?.competitor != null) {
-            holder.competitorView.text =
-                "${item.competitorCategory!!.competitor!!.firstName} ${item.competitorCategory!!.competitor.lastName}"
+            holder.competitorView.text = item.competitorCategory!!.competitor.getFullName()
         } else {
             holder.competitorView.setText(R.string.unknown_competitor)
         }

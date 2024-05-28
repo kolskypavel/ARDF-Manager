@@ -217,13 +217,10 @@ class DataProcessor private constructor(context: Context) {
     }
 
     //COMPETITORS
-    fun getCompetitorFlowForEvent(eventId: UUID) =
-        ardfRepository.getCompetitorFlowByEvent(eventId)
-
     fun getCompetitorDataFlowByEvent(eventId: UUID) =
         ardfRepository.getCompetitorDataFlowByEvent(eventId)
 
-    suspend fun getCompetitor(id: UUID): Competitor = ardfRepository.getCompetitor(id)
+    suspend fun getCompetitor(id: UUID) = ardfRepository.getCompetitor(id)
 
     suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
         ardfRepository.getCompetitorBySINumber(siNumber, eventId)
@@ -287,23 +284,9 @@ class DataProcessor private constructor(context: Context) {
 
     suspend fun createOrUpdateCompetitor(
         competitor: Competitor,
-        modifiedPunches: Boolean,
-        punches: ArrayList<Punch>,
-        manualStatus: RaceStatus?
     ) {
         ardfRepository.createCompetitor(competitor)
-
-        //If punches were added, process and save them
-        if (modifiedPunches) {
-            resultsProcessor?.processManualPunches(
-                competitor.id,
-                competitor.categoryId,
-                punches,
-                manualStatus
-            )
-        } else {
-            updateResultsForCompetitor(competitor.id)
-        }
+        updateResultsForCompetitor(competitor.id)
     }
 
     suspend fun deleteCompetitor(id: UUID, deleteReadout: Boolean) {
@@ -328,6 +311,7 @@ class DataProcessor private constructor(context: Context) {
 
     suspend fun getReadoutByCompetitor(competitorId: UUID): Readout? =
         ardfRepository.getReadoutsByCompetitor(competitorId)
+
 
     suspend fun saveReadoutAndResult(readout: Readout, punches: ArrayList<Punch>, result: Result) =
         ardfRepository.saveReadoutAndResult(readout, punches, result)
@@ -356,11 +340,19 @@ class DataProcessor private constructor(context: Context) {
     suspend fun processCardData(cardData: CardData, event: Event) =
         appContext.get()?.let { resultsProcessor?.processCardData(cardData, event, it) }
 
+    suspend fun processManualPunches(
+        readout: Readout,
+        punches: ArrayList<Punch>,
+        manualStatus: RaceStatus?
+    ) = resultsProcessor?.processManualPunchData(readout, punches, manualStatus)
+
     //RESULTS
     fun getResultDataByEvent(eventId: UUID) = resultsProcessor!!.getResultDataByEvent(eventId)
 
     suspend fun getResultByCompetitor(competitorId: UUID) =
         ardfRepository.getResultByCompetitor(competitorId)
+
+    suspend fun getResultByReadout(readoutId: UUID) = ardfRepository.getResultByReadout(readoutId)
 
     suspend fun createResult(result: Result) = ardfRepository.createResult(result)
     private suspend fun updateResultsForCategory(categoryId: UUID, delete: Boolean) =
