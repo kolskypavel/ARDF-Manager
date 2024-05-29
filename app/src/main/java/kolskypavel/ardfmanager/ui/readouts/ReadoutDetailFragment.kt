@@ -13,14 +13,14 @@ import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
-import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import java.util.UUID
 
 class ReadoutDetailFragment : Fragment() {
 
     private val dataProcessor = DataProcessor.get()
     private val args: ReadoutDetailFragmentArgs by navArgs()
-    private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
+    private val selectedRaceViewModel: SelectedRaceViewModel by activityViewModels()
 
     private lateinit var readoutDetailToolbar: Toolbar
     private lateinit var punchRecyclerView: RecyclerView
@@ -133,7 +133,7 @@ class ReadoutDetailFragment : Fragment() {
     }
 
     private fun setRecyclerViewAdapter(readoutId: UUID) {
-        val punches = selectedEventViewModel.getPunchesByReadout(readoutId)
+        val punches = selectedRaceViewModel.getPunchesByReadout(readoutId)
         punchRecyclerView.adapter = PunchRecyclerViewAdapter(punches, requireContext())
 
     }

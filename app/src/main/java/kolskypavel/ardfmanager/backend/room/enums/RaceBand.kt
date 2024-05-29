@@ -1,11 +1,9 @@
 package kolskypavel.ardfmanager.backend.room.enums
 
-enum class EventLevel(val value: Int) {
-    INTERNATIONAL(0),
-    NATIONAL(1),
-    REGIONAL(2),
-    DISTRICT(3),
-    PRACTICE(4);
+enum class RaceBand(val value: Int) {
+    M80(0),
+    M2(1),
+    COMBINED(2);
 
     companion object {
         fun getByValue(value: Int) = entries.firstOrNull { it.value == value }

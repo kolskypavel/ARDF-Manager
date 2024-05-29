@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/readout_menu_edit_event"
-        android:title="@string/event_edit" />
+        android:id="@+id/readout_menu_edit_race"
+        android:title="@string/race_edit" />
 
     <item
         android:id="@+id/readout_menu_global_settings"

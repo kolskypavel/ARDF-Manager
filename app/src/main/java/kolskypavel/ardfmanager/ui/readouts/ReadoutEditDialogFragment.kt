@@ -1,5 +1,7 @@
 package kolskypavel.ardfmanager.ui.readouts
 
+import android.content.res.Resources
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,14 +28,14 @@ import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.backend.sportident.SITime
 import kolskypavel.ardfmanager.backend.wrappers.PunchEditItemWrapper
-import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.UUID
 
 class ReadoutEditDialogFragment : DialogFragment() {
     private val args: ReadoutEditDialogFragmentArgs by navArgs()
-    private lateinit var selectedEventViewModel: SelectedEventViewModel
+    private lateinit var selectedRaceViewModel: SelectedRaceViewModel
     private val dataProcessor = DataProcessor.get()
 
     private lateinit var readout: Readout
@@ -60,13 +62,22 @@ class ReadoutEditDialogFragment : DialogFragment() {
         return inflater.inflate(R.layout.dialog_edit_readout, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val sl: SelectedEventViewModel by activityViewModels()
-        selectedEventViewModel = sl
-        competitors = selectedEventViewModel.getCompetitors().sortedBy { com -> com.lastName }
+    private fun DialogFragment.setWidthPercent(percentage: Int) {
+        val percent = percentage.toFloat() / 100
+        val dm = Resources.getSystem().displayMetrics
+        val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
+        val percentWidth = rect.width() * percent
+        dialog?.window?.setLayout(percentWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.add_dialog)
+        setWidthPercent(95)
+
+        val sl: SelectedRaceViewModel by activityViewModels()
+        selectedRaceViewModel = sl
+        competitors = selectedRaceViewModel.getCompetitors().sortedBy { com -> com.lastName }
 
         competitorPicker = view.findViewById(R.id.readout_dialog_competitor)
         competitorPickerLayout = view.findViewById(R.id.readout_dialog_competitor_layout)
@@ -88,7 +99,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
             readout =
                 Readout(
                     UUID.randomUUID(), null, 0,
-                    selectedEventViewModel.getCurrentEvent().id,
+                    selectedRaceViewModel.getCurrentRace().id,
                     null, null, null, null,
                     LocalDateTime.now(),
                     true
@@ -115,7 +126,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
             }
 
             if (readout.competitorID != null) {
-                val competitor = selectedEventViewModel.getCompetitor(readout.competitorID!!)!!
+                val competitor = selectedRaceViewModel.getCompetitor(readout.competitorID!!)!!
                 competitorPicker.setText(competitor.getNameWithStartNumber())
                 siNumberInputLayout.isEnabled = false
             } else {
@@ -165,7 +176,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
                 PunchEditItemWrapper(
                     Punch(
                         UUID.randomUUID(),
-                        dataProcessor.getCurrentEvent().id,
+                        dataProcessor.getCurrentRace().id,
                         null,
                         null,
                         null,
@@ -182,7 +193,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
                 PunchEditItemWrapper(
                     Punch(
                         UUID.randomUUID(),
-                        dataProcessor.getCurrentEvent().id,
+                        dataProcessor.getCurrentRace().id,
                         null,
                         null,
                         null,
@@ -227,7 +238,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
                     readout.siNumber = siNumberInput.text.toString().toInt()
                 }
 
-                selectedEventViewModel.processManualPunches(
+                selectedRaceViewModel.processManualPunches(
                     readout,
                     PunchEditItemWrapper.getPunches(
                         (punchEditRecyclerView.adapter as PunchEditRecyclerViewAdapter).values
@@ -249,7 +260,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
         //Check competitor
         if (readout.competitorID != null
             && origReadout?.competitorID != readout.competitorID
-            && selectedEventViewModel.getReadoutByCompetitor(readout.competitorID!!) != null
+            && selectedRaceViewModel.getReadoutByCompetitor(readout.competitorID!!) != null
         ) {
             competitorPickerLayout.error = getString(R.string.readout_competitor_exists)
             valid = false
@@ -261,9 +272,9 @@ class ReadoutEditDialogFragment : DialogFragment() {
             if (readout.siNumber != origReadout?.siNumber) {
 
                 //Check for duplicate readouts with same SI number
-                if (selectedEventViewModel.getReadoutBySINumber(
+                if (selectedRaceViewModel.getReadoutBySINumber(
                         readout.siNumber!!,
-                        selectedEventViewModel.getCurrentEvent().id
+                        selectedRaceViewModel.getCurrentRace().id
                     ) != null
                 ) {
                     siNumberInputLayout.error = getString(R.string.readout_si_exists)

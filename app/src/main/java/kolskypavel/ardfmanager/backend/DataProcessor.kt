@@ -12,15 +12,15 @@ import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
-import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
-import kolskypavel.ardfmanager.backend.room.enums.EventBand
-import kolskypavel.ardfmanager.backend.room.enums.EventLevel
-import kolskypavel.ardfmanager.backend.room.enums.EventType
+import kolskypavel.ardfmanager.backend.room.enums.RaceBand
+import kolskypavel.ardfmanager.backend.room.enums.RaceLevel
+import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.FinishTimeSource
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
@@ -78,67 +78,66 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    suspend fun setCurrentEvent(eventId: UUID): Event {
-        val event = getEvent(eventId)
-        currentState.postValue(currentState.value?.let { AppState(event, it.siReaderState) })
+    suspend fun setCurrentRace(raceId: UUID): Race {
+        val race = getRace(raceId)
+        currentState.postValue(currentState.value?.let { AppState(race, it.siReaderState) })
 
-        return event
+        return race
     }
 
-    fun getCurrentEvent() = currentState.value?.currentEvent!!
+    fun getCurrentRace() = currentState.value?.currentRace!!
 
-    fun removeReaderEvent() {
+    fun removeReaderRace() {
         currentState.postValue(currentState.value?.let { AppState(null, it.siReaderState) })
     }
 
-    //METHODS TO HANDLE EVENTS
-    suspend fun getEvents(): Flow<List<Event>> = ardfRepository.getEvents()
+    //METHODS TO HANDLE RACES
+    suspend fun getRaces(): Flow<List<Race>> = ardfRepository.getRaces()
 
-    private suspend fun getEvent(id: UUID): Event = ardfRepository.getEvent(id)
+    private suspend fun getRace(id: UUID): Race = ardfRepository.getRace(id)
 
-    fun createEvent(
-        event: Event
+    fun createRace(
+        race: Race
     ) {
         runBlocking {
-            ardfRepository.createEvent(event)
+            ardfRepository.createRace(race)
         }
     }
 
-    fun updateEvent(
-        event: Event
-    ) {
-        runBlocking {
-            ardfRepository.updateEvent(event)
-        }
+    suspend fun updateRace(race: Race) {
+        ardfRepository.updateRace(race)
+        updateResults(race.id)
     }
 
-    suspend fun deleteEvent(id: UUID) {
-        ardfRepository.deleteEvent(id)
+    suspend fun deleteRace(id: UUID) {
+        ardfRepository.deleteRace(id)
     }
 
     //CATEGORIES
-    fun getCategoryDataFlowForEvent(eventId: UUID) =
-        ardfRepository.getCategoryDataFlowForEvent(eventId)
+    fun getCategoryDataFlowForRace(raceId: UUID) =
+        ardfRepository.getCategoryDataFlowForRace(raceId)
 
     suspend fun getCategory(id: UUID): Category? = ardfRepository.getCategory(id)
-    suspend fun getCategoryData(id: UUID, eventId: UUID): CategoryData? {
-        return ardfRepository.getCategoryData(id, eventId)
+
+    suspend fun getCategoriesForRace(raceId: UUID) = ardfRepository.getCategoriesForRace(raceId)
+    suspend fun getCategoryData(id: UUID, raceId: UUID): CategoryData? {
+        return ardfRepository.getCategoryData(id, raceId)
     }
 
-    suspend fun getCategoryByName(string: String, eventId: UUID) =
-        ardfRepository.getCategoryByName(string, eventId)
+    suspend fun getCategoryByName(string: String, raceId: UUID) =
+        ardfRepository.getCategoryByName(string, raceId)
 
-    suspend fun getCategoryByBirthYear(birthYear: Int, isWoman: Boolean, eventId: UUID): Category? {
+    suspend fun getCategoryByBirthYear(birthYear: Int, isWoman: Boolean, raceId: UUID): Category? {
         //Calculate the age difference
         val age = LocalDate.now().year - birthYear
-        return ardfRepository.getCategoryByBirthYear(age, isWoman, eventId)
+        return ardfRepository.getCategoryByBirthYear(age, isWoman, raceId)
     }
 
-    suspend fun getHighestCategoryOrder(eventId: UUID) =
-        ardfRepository.getHighestCategoryOrder(eventId)
+    suspend fun getHighestCategoryOrder(raceId: UUID) =
+        ardfRepository.getHighestCategoryOrder(raceId)
 
-    suspend fun getCategoryByMaxAge(maxAge: Int, eventId: UUID) =
-        ardfRepository.getCategoryByMaxAge(maxAge, eventId)
+    suspend fun getCategoryByMaxAge(maxAge: Int, raceId: UUID) =
+        ardfRepository.getCategoryByMaxAge(maxAge, raceId)
 
     suspend fun createCategory(category: Category, controlPoints: List<ControlPoint>) {
         ardfRepository.createOrUpdateCategory(category)
@@ -150,7 +149,7 @@ class DataProcessor private constructor(context: Context) {
      */
     suspend fun duplicateCategory(categoryData: CategoryData) {
         categoryData.category.name += "_" + (appContext.get()?.getString(R.string.copy) ?: "_copy")
-        categoryData.category.order = getHighestCategoryOrder(categoryData.category.eventId) + 1
+        categoryData.category.order = getHighestCategoryOrder(categoryData.category.raceId) + 1
 
         //Adjust the IDs
         categoryData.category.id = UUID.randomUUID()
@@ -172,16 +171,16 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    suspend fun deleteCategory(id: UUID, eventId: UUID) {
+    suspend fun deleteCategory(id: UUID, raceId: UUID) {
         ardfRepository.deleteCategory(id)
         ardfRepository.deleteControlPointsByCategory(id)
         updateResultsForCategory(id, true)
-        updateCategoryOrder(eventId)
+        updateCategoryOrder(raceId)
     }
 
     //Updates category order after one is deleted - starts at 0
-    private suspend fun updateCategoryOrder(eventId: UUID) {
-        val categories = ardfRepository.getCategoriesForEvent(eventId)
+    private suspend fun updateCategoryOrder(raceId: UUID) {
+        val categories = ardfRepository.getCategoriesForRace(raceId)
         for (c in categories.withIndex()) {
             c.value.order = c.index
             ardfRepository.createOrUpdateCategory(c.value)
@@ -195,8 +194,8 @@ class DataProcessor private constructor(context: Context) {
 
     fun adjustControlPoints(
         controlPoints: ArrayList<ControlPoint>,
-        eventType: EventType
-    ) = ResultsProcessor.adjustControlPoints(controlPoints, eventType)
+        raceType: RaceType
+    ) = ResultsProcessor.adjustControlPoints(controlPoints, raceType)
 
     private suspend fun createControlPoints(controlPoints: List<ControlPoint>) {
         controlPoints.forEach { cp ->
@@ -204,12 +203,12 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    suspend fun getControlPointByName(eventId: UUID, name: String) =
-        ardfRepository.getControlPointByName(eventId, name)
+    suspend fun getControlPointByName(raceId: UUID, name: String) =
+        ardfRepository.getControlPointByName(raceId, name)
 
 
-    suspend fun getControlPointByCode(eventId: UUID, code: Int) =
-        ardfRepository.getControlPointByCode(eventId, code)
+    suspend fun getControlPointByCode(raceId: UUID, code: Int) =
+        ardfRepository.getControlPointByCode(raceId, code)
 
 
     fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): String {
@@ -217,19 +216,19 @@ class DataProcessor private constructor(context: Context) {
     }
 
     //COMPETITORS
-    fun getCompetitorDataFlowByEvent(eventId: UUID) =
-        ardfRepository.getCompetitorDataFlowByEvent(eventId)
+    fun getCompetitorDataFlowByRace(raceId: UUID) =
+        ardfRepository.getCompetitorDataFlowByRace(raceId)
 
     suspend fun getCompetitor(id: UUID) = ardfRepository.getCompetitor(id)
 
-    suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
-        ardfRepository.getCompetitorBySINumber(siNumber, eventId)
+    suspend fun getCompetitorBySINumber(siNumber: Int, raceId: UUID): Competitor? =
+        ardfRepository.getCompetitorBySINumber(siNumber, raceId)
 
     suspend fun getCompetitorsByCategory(categoryId: UUID): List<Competitor> =
         ardfRepository.getCompetitorsByCategory(categoryId)
 
-    suspend fun getStatisticsByEvent(eventId: UUID): StatisticsWrapper {
-        val competitors = ardfRepository.getCompetitorDataByEvent(eventId)
+    suspend fun getStatisticsByRace(raceId: UUID): StatisticsWrapper {
+        val competitors = ardfRepository.getCompetitorDataByRace(raceId)
         val statistics = StatisticsWrapper(competitors.size, 0, 0, 0)
 
         for (cd in competitors) {
@@ -240,7 +239,7 @@ class DataProcessor private constructor(context: Context) {
                 if (competitor.drawnRelativeStartTime != null) {
                     //Count started
                     if (TimeProcessor.hasStarted(
-                            getCurrentEvent().startDateTime,
+                            getCurrentRace().startDateTime,
                             competitor.drawnRelativeStartTime!!,
                             LocalDateTime.now()
                         )
@@ -248,9 +247,9 @@ class DataProcessor private constructor(context: Context) {
                         statistics.startedCompetitors++
                     }
 
-                    val limit = category?.timeLimit ?: getCurrentEvent().timeLimit
+                    val limit = category?.timeLimit ?: getCurrentRace().timeLimit
                     if (TimeProcessor.isInLimit(
-                            getCurrentEvent().startDateTime,
+                            getCurrentRace().startDateTime,
                             competitor.drawnRelativeStartTime!!,
                             limit, LocalDateTime.now()
                         )
@@ -267,20 +266,20 @@ class DataProcessor private constructor(context: Context) {
         return statistics
     }
 
-    fun checkIfSINumberExists(siNumber: Int, eventId: UUID): Boolean {
+    fun checkIfSINumberExists(siNumber: Int, raceId: UUID): Boolean {
         return runBlocking {
-            return@runBlocking ardfRepository.checkIfSINumberExists(siNumber, eventId) > 0
+            return@runBlocking ardfRepository.checkIfSINumberExists(siNumber, raceId) > 0
         }
     }
 
-    fun checkIfStartNumberExists(startNumber: Int, eventId: UUID): Boolean {
+    fun checkIfStartNumberExists(startNumber: Int, raceId: UUID): Boolean {
         return runBlocking {
-            return@runBlocking ardfRepository.checkIfStartNumberExists(startNumber, eventId) > 0
+            return@runBlocking ardfRepository.checkIfStartNumberExists(startNumber, raceId) > 0
         }
     }
 
-    suspend fun getHighestStartNumberByEvent(eventId: UUID) =
-        ardfRepository.getHighestStartNumberByEvent(eventId)
+    suspend fun getHighestStartNumberByRace(raceId: UUID) =
+        ardfRepository.getHighestStartNumberByRace(raceId)
 
     suspend fun createOrUpdateCompetitor(
         competitor: Competitor,
@@ -297,17 +296,17 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    suspend fun deleteAllCompetitors(eventId: UUID) {
-        ardfRepository.deleteAllCompetitors(eventId)
+    suspend fun deleteAllCompetitors(raceId: UUID) {
+        ardfRepository.deleteAllCompetitors(raceId)
     }
 
     //READOUTS
-    fun getReadoutDataByEvent(eventId: UUID): Flow<List<ReadoutData>> {
-        return ardfRepository.getReadoutDataByEvent(eventId)
+    fun getReadoutDataByRace(raceId: UUID): Flow<List<ReadoutData>> {
+        return ardfRepository.getReadoutDataByRace(raceId)
     }
 
-    suspend fun getReadoutBySINumber(siNumber: Int, eventId: UUID): Readout? =
-        ardfRepository.getReadoutBySINumber(siNumber, eventId)
+    suspend fun getReadoutBySINumber(siNumber: Int, raceId: UUID): Readout? =
+        ardfRepository.getReadoutBySINumber(siNumber, raceId)
 
     suspend fun getReadoutByCompetitor(competitorId: UUID): Readout? =
         ardfRepository.getReadoutsByCompetitor(competitorId)
@@ -316,9 +315,9 @@ class DataProcessor private constructor(context: Context) {
     suspend fun saveReadoutAndResult(readout: Readout, punches: ArrayList<Punch>, result: Result) =
         ardfRepository.saveReadoutAndResult(readout, punches, result)
 
-    fun checkIfReadoutExistsBySI(siNumber: Int, eventId: UUID): Boolean {
+    fun checkIfReadoutExistsBySI(siNumber: Int, raceId: UUID): Boolean {
         return runBlocking {
-            return@runBlocking ardfRepository.checkIfReadoutExistsById(siNumber, eventId) > 0
+            return@runBlocking ardfRepository.checkIfReadoutExistsById(siNumber, raceId) > 0
         }
     }
 
@@ -337,8 +336,8 @@ class DataProcessor private constructor(context: Context) {
         punches.forEach { punch -> createPunch(punch) }
     }
 
-    suspend fun processCardData(cardData: CardData, event: Event) =
-        appContext.get()?.let { resultsProcessor?.processCardData(cardData, event, it) }
+    suspend fun processCardData(cardData: CardData, race: Race) =
+        appContext.get()?.let { resultsProcessor?.processCardData(cardData, race, it) }
 
     suspend fun processManualPunches(
         readout: Readout,
@@ -347,7 +346,7 @@ class DataProcessor private constructor(context: Context) {
     ) = resultsProcessor?.processManualPunchData(readout, punches, manualStatus)
 
     //RESULTS
-    fun getResultDataByEvent(eventId: UUID) = resultsProcessor!!.getResultDataByEvent(eventId)
+    fun getResultDataByRace(raceId: UUID) = resultsProcessor!!.getResultDataByRace(raceId)
 
     suspend fun getResultByCompetitor(competitorId: UUID) =
         ardfRepository.getResultByCompetitor(competitorId)
@@ -355,13 +354,20 @@ class DataProcessor private constructor(context: Context) {
     suspend fun getResultByReadout(readoutId: UUID) = ardfRepository.getResultByReadout(readoutId)
 
     suspend fun createResult(result: Result) = ardfRepository.createResult(result)
+
+    private suspend fun updateResults(raceId: UUID) {
+        getCategoriesForRace(raceId).forEach { category ->
+            updateResultsForCategory(category.id, false)
+        }
+    }
+
     private suspend fun updateResultsForCategory(categoryId: UUID, delete: Boolean) =
         resultsProcessor?.updateResultsForCategory(categoryId, delete)
 
     private suspend fun updateResultsForCompetitor(competitorId: UUID) =
         resultsProcessor?.updateResultsForCompetitor(
             competitorId,
-            currentState.value?.currentEvent!!.id
+            currentState.value?.currentRace!!.id
         )
 
     fun importCompetitors() {
@@ -390,40 +396,40 @@ class DataProcessor private constructor(context: Context) {
     //GENERAL HELPER METHODS
 
     //Enums manipulation
-    fun eventTypeToString(eventType: EventType): String {
-        val eventTypeStrings =
-            appContext.get()?.resources?.getStringArray(R.array.event_types_array)!!
-        return eventTypeStrings[eventType.value]!!
+    fun raceTypeToString(raceType: RaceType): String {
+        val raceTypeStrings =
+            appContext.get()?.resources?.getStringArray(R.array.race_types_array)!!
+        return raceTypeStrings[raceType.value]!!
     }
 
-    fun eventTypeStringToEnum(string: String): EventType {
-        val eventTypeStrings =
-            appContext.get()?.resources?.getStringArray(R.array.event_types_array)!!
-        return EventType.getByValue(eventTypeStrings.indexOf(string))!!
+    fun raceTypeStringToEnum(string: String): RaceType {
+        val raceTypeStrings =
+            appContext.get()?.resources?.getStringArray(R.array.race_types_array)!!
+        return RaceType.getByValue(raceTypeStrings.indexOf(string))!!
     }
 
-    fun eventLevelToString(eventLevel: EventLevel): String {
-        val eventLevelStrings =
-            appContext.get()?.resources?.getStringArray(R.array.event_levels_array)!!
-        return eventLevelStrings[eventLevel.value]
+    fun raceLevelToString(raceLevel: RaceLevel): String {
+        val raceLevelStrings =
+            appContext.get()?.resources?.getStringArray(R.array.race_levels_array)!!
+        return raceLevelStrings[raceLevel.value]
     }
 
-    fun eventLevelStringToEnum(string: String): EventLevel {
-        val eventLevelStrings =
-            appContext.get()?.resources?.getStringArray(R.array.event_levels_array)!!
-        return EventLevel.getByValue(eventLevelStrings.indexOf(string))!!
+    fun raceLevelStringToEnum(string: String): RaceLevel {
+        val raceLevelStrings =
+            appContext.get()?.resources?.getStringArray(R.array.race_levels_array)!!
+        return RaceLevel.getByValue(raceLevelStrings.indexOf(string))!!
     }
 
-    fun eventBandToString(eventBand: EventBand): String {
-        val eventBandStrings =
-            appContext.get()?.resources?.getStringArray(R.array.event_bands_array)!!
-        return eventBandStrings[eventBand.value]
+    fun raceBandToString(raceBand: RaceBand): String {
+        val raceBandStrings =
+            appContext.get()?.resources?.getStringArray(R.array.race_bands_array)!!
+        return raceBandStrings[raceBand.value]
     }
 
-    fun eventBandStringToEnum(string: String): EventBand {
-        val eventBandStrings =
-            appContext.get()?.resources?.getStringArray(R.array.event_bands_array)!!
-        return EventBand.getByValue(eventBandStrings.indexOf(string))!!
+    fun raceBandStringToEnum(string: String): RaceBand {
+        val raceBandStrings =
+            appContext.get()?.resources?.getStringArray(R.array.race_bands_array)!!
+        return RaceBand.getByValue(raceBandStrings.indexOf(string))!!
     }
 
     fun raceStatusToString(raceStatus: RaceStatus): String {

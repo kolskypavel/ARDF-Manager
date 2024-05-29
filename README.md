@@ -5,7 +5,7 @@ Originally a school project for MSOE - CSC 4911.
 ## Basic app information
 This app enables event management for the sport of ARDF. 
 Currently availabe functions:
- - CRUD operations on the events, categories, and competitors
+ - CRUD operations on the races, categories, and competitors
  - Data readout using the SportIdent reader via USB OTG
  - Initial processing for the supporting competition formats.
 

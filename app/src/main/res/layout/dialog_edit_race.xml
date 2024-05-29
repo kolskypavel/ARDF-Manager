@@ -15,7 +15,7 @@
         android:hint="@string/name">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/event_dialog_name"
+            android:id="@+id/race_dialog_name"
             style="@style/dialog_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -33,7 +33,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="@string/event_type"
+            android:hint="@string/race_type"
             android:textColor="@color/black">
 
             <AutoCompleteTextView
@@ -42,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none"
-                app:simpleItems="@array/event_types_array" />
+                app:simpleItems="@array/race_types_array" />
         </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -55,7 +55,7 @@
             android:textColor="@color/black">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/event_dialog_external_id"
+                android:id="@+id/race_dialog_external_id"
                 style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -83,7 +83,7 @@
             app:endIconMode="custom">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/event_dialog_date"
+                android:id="@+id/race_dialog_date"
                 style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -102,7 +102,7 @@
             app:endIconMode="custom">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/event_dialog_start_time"
+                android:id="@+id/race_dialog_start_time"
                 style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -125,15 +125,15 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:layout_weight="0.9"
-            android:hint="@string/event_level">
+            android:hint="@string/race_level">
 
             <AutoCompleteTextView
-                android:id="@+id/event_dialog_level"
+                android:id="@+id/race_dialog_level"
                 style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none"
-                app:simpleItems="@array/event_levels_array" />
+                app:simpleItems="@array/race_levels_array" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -144,12 +144,12 @@
             android:hint="@string/band">
 
             <AutoCompleteTextView
-                android:id="@+id/event_dialog_band"
+                android:id="@+id/race_dialog_band"
                 style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="none"
-                app:simpleItems="@array/event_bands_array" />
+                app:simpleItems="@array/race_bands_array" />
         </com.google.android.material.textfield.TextInputLayout>
 
     </LinearLayout>
@@ -161,7 +161,7 @@
         android:hint="@string/limit">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/event_dialog_limit"
+            android:id="@+id/race_dialog_limit"
             style="@style/dialog_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -182,7 +182,7 @@
             android:hint="@string/start_time_source">
 
             <AutoCompleteTextView
-                android:id="@+id/event_dialog_start_time_source"
+                android:id="@+id/race_dialog_start_time_source"
                 style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -199,7 +199,7 @@
             android:hint="@string/finish_time_source">
 
             <AutoCompleteTextView
-                android:id="@+id/event_dialog_finish_time_source"
+                android:id="@+id/race_dialog_finish_time_source"
                 style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -219,7 +219,7 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/event_dialog_cancel"
+            android:id="@+id/race_dialog_cancel"
             style="@style/dialog_ok_cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -228,7 +228,7 @@
             android:text="@string/cancel" />
 
         <Button
-            android:id="@+id/event_dialog_ok"
+            android:id="@+id/race_dialog_ok"
             style="@style/dialog_ok_cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

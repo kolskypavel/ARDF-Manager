@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/event_toolbar"
+        android:id="@+id/race_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
@@ -15,20 +15,19 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/event_recycler_view"
-        android:name="kolskypavel.ardfmanager.EventSelectionFragment"
+        android:id="@+id/race_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="?attr/actionBarSize"
         app:layoutManager="LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@+id/event_toolbar"
-        tools:context=".ui.event.EventSelectionFragment"
+        app:layout_constraintTop_toBottomOf="@+id/race_toolbar"
+        tools:context=".ui.races.RaceSelectionFragment"
         tools:layout_editor_absoluteX="0dp"
-        tools:listitem="@layout/recycler_item_event" />
+        tools:listitem="@layout/recycler_item_race" />
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/event_btn_add"
+        android:id="@+id/race_btn_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="end|bottom"

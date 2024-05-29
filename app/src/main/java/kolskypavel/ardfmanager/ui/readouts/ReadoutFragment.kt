@@ -23,11 +23,11 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.databinding.FragmentReadoutsBinding
-import kolskypavel.ardfmanager.ui.SelectedEventViewModel
-import kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
+import kolskypavel.ardfmanager.ui.races.RaceCreateDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 class ReadoutFragment : Fragment() {
 
     private var _binding: FragmentReadoutsBinding? = null
-    private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
+    private val selectedRaceViewModel: SelectedRaceViewModel by activityViewModels()
     private val dataProcessor = DataProcessor.get()
 
     private lateinit var readoutToolbar: Toolbar
@@ -82,9 +82,9 @@ class ReadoutFragment : Fragment() {
             return@setOnMenuItemClickListener setFragmentMenuActions(it)
         }
 
-        selectedEventViewModel.event.observe(viewLifecycleOwner) { event ->
-            readoutToolbar.title = event.name
-            readoutToolbar.subtitle = dataProcessor.eventTypeToString(event.eventType)
+        selectedRaceViewModel.race.observe(viewLifecycleOwner) { race ->
+            readoutToolbar.title = race.name
+            readoutToolbar.subtitle = dataProcessor.raceTypeToString(race.raceType)
         }
 
         readoutAddFab.setOnClickListener {
@@ -107,19 +107,19 @@ class ReadoutFragment : Fragment() {
 
         when (menuItem.itemId) {
 
-            R.id.readout_menu_edit_event -> {
+            R.id.readout_menu_edit_race -> {
                 findNavController().navigate(
-                    BottomNavDirections.modifyEventProperties(
+                    BottomNavDirections.modifyRaceProperties(
                         false,
                         0,
-                        selectedEventViewModel.event.value
+                        selectedRaceViewModel.race.value
                     )
                 )
                 return true
             }
 
             R.id.readout_menu_global_settings -> {
-                findNavController().navigate(BottomNavDirections.openSettingsFromEvent())
+                findNavController().navigate(BottomNavDirections.openSettingsFromRace())
                 return true
             }
 
@@ -128,17 +128,17 @@ class ReadoutFragment : Fragment() {
     }
 
     private fun setResultListener() {
-        //Enable event modification from menu
-        setFragmentResultListener(EventCreateDialogFragment.REQUEST_EVENT_MODIFICATION) { _, bundle ->
-            val event: Event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        //Enable race modification from menu
+        setFragmentResultListener(RaceCreateDialogFragment.REQUEST_RACE_MODIFICATION) { _, bundle ->
+            val race: Race = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 bundle.getSerializable(
-                    EventCreateDialogFragment.BUNDLE_KEY_EVENT,
-                    Event::class.java
+                    RaceCreateDialogFragment.BUNDLE_KEY_RACE,
+                    Race::class.java
                 )!!
             } else {
-                bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT) as Event
+                bundle.getSerializable(RaceCreateDialogFragment.BUNDLE_KEY_RACE) as Race
             }
-            selectedEventViewModel.updateEvent(event)
+            selectedRaceViewModel.updateRace(race)
         }
     }
 
@@ -168,7 +168,7 @@ class ReadoutFragment : Fragment() {
         CoroutineScope(Dispatchers.Main).launch {
             while (true) {
                 val statistics =
-                    selectedEventViewModel.getStatistics(selectedEventViewModel.getCurrentEvent().id)
+                    selectedRaceViewModel.getStatistics(selectedRaceViewModel.getCurrentRace().id)
 
                 startedTextView.text = "${statistics.startedCompetitors}/${statistics.competitors}"
                 startedProgressBar.progress = if (statistics.startedCompetitors != 0) {
@@ -209,7 +209,7 @@ class ReadoutFragment : Fragment() {
         builder.setMessage(message)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            selectedEventViewModel.deleteReadout(readoutData.readoutResult.readout.id)
+            selectedRaceViewModel.deleteReadout(readoutData.readoutResult.readout.id)
             dialog.dismiss()
         }
 
@@ -222,7 +222,7 @@ class ReadoutFragment : Fragment() {
     private fun setRecyclerAdapter() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                selectedEventViewModel.readoutData.collect { readouts ->
+                selectedRaceViewModel.readoutData.collect { readouts ->
                     readoutRecyclerView.adapter =
                         ReadoutDataRecyclerViewAdapter(
                             readouts,
@@ -247,13 +247,13 @@ class ReadoutFragment : Fragment() {
     private fun setBackButton() {
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             val builder = AlertDialog.Builder(context)
-            builder.setTitle(getString(R.string.event_end))
-            val message = getString(R.string.event_end_confirmation)
+            builder.setTitle(getString(R.string.race_end))
+            val message = getString(R.string.race_end_confirmation)
             builder.setMessage(message)
 
             builder.setPositiveButton(R.string.ok) { dialog, _ ->
-                dataProcessor.removeReaderEvent()
-                findNavController().navigate(ReadoutFragmentDirections.closeEvent())
+                dataProcessor.removeReaderRace()
+                findNavController().navigate(ReadoutFragmentDirections.closeRace())
             }
 
             builder.setNegativeButton(R.string.cancel) { dialog, _ ->

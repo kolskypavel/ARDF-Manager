@@ -105,7 +105,7 @@ class PunchEditRecyclerViewAdapter(
             position + 1, PunchEditItemWrapper(
                 Punch(
                     UUID.randomUUID(),
-                    values[0].punch.eventId,
+                    values[0].punch.raceId,
                     null,
                     values[0].punch.competitorId,
                     null,

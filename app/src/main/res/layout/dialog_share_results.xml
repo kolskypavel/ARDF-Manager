@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:hint="@string/event_type"
+        android:hint="@string/race_type"
         android:padding="12dp"
         android:textColor="@color/black"
         app:layout_constraintTop_toTopOf="parent">
@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="none"
-            app:simpleItems="@array/event_types_array" />
+            app:simpleItems="@array/race_types_array" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

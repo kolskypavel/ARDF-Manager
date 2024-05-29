@@ -1,5 +1,7 @@
 package kolskypavel.ardfmanager.ui.competitors
 
+import android.content.res.Resources
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,7 +23,7 @@ import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
-import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -29,7 +31,7 @@ import java.util.UUID
 
 class CompetitorCreateDialogFragment : DialogFragment() {
     private val args: CompetitorCreateDialogFragmentArgs by navArgs()
-    private lateinit var selectedEventViewModel: SelectedEventViewModel
+    private lateinit var selectedRaceViewModel: SelectedRaceViewModel
     private val dataProcessor = DataProcessor.get()
 
     private lateinit var competitor: Competitor
@@ -62,16 +64,25 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.dialog_add_competitor, container, false)
+        return inflater.inflate(R.layout.dialog_edit_competitor, container, false)
+    }
+
+    private fun DialogFragment.setWidthPercent(percentage: Int) {
+        val percent = percentage.toFloat() / 100
+        val dm = Resources.getSystem().displayMetrics
+        val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
+        val percentWidth = rect.width() * percent
+        dialog?.window?.setLayout(percentWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val sl: SelectedEventViewModel by activityViewModels()
-        selectedEventViewModel = sl
-        categories = selectedEventViewModel.getCategories()
-
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.add_dialog)
+        setWidthPercent(95)
+
+        val sl: SelectedRaceViewModel by activityViewModels()
+        selectedRaceViewModel = sl
+        categories = selectedRaceViewModel.getCategories()
 
         firstNameTextView = view.findViewById(R.id.competitor_dialog_first_name)
         lastNameTextView = view.findViewById(R.id.competitor_dialog_last_name)
@@ -100,14 +111,14 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         if (args.create) {
             dialog?.setTitle(R.string.competitor_create)
 
-            val event = selectedEventViewModel.getCurrentEvent()
+            val race = selectedRaceViewModel.getCurrentRace()
             val startNumber = runBlocking {
-                return@runBlocking dataProcessor.getHighestStartNumberByEvent(event.id)
+                return@runBlocking dataProcessor.getHighestStartNumberByRace(race.id)
             } + 1
 
             competitor = Competitor(
                 UUID.randomUUID(),
-                event.id,
+                race.id,
                 null,
                 "", "", "", "",
                 false,
@@ -136,7 +147,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
             //Auto insertion of the last card read
             siNumberLayout.setEndIconOnClickListener {
-                val last = selectedEventViewModel.getLastReadCard()
+                val last = selectedRaceViewModel.getLastReadCard()
                 if (last != null) {
                     siNumberTextView.setText(last.toString())
                 }
@@ -150,7 +161,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
             //Preset category
             if (competitor.categoryId != null) {
                 runBlocking {
-                    val category = selectedEventViewModel.getCategory(competitor.categoryId!!)
+                    val category = selectedRaceViewModel.getCategory(competitor.categoryId!!)
                     if (category != null) {
                         categoryPicker.setText(category.name, false)
                     }
@@ -197,7 +208,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                         val calc = dataProcessor.getCategoryByBirthYear(
                             year.toInt(),
                             competitor.isWoman,
-                            selectedEventViewModel.event.value!!.id
+                            selectedRaceViewModel.race.value!!.id
                         )
                         if (calc != null) {
                             categoryPicker.setText(calc.name, false)
@@ -217,7 +228,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
             startTimeTextView.setText(
                 TimeProcessor.getHoursMinutesFromTime(
                     TimeProcessor.getAbsoluteDateTimeFromRelativeTime(
-                        dataProcessor.getCurrentEvent().startDateTime,
+                        dataProcessor.getCurrentRace().startDateTime,
                         competitor.drawnRelativeStartTime!!
                     )
                 )
@@ -258,7 +269,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                     competitor.categoryId = null
                 }
 
-                selectedEventViewModel.createOrUpdateCompetitor(competitor)
+                selectedRaceViewModel.createOrUpdateCompetitor(competitor)
                 //Send back the result to update the recycler view
                 setFragmentResult(
                     REQUEST_COMPETITOR_MODIFICATION, bundleOf(
@@ -316,7 +327,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                             getString(R.string.si_number_invalid_range)
                     }
                     //Already existing
-                    else if (selectedEventViewModel.checkIfSINumberExists(siNumber)) {
+                    else if (selectedRaceViewModel.checkIfSINumberExists(siNumber)) {
                         valid = false
                         siNumberTextView.error =
                             getString(R.string.duplicate_si_number)
@@ -332,7 +343,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         if (startNumberTextView.text.toString().isNotEmpty()) {
             try {
                 val startNumber = startNumberTextView.text.toString().toInt()
-                if (startNumber != origStartNumber && selectedEventViewModel.checkIfStartNumberExists(
+                if (startNumber != origStartNumber && selectedRaceViewModel.checkIfStartNumberExists(
                         startNumber
                     )
                 ) {

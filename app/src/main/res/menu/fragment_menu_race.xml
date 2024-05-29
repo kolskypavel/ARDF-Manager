@@ -4,12 +4,12 @@
 
 
     <item
-        android:id="@+id/event_menu_import_file"
+        android:id="@+id/race_menu_import_file"
         android:icon="@drawable/ic_import_file"
-        android:title="@string/event_import_text"
+        android:title="@string/race_import_text"
         app:showAsAction="always|withText" />
     <item
-        android:id="@+id/event_menu_global_settings"
+        android:id="@+id/race_menu_global_settings"
         android:icon="@drawable/ic_settings"
         android:title="@string/global_settings"
 

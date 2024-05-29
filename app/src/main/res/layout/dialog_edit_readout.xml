@@ -28,10 +28,11 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            style="@style/dialog_textView"
             android:id="@+id/readout_dialog_si_number_layout"
+            style="@style/dialog_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="@string/si_number">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -49,6 +50,7 @@
             style="@style/dialog_dropdown"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="@string/readout_detail_status"
             android:inputType="none"
             android:textColor="@color/black">
@@ -66,7 +68,7 @@
             android:id="@+id/readout_dialog_punch_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp"
+            android:layout_marginTop="8dp"
             android:theme="@style/punch_record_recycler"
             app:layoutManager="LinearLayoutManager" />
 

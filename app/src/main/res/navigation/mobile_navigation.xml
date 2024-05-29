@@ -3,18 +3,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@id/eventSelectionFragment">
+    app:startDestination="@id/raceSelectionFragment">
     <fragment
-        android:id="@+id/eventSelectionFragment"
-        android:name="kolskypavel.ardfmanager.ui.event.EventSelectionFragment"
-        android:label="fragment_event_selection_list"
-        tools:layout="@layout/fragment_event_selection">
+        android:id="@+id/raceSelectionFragment"
+        android:name="kolskypavel.ardfmanager.ui.races.RaceSelectionFragment"
+        android:label="fragment_race_selection_list"
+        tools:layout="@layout/fragment_race_selection">
         <action
-            android:id="@+id/openEvent"
+            android:id="@+id/openRace"
             app:destination="@id/bottomNav" />
         <action
-            android:id="@+id/eventCreateOfModify"
-            app:destination="@id/eventCreateDialogFragment" />
+            android:id="@+id/raceCreateOfModify"
+            app:destination="@id/RaceCreateDialogFragment" />
         <action
             android:id="@+id/openSettings"
             app:destination="@id/settingsFragment" />
@@ -27,7 +27,7 @@
         <dialog
             android:id="@+id/readoutEditDialogFragment"
             android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutEditDialogFragment"
-            android:label="ReadoutEditDialogFragment" >
+            android:label="ReadoutEditDialogFragment">
             <argument
                 android:name="create"
                 app:argType="boolean" />
@@ -76,8 +76,8 @@
                 android:id="@+id/modifyCompetitor"
                 app:destination="@id/competitorCreateDialogFragment" />
             <action
-                android:id="@+id/editEvent"
-                app:destination="@id/eventCreateDialogFragment" />
+                android:id="@+id/editRace"
+                app:destination="@id/RaceCreateDialogFragment" />
             <action
                 android:id="@+id/importExportDataCompetitors"
                 app:destination="@id/CompetitorFileDialogFragment" />
@@ -89,8 +89,8 @@
             android:label="@string/title_categories"
             tools:layout="@layout/fragment_categories">
             <action
-                android:id="@+id/editEvent"
-                app:destination="@id/eventCreateDialogFragment" />
+                android:id="@+id/editRace"
+                app:destination="@id/RaceCreateDialogFragment" />
             <action
                 android:id="@+id/modifyCategory"
                 app:destination="@id/categoryCreateDialogFragment" />
@@ -112,8 +112,8 @@
                 android:id="@+id/openReadoutDetail"
                 app:destination="@id/readoutDetailFragment" />
             <action
-                android:id="@+id/editEvent"
-                app:destination="@id/eventCreateDialogFragment" />
+                android:id="@+id/editRace"
+                app:destination="@id/RaceCreateDialogFragment" />
             <action
                 android:id="@+id/editOrCreateReadout"
                 app:destination="@id/readoutEditDialogFragment" />
@@ -124,8 +124,8 @@
             android:label="fragment_results"
             tools:layout="@layout/fragment_results">
             <action
-                android:id="@+id/editEvent"
-                app:destination="@id/eventCreateDialogFragment" />
+                android:id="@+id/editRace"
+                app:destination="@id/RaceCreateDialogFragment" />
             <action
                 android:id="@+id/exportResults"
                 app:destination="@id/ResultsShareDialogFragment" />
@@ -148,8 +148,8 @@
 
         </dialog>
         <action
-            android:id="@+id/closeEvent"
-            app:destination="@id/eventSelectionFragment" />
+            android:id="@+id/closeRace"
+            app:destination="@id/raceSelectionFragment" />
         <fragment
             android:id="@+id/readoutDetailFragment"
             android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutDetailFragment"
@@ -163,17 +163,17 @@
         </fragment>
 
         <action
-            android:id="@+id/modifyEventProperties"
-            app:destination="@id/eventCreateDialogFragment" />
+            android:id="@+id/modifyRaceProperties"
+            app:destination="@id/RaceCreateDialogFragment" />
         <action
-            android:id="@+id/openSettingsFromEvent"
+            android:id="@+id/openSettingsFromRace"
             app:destination="@id/settingsFragment" />
     </navigation>
 
     <dialog
-        android:id="@+id/eventCreateDialogFragment"
-        android:name="kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment"
-        android:label="EventCreateDialogFragment">
+        android:id="@+id/RaceCreateDialogFragment"
+        android:name="kolskypavel.ardfmanager.ui.races.RaceCreateDialogFragment"
+        android:label="RaceCreateDialogFragment">
         <argument
             android:name="create"
             app:argType="boolean" />
@@ -181,12 +181,12 @@
             android:name="position"
             app:argType="integer" />
         <argument
-            android:name="event"
-            app:argType="kolskypavel.ardfmanager.backend.room.entitity.Event"
+            android:name="race"
+            app:argType="kolskypavel.ardfmanager.backend.room.entitity.Race"
             app:nullable="true" />
         <action
-            android:id="@+id/action_eventCreateDialogFragment_to_eventSelectionFragment"
-            app:destination="@id/eventSelectionFragment" />
+            android:id="@+id/action_raceCreateDialogFragment_to_raceSelectionFragment"
+            app:destination="@id/raceSelectionFragment" />
         <action
             android:id="@+id/select_date"
             app:destination="@id/datePickerFragment" />

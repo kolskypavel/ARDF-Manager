@@ -1,4 +1,4 @@
-package kolskypavel.ardfmanager.ui.event
+package kolskypavel.ardfmanager.ui.races
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -11,53 +11,53 @@ import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.entitity.Race
 import java.util.UUID
 
 /**
- * [RecyclerView.Adapter] that can display a [Event].
+ * [RecyclerView.Adapter] that can display a [Race].
  * TODO: Replace the implementation with code for your data type.
  */
-class EventRecyclerViewAdapter(
-    private var values: List<Event>, private val onEventClicked: (eventId: UUID) -> Unit,
-    private val onMoreClicked: (action: Int, position: Int, event: Event) -> Unit,
+class RaceRecyclerViewAdapter(
+    private var values: List<Race>, private val onRaceClicked: (raceId: UUID) -> Unit,
+    private val onMoreClicked: (action: Int, position: Int, race: Race) -> Unit,
     private val context: Context
-) : RecyclerView.Adapter<EventRecyclerViewAdapter.EventViewHolder>() {
+) : RecyclerView.Adapter<RaceRecyclerViewAdapter.RaceViewHolder>() {
 
     private val dataProcessor = DataProcessor.get()
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RaceViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
-            .inflate(R.layout.recycler_item_event, parent, false)
+            .inflate(R.layout.recycler_item_race, parent, false)
 
-        return EventViewHolder(adapterLayout)
+        return RaceViewHolder(adapterLayout)
     }
 
-    override fun onBindViewHolder(holder: EventViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RaceViewHolder, position: Int) {
         val item = values[position]
         holder.title.text = item.name
         holder.date.text =
             item.startDateTime.toLocalDate()
                 .toString() + " " + TimeProcessor.getHoursMinutesFromTime(item.startDateTime)
-        holder.type.text = dataProcessor.eventTypeToString(item.eventType)
-        holder.level.text = dataProcessor.eventLevelToString(
-            item.eventLevel
+        holder.type.text = dataProcessor.raceTypeToString(item.raceType)
+        holder.level.text = dataProcessor.raceLevelToString(
+            item.raceLevel
         )
         holder.itemView.setOnClickListener {
-            onEventClicked(item.id)
+            onRaceClicked(item.id)
         }
         holder.moreBtn.setOnClickListener {
 
             val popupMenu = PopupMenu(context, holder.moreBtn)
-            popupMenu.inflate(R.menu.context_menu_event)
+            popupMenu.inflate(R.menu.context_menu_race)
 
             popupMenu.setOnMenuItemClickListener {
                 when (it.itemId) {
-                    R.id.menu_item_edit_event -> {
+                    R.id.menu_item_edit_race -> {
                         onMoreClicked(0, position, item)
                         true
                     }
 
-                    R.id.menu_item_delete_event -> {
+                    R.id.menu_item_delete_race -> {
                         onMoreClicked(1, position, item)
                         true
                     }
@@ -74,12 +74,12 @@ class EventRecyclerViewAdapter(
 
     override fun getItemCount(): Int = values.size
 
-    inner class EventViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val title: TextView = view.findViewById(R.id.event_item_title)
-        val date: TextView = view.findViewById(R.id.event_item_date)
-        val level: TextView = view.findViewById(R.id.event_item_level)
-        val type: TextView = view.findViewById(R.id.event_item_type)
-        val moreBtn: ImageButton = view.findViewById(R.id.event_item_more_btn)
+    inner class RaceViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val title: TextView = view.findViewById(R.id.race_item_title)
+        val date: TextView = view.findViewById(R.id.race_item_date)
+        val level: TextView = view.findViewById(R.id.race_item_level)
+        val type: TextView = view.findViewById(R.id.race_item_type)
+        val moreBtn: ImageButton = view.findViewById(R.id.race_item_more_btn)
     }
 
 }

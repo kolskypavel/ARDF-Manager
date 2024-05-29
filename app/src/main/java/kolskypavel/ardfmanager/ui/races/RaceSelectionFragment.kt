@@ -1,4 +1,4 @@
-package kolskypavel.ardfmanager.ui.event
+package kolskypavel.ardfmanager.ui.races
 
 import android.app.AlertDialog
 import android.os.Build
@@ -18,47 +18,47 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kolskypavel.ardfmanager.R
-import kolskypavel.ardfmanager.backend.room.entitity.Event
-import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kolskypavel.ardfmanager.backend.room.entitity.Race
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import kotlinx.coroutines.launch
 
 /**
  * A fragment representing a list of Items.
  */
-class EventSelectionFragment : Fragment() {
+class RaceSelectionFragment : Fragment() {
 
     private lateinit var toolbar: Toolbar
-    private lateinit var eventAddFAB: FloatingActionButton
+    private lateinit var raceAddFAB: FloatingActionButton
     private lateinit var recyclerView: RecyclerView
     private var mLastClickTime: Long = 0
 
-    private val eventViewModel: EventViewModel by activityViewModels()
-    private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
+    private val raceViewModel: RaceViewModel by activityViewModels()
+    private val selectedRaceViewModel: SelectedRaceViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_event_selection, container, false)
-        recyclerView = view.findViewById(R.id.event_recycler_view)
+        val view = inflater.inflate(R.layout.fragment_race_selection, container, false)
+        recyclerView = view.findViewById(R.id.race_recycler_view)
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        toolbar = view.findViewById(R.id.event_toolbar)
-        eventAddFAB = view.findViewById(R.id.event_btn_add)
+        toolbar = view.findViewById(R.id.race_toolbar)
+        raceAddFAB = view.findViewById(R.id.race_btn_add)
 
-        toolbar.setTitle(R.string.event_toolbar_title)
-        toolbar.inflateMenu(R.menu.fragment_menu_event)
+        toolbar.setTitle(R.string.race_toolbar_title)
+        toolbar.inflateMenu(R.menu.fragment_menu_race)
 
-        eventAddFAB.setOnClickListener {
+        raceAddFAB.setOnClickListener {
 
             //Prevent accidental double click
             if (SystemClock.elapsedRealtime() - mLastClickTime > 1500) {
                 findNavController().navigate(
-                    EventSelectionFragmentDirections.eventCreateOfModify(true, -1, null)
+                    RaceSelectionFragmentDirections.raceCreateOfModify(true, -1, null)
                 )
             }
             mLastClickTime = SystemClock.elapsedRealtime()
@@ -72,16 +72,15 @@ class EventSelectionFragment : Fragment() {
     private fun setMenuListener() {
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.event_menu_import_file -> {
+                R.id.race_menu_import_file -> {
                     true
                 }
 
-                R.id.event_menu_global_settings -> {
+                R.id.race_menu_global_settings -> {
                     // Navigate to settings screen.
-                    findNavController().navigate(EventSelectionFragmentDirections.openSettings())
+                    findNavController().navigate(RaceSelectionFragmentDirections.openSettings())
                     true
                 }
-
 
 
                 else -> false
@@ -90,54 +89,54 @@ class EventSelectionFragment : Fragment() {
     }
 
     private fun setFragmentListener() {
-        setFragmentResultListener(EventCreateDialogFragment.REQUEST_EVENT_MODIFICATION) { _, bundle ->
-            val create = bundle.getBoolean(EventCreateDialogFragment.BUNDLE_KEY_CREATE)
-            val position = bundle.getInt(EventCreateDialogFragment.BUNDLE_KEY_POSITION)
+        setFragmentResultListener(RaceCreateDialogFragment.REQUEST_RACE_MODIFICATION) { _, bundle ->
+            val create = bundle.getBoolean(RaceCreateDialogFragment.BUNDLE_KEY_CREATE)
+            val position = bundle.getInt(RaceCreateDialogFragment.BUNDLE_KEY_POSITION)
 
-            val event: Event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val race: Race = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 bundle.getSerializable(
-                    EventCreateDialogFragment.BUNDLE_KEY_EVENT,
-                    Event::class.java
+                    RaceCreateDialogFragment.BUNDLE_KEY_RACE,
+                    Race::class.java
                 )!!
             } else {
-                bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT) as Event
+                bundle.getSerializable(RaceCreateDialogFragment.BUNDLE_KEY_RACE) as Race
             }
 
-            //create new event
+            //create new race
             if (create) {
-                eventViewModel.createEvent(event)
+                raceViewModel.createRace(race)
             }
-            //Edit an existing event
+            //Edit an existing race
             else {
-                eventViewModel.updateEvent(event)
+                raceViewModel.updateRace(race)
                 recyclerView.adapter?.notifyItemChanged(position)
             }
         }
     }
 
-    private fun recyclerViewContextMenuActions(action: Int, position: Int, event: Event) {
+    private fun recyclerViewContextMenuActions(action: Int, position: Int, race: Race) {
         when (action) {
             0 -> findNavController().navigate(
-                EventSelectionFragmentDirections.eventCreateOfModify(
-                    false, position, event
+                RaceSelectionFragmentDirections.raceCreateOfModify(
+                    false, position, race
                 )
             )
 
-            1 -> confirmEventDeletion(event)
+            1 -> confirmRaceDeletion(race)
         }
     }
 
     /**
-     * Displays alert dialog to confirm the deletion of the event
+     * Displays alert dialog to confirm the deletion of the race
      */
-    private fun confirmEventDeletion(event: Event) {
+    private fun confirmRaceDeletion(race: Race) {
         val builder = AlertDialog.Builder(context)
-        builder.setTitle(getString(R.string.event_delete))
-        val message = getString(R.string.event_delete_confirmation) + " " + event.name
+        builder.setTitle(getString(R.string.race_delete))
+        val message = getString(R.string.race_delete_confirmation) + " " + race.name
         builder.setMessage(message)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            eventViewModel.deleteEvent(event.id)
+            raceViewModel.deleteRace(race.id)
             dialog.dismiss()
         }
 
@@ -152,24 +151,24 @@ class EventSelectionFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
-                eventViewModel.events.collect { events ->
+                raceViewModel.races.collect { races ->
                     recyclerView.adapter =
-                        EventRecyclerViewAdapter(
-                            events, { eventId ->
+                        RaceRecyclerViewAdapter(
+                            races, { raceId ->
 
-                                // Pass the event id into view Model
-                                selectedEventViewModel.setEvent(eventId)
+                                // Pass the race id into view Model
+                                selectedRaceViewModel.setRace(raceId)
 
                                 findNavController().navigate(
-                                    EventSelectionFragmentDirections.openEvent()
+                                    RaceSelectionFragmentDirections.openRace()
                                 )
                             },
                             //Context menu action setup
-                            { action, position, event ->
+                            { action, position, race ->
                                 recyclerViewContextMenuActions(
                                     action,
                                     position,
-                                    event
+                                    race
                                 )
                             }, requireContext()
                         )

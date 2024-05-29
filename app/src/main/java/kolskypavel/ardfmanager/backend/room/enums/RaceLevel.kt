@@ -1,11 +1,11 @@
 package kolskypavel.ardfmanager.backend.room.enums
 
-enum class EventType(val value: Int) {
-    CLASSICS(0),
-    SPRINT(1),
-    FOXORING(2),
-    ORIENTEERING(3),
-    CUSTOM(4);
+enum class RaceLevel(val value: Int) {
+    INTERNATIONAL(0),
+    NATIONAL(1),
+    REGIONAL(2),
+    DISTRICT(3),
+    PRACTICE(4);
 
     companion object {
         fun getByValue(value: Int) = entries.firstOrNull { it.value == value }

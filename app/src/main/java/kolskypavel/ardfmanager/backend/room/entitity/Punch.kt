@@ -21,7 +21,7 @@ import java.util.UUID
 )
 data class Punch(
     @PrimaryKey var id: UUID,
-    @ColumnInfo(name = "event_id") var eventId: UUID,
+    @ColumnInfo(name = "race_id") var raceId: UUID,
     @ColumnInfo(name = "readout_id") var readoutId: UUID?,
     @ColumnInfo(name = "competitor_id") var competitorId: UUID? = null,
     @ColumnInfo(name = "card_number") var cardNumber: Int? = null,

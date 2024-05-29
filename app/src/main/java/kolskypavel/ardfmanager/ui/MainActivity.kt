@@ -26,14 +26,14 @@ import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
 import kolskypavel.ardfmanager.databinding.ActivityMainBinding
-import kolskypavel.ardfmanager.ui.event.EventViewModel
+import kolskypavel.ardfmanager.ui.races.RaceViewModel
 import java.lang.ref.WeakReference
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val eventViewModel: EventViewModel by viewModels()
+    private val raceViewModel: RaceViewModel by viewModels()
     private lateinit var siStatusTextView: TextView
     private lateinit var dataProcessor: DataProcessor
 
@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                     siStatusTextView.visibility = View.VISIBLE
                 }
 
-                R.id.eventSelectionFragment, R.id.readoutDetailFragment -> {
+                R.id.raceSelectionFragment, R.id.readoutDetailFragment -> {
                     navView.visibility = View.GONE
                     siStatusTextView.visibility = View.VISIBLE
                 }
@@ -120,7 +120,6 @@ class MainActivity : AppCompatActivity() {
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED)
         registerReceiver(usbDetachReceiver, filter)
     }
-
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
@@ -154,8 +153,8 @@ class MainActivity : AppCompatActivity() {
         val siObserver = Observer<AppState> { newState ->
             when (newState.siReaderState.status) {
                 SIReaderStatus.CONNECTED -> {
-                    //Check if event is set
-                    if (newState.currentEvent != null) {
+                    //Check if race is set
+                    if (newState.currentRace != null) {
 
                         if (newState.siReaderState.stationId != null) {
                             siStatusTextView.text =
@@ -165,16 +164,16 @@ class MainActivity : AppCompatActivity() {
                         }
                         siStatusTextView.setBackgroundResource(R.color.green_ok)
                     }
-                    //Event not selected - warn user
+                    //Race not selected - warn user
                     else {
                         if (newState.siReaderState.stationId != null) {
                             siStatusTextView.text =
                                 getString(
-                                    R.string.si_connected_but_no_event,
+                                    R.string.si_connected_but_no_race,
                                     newState.siReaderState.stationId!!
                                 )
                         } else {
-                            getString(R.string.si_connected_but_no_event)
+                            getString(R.string.si_connected_but_no_race)
                         }
                         siStatusTextView.setBackgroundResource(R.color.yellow_warning)
                     }

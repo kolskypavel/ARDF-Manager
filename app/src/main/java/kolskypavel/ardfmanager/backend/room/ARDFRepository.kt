@@ -7,8 +7,8 @@ import kolskypavel.ardfmanager.backend.room.database.EventDatabase
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
-import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
@@ -25,38 +25,38 @@ class ARDFRepository private constructor(context: Context) {
         )
         .build()
 
-    //Events
-    fun getEvents(): Flow<List<Event>> = eventDatabase.eventDao().getEvents()
-    suspend fun getEvent(id: UUID): Event = eventDatabase.eventDao().getEvent(id)
-    suspend fun createEvent(event: Event) = eventDatabase.eventDao().createEvent(event)
-    suspend fun updateEvent(event: Event) = eventDatabase.eventDao().updateEvent(event)
-    suspend fun deleteEvent(id: UUID) = eventDatabase.eventDao().deleteEvent(id)
+    //Races
+    fun getRaces(): Flow<List<Race>> = eventDatabase.raceDao().getRaces()
+    suspend fun getRace(id: UUID): Race = eventDatabase.raceDao().getRace(id)
+    suspend fun createRace(race: Race) = eventDatabase.raceDao().createRace(race)
+    suspend fun updateRace(race: Race) = eventDatabase.raceDao().updateRace(race)
+    suspend fun deleteRace(id: UUID) = eventDatabase.raceDao().deleteRace(id)
 
 
     //Categories
-    fun getCategoryDataFlowForEvent(eventId: UUID) =
-        eventDatabase.categoryDao().getCategoryFlowForEvent(eventId)
+    fun getCategoryDataFlowForRace(raceId: UUID) =
+        eventDatabase.categoryDao().getCategoryFlowForRace(raceId)
 
-    fun getCategoriesForEvent(eventId: UUID): List<Category> =
-        eventDatabase.categoryDao().getCategoriesForEvent(eventId)
+    fun getCategoriesForRace(raceId: UUID): List<Category> =
+        eventDatabase.categoryDao().getCategoriesForRace(raceId)
 
     suspend fun getCategory(id: UUID) =
         eventDatabase.categoryDao().getCategory(id)
 
-    suspend fun getCategoryData(id: UUID, eventId: UUID) =
-        eventDatabase.categoryDao().getCategoryData(id, eventId)
+    suspend fun getCategoryData(id: UUID, raceId: UUID) =
+        eventDatabase.categoryDao().getCategoryData(id, raceId)
 
-    suspend fun getHighestCategoryOrder(eventId: UUID) =
-        eventDatabase.categoryDao().getHighestCategoryOrder(eventId)
+    suspend fun getHighestCategoryOrder(raceId: UUID) =
+        eventDatabase.categoryDao().getHighestCategoryOrder(raceId)
 
-    suspend fun getCategoryByName(name: String, eventId: UUID) =
-        eventDatabase.categoryDao().getCategoryByName(name, eventId)
+    suspend fun getCategoryByName(name: String, raceId: UUID) =
+        eventDatabase.categoryDao().getCategoryByName(name, raceId)
 
-    suspend fun getCategoryByMaxAge(maxAge: Int, eventId: UUID) =
-        eventDatabase.categoryDao().getCategoryByMaxAge(maxAge, eventId)
+    suspend fun getCategoryByMaxAge(maxAge: Int, raceId: UUID) =
+        eventDatabase.categoryDao().getCategoryByMaxAge(maxAge, raceId)
 
-    suspend fun getCategoryByBirthYear(birthYear: Int, woman: Boolean, eventId: UUID): Category? =
-        eventDatabase.categoryDao().getCategoryByAge(birthYear, woman, eventId)
+    suspend fun getCategoryByBirthYear(birthYear: Int, woman: Boolean, raceId: UUID): Category? =
+        eventDatabase.categoryDao().getCategoryByAge(birthYear, woman, raceId)
 
     suspend fun createOrUpdateCategory(category: Category) =
         eventDatabase.categoryDao().createOrUpdateCategory(category)
@@ -71,11 +71,11 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun getControlPointsByCategory(categoryId: UUID) =
         eventDatabase.controlPointDao().getControlPointsByCategory(categoryId)
 
-    suspend fun getControlPointByName(eventId: UUID, name: String) =
-        eventDatabase.controlPointDao().getControlPointByName(eventId, name)
+    suspend fun getControlPointByName(raceId: UUID, name: String) =
+        eventDatabase.controlPointDao().getControlPointByName(raceId, name)
 
-    suspend fun getControlPointByCode(eventId: UUID, code: Int) =
-        eventDatabase.controlPointDao().getControlPointByCode(eventId, code)
+    suspend fun getControlPointByCode(raceId: UUID, code: Int) =
+        eventDatabase.controlPointDao().getControlPointByCode(raceId, code)
 
     suspend fun deleteControlPointsByCategory(categoryId: UUID) =
         eventDatabase.controlPointDao().deleteControlPointsByCategory(categoryId)
@@ -85,17 +85,17 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun getCompetitor(id: UUID) =
         eventDatabase.competitorDao().getCompetitor(id)
 
-    suspend fun getCompetitorBySINumber(siNumber: Int, eventId: UUID): Competitor? =
-        eventDatabase.competitorDao().getCompetitorBySINumber(siNumber, eventId)
+    suspend fun getCompetitorBySINumber(siNumber: Int, raceId: UUID): Competitor? =
+        eventDatabase.competitorDao().getCompetitorBySINumber(siNumber, raceId)
 
-    suspend fun getHighestStartNumberByEvent(eventId: UUID) =
-        eventDatabase.competitorDao().getHighestStartNumberByEvent(eventId)
+    suspend fun getHighestStartNumberByRace(raceId: UUID) =
+        eventDatabase.competitorDao().getHighestStartNumberByRace(raceId)
 
-    fun getCompetitorDataFlowByEvent(eventId: UUID): Flow<List<CompetitorData>> =
-        eventDatabase.competitorDao().getCompetitorDataFlow(eventId)
+    fun getCompetitorDataFlowByRace(raceId: UUID): Flow<List<CompetitorData>> =
+        eventDatabase.competitorDao().getCompetitorDataFlow(raceId)
 
-    suspend fun getCompetitorDataByEvent(eventId: UUID): List<CompetitorData> =
-        eventDatabase.competitorDao().getCompetitorData(eventId)
+    suspend fun getCompetitorDataByRace(raceId: UUID): List<CompetitorData> =
+        eventDatabase.competitorDao().getCompetitorData(raceId)
 
     suspend fun getCompetitorsByCategory(categoryId: UUID) =
         eventDatabase.competitorDao().getCompetitorsByCategory(categoryId)
@@ -105,22 +105,22 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun deleteCompetitor(id: UUID) = eventDatabase.competitorDao().deleteCompetitor(id)
 
-    suspend fun deleteAllCompetitors(eventId: UUID) =
-        eventDatabase.competitorDao().deleteAllCompetitors(eventId)
+    suspend fun deleteAllCompetitors(raceId: UUID) =
+        eventDatabase.competitorDao().deleteAllCompetitors(raceId)
 
-    suspend fun checkIfSINumberExists(siNumber: Int, eventId: UUID): Int =
-        eventDatabase.competitorDao().checkIfSINumberExists(siNumber, eventId)
+    suspend fun checkIfSINumberExists(siNumber: Int, raceId: UUID): Int =
+        eventDatabase.competitorDao().checkIfSINumberExists(siNumber, raceId)
 
-    suspend fun checkIfStartNumberExists(startNumber: Int, eventId: UUID): Int =
-        eventDatabase.competitorDao().checkIfStartNumberExists(startNumber, eventId)
+    suspend fun checkIfStartNumberExists(startNumber: Int, raceId: UUID): Int =
+        eventDatabase.competitorDao().checkIfStartNumberExists(startNumber, raceId)
 
 
     //READOUTS
-    fun getReadoutDataByEvent(eventId: UUID) =
-        eventDatabase.readoutDao().getReadoutDataByEvent(eventId)
+    fun getReadoutDataByRace(raceId: UUID) =
+        eventDatabase.readoutDao().getReadoutDataByRace(raceId)
 
-    suspend fun getReadoutBySINumber(siNumber: Int, eventId: UUID) =
-        eventDatabase.readoutDao().getReadoutForSINumber(siNumber, eventId)
+    suspend fun getReadoutBySINumber(siNumber: Int, raceId: UUID) =
+        eventDatabase.readoutDao().getReadoutForSINumber(siNumber, raceId)
 
     suspend fun getReadoutsByCompetitor(competitorId: UUID): Readout? =
         eventDatabase.readoutDao().getReadoutByCompetitor(competitorId)
@@ -128,8 +128,8 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun createReadout(readout: Readout) =
         eventDatabase.readoutDao().createReadout(readout)
 
-    suspend fun checkIfReadoutExistsById(siNumber: Int, eventId: UUID) =
-        eventDatabase.readoutDao().checkIfReadoutExistsById(siNumber, eventId)
+    suspend fun checkIfReadoutExistsById(siNumber: Int, raceId: UUID) =
+        eventDatabase.readoutDao().checkIfReadoutExistsById(siNumber, raceId)
 
     suspend fun deleteReadout(id: UUID) = eventDatabase.readoutDao().deleteReadout(id)
 

@@ -6,7 +6,7 @@ import kolskypavel.ardfmanager.backend.files.constants.FileConstants
 import kolskypavel.ardfmanager.backend.files.wrappers.CompetitorImportDataWrapper
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import java.io.InputStream
 import java.io.OutputStream
@@ -22,7 +22,7 @@ object CSVProcessor {
 
     suspend fun parseCompetitorDataCsv(
         inStream: InputStream,
-        event: Event
+        race: Race
     ): List<CompetitorImportDataWrapper> {
         val csvReader = CsvReader().readAll(inStream)
         val competitors = ArrayList<Competitor>()
@@ -36,7 +36,7 @@ object CSVProcessor {
 
                         //Check if category exists
                         if (row[3].isNotEmpty()) {
-                            val dbCat = dataProcessor.getCategoryByName(row[3], event.id)
+                            val dbCat = dataProcessor.getCategoryByName(row[3], race.id)
 
                             if (dbCat != null) {
                                 category = dbCat
@@ -46,15 +46,15 @@ object CSVProcessor {
                                 category =
                                     Category(
                                         UUID.randomUUID(),
-                                        event.id,
+                                        race.id,
                                         row[3],
                                         false,
                                         null,
                                         false,
-                                        event.eventType,
-                                        event.timeLimit,
-                                        event.startTimeSource,
-                                        event.finishTimeSource, 0F,
+                                        race.raceType,
+                                        race.timeLimit,
+                                        race.startTimeSource,
+                                        race.finishTimeSource, 0F,
                                         0F, 0
                                     )
                                 categories[row[3]] = category
@@ -64,7 +64,7 @@ object CSVProcessor {
                         val competitor =
                             Competitor(
                                 UUID.randomUUID(),
-                                event.id,
+                                race.id,
                                 category?.id,
                                 row[1],
                                 row[2],

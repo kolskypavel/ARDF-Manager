@@ -11,9 +11,9 @@ import java.util.UUID
 
 @Entity(
     tableName = "readout", foreignKeys = [ForeignKey(
-        entity = Event::class,
+        entity = Race::class,
         parentColumns = arrayOf("id"),
-        childColumns = arrayOf("event_id"),
+        childColumns = arrayOf("race_id"),
         onDelete = ForeignKey.CASCADE
     )]
 )
@@ -21,7 +21,7 @@ data class Readout(
     @PrimaryKey var id: UUID,
     @ColumnInfo(name = "si_number") var siNumber: Int?,
     @ColumnInfo(name = "card_type") var cardType: Byte,
-    @ColumnInfo(name = "event_id") var eventId: UUID,
+    @ColumnInfo(name = "race_id") var raceId: UUID,
     @ColumnInfo(name = "competitor_id") var competitorID: UUID? = null,
     @ColumnInfo(name = "check_time") var checkTime: SITime?,
     @ColumnInfo(name = "start_time") var startTime: SITime?,

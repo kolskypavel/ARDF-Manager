@@ -4,8 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.files.constants.ResultDataFormat
 import kolskypavel.ardfmanager.backend.files.constants.CompetitorDataFormat
+import kolskypavel.ardfmanager.backend.files.constants.ResultDataFormat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -59,10 +59,9 @@ class FileHandler(val appContext: WeakReference<Context>) {
         return ret
     }
 
-    fun exportData(format: ResultDataFormat, eventId: UUID): Boolean {
+    fun exportData(format: ResultDataFormat, raceId: UUID): Boolean {
         CoroutineScope(Dispatchers.IO).launch {
-            // val competitorData = dataProcessor.getCompetitorDataFlowByEvent()
-            when (format) {
+             when (format) {
                 ResultDataFormat.IOF_XML -> {}
 
 

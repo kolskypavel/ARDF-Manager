@@ -8,14 +8,14 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
-import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
-import kolskypavel.ardfmanager.backend.room.enums.EventType
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
+import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SITime
@@ -39,7 +39,7 @@ class ResultsProcessor {
      */
     private fun processCardPunches(
         cardData: CardData,
-        event: Event,
+        race: Race,
         readout: Readout, competitorId: UUID?
     ): ArrayList<Punch> {
         val punches = ArrayList<Punch>()
@@ -48,7 +48,7 @@ class ResultsProcessor {
         cardData.punchData.forEach { punchData ->
             val punch = Punch(
                 UUID.randomUUID(),
-                event.id,
+                race.id,
                 readout.id,
                 competitorId,
                 cardData.siNumber,
@@ -68,7 +68,7 @@ class ResultsProcessor {
             punches.add(
                 Punch(
                     UUID.randomUUID(),
-                    event.id,
+                    race.id,
                     readout.id,
                     competitorId,
                     cardData.siNumber,
@@ -87,7 +87,7 @@ class ResultsProcessor {
             punches.add(
                 Punch(
                     UUID.randomUUID(),
-                    event.id,
+                    race.id,
                     readout.id,
                     competitorId,
                     cardData.siNumber,
@@ -117,11 +117,11 @@ class ResultsProcessor {
     /**
      * Processes the given result - saves the data into the db
      */
-    suspend fun processCardData(cardData: CardData, event: Event, context: Context): Boolean {
+    suspend fun processCardData(cardData: CardData, race: Race, context: Context): Boolean {
 
         //Check if readout already exists
-        if (!dataProcessor.checkIfReadoutExistsBySI(cardData.siNumber, event.id)) {
-            val competitor = dataProcessor.getCompetitorBySINumber(cardData.siNumber, event.id)
+        if (!dataProcessor.checkIfReadoutExistsBySI(cardData.siNumber, race.id)) {
+            val competitor = dataProcessor.getCompetitorBySINumber(cardData.siNumber, race.id)
             val category = competitor?.categoryId?.let { dataProcessor.getCategory(it) }
 
             //Create the readout and result
@@ -130,7 +130,7 @@ class ResultsProcessor {
                     UUID.randomUUID(),
                     cardData.siNumber,
                     cardData.cardType,
-                    event.id,
+                    race.id,
                     competitor?.id,
                     cardData.checkTime,
                     cardData.startTime,
@@ -154,7 +154,7 @@ class ResultsProcessor {
             if (competitor != null) {
                 if (readout.startTime == null && competitor.drawnRelativeStartTime != null) {
                     val startTime = TimeProcessor.getAbsoluteDateTimeFromRelativeTime(
-                        dataProcessor.getCurrentEvent().startDateTime,
+                        dataProcessor.getCurrentRace().startDateTime,
                         competitor.drawnRelativeStartTime!!
                     )
                     readout.startTime = SITime(
@@ -166,7 +166,7 @@ class ResultsProcessor {
             //Process the punches
             val punches = processCardPunches(
                 cardData,
-                event,
+                race,
                 readout,
                 competitor?.id
             )
@@ -292,31 +292,31 @@ class ResultsProcessor {
         }
         result.points = 0
 
-        val eventType = if (category.differentProperties) {
-            category.eventType!!
+        val raceType = if (category.differentProperties) {
+            category.raceType!!
         } else {
-            dataProcessor.getCurrentEvent().eventType
+            dataProcessor.getCurrentRace().raceType
         }
-        when (eventType) {
-            EventType.CLASSICS, EventType.FOXORING -> evaluateClassics(
+        when (raceType) {
+            RaceType.CLASSICS, RaceType.FOXORING -> evaluateClassics(
                 punches,
                 controlPoints,
                 result
             )
 
-            EventType.SPRINT -> evaluateSprint(
+            RaceType.SPRINT -> evaluateSprint(
                 punches,
                 controlPoints,
                 result
             )
 
-            EventType.ORIENTEERING -> evaluateOrienteering(
+            RaceType.ORIENTEERING -> evaluateOrienteering(
                 punches,
                 controlPoints,
                 result
             )
 
-            EventType.CUSTOM -> evaluateCustom(
+            RaceType.CUSTOM -> evaluateCustom(
                 punches,
                 controlPoints,
                 result
@@ -349,7 +349,7 @@ class ResultsProcessor {
         }
     }
 
-    suspend fun updateResultsForCompetitor(competitorId: UUID, eventId: UUID) {
+    suspend fun updateResultsForCompetitor(competitorId: UUID, raceId: UUID) {
         var readout = dataProcessor.getReadoutByCompetitor(competitorId)
         val competitor = dataProcessor.getCompetitor(competitorId)
 
@@ -357,7 +357,7 @@ class ResultsProcessor {
         if (readout == null) {
             if (competitor != null) {
                 readout =
-                    competitor.siNumber?.let { dataProcessor.getReadoutBySINumber(it, eventId) }
+                    competitor.siNumber?.let { dataProcessor.getReadoutBySINumber(it, raceId) }
             }
             if (readout != null) {
                 readout.competitorID = competitorId
@@ -425,8 +425,8 @@ class ResultsProcessor {
         return this.groupBy { it.competitorCategory.category }
     }
 
-    fun getResultDataByEvent(eventId: UUID): Flow<List<ResultDisplayWrapper>> {
-        return dataProcessor.getCompetitorDataFlowByEvent(eventId).map { readoutDataList ->
+    fun getResultDataByRace(raceId: UUID): Flow<List<ResultDisplayWrapper>> {
+        return dataProcessor.getCompetitorDataFlowByRace(raceId).map { readoutDataList ->
             readoutDataList.toResultDisplayWrappers()
         }
     }
@@ -625,7 +625,7 @@ class ResultsProcessor {
 
         fun adjustControlPoints(
             controlPoints: ArrayList<ControlPoint>,
-            eventType: EventType
+            raceType: RaceType
         ): List<ControlPoint> {
 
             var order = 1

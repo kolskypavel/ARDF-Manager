@@ -11,7 +11,7 @@ import java.util.UUID
 
 @Entity(
     tableName = "competitor", indices = [Index(
-        value = ["start_number", "event_id"],
+        value = ["start_number", "race_id"],
         unique = true
     ), Index("category_id")],
     foreignKeys = [
@@ -23,15 +23,15 @@ import java.util.UUID
 
             ),
         ForeignKey(
-            entity = Event::class,
+            entity = Race::class,
             parentColumns = arrayOf("id"),
-            childColumns = arrayOf("event_id"),
+            childColumns = arrayOf("race_id"),
             onDelete = ForeignKey.CASCADE
         )]
 )
 data class Competitor(
     @PrimaryKey var id: UUID,
-    @ColumnInfo(name = "event_id") var eventId: UUID,
+    @ColumnInfo(name = "race_id") var raceId: UUID,
     @ColumnInfo(name = "category_id") var categoryId: UUID? = null,
     @ColumnInfo(name = "first_name") var firstName: String,
     @ColumnInfo(name = "last_name") var lastName: String,

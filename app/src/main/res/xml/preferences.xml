@@ -27,7 +27,7 @@
     <PreferenceCategory
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:title="@string/preferences_event">
+        android:title="@string/preferences_race">
 
     </PreferenceCategory>
     <PreferenceCategory

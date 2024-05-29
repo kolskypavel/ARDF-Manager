@@ -4,7 +4,7 @@ import android.util.Log
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.GET_SI_CARD8_9_SIAC
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.GET_SYSTEM_INFO
@@ -70,9 +70,9 @@ class SIPort(
                     setStatusConnected()
                 }
                 if (dataProcessor.currentState.value!!.siReaderState.status != SIReaderStatus.DISCONNECTED
-                    && dataProcessor.currentState.value!!.currentEvent != null
+                    && dataProcessor.currentState.value!!.currentRace != null
                 ) {
-                    readCardOnce(dataProcessor.currentState.value!!.currentEvent!!)
+                    readCardOnce(dataProcessor.currentState.value!!.currentRace!!)
                 }
             }
         }
@@ -112,7 +112,7 @@ class SIPort(
     /**
      * Attempts to read out the data from the SI card, based on the cardType
      */
-    private suspend fun readCardOnce(event: Event) {
+    private suspend fun readCardOnce(race: Race) {
         val cardData = CardData(ZERO, 0, punchData = ArrayList())
         var valid = false
 
@@ -127,7 +127,7 @@ class SIPort(
 
             //If the readout was valid, process the data further
             if (valid) {
-                if (dataProcessor.processCardData(cardData, event) == true) {
+                if (dataProcessor.processCardData(cardData, race) == true) {
                     lastReadCardId = cardData.siNumber
                     setStatusRead(cardData.siNumber)
                 } else {

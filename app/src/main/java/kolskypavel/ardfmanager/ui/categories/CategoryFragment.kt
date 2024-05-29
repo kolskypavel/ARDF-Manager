@@ -23,17 +23,17 @@ import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.databinding.FragmentCategoriesBinding
-import kolskypavel.ardfmanager.ui.SelectedEventViewModel
-import kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
+import kolskypavel.ardfmanager.ui.races.RaceCreateDialogFragment
 import kotlinx.coroutines.launch
 
 class CategoryFragment : Fragment() {
 
     private var _binding: FragmentCategoriesBinding? = null
-    private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
+    private val selectedRaceViewModel: SelectedRaceViewModel by activityViewModels()
     private val dataProcessor = DataProcessor.get()
 
     private lateinit var categoryToolbar: Toolbar
@@ -82,9 +82,9 @@ class CategoryFragment : Fragment() {
             mLastClickTime = SystemClock.elapsedRealtime()
         }
 
-        selectedEventViewModel.event.observe(viewLifecycleOwner) { event ->
-            categoryToolbar.title = event.name
-            categoryToolbar.subtitle = dataProcessor.eventTypeToString(event.eventType)
+        selectedRaceViewModel.race.observe(viewLifecycleOwner) { race ->
+            categoryToolbar.title = race.name
+            categoryToolbar.subtitle = dataProcessor.raceTypeToString(race.raceType)
         }
         setFragmentListener()
         setRecyclerViewAdapter()
@@ -99,19 +99,19 @@ class CategoryFragment : Fragment() {
                 return true
             }
 
-            R.id.category_menu_edit_event -> {
+            R.id.category_menu_edit_race -> {
                 findNavController().navigate(
-                    BottomNavDirections.modifyEventProperties(
+                    BottomNavDirections.modifyRaceProperties(
                         false,
                         0,
-                        selectedEventViewModel.event.value
+                        selectedRaceViewModel.race.value
                     )
                 )
                 return true
             }
 
             R.id.category_menu_global_settings -> {
-                findNavController().navigate(BottomNavDirections.openSettingsFromEvent())
+                findNavController().navigate(BottomNavDirections.openSettingsFromRace())
                 return true
             }
 
@@ -131,24 +131,24 @@ class CategoryFragment : Fragment() {
             }
         }
 
-        //Enable event modification from menu
-        setFragmentResultListener(EventCreateDialogFragment.REQUEST_EVENT_MODIFICATION) { _, bundle ->
-            val event: Event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        //Enable race modification from menu
+        setFragmentResultListener(RaceCreateDialogFragment.REQUEST_RACE_MODIFICATION) { _, bundle ->
+            val race: Race = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 bundle.getSerializable(
-                    EventCreateDialogFragment.BUNDLE_KEY_EVENT,
-                    Event::class.java
+                    RaceCreateDialogFragment.BUNDLE_KEY_RACE,
+                    Race::class.java
                 )!!
             } else {
-                bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT) as Event
+                bundle.getSerializable(RaceCreateDialogFragment.BUNDLE_KEY_RACE) as Race
             }
-            selectedEventViewModel.updateEvent(event)
+            selectedRaceViewModel.updateRace(race)
         }
     }
 
     private fun setRecyclerViewAdapter() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                selectedEventViewModel.categories.collect { categories ->
+                selectedRaceViewModel.categories.collect { categories ->
                     categoryRecyclerView.adapter =
                         CategoryRecyclerViewAdapter(
                             categories, { action, position, categoryData ->
@@ -158,7 +158,7 @@ class CategoryFragment : Fragment() {
                                     categoryData
                                 )
                             }, requireContext(),
-                            selectedEventViewModel
+                            selectedRaceViewModel
                         )
                 }
             }
@@ -172,7 +172,7 @@ class CategoryFragment : Fragment() {
         builder.setMessage(message)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            selectedEventViewModel.deleteCategory(category.id, category.eventId)
+            selectedRaceViewModel.deleteCategory(category.id, category.raceId)
             dialog.dismiss()
         }
 
@@ -196,7 +196,7 @@ class CategoryFragment : Fragment() {
                 )
             )
 
-            1 -> selectedEventViewModel.duplicateCategory(categoryData)
+            1 -> selectedRaceViewModel.duplicateCategory(categoryData)
             2 -> confirmCategoryDeletion(categoryData.category)
         }
     }
@@ -204,13 +204,13 @@ class CategoryFragment : Fragment() {
     private fun setBackButton() {
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             val builder = AlertDialog.Builder(context)
-            builder.setTitle(getString(R.string.event_end))
-            val message = getString(R.string.event_end_confirmation)
+            builder.setTitle(getString(R.string.race_end))
+            val message = getString(R.string.race_end_confirmation)
             builder.setMessage(message)
 
             builder.setPositiveButton(R.string.ok) { _, _ ->
-                dataProcessor.removeReaderEvent()
-                findNavController().navigate(CategoryFragmentDirections.closeEvent())
+                dataProcessor.removeReaderRace()
+                findNavController().navigate(CategoryFragmentDirections.closeRace())
             }
 
             builder.setNegativeButton(R.string.cancel) { dialog, _ ->

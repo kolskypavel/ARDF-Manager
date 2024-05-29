@@ -21,7 +21,7 @@ import java.util.UUID
 )
 data class ControlPoint(
     @PrimaryKey var id: UUID,
-    @ColumnInfo(name = "event_id") var eventId: UUID,
+    @ColumnInfo(name = "race_id") var raceId: UUID,
     @ColumnInfo(name = "category_id") var categoryId: UUID,
     @ColumnInfo(name = "si_code") var siCode: Int,
     @ColumnInfo(name = "order") var order: Int,

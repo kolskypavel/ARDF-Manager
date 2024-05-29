@@ -11,15 +11,15 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
-import kolskypavel.ardfmanager.backend.room.enums.EventType
+import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.wrappers.ControlPointItemWrapper
 import java.util.UUID
 
 class ControlPointRecyclerViewAdapter(
     var values: ArrayList<ControlPointItemWrapper>,
-    val eventId: UUID,
+    val raceId: UUID,
     val categoryId: UUID,
-    private var eventType: EventType,
+    private var raceType: RaceType,
     val context: Context
 ) :
     RecyclerView.Adapter<ControlPointRecyclerViewAdapter.ControlPointViewHolder>() {
@@ -62,7 +62,7 @@ class ControlPointRecyclerViewAdapter(
                 holder.adapterPosition + 1, ControlPointItemWrapper(
                     ControlPoint(
                         UUID.randomUUID(),
-                        eventId,
+                        raceId,
                         categoryId,
                         -1,
                         item.controlPoint.order++,
@@ -100,20 +100,20 @@ class ControlPointRecyclerViewAdapter(
             holder.name.visibility = View.GONE
             holder.siCode.visibility = View.GONE
             holder.separator.visibility = View.GONE
-        } else if (eventType == EventType.CLASSICS ||
-            eventType == EventType.FOXORING
+        } else if (raceType == RaceType.CLASSICS ||
+            raceType == RaceType.FOXORING
         ) {
             holder.separator.visibility = View.GONE
             holder.points.visibility = View.GONE
-        } else if (eventType == EventType.ORIENTEERING) {
+        } else if (raceType == RaceType.ORIENTEERING) {
             holder.separator.visibility = View.GONE
             holder.points.visibility = View.GONE
             holder.name.visibility = View.GONE
-        } else if (eventType == EventType.SPRINT) {
+        } else if (raceType == RaceType.SPRINT) {
             holder.points.visibility = View.GONE
         }
 
-        if (eventType != EventType.ORIENTEERING &&
+        if (raceType != RaceType.ORIENTEERING &&
             holder.adapterPosition != 0 &&
             holder.layoutPosition == values.size - 1
         ) {
@@ -144,7 +144,7 @@ class ControlPointRecyclerViewAdapter(
     //Returns true if a code is valid - not duplicate - does not matter in Orienteering or Custom
     //TODO: Further check for sprint
     private fun checkCodeDuplicate(code: Int, position: Int): Boolean {
-        if (eventType == EventType.CLASSICS || eventType == EventType.FOXORING) {
+        if (raceType == RaceType.CLASSICS || raceType == RaceType.FOXORING) {
             for ((counter, v) in values.withIndex()) {
                 if (counter != position && v.controlPoint.siCode == code) {
                     return false

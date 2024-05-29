@@ -11,13 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
-import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 
 class CategoryRecyclerViewAdapter(
     private var values: List<CategoryData>,
     private val onMoreClicked: (action: Int, position: Int, categoryData: CategoryData) -> Unit,
     private val context: Context,
-    private val selectedEventViewModel: SelectedEventViewModel
+    private val selectedRaceViewModel: SelectedRaceViewModel
 ) :
     RecyclerView.Adapter<CategoryRecyclerViewAdapter.CategoryViewHolder>() {
 
@@ -40,8 +40,8 @@ class CategoryRecyclerViewAdapter(
             "(${item.competitors.size.toString()} ${
                 context.getString(R.string.title_competitors).lowercase()
             })"
-        holder.type.text = dataProcessor.eventTypeToString(
-            item.category.eventType ?: dataProcessor.getCurrentEvent().eventType
+        holder.type.text = dataProcessor.raceTypeToString(
+            item.category.raceType ?: dataProcessor.getCurrentRace().raceType
         ) //TODO: fix crash
         holder.gender.text = dataProcessor.genderToString(item.category.isWoman)
         holder.siCodes.text =
@@ -107,14 +107,14 @@ class CategoryRecyclerViewAdapter(
         if (up) {
             values[position - 1].category.order++
             values[position].category.order--
-            selectedEventViewModel.updateCategory(values[position - 1].category, null)
-            selectedEventViewModel.updateCategory(values[position].category, null)
+            selectedRaceViewModel.updateCategory(values[position - 1].category, null)
+            selectedRaceViewModel.updateCategory(values[position].category, null)
             notifyItemMoved(position, position - 1)
         } else {
             values[position + 1].category.order--
             values[position].category.order++
-            selectedEventViewModel.updateCategory(values[position + 1].category, null)
-            selectedEventViewModel.updateCategory(values[position].category, null)
+            selectedRaceViewModel.updateCategory(values[position + 1].category, null)
+            selectedRaceViewModel.updateCategory(values[position].category, null)
             notifyItemMoved(position, position + 1)
         }
     }

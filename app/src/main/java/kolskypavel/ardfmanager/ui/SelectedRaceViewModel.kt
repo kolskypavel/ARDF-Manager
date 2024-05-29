@@ -7,14 +7,14 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
-import kolskypavel.ardfmanager.backend.room.entitity.Event
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
-import kolskypavel.ardfmanager.backend.room.enums.EventType
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
+import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
 import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
 import kotlinx.coroutines.CoroutineScope
@@ -27,13 +27,13 @@ import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
 /**
- * Represents the current selected event and its data - properties, categories, competitors and readouts
+ * Represents the current selected race and its data - properties, categories, competitors and readouts
  */
-class SelectedEventViewModel : ViewModel() {
+class SelectedRaceViewModel : ViewModel() {
     private val dataProcessor = DataProcessor.get()
-    private val _event = MutableLiveData<Event>()
+    private val _race = MutableLiveData<Race>()
 
-    val event: LiveData<Event> get() = _event
+    val race: LiveData<Race> get() = _race
     private val _categories: MutableStateFlow<List<CategoryData>> = MutableStateFlow(emptyList())
     val categories: StateFlow<List<CategoryData>> get() = _categories.asStateFlow()
 
@@ -53,49 +53,49 @@ class SelectedEventViewModel : ViewModel() {
         get() =
             _competitorData.asStateFlow()
 
-    fun getCurrentEvent(): Event {
-        if (event.value != null) {
-            return event.value!!
+    fun getCurrentRace(): Race {
+        if (race.value != null) {
+            return race.value!!
         }
-        throw IllegalStateException("Event value accessed without event set")
+        throw IllegalStateException("Race value accessed without race set")
     }
 
     /**
-     * Updates the current selected event and corresponding data
+     * Updates the current selected race and corresponding data
      */
-    fun setEvent(id: UUID) {
+    fun setRace(id: UUID) {
         CoroutineScope(Dispatchers.IO).launch {
-            val event = dataProcessor.setCurrentEvent(id)
-            _event.postValue(event)
+            val race = dataProcessor.setCurrentRace(id)
+            _race.postValue(race)
 
             launch {
-                dataProcessor.getCategoryDataFlowForEvent(id).collect {
+                dataProcessor.getCategoryDataFlowForRace(id).collect {
                     _categories.value = it
                 }
             }
             launch {
-                dataProcessor.getCompetitorDataFlowByEvent(id).collect {
+                dataProcessor.getCompetitorDataFlowByRace(id).collect {
                     _competitorData.value = it
                 }
             }
 
             launch {
-                dataProcessor.getReadoutDataByEvent(id).collect {
+                dataProcessor.getReadoutDataByRace(id).collect {
                     _readoutData.value = it
                 }
             }
             launch {
-                dataProcessor.getResultDataByEvent(id).collect {
+                dataProcessor.getResultDataByRace(id).collect {
                     _resultData.value = it
                 }
             }
         }
     }
 
-    fun updateEvent(event: Event) {
+    fun updateRace(race: Race) {
         CoroutineScope(Dispatchers.IO).launch {
-            dataProcessor.updateEvent(event)
-            _event.postValue(event)
+            dataProcessor.updateRace(race)
+            _race.postValue(race)
         }
     }
 
@@ -105,19 +105,19 @@ class SelectedEventViewModel : ViewModel() {
     fun getCategories(): List<Category> = categories.value.map { it.category }
     fun getCategoryByName(string: String): Category? {
         return runBlocking {
-            return@runBlocking dataProcessor.getCategoryByName(string, getCurrentEvent().id)
+            return@runBlocking dataProcessor.getCategoryByName(string, getCurrentRace().id)
         }
     }
 
     fun getCategoryByMaxAge(maxAge: Int): Category? {
         return runBlocking {
-            return@runBlocking dataProcessor.getCategoryByMaxAge(maxAge, getCurrentEvent().id)
+            return@runBlocking dataProcessor.getCategoryByMaxAge(maxAge, getCurrentRace().id)
         }
     }
 
-    fun getHighestCategoryOrder(eventId: UUID): Int {
+    fun getHighestCategoryOrder(raceId: UUID): Int {
         return runBlocking {
-            return@runBlocking dataProcessor.getHighestCategoryOrder(eventId)
+            return@runBlocking dataProcessor.getHighestCategoryOrder(raceId)
         }
     }
 
@@ -138,11 +138,11 @@ class SelectedEventViewModel : ViewModel() {
         }
     }
 
-    fun deleteCategory(categoryId: UUID, eventId: UUID) =
+    fun deleteCategory(categoryId: UUID, raceId: UUID) =
         CoroutineScope(Dispatchers.IO).launch {
             dataProcessor.deleteCategory(
                 categoryId,
-                eventId
+                raceId
             )
         }
 
@@ -158,7 +158,7 @@ class SelectedEventViewModel : ViewModel() {
             0,
             ControlPoint(
                 UUID.randomUUID(),
-                dataProcessor.getCurrentEvent().id,
+                dataProcessor.getCurrentRace().id,
                 categoryId,
                 -1,
                 0, null, 0, 1,
@@ -171,15 +171,15 @@ class SelectedEventViewModel : ViewModel() {
     //TODO: Complete / remove
     fun checkIfControlPointNameExists(siCode: Int?, name: String): Boolean {
         runBlocking {
-            dataProcessor.getControlPointByName(event.value!!.id, name)
+            dataProcessor.getControlPointByName(race.value!!.id, name)
         }
         return false
     }
 
     fun adjustControlPoints(
         controlPoints: ArrayList<ControlPoint>,
-        eventType: EventType
-    ) = dataProcessor.adjustControlPoints(controlPoints, eventType)
+        raceType: RaceType
+    ) = dataProcessor.adjustControlPoints(controlPoints, raceType)
 
 
     //Competitor
@@ -205,29 +205,29 @@ class SelectedEventViewModel : ViewModel() {
 
     fun deleteAllCompetitors() =
         CoroutineScope(Dispatchers.IO).launch {
-            event.value?.let {
+            race.value?.let {
                 dataProcessor.deleteAllCompetitors(
                     it.id
                 )
             }
         }
 
-    suspend fun getStatistics(eventId: UUID): StatisticsWrapper =
-        dataProcessor.getStatisticsByEvent(eventId)
+    suspend fun getStatistics(raceId: UUID): StatisticsWrapper =
+        dataProcessor.getStatisticsByRace(raceId)
 
     /**
      * Checks if the SI number is unique
      */
     fun checkIfSINumberExists(siNumber: Int): Boolean {
-        if (event.value != null) {
-            return dataProcessor.checkIfSINumberExists(siNumber, event.value!!.id)
+        if (race.value != null) {
+            return dataProcessor.checkIfSINumberExists(siNumber, race.value!!.id)
         }
         return true
     }
 
     fun checkIfStartNumberExists(siNumber: Int): Boolean {
-        if (event.value != null) {
-            return dataProcessor.checkIfStartNumberExists(siNumber, event.value!!.id)
+        if (race.value != null) {
+            return dataProcessor.checkIfStartNumberExists(siNumber, race.value!!.id)
         }
         return true
     }
@@ -242,9 +242,9 @@ class SelectedEventViewModel : ViewModel() {
         dataProcessor.processManualPunches(readout, punches, manualStatus)
     }
 
-    fun getReadoutBySINumber(siNumber: Int, eventId: UUID) =
+    fun getReadoutBySINumber(siNumber: Int, raceId: UUID) =
         runBlocking {
-            return@runBlocking dataProcessor.getReadoutBySINumber(siNumber, eventId)
+            return@runBlocking dataProcessor.getReadoutBySINumber(siNumber, raceId)
         }
 
     fun getReadoutByCompetitor(competitorId: UUID) = runBlocking {

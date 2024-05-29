@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">ARDFManager</string>
-    <string name="title_events">Events</string>
+    <string name="title_races">Races</string>
     <string name="title_competitors">Competitors</string>
     <string name="title_categories">Categories</string>
     <string name="title_readouts">Readouts</string>
@@ -40,11 +40,11 @@
     <string name="file_export">Export</string>
     <string name="file_preview">Preview</string>
 
-    <!--Event-->
-    <string name="event_import_text">Import event from a file</string>
-    <string name="event_toolbar_title">Events overview</string>
-    <string name="event_level">Level</string>
-    <string name="event_type">Event type</string>
+    <!--Race-->
+    <string name="race_import_text">Import race from a file</string>
+    <string name="race_toolbar_title">Races overview</string>
+    <string name="race_level">Level</string>
+    <string name="race_type">Race type</string>
     <string name="limit">Limit (min)</string>
     <string name="start_time_hint">Start time (hh:mm)</string>
     <string name="external_id">External ID</string>
@@ -56,12 +56,12 @@
     <string name="finish_time_source_finish_control">Finish control</string>
     <string name="finish_time_source_last_control">Last control</string>
 
-    <string name="event_create">Create event</string>
-    <string name="event_edit">Edit event</string>
-    <string name="event_delete">Delete event</string>
-    <string name="event_export">Export event</string>
-    <string name="event_end">Close event</string>
-    <string name="event_end_confirmation">Do you really want to close the current event?</string>
+    <string name="race_create">Create race</string>
+    <string name="race_edit">Edit race</string>
+    <string name="race_delete">Delete race</string>
+    <string name="race_export">Export race</string>
+    <string name="race_end">Close race</string>
+    <string name="race_end_confirmation">Do you really want to close the current race?</string>
 
     <string name="ok" translatable="false">OK</string>
     <string name="cancel">Cancel</string>
@@ -69,8 +69,8 @@
     <string name="run_time">Run time</string>
     <string name="required">Required</string>
     <string name="invalid">Invalid</string>
-    <string name="event_delete_confirmation">Do you really want to delete this event?</string>
-    <string name="same_category_type">Same type as event</string>
+    <string name="race_delete_confirmation">Do you really want to delete this race?</string>
+    <string name="same_category_type">Same type as race</string>
 
     <!--Categories-->
     <string name="category">Category</string>
@@ -131,7 +131,7 @@
     <!--SI station display-->
     <string name="si_ready">SI service started</string>
     <string name="si_connected">SI station %1$d connected</string>
-    <string name="si_connected_but_no_event">SI station %1$d connected, but no event set!</string>
+    <string name="si_connected_but_no_race">SI station %1$d connected, but no race set!</string>
     <string name="si_disconnected">SI station disconnected</string>
     <string name="si_reading">SI station %1$d reading card %2$d </string>
     <string name="si_card_error">SI station %1$d, error reading card %2$d </string>
@@ -203,7 +203,7 @@
 
     <!--    Preferences    -->
     <string name="preferences_general">General</string>
-    <string name="preferences_event">Event</string>
+    <string name="preferences_race">Race</string>
     <string name="preferences_results">Results</string>
     <string name="preferences_prints">Prints</string>
     <string name="preferences_sportident">Sportident</string>
@@ -224,39 +224,39 @@
 
     <!--    DATA ARRAYS-->
 
-    <string name="event_type_0">Classics</string>
-    <string name="event_type_1" translatable="false">Sprint</string>
-    <string name="event_type_2" translatable="false">Foxoring</string>
-    <string name="event_type_3">Orienteering</string>
-    <string name="event_type_4">Custom</string>
+    <string name="race_type_0">Classics</string>
+    <string name="race_type_1" translatable="false">Sprint</string>
+    <string name="race_type_2" translatable="false">Foxoring</string>
+    <string name="race_type_3">Orienteering</string>
+    <string name="race_type_4">Custom</string>
 
-    <string name="event_level_0">International</string>
-    <string name="event_level_1">National</string>
-    <string name="event_level_2">Regional</string>
-    <string name="event_level_3">District</string>
-    <string name="event_level_4">Practice</string>
+    <string name="race_level_0">International</string>
+    <string name="race_level_1">National</string>
+    <string name="race_level_2">Regional</string>
+    <string name="race_level_3">District</string>
+    <string name="race_level_4">Practice</string>
 
     <string name="band_80m" translatable="false">80m</string>
     <string name="band_2m" translatable="false">2m</string>
     <string name="band_combined">Combined</string>
 
-    <string-array name="event_types_array">
-        <item>@string/event_type_0</item>
-        <item>@string/event_type_1</item>
-        <item>@string/event_type_2</item>
-        <item>@string/event_type_3</item>
-        <item>@string/event_type_4</item>
+    <string-array name="race_types_array">
+        <item>@string/race_type_0</item>
+        <item>@string/race_type_1</item>
+        <item>@string/race_type_2</item>
+        <item>@string/race_type_3</item>
+        <item>@string/race_type_4</item>
     </string-array>
 
-    <string-array name="event_levels_array">
-        <item>@string/event_level_0</item>
-        <item>@string/event_level_1</item>
-        <item>@string/event_level_2</item>
-        <item>@string/event_level_3</item>
-        <item>@string/event_level_4</item>
+    <string-array name="race_levels_array">
+        <item>@string/race_level_0</item>
+        <item>@string/race_level_1</item>
+        <item>@string/race_level_2</item>
+        <item>@string/race_level_3</item>
+        <item>@string/race_level_4</item>
     </string-array>
 
-    <string-array name="event_bands_array">
+    <string-array name="race_bands_array">
         <item>@string/band_80m</item>
         <item>@string/band_2m</item>
         <item>@string/band_combined</item>

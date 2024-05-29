@@ -1,5 +1,7 @@
 package kolskypavel.ardfmanager.ui.categories
 
+import android.content.res.Resources
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,9 +21,9 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
-import kolskypavel.ardfmanager.backend.room.enums.EventType
+import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.wrappers.ControlPointItemWrapper
-import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import java.time.Duration
 import java.util.UUID
 
@@ -29,17 +31,17 @@ import java.util.UUID
 class CategoryCreateDialogFragment : DialogFragment() {
 
     private val args: CategoryCreateDialogFragmentArgs by navArgs()
-    private lateinit var selectedEventViewModel: SelectedEventViewModel
+    private lateinit var selectedRaceViewModel: SelectedRaceViewModel
     private val dataProcessor = DataProcessor.get()
     private lateinit var category: Category
 
     private lateinit var nameEditText: TextInputEditText
     private lateinit var samePropertiesCheckBox: CheckBox
-    private lateinit var eventTypeLayout: TextInputLayout
+    private lateinit var raceTypeLayout: TextInputLayout
     private lateinit var limitEditText: TextInputEditText
     private lateinit var limitLayout: TextInputLayout
     private lateinit var genderPicker: MaterialAutoCompleteTextView
-    private lateinit var eventTypePicker: MaterialAutoCompleteTextView
+    private lateinit var raceTypePicker: MaterialAutoCompleteTextView
     private lateinit var startTimeSourceLayout: TextInputLayout
     private lateinit var startTimeSourcePicker: MaterialAutoCompleteTextView
     private lateinit var finishTimeSourceLayout: TextInputLayout
@@ -58,22 +60,31 @@ class CategoryCreateDialogFragment : DialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.dialog_add_category, container, false)
+        return inflater.inflate(R.layout.dialog_edit_category, container, false)
+    }
+
+    private fun DialogFragment.setWidthPercent(percentage: Int) {
+        val percent = percentage.toFloat() / 100
+        val dm = Resources.getSystem().displayMetrics
+        val rect = dm.run { Rect(0, 0, widthPixels, heightPixels) }
+        val percentWidth = rect.width() * percent
+        dialog?.window?.setLayout(percentWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val sl: SelectedEventViewModel by activityViewModels()
-        selectedEventViewModel = sl
-
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.add_dialog)
+        setWidthPercent(95)
+
+        val sl: SelectedRaceViewModel by activityViewModels()
+        selectedRaceViewModel = sl
 
         nameEditText = view.findViewById(R.id.category_dialog_name)
         samePropertiesCheckBox = view.findViewById(R.id.category_dialog_same_properties_checkbox)
-        eventTypeLayout = view.findViewById(R.id.category_dialog_type_layout)
+        raceTypeLayout = view.findViewById(R.id.category_dialog_type_layout)
         limitEditText = view.findViewById(R.id.category_dialog_limit)
         limitLayout = view.findViewById(R.id.category_dialog_limit_layout)
-        eventTypePicker = view.findViewById(R.id.category_dialog_type)
+        raceTypePicker = view.findViewById(R.id.category_dialog_type)
         genderPicker = view.findViewById(R.id.category_gender)
         startTimeSourceLayout = view.findViewById(R.id.category_dialog_start_time_source_layout)
         startTimeSourcePicker = view.findViewById(R.id.category_dialog_start_time_source)
@@ -91,7 +102,6 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
         populateFields()
         setButtons()
-
     }
 
 
@@ -99,43 +109,43 @@ class CategoryCreateDialogFragment : DialogFragment() {
      * Populate the data fields - text views, pickers
      */
     private fun populateFields() {
-        val event = selectedEventViewModel.getCurrentEvent()
+        val race = selectedRaceViewModel.getCurrentRace()
 
         if (args.create) {
-            val order = selectedEventViewModel.getHighestCategoryOrder(event.id) + 1
+            val order = selectedRaceViewModel.getHighestCategoryOrder(race.id) + 1
 
             dialog?.setTitle(R.string.category_create)
             category = Category(
                 UUID.randomUUID(),
-                event.id,
+                race.id,
                 "", isWoman = false,
                 null,
                 false,
-                event.eventType,
-                event.timeLimit,
-                event.startTimeSource,
-                event.finishTimeSource,
+                race.raceType,
+                race.timeLimit,
+                race.startTimeSource,
+                race.finishTimeSource,
                 0F,
                 0F,
                 order
             )
 
-            //Preset the data from the event
-            eventTypePicker.setText(
-                dataProcessor.eventTypeToString(event.eventType),
+            //Preset the data from the race
+            raceTypePicker.setText(
+                dataProcessor.raceTypeToString(race.raceType),
                 false
             )
-            limitEditText.setText(event.timeLimit.toMinutes().toString())
+            limitEditText.setText(race.timeLimit.toMinutes().toString())
             startTimeSourcePicker.setText(
-                dataProcessor.startTimeSourceToString(event.startTimeSource),
+                dataProcessor.startTimeSourceToString(race.startTimeSource),
                 false
             )
             finishTimeSourcePicker.setText(
-                dataProcessor.finishTimeSourceToString(event.finishTimeSource),
+                dataProcessor.finishTimeSourceToString(race.finishTimeSource),
                 false
             )
 
-            eventTypeLayout.isEnabled = false
+            raceTypeLayout.isEnabled = false
             limitLayout.isEnabled = false
             startTimeSourceLayout.isEnabled = false
             finishTimeSourceLayout.isEnabled = false
@@ -151,32 +161,32 @@ class CategoryCreateDialogFragment : DialogFragment() {
             if (category.differentProperties) {
                 samePropertiesCheckBox.isChecked = false
             } else {
-                eventTypeLayout.isEnabled = false
+                raceTypeLayout.isEnabled = false
                 limitLayout.isEnabled = false
                 startTimeSourceLayout.isEnabled = false
                 finishTimeSourceLayout.isEnabled = false
             }
 
-            eventTypePicker.setText(
-                dataProcessor.eventTypeToString(category.eventType ?: event.eventType),
+            raceTypePicker.setText(
+                dataProcessor.raceTypeToString(category.raceType ?: race.raceType),
                 false
             )
             limitEditText.setText(
                 if (category.timeLimit != null) {
                     category.timeLimit!!.toMinutes().toString()
                 } else {
-                    event.timeLimit.toMinutes().toString()
+                    race.timeLimit.toMinutes().toString()
                 }
             )
             startTimeSourcePicker.setText(
                 dataProcessor.startTimeSourceToString(
-                    category.startTimeSource ?: event.startTimeSource
+                    category.startTimeSource ?: race.startTimeSource
                 ),
                 false
             )
             finishTimeSourcePicker.setText(
                 dataProcessor.finishTimeSourceToString(
-                    category.finishTimeSource ?: event.finishTimeSource
+                    category.finishTimeSource ?: race.finishTimeSource
                 ),
                 false
             )
@@ -200,25 +210,25 @@ class CategoryCreateDialogFragment : DialogFragment() {
             false -> genderPicker.setText(getString(R.string.gender_man), false)
         }
 
-        //Set the event type checkbox functionality
+        //Set the race type checkbox functionality
         samePropertiesCheckBox.setOnClickListener {
             if (samePropertiesCheckBox.isChecked) {
-                eventTypePicker.setText(
-                    dataProcessor.eventTypeToString(event.eventType),
+                raceTypePicker.setText(
+                    dataProcessor.raceTypeToString(race.raceType),
                     false
                 )
-                eventTypeWatcher(event.eventType.value)
-                limitEditText.setText(event.timeLimit.toMinutes().toString())
+                raceTypeWatcher(race.raceType.value)
+                limitEditText.setText(race.timeLimit.toMinutes().toString())
                 startTimeSourcePicker.setText(
-                    dataProcessor.startTimeSourceToString(event.startTimeSource),
+                    dataProcessor.startTimeSourceToString(race.startTimeSource),
                     false
                 )
                 finishTimeSourcePicker.setText(
-                    dataProcessor.finishTimeSourceToString(event.finishTimeSource),
+                    dataProcessor.finishTimeSourceToString(race.finishTimeSource),
                     false
                 )
 
-                eventTypeLayout.isEnabled = false
+                raceTypeLayout.isEnabled = false
                 limitLayout.isEnabled = false
                 startTimeSourceLayout.isEnabled = false
                 finishTimeSourceLayout.isEnabled = false
@@ -226,50 +236,50 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
             //Hide the shading and enable input
             else {
-                eventTypeLayout.isEnabled = true
+                raceTypeLayout.isEnabled = true
                 limitLayout.isEnabled = true
                 startTimeSourceLayout.isEnabled = true
                 finishTimeSourceLayout.isEnabled = true
-                eventTypePicker.setOnItemClickListener { _, _, position, _ ->
-                    eventTypeWatcher(position)
+                raceTypePicker.setOnItemClickListener { _, _, position, _ ->
+                    raceTypeWatcher(position)
                 }
             }
             setAdapter(null)
         }
 
         //Set the punches
-        setAdapter(ArrayList(selectedEventViewModel.getControlPointsByCategory(category.id)))
+        setAdapter(ArrayList(selectedRaceViewModel.getControlPointsByCategory(category.id)))
 
-        //TODO: Process the saving - this is just to prevent the filtering after screen rotation
-        eventTypePicker.isSaveEnabled = false
+        //TODO: Process the saving - this is just to prrace the filtering after screen rotation
+        raceTypePicker.isSaveEnabled = false
         startTimeSourcePicker.isSaveEnabled = false
         finishTimeSourcePicker.isSaveEnabled = false
     }
 
     private fun setAdapter(values: ArrayList<ControlPoint>?) {
-        val event = selectedEventViewModel.getCurrentEvent()
+        val race = selectedRaceViewModel.getCurrentRace()
 
         if (values != null) {
             controlPointRecyclerView.adapter =
                 ControlPointRecyclerViewAdapter(
                     ControlPointItemWrapper.getWrappers(values),
-                    selectedEventViewModel.event.value!!.id,
+                    selectedRaceViewModel.race.value!!.id,
                     category.id,
-                    category.eventType ?: event.eventType, requireContext()
+                    category.raceType ?: race.raceType, requireContext()
                 )
         } else {
             controlPointRecyclerView.adapter =
                 ControlPointRecyclerViewAdapter(
                     (controlPointRecyclerView.adapter as ControlPointRecyclerViewAdapter).getOriginalValues(),
-                    selectedEventViewModel.event.value!!.id,
+                    selectedRaceViewModel.race.value!!.id,
                     category.id,
-                    category.eventType ?: event.eventType, requireContext()
+                    category.raceType ?: race.raceType, requireContext()
                 )
         }
     }
 
-    private fun eventTypeWatcher(position: Int) {
-        category.eventType = EventType.getByValue(position)!!
+    private fun raceTypeWatcher(position: Int) {
+        category.raceType = RaceType.getByValue(position)!!
         setAdapter(null)
     }
 
@@ -283,7 +293,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
         //Check if the name is unique
         else {
             val name = nameEditText.text.toString()
-            val orig = selectedEventViewModel.getCategoryByName(name)
+            val orig = selectedRaceViewModel.getCategoryByName(name)
             if (orig != null && orig.id != category.id) {
                 valid = false
                 nameEditText.error = getString(R.string.category_exists)
@@ -307,7 +317,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
         if (maxAgeEditText.text.toString().isNotBlank()) {
             val maxYear: String = maxAgeEditText.text.toString()
 
-            val orig = selectedEventViewModel.getCategoryByMaxAge(maxYear.toInt())
+            val orig = selectedRaceViewModel.getCategoryByMaxAge(maxYear.toInt())
             if (orig != null && orig.id != category.id) {
                 maxAgeEditText.error = getString(R.string.invalid_max_age, orig.name)
                 valid = false
@@ -346,31 +356,31 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
                 category.differentProperties = !samePropertiesCheckBox.isChecked
                 if (category.differentProperties) {
-                    category.eventType =
-                        dataProcessor.eventTypeStringToEnum(eventTypePicker.text.toString())
+                    category.raceType =
+                        dataProcessor.raceTypeStringToEnum(raceTypePicker.text.toString())
                     category.timeLimit = Duration.ofMinutes(limitEditText.text.toString().toLong())
                     category.startTimeSource =
                         dataProcessor.startTimeSourceStringToEnum(startTimeSourcePicker.text.toString())
                     category.finishTimeSource =
                         dataProcessor.finishTimeSourceStringToEnum(finishTimeSourcePicker.text.toString())
                 } else {
-                    category.eventType = null
+                    category.raceType = null
                     category.timeLimit = null
                     category.startTimeSource = null
                     category.finishTimeSource = null
                 }
 
                 //Get control points
-                val parsed = selectedEventViewModel.adjustControlPoints(
+                val parsed = selectedRaceViewModel.adjustControlPoints(
                     (controlPointRecyclerView.adapter as ControlPointRecyclerViewAdapter).getControlPoints(),
-                    category.eventType ?: selectedEventViewModel.getCurrentEvent().eventType
+                    category.raceType ?: selectedRaceViewModel.getCurrentRace().raceType
                 )
 
                 //Create or update the category
                 if (args.create) {
-                    selectedEventViewModel.createCategory(category, parsed)
+                    selectedRaceViewModel.createCategory(category, parsed)
                 } else {
-                    selectedEventViewModel.updateCategory(category, parsed)
+                    selectedRaceViewModel.updateCategory(category, parsed)
                 }
                 setFragmentResult(
                     REQUEST_CATEGORY_MODIFICATION, bundleOf(

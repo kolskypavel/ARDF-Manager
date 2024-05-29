@@ -10,7 +10,7 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.CompetitorTableDisplayType
-import kolskypavel.ardfmanager.ui.SelectedEventViewModel
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -19,7 +19,7 @@ class CompetitorTableViewAdapter(
     private var values: List<CompetitorData>,
     private var display: CompetitorTableDisplayType,
     private val context: Context,
-    private val selectedEventViewModel: SelectedEventViewModel,
+    private val selectedRaceViewModel: SelectedRaceViewModel,
     private val onMoreClicked: (action: Int, position: Int, competitor: CompetitorData) -> Unit,
 ) : TableDataAdapter<CompetitorData>(context, values) {
 
@@ -116,7 +116,7 @@ class CompetitorTableViewAdapter(
                             if (item.readoutResult == null) {
                                 val runDuration = TimeProcessor
                                     .runDurationFromStart(
-                                        selectedEventViewModel.getCurrentEvent().startDateTime,
+                                        selectedRaceViewModel.getCurrentRace().startDateTime,
                                         item.competitorCategory.competitor.drawnRelativeStartTime!!
                                     )
                                 if (runDuration != null) {
@@ -141,11 +141,11 @@ class CompetitorTableViewAdapter(
                                     if (item.competitorCategory.category?.timeLimit != null) {
                                         item.competitorCategory.category!!.timeLimit!!
                                     } else {
-                                        selectedEventViewModel.getCurrentEvent().timeLimit
+                                        selectedRaceViewModel.getCurrentRace().timeLimit
                                     }
                                 val toLimit =
                                     TimeProcessor.durationToLimit(
-                                        selectedEventViewModel.getCurrentEvent().startDateTime,
+                                        selectedRaceViewModel.getCurrentRace().startDateTime,
                                         item.competitorCategory.competitor.drawnRelativeStartTime!!,
                                         limit, LocalDateTime.now()
                                     )

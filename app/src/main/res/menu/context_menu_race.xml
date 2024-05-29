@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/menu_item_edit_event"
+        android:id="@+id/menu_item_edit_race"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/event_edit" />
+        android:title="@string/race_edit" />
     <item
-        android:id="@+id/menu_item_export_event"
+        android:id="@+id/menu_item_export_race"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/event_export" />
+        android:title="@string/race_export" />
     <item
-        android:id="@+id/menu_item_delete_event"
+        android:id="@+id/menu_item_delete_race"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/event_delete" />
+        android:title="@string/race_delete" />
 </menu>

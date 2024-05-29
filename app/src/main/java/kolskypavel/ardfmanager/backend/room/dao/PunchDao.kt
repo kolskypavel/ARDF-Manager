@@ -25,7 +25,7 @@ interface PunchDao {
     @Query("DELETE FROM punch WHERE id =(:id) ")
     suspend fun deletePunch(id: UUID)
 
-    @Query("DELETE FROM punch WHERE event_id=(:eventId)")
-    suspend fun deletePunchesByEvent(eventId: UUID)
+    @Query("DELETE FROM punch WHERE race_id=(:raceId)")
+    suspend fun deletePunchesByRace(raceId: UUID)
 
 }

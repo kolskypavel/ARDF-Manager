@@ -12,8 +12,8 @@
         android:id="@+id/result_menu_results_service"
         android:title="@string/results_service" />
     <item
-        android:id="@+id/result_menu_edit_event"
-        android:title="@string/event_edit" />
+        android:id="@+id/result_menu_edit_race"
+        android:title="@string/race_edit" />
     <item
         android:id="@+id/result_menu_global_settings"
         android:icon="@drawable/ic_settings"

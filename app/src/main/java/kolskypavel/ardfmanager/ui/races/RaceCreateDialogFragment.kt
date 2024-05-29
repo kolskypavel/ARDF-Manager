@@ -1,4 +1,4 @@
-package kolskypavel.ardfmanager.ui.event
+package kolskypavel.ardfmanager.ui.races
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,11 +16,11 @@ import com.google.android.material.textfield.TextInputEditText
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Event
-import kolskypavel.ardfmanager.backend.room.enums.EventBand
-import kolskypavel.ardfmanager.backend.room.enums.EventLevel
-import kolskypavel.ardfmanager.backend.room.enums.EventType
+import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.enums.FinishTimeSource
+import kolskypavel.ardfmanager.backend.room.enums.RaceBand
+import kolskypavel.ardfmanager.backend.room.enums.RaceLevel
+import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import kolskypavel.ardfmanager.ui.pickers.DatePickerFragment
 import kolskypavel.ardfmanager.ui.pickers.TimePickerFragment
@@ -30,8 +30,8 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.UUID
 
-class EventCreateDialogFragment : DialogFragment() {
-    private val args: EventCreateDialogFragmentArgs by navArgs()
+class RaceCreateDialogFragment : DialogFragment() {
+    private val args: RaceCreateDialogFragmentArgs by navArgs()
     private val dataProcessor = DataProcessor.get()
 
     private lateinit var nameEditText: TextInputEditText
@@ -39,47 +39,47 @@ class EventCreateDialogFragment : DialogFragment() {
     private lateinit var dateView: TextInputEditText
     private lateinit var startTimeView: TextInputEditText
     private lateinit var limitEditText: TextInputEditText
-    private lateinit var eventTypePicker: MaterialAutoCompleteTextView
-    private lateinit var eventLevelPicker: MaterialAutoCompleteTextView
-    private lateinit var eventBandPicker: MaterialAutoCompleteTextView
+    private lateinit var raceTypePicker: MaterialAutoCompleteTextView
+    private lateinit var raceLevelPicker: MaterialAutoCompleteTextView
+    private lateinit var raceBandPicker: MaterialAutoCompleteTextView
     private lateinit var startTimeSourcePicker: MaterialAutoCompleteTextView
     private lateinit var finishTimeSourcePicker: MaterialAutoCompleteTextView
 
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
 
-    private lateinit var event: Event
+    private lateinit var race: Race
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.dialog_add_event, container, false)
+        return inflater.inflate(R.layout.dialog_edit_race, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.add_dialog)
 
-        nameEditText = view.findViewById(R.id.event_dialog_name)
-        externalIdEditText = view.findViewById(R.id.event_dialog_external_id)
-        dateView = view.findViewById(R.id.event_dialog_date)
-        startTimeView = view.findViewById(R.id.event_dialog_start_time)
-        limitEditText = view.findViewById(R.id.event_dialog_limit)
-        eventTypePicker = view.findViewById(R.id.category_dialog_type)
-        eventLevelPicker = view.findViewById(R.id.event_dialog_level)
-        eventBandPicker = view.findViewById(R.id.event_dialog_band)
-        startTimeSourcePicker = view.findViewById(R.id.event_dialog_start_time_source)
-        finishTimeSourcePicker = view.findViewById(R.id.event_dialog_finish_time_source)
-        cancelButton = view.findViewById(R.id.event_dialog_cancel)
-        okButton = view.findViewById(R.id.event_dialog_ok)
+        nameEditText = view.findViewById(R.id.race_dialog_name)
+        externalIdEditText = view.findViewById(R.id.race_dialog_external_id)
+        dateView = view.findViewById(R.id.race_dialog_date)
+        startTimeView = view.findViewById(R.id.race_dialog_start_time)
+        limitEditText = view.findViewById(R.id.race_dialog_limit)
+        raceTypePicker = view.findViewById(R.id.category_dialog_type)
+        raceLevelPicker = view.findViewById(R.id.race_dialog_level)
+        raceBandPicker = view.findViewById(R.id.race_dialog_band)
+        startTimeSourcePicker = view.findViewById(R.id.race_dialog_start_time_source)
+        finishTimeSourcePicker = view.findViewById(R.id.race_dialog_finish_time_source)
+        cancelButton = view.findViewById(R.id.race_dialog_cancel)
+        okButton = view.findViewById(R.id.race_dialog_ok)
 
 
-        //TODO: Process the saving - this is just to prevent the filtering after screen rotation
-        eventTypePicker.isSaveEnabled = false
-        eventLevelPicker.isSaveEnabled = false
-        eventBandPicker.isSaveEnabled = false
+        //TODO: Process the saving - this is just to prrace the filtering after screen rotation
+        raceTypePicker.isSaveEnabled = false
+        raceLevelPicker.isSaveEnabled = false
+        raceBandPicker.isSaveEnabled = false
         startTimeSourcePicker.isSaveEnabled = false
         finishTimeSourcePicker.isSaveEnabled = false
 
@@ -93,70 +93,70 @@ class EventCreateDialogFragment : DialogFragment() {
      */
     private fun setPickers() {
         dateView.setOnClickListener {
-            findNavController().navigate(EventCreateDialogFragmentDirections.selectDate(event.startDateTime.toLocalDate()))
+            findNavController().navigate(RaceCreateDialogFragmentDirections.selectDate(race.startDateTime.toLocalDate()))
         }
         setFragmentResultListener(
             DatePickerFragment.REQUEST_KEY_DATE
         ) { _, bundle ->
 
-            event.startDateTime =
+            race.startDateTime =
                 LocalDateTime.of(
                     LocalDate.parse(bundle.getString(DatePickerFragment.BUNDLE_KEY_DATE)),
-                    event.startDateTime.toLocalTime()
+                    race.startDateTime.toLocalTime()
                 )
 
-            dateView.setText(event.startDateTime.toLocalDate().toString())
+            dateView.setText(race.startDateTime.toLocalDate().toString())
         }
 
         startTimeView.setOnClickListener {
-            findNavController().navigate(EventCreateDialogFragmentDirections.selectTime(event.startDateTime.toLocalTime()))
+            findNavController().navigate(RaceCreateDialogFragmentDirections.selectTime(race.startDateTime.toLocalTime()))
         }
         setFragmentResultListener(TimePickerFragment.REQUEST_KEY_TIME) { _, bundle ->
-            event.startDateTime = event.startDateTime.with(
+            race.startDateTime = race.startDateTime.with(
                 LocalTime.parse(bundle.getString(TimePickerFragment.BUNDLE_KEY_TIME))
             )
-            startTimeView.setText(event.startDateTime.toLocalTime().toString())
+            startTimeView.setText(race.startDateTime.toLocalTime().toString())
         }
     }
 
     private fun populateFields() {
 
-        //Create new event
+        //Create new race
         if (args.create) {
-            dialog?.setTitle(R.string.event_create)
-            event = Event(
+            dialog?.setTitle(R.string.race_create)
+            race = Race(
                 UUID.randomUUID(),
                 "", null,
                 LocalDateTime.now(),
-                EventType.CLASSICS,
-                EventLevel.PRACTICE,
-                EventBand.M80,
+                RaceType.CLASSICS,
+                RaceLevel.PRACTICE,
+                RaceBand.M80,
                 Duration.ofMinutes(120),
                 StartTimeSource.DRAWN_TIME,
                 FinishTimeSource.FINISH_CONTROL
             )
         } else {
-            event = args.event!!
-            dialog?.setTitle(R.string.event_edit)
-            nameEditText.setText(event.name)
+            race = args.race!!
+            dialog?.setTitle(R.string.race_edit)
+            nameEditText.setText(race.name)
         }
 
-        dateView.setText(event.startDateTime.toLocalDate().toString())
-        if (event.externalId != null) {
-            externalIdEditText.setText(event.externalId.toString())
+        dateView.setText(race.startDateTime.toLocalDate().toString())
+        if (race.externalId != null) {
+            externalIdEditText.setText(race.externalId.toString())
         }
-        startTimeView.setText(TimeProcessor.getHoursMinutesFromTime(event.startDateTime))
+        startTimeView.setText(TimeProcessor.getHoursMinutesFromTime(race.startDateTime))
         limitEditText.setText("120") //TODO: Fix with default values from settings
 
-        eventTypePicker.setText(dataProcessor.eventTypeToString(event.eventType), false)
-        eventLevelPicker.setText(dataProcessor.eventLevelToString(event.eventLevel), false)
-        eventBandPicker.setText(dataProcessor.eventBandToString(event.eventBand), false)
+        raceTypePicker.setText(dataProcessor.raceTypeToString(race.raceType), false)
+        raceLevelPicker.setText(dataProcessor.raceLevelToString(race.raceLevel), false)
+        raceBandPicker.setText(dataProcessor.raceBandToString(race.raceBand), false)
         startTimeSourcePicker.setText(
-            dataProcessor.startTimeSourceToString(event.startTimeSource),
+            dataProcessor.startTimeSourceToString(race.startTimeSource),
             false
         )
         finishTimeSourcePicker.setText(
-            dataProcessor.finishTimeSourceToString(event.finishTimeSource),
+            dataProcessor.finishTimeSourceToString(race.finishTimeSource),
             false
         )
 
@@ -165,31 +165,31 @@ class EventCreateDialogFragment : DialogFragment() {
     private fun setButtons() {
         okButton.setOnClickListener {
 
-            //Send the arguments to create a new event
+            //Send the arguments to create a new race
             if (checkValidity()) {
 
-                event.name = nameEditText.text.toString()
+                race.name = nameEditText.text.toString()
                 if (externalIdEditText.text.toString().isNotBlank()) {
-                    event.externalId = externalIdEditText.text.toString().toLong()
+                    race.externalId = externalIdEditText.text.toString().toLong()
                 } else {
-                    event.externalId = null
+                    race.externalId = null
                 }
-                event.eventType =
-                    dataProcessor.eventTypeStringToEnum(eventTypePicker.text.toString())
-                event.eventLevel =
-                    dataProcessor.eventLevelStringToEnum(eventLevelPicker.text.toString())
-                event.eventBand =
-                    dataProcessor.eventBandStringToEnum(eventBandPicker.text.toString())
-                event.timeLimit = Duration.ofMinutes(limitEditText.text.toString().toLong())
-                event.startTimeSource =
+                race.raceType =
+                    dataProcessor.raceTypeStringToEnum(raceTypePicker.text.toString())
+                race.raceLevel =
+                    dataProcessor.raceLevelStringToEnum(raceLevelPicker.text.toString())
+                race.raceBand =
+                    dataProcessor.raceBandStringToEnum(raceBandPicker.text.toString())
+                race.timeLimit = Duration.ofMinutes(limitEditText.text.toString().toLong())
+                race.startTimeSource =
                     dataProcessor.startTimeSourceStringToEnum(startTimeSourcePicker.text.toString())
-                event.finishTimeSource =
+                race.finishTimeSource =
                     dataProcessor.finishTimeSourceStringToEnum(finishTimeSourcePicker.text.toString())
 
                 setFragmentResult(
-                    REQUEST_EVENT_MODIFICATION, bundleOf(
+                    REQUEST_RACE_MODIFICATION, bundleOf(
                         BUNDLE_KEY_CREATE to args.create,
-                        BUNDLE_KEY_EVENT to event
+                        BUNDLE_KEY_RACE to race
                     )
                 )
                 //End the dialog
@@ -241,9 +241,9 @@ class EventCreateDialogFragment : DialogFragment() {
     }
 
     companion object {
-        const val REQUEST_EVENT_MODIFICATION = "REQUEST_EVENT_MODIFICATION"
+        const val REQUEST_RACE_MODIFICATION = "REQUEST_RACE_MODIFICATION"
         const val BUNDLE_KEY_CREATE = "BUNDLE_KEY_CREATE"
-        const val BUNDLE_KEY_EVENT = "BUNDLE_KEY_EVENT"
+        const val BUNDLE_KEY_RACE = "BUNDLE_KEY_RACE"
         const val BUNDLE_KEY_POSITION = "BUNDLE_KEY_POSITION"
     }
 }

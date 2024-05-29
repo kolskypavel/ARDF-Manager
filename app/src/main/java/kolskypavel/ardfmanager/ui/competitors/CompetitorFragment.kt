@@ -33,12 +33,12 @@ import kolskypavel.ardfmanager.backend.comparators.CompetitorSINumberComparator
 import kolskypavel.ardfmanager.backend.comparators.CompetitorStartNumComparator
 import kolskypavel.ardfmanager.backend.comparators.CompetitorStartTimeComparator
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.Event
+import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.CompetitorTableDisplayType
 import kolskypavel.ardfmanager.databinding.FragmentCompetitorsBinding
-import kolskypavel.ardfmanager.ui.SelectedEventViewModel
-import kolskypavel.ardfmanager.ui.event.EventCreateDialogFragment
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
+import kolskypavel.ardfmanager.ui.races.RaceCreateDialogFragment
 import kotlinx.coroutines.launch
 
 
@@ -46,7 +46,7 @@ class CompetitorFragment : Fragment() {
 
     private var _binding: FragmentCompetitorsBinding? = null
 
-    private val selectedEventViewModel: SelectedEventViewModel by activityViewModels()
+    private val selectedRaceViewModel: SelectedRaceViewModel by activityViewModels()
     private val dataProcessor = DataProcessor.get()
     private lateinit var competitorToolbar: Toolbar
     private lateinit var competitorTableView: SortableTableView<CompetitorData>
@@ -81,9 +81,9 @@ class CompetitorFragment : Fragment() {
             return@setOnMenuItemClickListener setFragmentMenuActions(it)
         }
 
-        selectedEventViewModel.event.observe(viewLifecycleOwner) { event ->
-            competitorToolbar.title = event.name
-            competitorToolbar.subtitle = dataProcessor.eventTypeToString(event.eventType)
+        selectedRaceViewModel.race.observe(viewLifecycleOwner) { race ->
+            competitorToolbar.title = race.name
+            competitorToolbar.subtitle = dataProcessor.raceTypeToString(race.raceType)
         }
 
         competitorDisplayTypePicker.setOnItemClickListener { _, _, _, pos ->
@@ -118,12 +118,12 @@ class CompetitorFragment : Fragment() {
                 return true
             }
 
-            R.id.competitor_menu_edit_event -> {
+            R.id.competitor_menu_edit_race -> {
                 findNavController().navigate(
-                    BottomNavDirections.modifyEventProperties(
+                    BottomNavDirections.modifyRaceProperties(
                         false,
                         0,
-                        selectedEventViewModel.event.value
+                        selectedRaceViewModel.race.value
                     )
                 )
                 return true
@@ -134,7 +134,7 @@ class CompetitorFragment : Fragment() {
             }
 
             R.id.competitor_menu_global_settings -> {
-                findNavController().navigate(BottomNavDirections.openSettingsFromEvent())
+                findNavController().navigate(BottomNavDirections.openSettingsFromRace())
                 return true
             }
         }
@@ -240,12 +240,12 @@ class CompetitorFragment : Fragment() {
     private fun setRecyclerAdapter(displayType: CompetitorTableDisplayType) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                selectedEventViewModel.competitorData.collect { competitorCategories ->
+                selectedRaceViewModel.competitorData.collect { competitorCategories ->
                     competitorTableView.dataAdapter =
                         CompetitorTableViewAdapter(
                             competitorCategories,
                             displayType,
-                            requireContext(), selectedEventViewModel
+                            requireContext(), selectedRaceViewModel
                         ) { action, position, competitor ->
                             tableViewContextMenuActions(
                                 action,
@@ -285,7 +285,7 @@ class CompetitorFragment : Fragment() {
 
         //TODO: Fix the readout removal
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            selectedEventViewModel.deleteCompetitor(competitor.id, false)
+            selectedRaceViewModel.deleteCompetitor(competitor.id, false)
             dialog.dismiss()
         }
 
@@ -301,7 +301,7 @@ class CompetitorFragment : Fragment() {
         builder.setMessage(R.string.competitor_delete_all_confirmation)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            selectedEventViewModel.deleteAllCompetitors()
+            selectedRaceViewModel.deleteAllCompetitors()
             dialog.dismiss()
         }
 
@@ -314,13 +314,13 @@ class CompetitorFragment : Fragment() {
     private fun setBackButton() {
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             val builder = AlertDialog.Builder(context)
-            builder.setTitle(getString(R.string.event_end))
-            val message = getString(R.string.event_end_confirmation)
+            builder.setTitle(getString(R.string.race_end))
+            val message = getString(R.string.race_end_confirmation)
             builder.setMessage(message)
 
             builder.setPositiveButton(R.string.ok) { dialog, _ ->
-                dataProcessor.removeReaderEvent()
-                findNavController().navigate(CompetitorFragmentDirections.closeEvent())
+                dataProcessor.removeReaderRace()
+                findNavController().navigate(CompetitorFragmentDirections.closeRace())
             }
 
             builder.setNegativeButton(R.string.cancel) { dialog, _ ->
@@ -339,17 +339,17 @@ class CompetitorFragment : Fragment() {
             }
         }
 
-        //Enable event modification from menu
-        setFragmentResultListener(EventCreateDialogFragment.REQUEST_EVENT_MODIFICATION) { _, bundle ->
-            val event: Event = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        //Enable race modification from menu
+        setFragmentResultListener(RaceCreateDialogFragment.REQUEST_RACE_MODIFICATION) { _, bundle ->
+            val race: Race = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 bundle.getSerializable(
-                    EventCreateDialogFragment.BUNDLE_KEY_EVENT,
-                    Event::class.java
+                    RaceCreateDialogFragment.BUNDLE_KEY_RACE,
+                    Race::class.java
                 )!!
             } else {
-                bundle.getSerializable(EventCreateDialogFragment.BUNDLE_KEY_EVENT) as Event
+                bundle.getSerializable(RaceCreateDialogFragment.BUNDLE_KEY_RACE) as Race
             }
-            selectedEventViewModel.updateEvent(event)
+            selectedRaceViewModel.updateRace(race)
         }
     }
 
