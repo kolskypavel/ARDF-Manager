@@ -52,6 +52,11 @@ class ResultsFragment : Fragment() {
         return root
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        resultsRecyclerView.adapter = null
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -62,9 +67,9 @@ class ResultsFragment : Fragment() {
             return@setOnMenuItemClickListener setFragmentMenuActions(it)
         }
 
-        selectedRaceViewModel.race.observe(viewLifecycleOwner) { raace ->
-            resultsToolbar.title = raace.name
-            resultsToolbar.subtitle = dataProcessor.raceTypeToString(raace.raceType)
+        selectedRaceViewModel.race.observe(viewLifecycleOwner) { race ->
+            resultsToolbar.title = race.name
+            resultsToolbar.subtitle = dataProcessor.raceTypeToString(race.raceType)
         }
 
         setResultListener()
@@ -139,7 +144,11 @@ class ResultsFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 selectedRaceViewModel.resultData.collect { results ->
                     resultsRecyclerView.adapter =
-                        ResultsFragmentRecyclerViewAdapter(ArrayList(results), requireContext())
+                        ResultsFragmentRecyclerViewAdapter(
+                            ArrayList(results),
+                            requireContext(),
+                            selectedRaceViewModel
+                        )
                 }
             }
         }

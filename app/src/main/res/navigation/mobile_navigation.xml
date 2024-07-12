@@ -44,10 +44,6 @@
             android:name="kolskypavel.ardfmanager.ui.results.ResultsExportDialogFragment"
             android:label="ResultsExportDialogFragment" />
         <dialog
-            android:id="@+id/categoryFileDialogFragment"
-            android:name="kolskypavel.ardfmanager.ui.categories.CategoryFileDialogFragment"
-            android:label="CategoryFileDialogFragment" />
-        <dialog
             android:id="@+id/competitorCreateDialogFragment"
             android:name="kolskypavel.ardfmanager.ui.competitors.CompetitorCreateDialogFragment"
             android:label="CompetitorCreateDialogFragment">
@@ -80,7 +76,7 @@
                 app:destination="@id/RaceCreateDialogFragment" />
             <action
                 android:id="@+id/importExportDataCompetitors"
-                app:destination="@id/CompetitorFileDialogFragment" />
+                app:destination="@id/DataImportExportDialogFragment" />
         </fragment>
 
         <fragment
@@ -95,12 +91,12 @@
                 android:id="@+id/modifyCategory"
                 app:destination="@id/categoryCreateDialogFragment" />
             <action
-                android:id="@+id/importExportCategories"
-                app:destination="@id/categoryFileDialogFragment" />
+                android:id="@+id/importExportData"
+                app:destination="@id/DataImportExportDialogFragment" />
         </fragment>
         <dialog
-            android:id="@+id/CompetitorFileDialogFragment"
-            android:name="kolskypavel.ardfmanager.ui.competitors.CompetitorFileDialogFragment"
+            android:id="@+id/DataImportExportDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.data.DataImportDialogFragment"
             android:label="DataExportImportDialogFragment" />
 
         <fragment

@@ -13,10 +13,12 @@ import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 
 class ResultsFragmentRecyclerViewAdapter(
     var values: ArrayList<ResultDisplayWrapper>,
-    var context: Context
+    var context: Context,
+    var selectedRaceViewModel: SelectedRaceViewModel
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(
     ) {
@@ -100,6 +102,13 @@ class ResultsFragmentRecyclerViewAdapter(
                     }
                 competitorTime.text = if (singleResult.readoutResult != null) {
                     TimeProcessor.durationToMinuteString(singleResult.readoutResult!!.result.runTime)
+                } else if (singleResult.competitorCategory.competitor.drawnRelativeStartTime != null) {
+                    "${
+                        TimeProcessor.runDurationFromStartString(
+                            selectedRaceViewModel.getCurrentRace().startDateTime,
+                            singleResult.competitorCategory.competitor.drawnRelativeStartTime!!
+                        )
+                    }?"
                 } else {
                     "-"
                 }
@@ -119,16 +128,17 @@ class ResultsFragmentRecyclerViewAdapter(
         } else {
             expandParentRow(position)
         }
+
     }
 
     private fun expandParentRow(position: Int) {
         val currentBoardingRow = values[position]
-        val services = currentBoardingRow.subList
+        val competitors = currentBoardingRow.subList
         currentBoardingRow.isExpanded = true
         var nextPosition = position
         if (currentBoardingRow.isChild == 0) {
 
-            services.forEach { service ->
+            competitors.forEach { service ->
                 val parentModel = ResultDisplayWrapper()
                 parentModel.isChild = 1
                 val subList: ArrayList<CompetitorData> = ArrayList()

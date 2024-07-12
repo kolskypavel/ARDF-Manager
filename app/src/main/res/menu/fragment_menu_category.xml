@@ -6,8 +6,12 @@
     <item
         android:id="@+id/category_menu_import_file"
         android:icon="@drawable/ic_import_file"
-        android:title="@string/category_import_text"
+        android:title="@string/data_import_data"
         app:showAsAction="always|withText" />
+
+    <item
+        android:id="@+id/category_menu_import_standard_categories"
+        android:title="@string/category_create_standard_categories" />
 
     <item
         android:id="@+id/category_menu_edit_race"

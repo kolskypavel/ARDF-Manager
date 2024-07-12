@@ -13,6 +13,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
@@ -52,11 +53,10 @@ class ResultsProcessor {
                 readout.id,
                 competitorId,
                 cardData.siNumber,
-                SIRecordType.CONTROL,
                 punchData.siCode,
+                punchData.siTime,
+                SIRecordType.CONTROL,
                 orderCounter,
-                punchData.siTime,
-                punchData.siTime,
                 PunchStatus.UNKNOWN,
             )
             punches.add(punch)
@@ -72,11 +72,10 @@ class ResultsProcessor {
                     readout.id,
                     competitorId,
                     cardData.siNumber,
+                    0,
+                    readout.startTime!!,
                     SIRecordType.START,
                     0,
-                    0,
-                    readout.startTime!!,
-                    readout.startTime!!,
                     PunchStatus.VALID,
                 )
             )
@@ -91,11 +90,10 @@ class ResultsProcessor {
                     readout.id,
                     competitorId,
                     cardData.siNumber,
-                    SIRecordType.FINISH,
                     0,
+                    readout.finishTime!!,
+                    SIRecordType.FINISH,
                     orderCounter,
-                    readout.finishTime!!,
-                    readout.finishTime!!,
                     PunchStatus.VALID,
                 )
             )
@@ -316,12 +314,6 @@ class ResultsProcessor {
                 result
             )
 
-            RaceType.CUSTOM -> evaluateCustom(
-                punches,
-                controlPoints,
-                result
-            )
-
         }
     }
 
@@ -455,9 +447,10 @@ class ResultsProcessor {
             val taken = TreeSet<Int>()  //Already taken CPs
             var points = 0
 
-            val beacon: Int = if (controlPoints.isNotEmpty() && controlPoints.last().beacon) {
-                controlPoints.last().siCode
-            } else -1
+            val beacon: Int =
+                if (controlPoints.isNotEmpty() && controlPoints.last().type == ControlPointType.BEACON) {
+                    controlPoints.last().siCode
+                } else -1
 
 
             punches.forEach { punch ->
@@ -523,7 +516,7 @@ class ResultsProcessor {
 
             //Find separators in the control points
             for (cp in controlPoints.withIndex()) {
-                if (cp.value.separator) {
+                if (cp.value.type == ControlPointType.SEPARATOR) {
                     separators.add(Pair(cp.value.siCode, cp.index))
                 }
             }
@@ -612,32 +605,15 @@ class ResultsProcessor {
             }
         }
 
-        /**
-         * Process the custom race
-         */
-        fun evaluateCustom(
-            punches: ArrayList<Punch>,
-            controlPoints: List<ControlPoint>,
-            result: Result
-        ) {
-            //TODO: Not yet implemented
-        }
-
         fun adjustControlPoints(
             controlPoints: ArrayList<ControlPoint>,
             raceType: RaceType
         ): List<ControlPoint> {
 
             var order = 1
-            var round = 1
 
             for (cp in controlPoints) {
                 cp.order = order
-                cp.round = round
-
-                if (cp.separator) {
-                    round++
-                }
 
                 if (cp.name == null) {
                     cp.name = cp.siCode.toString()
@@ -653,10 +629,10 @@ class ResultsProcessor {
             for (cp in controlPoints) {
                 codes += cp.siCode
 
-                if (cp.beacon) {
+                if (cp.type == ControlPointType.BEACON) {
                     codes += "B"
                 }
-                if (cp.separator) {
+                if (cp.type == ControlPointType.SEPARATOR) {
                     codes += "!"
                 }
                 if (cp.name != null) {

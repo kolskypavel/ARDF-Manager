@@ -3,9 +3,13 @@ package kolskypavel.ardfmanager.backend
 import android.content.Context
 import android.content.Intent
 import android.hardware.usb.UsbDevice
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import kolskypavel.ardfmanager.R
-import kolskypavel.ardfmanager.backend.files.FileHandler
+import kolskypavel.ardfmanager.backend.files.FileProcessor
+import kolskypavel.ardfmanager.backend.files.constants.DataFormat
+import kolskypavel.ardfmanager.backend.files.constants.DataType
+import kolskypavel.ardfmanager.backend.files.wrappers.CompetitorImportDataWrapper
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
@@ -30,6 +34,7 @@ import kolskypavel.ardfmanager.backend.sportident.SIReaderState
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
 import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
 import java.time.LocalDate
@@ -47,7 +52,7 @@ class DataProcessor private constructor(context: Context) {
 
     var currentState = MutableLiveData<AppState>()
     var resultsProcessor: ResultsProcessor? = null
-    var fileProcessor: FileHandler? = null
+    var fileProcessor: FileProcessor? = null
 
     companion object {
         private var INSTANCE: DataProcessor? = null
@@ -370,9 +375,30 @@ class DataProcessor private constructor(context: Context) {
             currentState.value?.currentRace!!.id
         )
 
-    fun importCompetitors() {
+    //IMPORTS
+    suspend fun importCategories(
+        uri: Uri,
+        dataFormat: DataFormat,
+        raceId: UUID
+    ): List<CategoryData>? {
+        return fileProcessor?.importCategories(uri, dataFormat, raceId, emptyList())
+    }
+
+    suspend fun importCompetitors(
+        uri: Uri,
+        dataFormat: DataFormat,
+        raceId: UUID
+    ): CompetitorImportDataWrapper? {
+        return fileProcessor?.importCompetitors(uri, dataFormat, raceId)
+    }
+
+    suspend fun importStarts(uri: Uri, dataFormat: DataFormat, raceId: UUID) {
 
     }
+
+    //EXPORTS
+//    suspend fun exportResults(uri: Uri, dataFormat: DataFormat, raceId: UUID) =
+//        fileProcessor?.exportResults(uri, dataFormat, getResultDataByRace(raceId))
 
     //SportIdent manipulation
     fun connectDevice(usbDevice: UsbDevice) {
@@ -474,9 +500,9 @@ class DataProcessor private constructor(context: Context) {
         return FinishTimeSource.getByValue(finishTimeSourceStrings.indexOf(string))!!
     }
 
-    fun genderToString(gender: Boolean?): String {
-        return when (gender) {
-            true -> appContext.get()!!.resources.getString(R.string.gender_woman)
+    fun genderToString(isMan: Boolean?): String {
+        return when (isMan) {
+            false -> appContext.get()!!.resources.getString(R.string.gender_woman)
             else -> appContext.get()!!.resources.getString(R.string.gender_man)
         }
     }
@@ -489,5 +515,17 @@ class DataProcessor private constructor(context: Context) {
             1 -> true
             else -> false
         }
+    }
+
+    fun dataFormatFromString(string: String): DataFormat {
+        val dataStrings = appContext.get()?.resources?.getStringArray(R.array.data_formats)!!
+        val index = dataStrings.indexOf(string).or(0)
+        return DataFormat.getByValue(index)!!
+    }
+
+    fun dataTypeFromString(string: String): DataType {
+        val dataStrings = appContext.get()?.resources?.getStringArray(R.array.data_types)!!
+        val index = dataStrings.indexOf(string).or(0)
+        return DataType.getByValue(index)!!
     }
 }

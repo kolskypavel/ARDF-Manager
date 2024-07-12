@@ -154,7 +154,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
             }
 
             //Preset gender
-            if (competitor.isWoman) {
+            if (competitor.isMan) {
                 womanCheckBox.isChecked = true
             }
 
@@ -190,7 +190,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         startNumberTextView.setText(competitor.startNumber.toString())
 
         womanCheckBox.setOnCheckedChangeListener { _, checked ->
-            competitor.isWoman = checked
+            competitor.isMan = checked
         }
 
         //TODO: Enable the automatic category, based on the year of birth
@@ -207,7 +207,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                     runBlocking {
                         val calc = dataProcessor.getCategoryByBirthYear(
                             year.toInt(),
-                            competitor.isWoman,
+                            competitor.isMan,
                             selectedRaceViewModel.race.value!!.id
                         )
                         if (calc != null) {

@@ -4,6 +4,7 @@ import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Result
+import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
@@ -43,8 +44,8 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     null,
-                    SIRecordType.CONTROL,
-                    30 + i, i, SITime(), null, PunchStatus.UNKNOWN, null
+                    30 + i,
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
                 )
             )
             controlPoints.add(
@@ -53,16 +54,14 @@ class ResultsEvaluationUnitTests {
                     UUID.randomUUID(),
                     UUID.randomUUID(),
                     30 + i,
-                    i,
                     null,
-                    0,
-                    0,
-                    false,
-                    false
+                    ControlPointType.CONTROL,
+                    i,
+                    0
                 )
             )
         }
-        controlPoints.last().beacon = true
+        controlPoints.last().type = ControlPointType.BEACON
         ResultsProcessor.evaluateClassics(punches, controlPoints, result)
         assertEquals(RaceStatus.VALID, result.raceStatus)
         //Check the punches
@@ -102,8 +101,8 @@ class ResultsEvaluationUnitTests {
                         null,
                         null,
                         null,
-                        SIRecordType.CONTROL,
-                        randCode, i, SITime(), null, PunchStatus.UNKNOWN, null
+                        randCode,
+                        SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
                     )
                 )
                 controlPoints.add(
@@ -112,17 +111,15 @@ class ResultsEvaluationUnitTests {
                         UUID.randomUUID(),
                         UUID.randomUUID(),
                         randCode,
-                        i,
                         null,
-                        0,
-                        0,
-                        false,
-                        false
+                        ControlPointType.CONTROL,
+                        i,
+                        0
                     )
                 )
             }
 
-            controlPoints.last().beacon = true
+            controlPoints.last().type = ControlPointType.BEACON
             ResultsProcessor.evaluateClassics(punches, controlPoints, result)
             assertEquals(RaceStatus.VALID, result.raceStatus)
             assertEquals(randLength + 1, result.points)
@@ -152,8 +149,8 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     null,
-                    SIRecordType.CONTROL,
-                    30 + i, i, SITime(), null, PunchStatus.UNKNOWN, null
+                    30 + i,
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
                 )
             )
             controlPoints.add(
@@ -162,16 +159,14 @@ class ResultsEvaluationUnitTests {
                     UUID.randomUUID(),
                     UUID.randomUUID(),
                     30 + i,
-                    i,
                     null,
-                    0,
-                    0,
-                    false,
-                    false
+                    ControlPointType.CONTROL,
+                    i,
+                    0
                 )
             )
         }
-        controlPoints.last().beacon = true
+        controlPoints.last().type = ControlPointType.BEACON
 
         punches.add(
             Punch(
@@ -180,8 +175,8 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 null,
-                SIRecordType.CONTROL,
-                36, 19, SITime(), null, PunchStatus.UNKNOWN, null
+                36,
+                SITime(), SIRecordType.CONTROL, 19, PunchStatus.UNKNOWN, null
             )
         )
 
@@ -215,17 +210,15 @@ class ResultsEvaluationUnitTests {
                     UUID.randomUUID(),
                     UUID.randomUUID(),
                     30 + i,
-                    i,
                     null,
-                    0,
-                    0,
-                    false,
-                    false
+                    ControlPointType.CONTROL,
+                    i,
+                    0
                 )
             )
         }
 
-        controlPoints.last().beacon = true
+        controlPoints.last().type = ControlPointType.BEACON
 
         for (i in 3..6) {
             punches.add(
@@ -235,8 +228,8 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     null,
-                    SIRecordType.CONTROL,
-                    30 + i, i, SITime(), null, PunchStatus.UNKNOWN, null
+                    30 + i,
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
                 )
             )
         }
@@ -249,8 +242,8 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     null,
-                    SIRecordType.CONTROL,
-                    30 + i, i, SITime(), null, PunchStatus.UNKNOWN, null
+                    30 + i,
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
                 )
             )
         }
@@ -286,8 +279,8 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 null,
-                SIRecordType.CONTROL,
-                31, 0, SITime(), null, PunchStatus.UNKNOWN, null
+                31,
+                SITime(), SIRecordType.CONTROL, 0, PunchStatus.UNKNOWN, null
             )
         )
         controlPoints.add(
@@ -296,12 +289,10 @@ class ResultsEvaluationUnitTests {
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 31,
-                0,
                 null,
+                ControlPointType.CONTROL,
                 0,
-                0,
-                false,
-                false
+                0
             )
         )
         ResultsProcessor.evaluateClassics(punches, controlPoints, result)
@@ -313,8 +304,8 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 null,
-                SIRecordType.CONTROL,
-                32, 0, SITime(), null, PunchStatus.UNKNOWN, null
+                32,
+                SITime(), SIRecordType.CONTROL, 0, PunchStatus.UNKNOWN, null
             )
         )
         controlPoints.add(
@@ -323,12 +314,10 @@ class ResultsEvaluationUnitTests {
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 32,
-                0,
                 null,
+                ControlPointType.CONTROL,
                 0,
-                0,
-                false,
-                false
+                0
             )
         )
         ResultsProcessor.evaluateClassics(punches, controlPoints, result)
@@ -358,8 +347,8 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     null,
-                    SIRecordType.CONTROL,
-                    30 + i, i, SITime(), null, PunchStatus.UNKNOWN, null
+                    30 + i,
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
                 )
             )
             controlPoints.add(
@@ -368,12 +357,10 @@ class ResultsEvaluationUnitTests {
                     UUID.randomUUID(),
                     UUID.randomUUID(),
                     30 + i,
-                    i,
                     null,
-                    0,
-                    0,
-                    false,
-                    false
+                    ControlPointType.CONTROL,
+                    i,
+                    0
                 )
             )
         }
@@ -405,8 +392,8 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     null,
-                    SIRecordType.CONTROL,
-                    30 + i, i, SITime(), null, PunchStatus.UNKNOWN, null
+                    30 + i,
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
                 )
             )
             controlPoints.add(
@@ -415,12 +402,10 @@ class ResultsEvaluationUnitTests {
                     UUID.randomUUID(),
                     UUID.randomUUID(),
                     30 + i,
-                    i,
                     null,
-                    0,
-                    0,
-                    false,
-                    false
+                    ControlPointType.CONTROL,
+                    i,
+                    0
                 )
             )
         }
@@ -431,8 +416,8 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 null,
-                SIRecordType.CONTROL,
-                62, 0, SITime(), null, PunchStatus.UNKNOWN, null
+                62,
+                SITime(), SIRecordType.CONTROL, 0, PunchStatus.UNKNOWN, null
             )
         )
         punches.add(
@@ -442,8 +427,8 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 null,
-                SIRecordType.CONTROL,
-                64, 0, SITime(), null, PunchStatus.UNKNOWN, null
+                64,
+                SITime(), SIRecordType.CONTROL, 0, PunchStatus.UNKNOWN, null
             )
         )
         ResultsProcessor.evaluateOrienteering(punches, controlPoints, result)
@@ -476,8 +461,8 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     null,
-                    SIRecordType.CONTROL,
-                    30 + i, i, SITime(), null, PunchStatus.UNKNOWN, null
+                    30 + i,
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
                 )
             )
             controlPoints.add(
@@ -486,12 +471,10 @@ class ResultsEvaluationUnitTests {
                     UUID.randomUUID(),
                     UUID.randomUUID(),
                     30 + i,
-                    i,
                     null,
-                    0,
-                    0,
-                    false,
-                    false
+                    ControlPointType.CONTROL,
+                    i,
+                    0
                 )
             )
         }
@@ -525,8 +508,8 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     null,
-                    SIRecordType.CONTROL,
-                    30 + i, i, SITime(), null, PunchStatus.UNKNOWN, null
+                    30 + i,
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
                 )
             )
             controlPoints.add(
@@ -535,18 +518,16 @@ class ResultsEvaluationUnitTests {
                     UUID.randomUUID(),
                     UUID.randomUUID(),
                     30 + i,
-                    i,
                     null,
-                    0,
-                    0,
-                    false,
-                    false
+                    ControlPointType.CONTROL,
+                    i,
+                    0
                 )
             )
         }
-        controlPoints[4].separator = true
-        controlPoints[7].separator = true
-        controlPoints.last().beacon = true
+        controlPoints[4].type = ControlPointType.SEPARATOR
+        controlPoints[7].type = ControlPointType.SEPARATOR
+        controlPoints.last().type = ControlPointType.BEACON
 
         ResultsProcessor.evaluateSprint(punches, controlPoints, result)
         assertEquals(RaceStatus.VALID, result.raceStatus)
@@ -563,8 +544,8 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 null,
-                SIRecordType.CONTROL,
-                99, 15, SITime(), null, PunchStatus.UNKNOWN, null
+                99,
+                SITime(), SIRecordType.CONTROL, 15, PunchStatus.UNKNOWN, null
             )
         )
 
@@ -575,8 +556,8 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 null,
-                SIRecordType.CONTROL,
-                67, 15, SITime(), null, PunchStatus.UNKNOWN, null
+                67,
+                SITime(), SIRecordType.CONTROL, 15, PunchStatus.UNKNOWN, null
             )
         )
         ResultsProcessor.evaluateSprint(punches, controlPoints, result)
@@ -612,8 +593,8 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     null,
-                    SIRecordType.CONTROL,
-                    30 + i, i, SITime(), null, PunchStatus.UNKNOWN, null
+                    30 + i,
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
                 )
             )
             controlPoints.add(
@@ -622,19 +603,17 @@ class ResultsEvaluationUnitTests {
                     UUID.randomUUID(),
                     UUID.randomUUID(),
                     30 + i,
-                    i,
                     null,
-                    0,
-                    0,
-                    false,
-                    false
+                    ControlPointType.CONTROL,
+                    i,
+                    0
                 )
             )
         }
 
-        controlPoints[4].separator = true
-        controlPoints[7].separator = true
-        controlPoints.last().beacon = true
+        controlPoints[4].type = ControlPointType.SEPARATOR
+        controlPoints[7].type = ControlPointType.SEPARATOR
+        controlPoints.last().type = ControlPointType.BEACON
 
         punches.add(
             3, Punch(
@@ -643,8 +622,8 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 null,
-                SIRecordType.CONTROL,
-                34, 15, SITime(), null, PunchStatus.UNKNOWN, null
+                34,
+                SITime(), SIRecordType.CONTROL, 15, PunchStatus.UNKNOWN, null
             )
         )
 
@@ -655,8 +634,8 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 null,
-                SIRecordType.CONTROL,
-                37, 15, SITime(), null, PunchStatus.UNKNOWN, null
+                37,
+                SITime(), SIRecordType.CONTROL, 15, PunchStatus.UNKNOWN, null
             )
         )
         for (pun in punches.withIndex()) {
@@ -693,8 +672,8 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     null,
-                    SIRecordType.CONTROL,
-                    30 + i, i, SITime(), null, PunchStatus.UNKNOWN, null
+                    30 + i,
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
                 )
             )
             controlPoints.add(
@@ -703,12 +682,10 @@ class ResultsEvaluationUnitTests {
                     UUID.randomUUID(),
                     UUID.randomUUID(),
                     30 + i,
-                    i,
                     null,
-                    0,
-                    0,
-                    false,
-                    true
+                    ControlPointType.CONTROL,
+                    i,
+                    0
                 )
             )
         }

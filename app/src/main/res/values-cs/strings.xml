@@ -29,8 +29,8 @@
     <string name="band">Pásmo</string>
     <string name="race_end">Ukončit závod</string>
     <string name="race_end_confirmation">Opravdu chcete ukončit závod?</string>
-    <string name="race_type_0">Klasická trať</string>
-    <string name="race_type_3">Orientační běh</string>
+    <string name="race_type_classics">Klasická trať</string>
+    <string name="race_type_orienteering">Orientační běh</string>
     <string name="race_type_4">Vlastní</string>
     <string name="finish_time">Čas cíle</string>
     <string name="run_time">Čas běhu</string>
@@ -53,7 +53,7 @@
     <string name="competitor">Závodník</string>
     <string name="competitor_first_name">Jméno</string>
     <string name="competitor_last_name">Příjmení</string>
-    <string name="competitor_import_file">Importovat závodníky ze souboru</string>
+    <string name="data_import_data">Importovat závodníky ze souboru</string>
     <string name="club">Klub</string>
     <string name="gender_man">Muž</string>
     <string name="gender_woman">Žena</string>

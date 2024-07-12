@@ -43,7 +43,7 @@ class CategoryRecyclerViewAdapter(
         holder.type.text = dataProcessor.raceTypeToString(
             item.category.raceType ?: dataProcessor.getCurrentRace().raceType
         ) //TODO: fix crash
-        holder.gender.text = dataProcessor.genderToString(item.category.isWoman)
+        holder.gender.text = dataProcessor.genderToString(item.category.isMan)
         holder.siCodes.text =
             dataProcessor.getCodesNameFromControlPoints(item.controlPoints).ifEmpty { "-" }
 

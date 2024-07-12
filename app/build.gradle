@@ -30,11 +30,11 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     buildFeatures {
         viewBinding = true
@@ -64,6 +64,7 @@ dependencies {
     implementation 'com.github.ISchwarz23:SortableTableView:2.8.1'
     implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.9.3")
     implementation 'com.github.felHR85:UsbSerial:6.1.0'
+    implementation("gg.jte:jte:3.1.12")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

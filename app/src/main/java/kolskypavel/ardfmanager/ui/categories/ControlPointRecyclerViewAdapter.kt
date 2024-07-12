@@ -11,6 +11,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
+import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.wrappers.ControlPointItemWrapper
 import java.util.UUID
@@ -44,7 +45,7 @@ class ControlPointRecyclerViewAdapter(
         }
 
         holder.points.setText(item.controlPoint.points.toString())
-        holder.separator.isChecked = item.controlPoint.separator
+        holder.separator.isChecked = (item.controlPoint.type == ControlPointType.SEPARATOR)
 
         holder.siCode.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
             codeWatcher(cs.toString(), holder.layoutPosition, holder.siCode)
@@ -54,7 +55,7 @@ class ControlPointRecyclerViewAdapter(
         }
 
         holder.beacon.setOnCheckedChangeListener { _, checked ->
-            values[holder.adapterPosition].controlPoint.beacon = checked
+            values[holder.adapterPosition].controlPoint.type = ControlPointType.BEACON
         }
 
         holder.addBtn.setOnClickListener {
@@ -65,12 +66,10 @@ class ControlPointRecyclerViewAdapter(
                         raceId,
                         categoryId,
                         -1,
-                        item.controlPoint.order++,
                         null,
-                        0,
-                        1,
-                        beacon = false,
-                        separator = false
+                        type = ControlPointType.CONTROL,
+                        item.controlPoint.order++,
+                        1
                     ), isCodeValid = false
                 )
             )
@@ -82,8 +81,10 @@ class ControlPointRecyclerViewAdapter(
             if (holder.adapterPosition != 0) {
 
                 //Change beacon
-                if (holder.adapterPosition == values.size - 1 && values.size > 2) {
-                    values[holder.adapterPosition - 1].controlPoint.beacon = holder.beacon.isChecked
+                if (holder.adapterPosition == values.size - 1 && values.size > 2 &&
+                    holder.beacon.isChecked
+                ) {
+                    values[holder.adapterPosition - 1].controlPoint.type = ControlPointType.BEACON
                     notifyItemChanged(holder.adapterPosition - 1)
                 }
 

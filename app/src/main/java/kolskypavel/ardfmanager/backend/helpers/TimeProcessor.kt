@@ -70,6 +70,17 @@ object TimeProcessor {
         return null
     }
 
+    fun runDurationFromStartString(
+        startDateTime: LocalDateTime,
+        relativeStartTime: Duration
+    ): String {
+        //Check if the competitor started
+        if (hasStarted(startDateTime, relativeStartTime, LocalDateTime.now())) {
+            return durationToMinuteString(Duration.between(startDateTime, LocalDateTime.now()))
+        }
+        return ""
+    }
+
     /**
      * If a competitor is in limit or not
      */

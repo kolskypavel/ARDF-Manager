@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
@@ -110,6 +111,12 @@ class ReadoutDetailFragment : Fragment() {
         readoutDetailToolbar.setOnMenuItemClickListener {
             when (it.itemId) {
                 R.id.readout_detail_menu_edit_readout -> {
+                    findNavController().navigate(
+                        ReadoutDetailFragmentDirections.editReadout(
+                            false,
+                            args.readoutDetail, -1
+                        )
+                    )
                     true
                 }
 

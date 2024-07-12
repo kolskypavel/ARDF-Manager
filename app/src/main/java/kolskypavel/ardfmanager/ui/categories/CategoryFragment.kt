@@ -95,7 +95,7 @@ class CategoryFragment : Fragment() {
 
         when (menuItem.itemId) {
             R.id.category_menu_import_file -> {
-                findNavController().navigate(CategoryFragmentDirections.importExportCategories())
+                findNavController().navigate(CategoryFragmentDirections.importExportData())
                 return true
             }
 

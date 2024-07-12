@@ -118,16 +118,16 @@ class CategoryCreateDialogFragment : DialogFragment() {
             category = Category(
                 UUID.randomUUID(),
                 race.id,
-                "", isWoman = false,
+                "", isMan = false,
                 null,
+                0F,
+                0F,
+                order,
                 false,
                 race.raceType,
                 race.timeLimit,
                 race.startTimeSource,
-                race.finishTimeSource,
-                0F,
-                0F,
-                order
+                race.finishTimeSource
             )
 
             //Preset the data from the race
@@ -205,7 +205,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
         }
 
         //Set gender
-        when (category.isWoman) {
+        when (category.isMan) {
             true -> genderPicker.setText(getString(R.string.gender_woman), false)
             false -> genderPicker.setText(getString(R.string.gender_man), false)
         }
@@ -352,7 +352,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 }
 
                 //Set the data from pickers
-                category.isWoman = dataProcessor.genderFromString(genderPicker.text.toString())
+                category.isMan = dataProcessor.genderFromString(genderPicker.text.toString())
 
                 category.differentProperties = !samePropertiesCheckBox.isChecked
                 if (category.differentProperties) {

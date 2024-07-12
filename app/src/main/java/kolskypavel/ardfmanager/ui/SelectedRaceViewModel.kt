@@ -1,9 +1,12 @@
 package kolskypavel.ardfmanager.ui
 
+import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.files.constants.DataFormat
+import kolskypavel.ardfmanager.backend.files.wrappers.CompetitorImportDataWrapper
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
@@ -13,6 +16,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
+import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
@@ -161,8 +165,7 @@ class SelectedRaceViewModel : ViewModel() {
                 dataProcessor.getCurrentRace().id,
                 categoryId,
                 -1,
-                0, null, 0, 1,
-                beacon = false, separator = false
+                null, type = ControlPointType.CONTROL, 0, 1
             )
         )
         return controlPoints
@@ -263,7 +266,22 @@ class SelectedRaceViewModel : ViewModel() {
         }
     }
 
-    fun importCompetitors() {
+    fun importCategories(uri: Uri, dataFormat: DataFormat): List<CategoryData>? {
+        return runBlocking {
+            return@runBlocking dataProcessor.importCategories(uri, dataFormat, getCurrentRace().id)
+        }
+    }
+
+    fun importCompetitors(
+        uri: Uri,
+        dataFormat: DataFormat
+    ): CompetitorImportDataWrapper? {
+        return runBlocking {
+            return@runBlocking dataProcessor.importCompetitors(uri, dataFormat, getCurrentRace().id)
+        }
+    }
+
+    fun importStarts(uri: Uri, dataFormat: DataFormat) {
 
     }
 }

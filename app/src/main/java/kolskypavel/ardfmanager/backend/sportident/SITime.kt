@@ -28,7 +28,7 @@ class SITime(
     }
 
     override fun toString(): String {
-        return "$time;$dayOfWeek;$week"
+        return "$time,$dayOfWeek,$week"
     }
 
     fun addHalfDay() {
@@ -73,7 +73,7 @@ class SITime(
         @Throws(IllegalArgumentException::class)
         fun from(string: String): SITime {
             try {
-                val split = string.split(";")
+                val split = string.split(",")
                 val time = LocalTime.parse(split[0])
                 val dayOfWeek = split[1].toInt()
                 val week = split[2].toInt()

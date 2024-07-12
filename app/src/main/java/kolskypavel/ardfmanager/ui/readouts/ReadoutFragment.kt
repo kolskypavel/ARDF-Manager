@@ -1,5 +1,6 @@
 package kolskypavel.ardfmanager.ui.readouts
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.os.Build
 import android.os.Bundle
@@ -10,6 +11,7 @@ import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -53,6 +55,14 @@ class ReadoutFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private val getResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
+        if (it.resultCode == Activity.RESULT_OK) {
+            val value = it.data
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -261,6 +271,10 @@ class ReadoutFragment : Fragment() {
             }
             builder.show()
         }
+    }
+
+    private fun exportReadoutData() {
+
     }
 
     override fun onDestroyView() {

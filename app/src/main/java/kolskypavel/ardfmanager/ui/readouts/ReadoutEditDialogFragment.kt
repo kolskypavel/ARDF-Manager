@@ -180,11 +180,10 @@ class ReadoutEditDialogFragment : DialogFragment() {
                         null,
                         null,
                         null,
-                        SIRecordType.START,
-                        0,
                         0,
                         SITime(LocalTime.MIN),
-                        null,
+                        SIRecordType.START,
+                        0,
                         PunchStatus.VALID
                     ), true, true, true, true
                 )
@@ -197,11 +196,10 @@ class ReadoutEditDialogFragment : DialogFragment() {
                         null,
                         null,
                         null,
-                        SIRecordType.FINISH,
-                        0,
                         0,
                         SITime(LocalTime.MIN),
-                        null,
+                        SIRecordType.FINISH,
+                        0,
                         PunchStatus.VALID
                     ), true, true, true, true
                 )

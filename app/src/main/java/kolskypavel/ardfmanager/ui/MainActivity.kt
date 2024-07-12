@@ -21,7 +21,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.AppState
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.files.FileHandler
+import kolskypavel.ardfmanager.backend.files.FileProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         DataProcessor.initialize(this)
         dataProcessor = DataProcessor.get()
         dataProcessor.resultsProcessor = ResultsProcessor()
-        dataProcessor.fileProcessor = FileHandler(WeakReference(this))
+        dataProcessor.fileProcessor = FileProcessor(WeakReference(this))
 
         // Set the usb device
         if (intent != null) {

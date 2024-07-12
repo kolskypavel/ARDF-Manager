@@ -109,11 +109,10 @@ class PunchEditRecyclerViewAdapter(
                     null,
                     values[0].punch.competitorId,
                     null,
-                    SIRecordType.CONTROL,
                     0,
-                    values[position].punch.order++,
                     values[position].punch.siTime,
-                    null,
+                    SIRecordType.CONTROL,
+                    values[position].punch.order++,
                     PunchStatus.UNKNOWN
                 ), true, true, true, true
             )

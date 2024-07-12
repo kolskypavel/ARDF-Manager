@@ -37,7 +37,7 @@ data class Competitor(
     @ColumnInfo(name = "last_name") var lastName: String,
     @ColumnInfo(name = "club") var club: String,
     @ColumnInfo(name = "index") var index: String,
-    @ColumnInfo(name = "is_woman") var isWoman: Boolean = false,
+    @ColumnInfo(name = "is_man") var isMan: Boolean = false,
     @ColumnInfo(name = "birth_year") var birthYear: Int,
     @ColumnInfo(name = "si_number") var siNumber: Int? = null,
     @ColumnInfo(name = "si_rent") var siRent: Boolean = false,
@@ -50,5 +50,29 @@ data class Competitor(
 
     fun getNameWithStartNumber(): String {
         return "${lastName.uppercase()} $firstName (${startNumber})"
+    }
+
+    fun toCsvString(categoryName: String): String {
+        return "${siNumber ?: ""};${firstName};${lastName};${categoryName};${isMan.compareTo(false)};${birthYear};;${club};;${startNumber};${index}"
+    }
+
+    companion object {
+        fun getTestCompetitor(): Competitor {
+            return Competitor(
+                UUID.randomUUID(),
+                UUID.randomUUID(),
+                null,
+                "Test",
+                "Tester",
+                "AC Test",
+                "ACT0001",
+                true,
+                2000,
+                123456789,
+                false,
+                0,
+                null
+            )
+        }
     }
 }

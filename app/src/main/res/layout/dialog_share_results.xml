@@ -6,38 +6,38 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/results_file_format_layout"
+        android:id="@+id/results_data_format_layout"
         style="@style/dialog_dropdown"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:hint="@string/race_type"
+        android:hint="@string/data_format"
         android:padding="12dp"
         android:textColor="@color/black"
         app:layout_constraintTop_toTopOf="parent">
 
         <AutoCompleteTextView
-            android:id="@+id/result_file_format"
+            android:id="@+id/results_data_format_picker"
             style="@style/dialog_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="none"
-            app:simpleItems="@array/race_types_array" />
+            app:simpleItems="@array/results_data_formats" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
-        android:id="@+id/results_file_import_btn"
+        android:id="@+id/results_file_preview_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="180dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="12dp"
         android:layout_weight="1"
-        android:text="@string/file_import"
+        android:text="@string/preview"
         app:layout_constraintEnd_toStartOf="@+id/results_file_export_button"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/results_file_format_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/results_data_format_layout" />
 
     <Button
         android:id="@+id/results_file_export_button"
@@ -47,39 +47,21 @@
         android:layout_marginTop="12dp"
         android:layout_marginEnd="12dp"
         android:layout_weight="1"
-        android:text="@string/file_export"
+        android:text="@string/data_export"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintTop_toBottomOf="@+id/results_file_format_layout" />
+        app:layout_constraintTop_toBottomOf="@+id/results_data_format_layout" />
 
-
-    <LinearLayout
+    <Button
+        android:id="@+id/results_file_cancel"
+        style="@style/dialog_ok_cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_weight="1"
+        android:text="@string/cancel"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteY="146dp">
-
-        <Button
-            android:id="@+id/results_file_ok"
-            style="@style/dialog_ok_cancel_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_weight="1"
-            android:text="@string/ok"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:layout_editor_absoluteY="217dp" />
-
-        <Button
-            android:id="@+id/results_file_cancel"
-            style="@style/dialog_ok_cancel_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_weight="1"
-            android:text="@string/cancel"
-            app:layout_constraintEnd_toEndOf="parent"
-            tools:layout_editor_absoluteY="217dp" />
-    </LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/results_file_export_button"
+        tools:layout_editor_absoluteY="217dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

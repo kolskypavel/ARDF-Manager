@@ -27,7 +27,7 @@
     <PreferenceCategory
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:title="@string/preferences_race">
+        android:title="@string/preferences_readouts">
 
     </PreferenceCategory>
     <PreferenceCategory
@@ -40,7 +40,7 @@
     <PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/files">
+        android:title="@string/files_data">
 
         <CheckBoxPreference
             android:layout_width="wrap_content"

@@ -7,7 +7,7 @@
     <string name="title_results">Results</string>
     <string name="global_settings">Global settings</string>
     <string name="about_the_app">About the app</string>
-    <string name="description_file_import">Import a file</string>
+    <string name="data_import_data">Import data</string>
     <string name="unknown" translatable="false">\?</string>
 
     <!--General strings -->
@@ -34,11 +34,12 @@
     <string name="si_number">SI number</string>
 
     <!--Files-->
-    <string name="files">Files</string>
-    <string name="file_format">File format</string>
-    <string name="file_import">Import</string>
-    <string name="file_export">Export</string>
-    <string name="file_preview">Preview</string>
+    <string name="files_data">Files and data</string>
+    <string name="data_type">Data type</string>
+    <string name="data_format">Data format</string>
+    <string name="data_import">Import</string>
+    <string name="data_export">Export</string>
+    <string name="data_preview">Preview</string>
 
     <!--Race-->
     <string name="race_import_text">Import race from a file</string>
@@ -76,13 +77,12 @@
     <string name="category">Category</string>
     <string name="categories_age_based">Age based</string>
     <string name="si_codes">SI codes</string>
-    <string name="category_import_text">Import category from a file</string>
+    <string name="category_create_standard_categories">Create standard categories</string>
     <string name="no_category">No category</string>
     <string name="category_create">Create category</string>
     <string name="category_edit">Edit category</string>
     <string name="category_duplicate">Duplicate category</string>
     <string name="category_delete">Delete category</string>
-    <string name="category_file_import_export">Import/Export categories</string>
     <string name="category_delete_confirmation">Do you really want to delete this category?</string>
     <string name="last_name">Last name</string>
     <string name="length">Length (km)</string>
@@ -104,7 +104,6 @@
     <string name="competitor_start_time">Start time</string>
     <string name="competitor_start_number_header">Start #</string>
     <string name="competitor_to_limit">To limit</string>
-    <string name="competitor_import_file">Import competitors from a file</string>
     <string name="club">Club</string>
     <string name="competitor_create">Create competitor</string>
     <string name="competitor_edit">Edit competitor</string>
@@ -112,7 +111,7 @@
     <string name="competitor_delete">Delete competitor</string>
     <string name="competitor_delete_all">Delete all competitors</string>
     <string name="competitor_delete_confirmation">Do you really want to delete this competitor?</string>
-    <string name="competitor_delete_all_confirmation">Do you really want to delete all competitors?</string>
+    <string name="competitor_delete_all_confirmation">Do you really want to delete all competitors? This action CAN\'T be undone!</string>
     <string name="index_callsign">Index/Callsign</string>
     <string name="automatic_category_not_found">Automatic category not found!</string>
     <string name="competitor_rent_chip">Rent chip</string>
@@ -159,6 +158,7 @@
     <string name="readout_edit_readout">Edit readout</string>
     <string name="readout_print_ticket">Print ticket</string>
     <string name="readout_delete_readout">Delete readout</string>
+    <string name="readout_export_readout_data">Export readout data</string>
     <string name="readout_create_category_from_readout">Create a category from this readout</string>
     <string name="readout_delete_readout_confirmation">Do you really want to delete readout for SI card %1$d?</string>
 
@@ -192,27 +192,36 @@
     <string name="results_share">Share results</string>
     <string name="results_service">Results service</string>
 
-    <string name="file_format_csv" translatable="false">CSV</string>
-    <string name="file_format_json" translatable="false">JSON</string>
-    <string name="file_format_xml" translatable="false">XML</string>
-    <string name="file_format_tln" translatable="false">TLN</string>
-    <string name="file_format_pdf_simple" translatable="false">PDF</string>
-    <string name="file_format_pdf_splits">PDF splits</string>
-    <string name="file_format_html" translatable="false">HTML</string>
-    <string name="file_format_html_splits">HTML splits</string>
+    <string name="data_format_txt" translatable="false">TXT</string>
+    <string name="data_format_csv" translatable="false">CSV</string>
+    <string name="data_format_json" translatable="false">JSON</string>
+    <string name="data_format_xml" translatable="false">XML</string>
+    <string name="data_format_pdf" translatable="false">PDF</string>
+    <string name="data_format_html" translatable="false">HTML</string>
 
     <!--    Preferences    -->
     <string name="preferences_general">General</string>
-    <string name="preferences_race">Race</string>
+    <string name="preferences_readouts">Readouts</string>
     <string name="preferences_results">Results</string>
     <string name="preferences_prints">Prints</string>
     <string name="preferences_sportident">Sportident</string>
     <string name="preferences_help">Help</string>
+    <string name="preferences_replace">Replace</string>
+    <string name="preferences_ignore">Ignore</string>
 
     <!--Preferences:general-->
     <string name="preferences_general_keep_screen_open">Prevent system from locking screen</string>
     <string name="preferences_general_show_log">Show log</string>
     <string name="preferences_general_language">Language</string>
+
+    <!--Preferences: readouts-->
+    <string name="preferences_readout_duplicate">Action for duplicate readouts</string>
+    <string name="preferences_readout_duplicate_description">Select an action for duplicate readout for the same competitor.</string>
+
+    <string-array name="preferences_readout_duplicate_options">
+        <item>@string/preferences_replace</item>
+        <item>@string/preferences_ignore</item>
+    </string-array>
 
     <!--Preferences:files-->
     <string name="preferences_files_file_import_skip">Skip invalid lines during import</string>
@@ -222,13 +231,13 @@
     <string name="preferences_print_select_printer">Select printer</string>
     <string name="preferences_print_when_to_print">Select when to print the tickets </string>
 
+    <!--Preference values -->
     <!--    DATA ARRAYS-->
 
-    <string name="race_type_0">Classics</string>
-    <string name="race_type_1" translatable="false">Sprint</string>
-    <string name="race_type_2" translatable="false">Foxoring</string>
-    <string name="race_type_3">Orienteering</string>
-    <string name="race_type_4">Custom</string>
+    <string name="race_type_classics">Classics</string>
+    <string name="race_type_sprint" translatable="false">Sprint</string>
+    <string name="race_type_foxoring" translatable="false">Foxoring</string>
+    <string name="race_type_orienteering">Orienteering</string>
 
     <string name="race_level_0">International</string>
     <string name="race_level_1">National</string>
@@ -240,12 +249,17 @@
     <string name="band_2m" translatable="false">2m</string>
     <string name="band_combined">Combined</string>
 
+    <string name="data_type_categories">Categories</string>
+    <string name="data_type_competitors">Competitors</string>
+    <string name="data_type_competitor_starts_time">Competitor starts</string>
+    <string name="data_type_competitor_starts_categories">Competitor starts by categories</string>
+    <string name="data_type_competitor_starts_clubs">Competitor starts by clubs</string>
+
     <string-array name="race_types_array">
-        <item>@string/race_type_0</item>
-        <item>@string/race_type_1</item>
-        <item>@string/race_type_2</item>
-        <item>@string/race_type_3</item>
-        <item>@string/race_type_4</item>
+        <item>@string/race_type_classics</item>
+        <item>@string/race_type_sprint</item>
+        <item>@string/race_type_foxoring</item>
+        <item>@string/race_type_orienteering</item>
     </string-array>
 
     <string-array name="race_levels_array">
@@ -307,17 +321,46 @@
         <item>@string/race_status_error_short</item>
     </string-array>
 
+    <string-array name="data_formats">
+        <item>@string/data_format_txt</item>
+        <item>@string/data_format_csv</item>
+        <item>@string/data_format_json</item>
+        <item>@string/data_format_xml</item>
+        <item>@string/data_format_pdf</item>
+        <item>@string/data_format_html</item>
+    </string-array>
+
     <string-array name="category_data_formats">
-        <item>@string/file_format_csv</item>
-        <item>@string/file_format_json</item>
-        <item>@string/file_format_xml</item>
+        <item>@string/data_format_csv</item>
+        <item>@string/data_format_json</item>
+        <item>@string/data_format_xml</item>
     </string-array>
 
     <string-array name="competitor_data_formats">
-        <item>@string/file_format_csv</item>
-        <item>@string/file_format_tln</item>
-        <item>@string/file_format_json</item>
-        <item>@string/file_format_xml</item>
+        <item>@string/data_format_csv</item>
+        <item>@string/data_format_json</item>
+        <item>@string/data_format_xml</item>
     </string-array>
 
+    <string-array name="results_data_formats">
+        <item>@string/data_format_txt</item>
+        <item>@string/data_format_csv</item>
+        <item>@string/data_format_json</item>
+        <item>@string/data_format_pdf</item>
+        <item>@string/data_format_html</item>
+    </string-array>
+
+    <string-array name="data_types">
+        <item>@string/data_type_categories</item>
+        <item>@string/data_type_competitors</item>
+        <item>@string/data_type_competitor_starts_time</item>
+        <item>@string/data_type_competitor_starts_categories</item>
+        <item>@string/data_type_competitor_starts_clubs</item>
+    </string-array>
+
+    <string-array name="competitor_data_types">
+        <item>@string/data_type_categories</item>
+        <item>@string/data_type_competitors</item>
+        <item>@string/data_type_competitor_starts_time</item>
+    </string-array>
 </resources>

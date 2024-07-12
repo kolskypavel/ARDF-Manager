@@ -25,11 +25,14 @@ data class Punch(
     @ColumnInfo(name = "readout_id") var readoutId: UUID?,
     @ColumnInfo(name = "competitor_id") var competitorId: UUID? = null,
     @ColumnInfo(name = "card_number") var cardNumber: Int? = null,
-    @ColumnInfo(name = "punch_type") var punchType: SIRecordType,
     @ColumnInfo(name = "si_code") var siCode: Int,
-    @ColumnInfo(name = "order") var order: Int,
     @ColumnInfo(name = "si_time") var siTime: SITime,
-    @ColumnInfo(name = "orig_si_time") val origSiTime: SITime?,      //Holds the original SI Time in case a punch was modified
-    @ColumnInfo(name = "punch_status") var punchStatus: PunchStatus,
+    @ColumnInfo(name = "punch_type") var punchType: SIRecordType,
+    @ColumnInfo(name = "order") var order: Int,
+    @ColumnInfo(name = "punch_status") var punchStatus: PunchStatus,      //Holds the original SI Time in case a punch was modified
     var split: Duration? = null
-) : Serializable
+) : Serializable {
+    fun toCsvString(): String {
+        return "${cardNumber ?: ""};${siCode};${siTime}"
+    }
+}
