@@ -118,18 +118,24 @@
         </TableRow>
     </TableLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/readout_recycler_view"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layoutManager="LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@+id/readouts_status_layout"
-        tools:context=".ui.races.RaceSelectionFragment"
-        tools:layout_editor_absoluteX="0dp"
-        tools:listitem="@layout/recycler_item_race">
-        <!--         android:layout_marginTop="?attr/actionBarSize"-->
+        app:layout_constraintTop_toBottomOf="@id/readouts_status_layout">
 
-    </androidx.recyclerview.widget.RecyclerView>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/readout_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@+id/readouts_status_layout"
+            tools:context=".ui.races.RaceSelectionFragment"
+            tools:layout_editor_absoluteX="0dp"
+            tools:listitem="@layout/recycler_item_race">
+            <!--         android:layout_marginTop="?attr/actionBarSize"-->
+
+        </androidx.recyclerview.widget.RecyclerView>
+    </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/readout_btn_add"

@@ -1,13 +1,17 @@
 package kolskypavel.ardfmanager.backend.files.processors
 
+import android.net.Uri
 import android.util.Log
 import com.github.doyaaaaaken.kotlincsv.client.CsvReader
+import com.github.doyaaaaaken.kotlincsv.dsl.context.CsvReaderContext
+import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.files.constants.FileConstants
-import kolskypavel.ardfmanager.backend.files.wrappers.CompetitorImportDataWrapper
+import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorCategory
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kotlinx.coroutines.Dispatchers
@@ -25,17 +29,38 @@ import java.util.UUID
  * Competitor starts format:
  * Result format:
  */
-object CsvProcessor {
+object CsvProcessor : FormatProcessor {
+
+    override fun importData(
+        uri: Uri,
+        dataType: DataType,
+        race: Race,
+        categories: List<CategoryData>
+    ): DataImportWrapper {
+        TODO("Not yet implemented")
+    }
+
+    override fun exportData(uri: Uri, dataType: DataType): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    //Use reader with semicolon separator
+    private fun getReader(): CsvReader {
+        val context = CsvReaderContext()
+        context.delimiter = ';'
+        return CsvReader(context)
+    }
 
     @Throws(IOException::class)
     suspend fun importCategories(
         inStream: InputStream,
         race: Race
-    ) {
-        val csvReader = CsvReader().readAll(inStream)
-        if (csvReader.isNotEmpty()) {
+    ): DataImportWrapper {
+        val readData = getReader().readAll(inStream)
+        val data = DataImportWrapper(emptyList(), emptyList())
+        if (readData.isNotEmpty()) {
 
-            for (row in csvReader) {
+            for (row in readData) {
                 if (row.size == FileConstants.CATEGORY_CSV_COLUMNS) {
                     try {
 
@@ -47,6 +72,7 @@ object CsvProcessor {
                 }
             }
         }
+        return data
     }
 
     @Throws(IOException::class)
@@ -65,7 +91,7 @@ object CsvProcessor {
                 for (cp in data.controlPoints.withIndex()) {
                     writer.write(cp.value.toCsvString())
 
-                    //Separate control points by column
+                    //Separate control points by comma
                     if (cp.index < data.controlPoints.size - 1) {
                         writer.write(",")
                     }
@@ -77,29 +103,31 @@ object CsvProcessor {
     }
 
     @Throws(IOException::class)
-    suspend fun parseCompetitorData(
+    fun importCompetitorData(
         inStream: InputStream,
         race: Race,
-        categories: HashSet<Category>
-    ): CompetitorImportDataWrapper {
-        val csvReader = CsvReader().readAll(inStream)
-        val competitors = ArrayList<Competitor>()
+        categories: HashSet<CategoryData>
+    ): DataImportWrapper {
+
+
+        val csvReader = getReader().readAll(inStream)
+        val competitors = ArrayList<CompetitorCategory>()
 
         if (csvReader.isNotEmpty()) {
             for (row in csvReader) {
 
                 if (row.size == FileConstants.OCM_COMPETITOR_CSV_COLUMNS) {
                     try {
-                        var category: Category? = null
+                        var category: CategoryData? = null
 
                         //Check if category exists
                         if (row[3].isNotEmpty()) {
                             val catName = row[3]
-                            val origCat = categories.find { it.name == catName }
+                            val origCat = categories.find { it.category.name == catName }
                             if (origCat != null) {
                                 category = origCat
                             } else {
-                                category =
+                                category = CategoryData(
                                     Category(
                                         UUID.randomUUID(),
                                         race.id,
@@ -112,7 +140,8 @@ object CsvProcessor {
                                         false,
                                         race.raceType, race.timeLimit,
                                         race.startTimeSource, race.finishTimeSource
-                                    )
+                                    ), emptyList(), emptyList()
+                                )
                                 categories.add(category)
                             }
                         }
@@ -121,7 +150,7 @@ object CsvProcessor {
                             Competitor(
                                 UUID.randomUUID(),
                                 race.id,
-                                category?.id,
+                                category?.category?.id,
                                 row[1],
                                 row[2],
                                 row[7],
@@ -133,14 +162,16 @@ object CsvProcessor {
                                 row[9].toInt(),
                                 null
                             )
-                        competitors.add(competitor)
+                        if (category != null) {
+                            competitors.add(CompetitorCategory(competitor, category.category))
+                        }
                     } catch (ex: Exception) {
                         Log.e("CSV import", "Failed to import competitor")
                     }
                 }
             }
         }
-        return CompetitorImportDataWrapper(competitors, categories.toList())
+        return DataImportWrapper(competitors, categories.toList())
     }
 
     @Throws(IOException::class)

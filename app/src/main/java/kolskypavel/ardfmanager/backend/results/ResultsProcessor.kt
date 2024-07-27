@@ -439,7 +439,7 @@ class ResultsProcessor {
          * Process one loop of classics race
          * @return Number of points
          */
-        fun evaluateLoop(
+        private fun evaluateLoop(
             punches: List<Punch>,
             controlPoints: List<ControlPoint>
         ): Int {

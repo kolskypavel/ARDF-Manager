@@ -5,7 +5,6 @@ import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.GET_SI_CARD8_9_SIAC
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.GET_SYSTEM_INFO
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.READ_WRITE_TIMEOUT
@@ -413,7 +412,8 @@ class SIPort(
         if (data.size == 136) {
             // Start at data part
             offset += 5
-            // Get cardId
+
+            // Get card number
             if (data[offset + 6] == ZERO || data[offset + 6].toInt() == 0x01) {
                 cardData.siNumber =
                     (byteToUnsignedInt(data[offset + 4]) shl 8) + byteToUnsignedInt(
@@ -432,98 +432,101 @@ class SIPort(
                     ) shl 8) + byteToUnsignedInt(data[offset + 5])
             }
 
-//            val checkPunch = parseOldPunch(data.copyOfRange(), PunchType.CHECK)
-//            val startPunch = parseOldPunch(data.copyOfRange(), PunchType.START)
-//            val finishPunch = parseOldPunch(data.copyOfRange(), PunchType.FINISH)
-
-//            cardData.startTime = ((byteToUnsignedInt(data[offset + 19]) shl 8) + byteToUnsignedInt(
-//                data[offset + 20]
-//            )).toLong()
-//            cardData.finishTime = ((byteToUnsignedInt(data[offset + 21]) shl 8) + byteToUnsignedInt(
-//                data[offset + 22]
-//            )).toLong()
-//            cardData.checkTime = ((byteToUnsignedInt(data[offset + 25]) shl 8) + byteToUnsignedInt(
-//                data[offset + 26]
-//            )).toLong()
-
-//            val punchCount = byteToUnsignedInt(data[offset + 23]) - 1
-//            run {
-//                var i = 0
-//                while (i < punchCount && i < 30) {
-//                    val punch = PunchData(0, 0L)
-//                    val baseOffset = offset + 32 + i / 5 * 16 + 1 + 3 * (i % 5)
-//                    punch.siCode = byteToUnsignedInt(data[baseOffset])
-//                    punch.time =
-//                        ((byteToUnsignedInt(data[baseOffset + 1]) shl 8) + byteToUnsignedInt(
-//                            data[baseOffset + 2]
-//                        ))
-//                    cardData.punchData.add(punch)
-//                    i++
-//                }
-//            }
-//            for (i in 30 until punchCount) {
-//                val punch = PunchData(0, 0L)
-//                val baseOffset = offset + 32 + (i - 30) * 16
-//                punch.siCode = data[baseOffset].toInt()
-//                punch.time = 0
-//                cardData.punchData.add(punch)
-//            }
-//            card5TimeAdjust(cardData)
-//            ret = true
+            cardData.startTime = SITime(
+                ((byteToUnsignedInt(data[offset + 19]) shl 8) + byteToUnsignedInt(
+                    data[offset + 20]
+                )).toLong()
+            )
+            cardData.finishTime = SITime(
+                ((byteToUnsignedInt(data[offset + 21]) shl 8) + byteToUnsignedInt(
+                    data[offset + 22]
+                )).toLong()
+            )
+            cardData.checkTime = SITime(
+                ((byteToUnsignedInt(data[offset + 25]) shl 8) + byteToUnsignedInt(
+                    data[offset + 26]
+                )).toLong()
+            )
+            val punchCount = byteToUnsignedInt(data[offset + 23]) - 1
+            run {
+                var i = 0
+                while (i < punchCount && i < 30) {
+                    val punch = PunchData(0, SITime())
+                    val baseOffset = offset + 32 + i / 5 * 16 + 1 + 3 * (i % 5)
+                    punch.siCode = byteToUnsignedInt(data[baseOffset])
+                    punch.siTime = SITime(
+                        ((byteToUnsignedInt(data[baseOffset + 1]) shl 8) + byteToUnsignedInt(
+                            data[baseOffset + 2]
+                        )).toLong()
+                    )
+                    cardData.punchData.add(punch)
+                    i++
+                }
+            }
+            //Read additional punches
+            for (i in 30 until punchCount) {
+                val punch = PunchData(0, SITime())
+                val baseOffset = offset + 32 + (i - 30) * 16
+                punch.siCode = data[baseOffset].toInt()
+                punch.siTime = SITime()
+                cardData.punchData.add(punch)
+            }
+            card5TimeAdjust(cardData)
+            ret = true
         }
         return ret
     }
 
-    private fun parseOldPunch(data: ByteArray, siRecordType: SIRecordType): PunchData {
-        val punchData = PunchData(0, SITime())
-
-        //Read the SI code of the control
-        if (siRecordType == SIRecordType.CONTROL) {
-
-        }
-
-        //TODO: read additional punches (just codes)
-        return punchData
-    }
 
     /**
      * Adjust the times for the SI_CARD5, because it operates on 12h mode instead of 24h
      */
-//    private fun card5TimeAdjust(cardData: CardData) {
-//        val pmOffset: Long = if (zeroTimeBase >= HALF_DAY) HALF_DAY else 0
-//        if (cardData.startTime != 0L) {
-//            cardData.startTime = cardData.startTime * 1000 + pmOffset
-//            if (cardData.startTime < zeroTimeBase) {
-//                cardData.startTime += HALF_DAY
-//            }
-//            cardData.startTime -= zeroTimeBase
-//        }
-//        if (cardData.checkTime != 0L) {
-//            cardData.checkTime = cardData.checkTime * 1000 + pmOffset
-//            if (cardData.checkTime < zeroTimeBase) {
-//                cardData.checkTime += HALF_DAY
-//            }
-//            cardData.checkTime -= zeroTimeBase
-//        }
-//        var currentBase = pmOffset
-//        var lastTime: Long = zeroTimeBase
-//        for (punch in cardData.punchData) {
-//            val tmpTime: Long = punch.time * 1000 + currentBase
-//            //if (tmpTime < lastTime) {
-//            //    currentBase += HALF_DAY;
-//            //}
-//            //tmpTime = punch.time * 1000 + currentBase;
-//
-//            // punch.time = tmpTime - zeroTimeBase
-//            lastTime = tmpTime
-//        }
-//        var tmpTime: Long = cardData.finishTime * 1000 + currentBase
-//        if (tmpTime < lastTime) {
-//            currentBase += HALF_DAY
-//        }
-//        tmpTime = cardData.finishTime * 1000 + currentBase
-//        cardData.finishTime = tmpTime - zeroTimeBase
-//    }
+    private fun card5TimeAdjust(cardData: CardData) {
+        val zeroTimeBase = dataProcessor.getCurrentRace().startDateTime.toLocalTime()
+
+        //Solve start and check
+        if (cardData.startTime != null &&
+            cardData.startTime!!.getTime().isBefore(zeroTimeBase)
+        ) {
+            cardData.startTime!!.addHalfDay()
+        }
+        if (cardData.checkTime != null &&
+            cardData.checkTime!!.getTime().isBefore(zeroTimeBase)
+        ) {
+            cardData.checkTime!!.addHalfDay()
+        }
+
+        val punches = cardData.punchData
+
+        //Adjust the punches
+        for (punch in punches.withIndex()) {
+
+            //Check if the previous punch time is not before the current one
+            if (punch.index != 0 && punches[punch.index - 1].siTime.getTime()
+                    .isAfter(punch.value.siTime.getTime())
+            ) {
+                punch.value.siTime.addHalfDay()
+            }
+            //Check first punch against start time
+            else if (cardData.startTime != null &&
+                punch.value.siTime.getTime()
+                    .isBefore(cardData.startTime!!.getTime())
+            ) {
+                punch.value.siTime.addHalfDay()
+            }
+        }
+
+        //Adjust finish
+        if (cardData.finishTime != null) {
+
+            if (punches.size != 0
+                && punches[punches.size - 1].siTime.getTime()
+                    .isAfter(cardData.finishTime!!.getTime())
+            ) {
+                cardData.finishTime!!.addHalfDay()
+            }
+        }
+    }
 
     private fun card6Readout(cardData: CardData): Boolean {
 
@@ -802,6 +805,7 @@ class SIPort(
         return punchData
     }
 
+    // STATUS BAR
     private fun setStatusConnected() {
         dataProcessor.updateReaderState(
             SIReaderState(

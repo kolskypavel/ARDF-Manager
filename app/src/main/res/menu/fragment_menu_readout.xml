@@ -4,6 +4,10 @@
     <item
         android:id="@+id/readout_menu_export_data"
         android:title="@string/readout_export_readout_data" />
+
+    <item
+        android:id="@+id/readout_menu_delete_all_readouts"
+        android:title="@string/readout_delete_all_readouts" />
     <item
         android:id="@+id/readout_menu_edit_race"
         android:title="@string/race_edit" />

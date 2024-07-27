@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter
  */
 class SITime(
     private var time: LocalTime,
-    private var dayOfWeek: Int = 0,
+    private var dayOfWeek: Int = 0, //0 - Monday, 6 - Sunday
     private var week: Int = 0
 ) : Serializable {
 
@@ -20,6 +20,17 @@ class SITime(
     constructor(time: LocalTime) : this() {
         this.time = time
         calculateSeconds()
+    }
+
+    constructor(orig: Long) : this() {
+        seconds = orig
+        this.time = LocalTime.of(
+            ((orig / 3600) % 24).toInt(),   // max 24 hours in a day
+            ((orig / 60) % 60).toInt(),     // max 60 minutes in an hour
+            (orig % 60).toInt()             // max 60 seconds in a minute
+        )
+        week = (orig % SIConstants.SECONDS_WEEK).toInt()    //Weeks from SI synchronization
+        dayOfWeek = ((orig / SIConstants.SECONDS_DAY) % 7).toInt()  //Days from SI synchronization
     }
 
     private fun calculateSeconds() {
@@ -32,8 +43,22 @@ class SITime(
     }
 
     fun addHalfDay() {
+        if (time.isAfter(LocalTime.NOON)) {
+            dayOfWeek++
+            adjustDayWeek()
+        }
         this.time = time.plusHours(12)
         calculateSeconds()
+    }
+
+    /**
+     * Adjust the weeks and days for SI card 5
+     */
+    private fun adjustDayWeek() {
+        if (dayOfWeek > 6) {
+            week++
+            dayOfWeek %= 7
+        }
     }
 
     //Getters and setters

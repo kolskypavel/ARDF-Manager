@@ -6,7 +6,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.constants.DataFormat
-import kolskypavel.ardfmanager.backend.files.wrappers.CompetitorImportDataWrapper
+import kolskypavel.ardfmanager.backend.files.constants.DataType
+import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
@@ -266,22 +267,29 @@ class SelectedRaceViewModel : ViewModel() {
         }
     }
 
-    fun importCategories(uri: Uri, dataFormat: DataFormat): List<CategoryData>? {
-        return runBlocking {
-            return@runBlocking dataProcessor.importCategories(uri, dataFormat, getCurrentRace().id)
-        }
-    }
-
-    fun importCompetitors(
+    //DATA IMPORT/EXPORT
+     fun importData(
         uri: Uri,
+        dataType: DataType,
         dataFormat: DataFormat
-    ): CompetitorImportDataWrapper? {
+    ): DataImportWrapper? {
         return runBlocking {
-            return@runBlocking dataProcessor.importCompetitors(uri, dataFormat, getCurrentRace().id)
+            return@runBlocking dataProcessor.importData(
+                uri,
+                dataType,
+                dataFormat,
+                getCurrentRace().id
+            )
         }
     }
 
-    fun importStarts(uri: Uri, dataFormat: DataFormat) {
-
+    fun exportData(
+        uri: Uri,
+        dataType: DataType,
+        dataFormat: DataFormat
+    ): Boolean {
+        CoroutineScope(Dispatchers.IO).run {
+            return dataProcessor.exportData(uri, dataType, dataFormat)
+        }
     }
 }

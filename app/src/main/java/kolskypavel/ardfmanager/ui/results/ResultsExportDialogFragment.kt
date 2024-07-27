@@ -2,6 +2,7 @@ package kolskypavel.ardfmanager.ui.results
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,10 +14,12 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.constants.DataFormat
+import kolskypavel.ardfmanager.backend.files.constants.DataType
 
 class ResultsExportDialogFragment : DialogFragment() {
 
     val dataProcessor = DataProcessor.get()
+    private lateinit var dataTypePicker: MaterialAutoCompleteTextView
     private lateinit var dataFormatPicker: MaterialAutoCompleteTextView
     private lateinit var previewButton: Button
     private lateinit var exportButton: Button
@@ -36,6 +39,11 @@ class ResultsExportDialogFragment : DialogFragment() {
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             val value = it.data
+            val uri = value?.data
+
+            if (uri != null) {
+                exportData(uri)
+            }
         }
     }
 
@@ -44,6 +52,7 @@ class ResultsExportDialogFragment : DialogFragment() {
         setStyle(STYLE_NORMAL, R.style.add_dialog)
         dialog?.setTitle(R.string.results_share)
 
+        dataTypePicker = view.findViewById(R.id.results_data_type_picker)
         dataFormatPicker = view.findViewById(R.id.results_data_format_picker)
         previewButton = view.findViewById(R.id.results_file_preview_btn)
         exportButton = view.findViewById(R.id.results_file_export_button)
@@ -53,13 +62,13 @@ class ResultsExportDialogFragment : DialogFragment() {
     }
 
     private fun setButtons() {
+        dataTypePicker.setText(getString(R.string.data_type_results), false)
         dataFormatPicker.setText(getText(R.string.data_format_csv), false)
         previewButton.setOnClickListener {
 
         }
 
         exportButton.setOnClickListener {
-
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
             setFlags(intent, getCurrentFormat())
@@ -70,11 +79,6 @@ class ResultsExportDialogFragment : DialogFragment() {
         cancelButton.setOnClickListener {
             dialog?.cancel()
         }
-    }
-
-    private fun getCurrentFormat(): DataFormat {
-        val text = dataFormatPicker.text.toString()
-        return dataProcessor.dataFormatFromString(text)
     }
 
     private fun setFlags(intent: Intent, dataFormat: DataFormat) {
@@ -111,6 +115,35 @@ class ResultsExportDialogFragment : DialogFragment() {
                 intent.putExtra(Intent.EXTRA_TITLE, "results.html")
             }
 
+        }
+    }
+
+    private fun getCurrentType(): DataType {
+        val text = dataTypePicker.text.toString()
+        return dataProcessor.dataTypeFromString(text)
+    }
+
+    private fun getCurrentFormat(): DataFormat {
+        val text = dataFormatPicker.text.toString()
+        return dataProcessor.dataFormatFromString(text)
+    }
+
+    private fun exportData(uri: Uri) {
+
+    }
+
+    private fun previewData() {
+        val currType = getCurrentType()
+        val format = getCurrentFormat()
+
+        when (currType) {
+            DataType.CATEGORIES -> TODO()
+            DataType.C0MPETITORS -> TODO()
+            DataType.COMPETITOR_STARTS_TIME -> TODO()
+            DataType.COMPETITOR_STARTS_CATEGORIES -> TODO()
+            DataType.COMPETITOR_STARTS_CLUBS -> TODO()
+            DataType.RESULTS_SIMPLE -> TODO()
+            DataType.RESULTS_SPLITS -> TODO()
         }
     }
 }

@@ -9,7 +9,7 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.files.FileProcessor
 import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
-import kolskypavel.ardfmanager.backend.files.wrappers.CompetitorImportDataWrapper
+import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
@@ -34,7 +34,6 @@ import kolskypavel.ardfmanager.backend.sportident.SIReaderState
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
 import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
 import java.time.LocalDate
@@ -125,9 +124,14 @@ class DataProcessor private constructor(context: Context) {
     suspend fun getCategory(id: UUID): Category? = ardfRepository.getCategory(id)
 
     suspend fun getCategoriesForRace(raceId: UUID) = ardfRepository.getCategoriesForRace(raceId)
+
     suspend fun getCategoryData(id: UUID, raceId: UUID): CategoryData? {
         return ardfRepository.getCategoryData(id, raceId)
     }
+
+    suspend fun getCategoryDataForRace(raceId: UUID): List<CategoryData> =
+        ardfRepository.getCategoryDataForRace(raceId)
+
 
     suspend fun getCategoryByName(string: String, raceId: UUID) =
         ardfRepository.getCategoryByName(string, raceId)
@@ -375,30 +379,24 @@ class DataProcessor private constructor(context: Context) {
             currentState.value?.currentRace!!.id
         )
 
-    //IMPORTS
-    suspend fun importCategories(
+    //DATA IMPORT/EXPORT
+    suspend fun importData(
         uri: Uri,
+        dataType: DataType,
         dataFormat: DataFormat,
         raceId: UUID
-    ): List<CategoryData>? {
-        return fileProcessor?.importCategories(uri, dataFormat, raceId, emptyList())
+    ): DataImportWrapper? {
+        return fileProcessor?.importData(uri, dataType, dataFormat, getRace(raceId))
     }
 
-    suspend fun importCompetitors(
+    fun exportData(
         uri: Uri,
-        dataFormat: DataFormat,
-        raceId: UUID
-    ): CompetitorImportDataWrapper? {
-        return fileProcessor?.importCompetitors(uri, dataFormat, raceId)
+        dataType: DataType,
+        dataFormat: DataFormat
+    ): Boolean {
+        return true
     }
 
-    suspend fun importStarts(uri: Uri, dataFormat: DataFormat, raceId: UUID) {
-
-    }
-
-    //EXPORTS
-//    suspend fun exportResults(uri: Uri, dataFormat: DataFormat, raceId: UUID) =
-//        fileProcessor?.exportResults(uri, dataFormat, getResultDataByRace(raceId))
 
     //SportIdent manipulation
     fun connectDevice(usbDevice: UsbDevice) {

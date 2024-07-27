@@ -8,15 +8,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
+import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class DataImportDialogFragment : DialogFragment() {
     override fun onCreateView(
@@ -30,8 +37,13 @@ class DataImportDialogFragment : DialogFragment() {
     private val dataProcessor = DataProcessor.get()
     private val selectedRaceViewModel: SelectedRaceViewModel by activityViewModels()
 
+    private var data: DataImportWrapper? = null
+
     private lateinit var dataTypePicker: MaterialAutoCompleteTextView
     private lateinit var dataFormatPicker: MaterialAutoCompleteTextView
+    private lateinit var dataPreviewLayout: LinearLayout
+    private lateinit var dataPreviewRecyclerView: RecyclerView
+    private lateinit var errorView: TextView
     private lateinit var importButton: Button
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
@@ -44,7 +56,7 @@ class DataImportDialogFragment : DialogFragment() {
             val uri = value?.data
 
             if (uri != null) {
-                importData(uri)
+                openData(uri)
             }
         }
     }
@@ -57,6 +69,9 @@ class DataImportDialogFragment : DialogFragment() {
         dataTypePicker = view.findViewById(R.id.data_import_type)
         dataFormatPicker = view.findViewById(R.id.data_import_format)
         importButton = view.findViewById(R.id.data_import_import_btn)
+        dataPreviewLayout = view.findViewById(R.id.data_import_preview_layout)
+        dataPreviewRecyclerView = view.findViewById(R.id.data_import_recyclerview)
+        errorView = view.findViewById(R.id.data_import_error)
         okButton = view.findViewById(R.id.data_import_ok)
         cancelButton = view.findViewById(R.id.data_import_cancel)
 
@@ -69,27 +84,33 @@ class DataImportDialogFragment : DialogFragment() {
             getResult.launch(intent)
         }
 
+        okButton.setOnClickListener {
+            confirmImport()
+            dialog?.dismiss()
+        }
+
         cancelButton.setOnClickListener {
             dialog?.cancel()
         }
     }
 
     private fun setFlags(intent: Intent, dataFormat: DataFormat) {
-        when (dataFormat) {
-            DataFormat.CSV -> {
-                intent.type = "text/csv"
-            }
-
-            DataFormat.JSON -> {
-                intent.type = "text/json"
-            }
-
-            DataFormat.IOF_XML -> {
-                intent.type = "text/xml"
-            }
-
-            else -> {}
-        }
+        intent.type = "text/*"
+//        when (dataFormat) {
+//            DataFormat.CSV -> {
+//
+//            }
+//
+//            DataFormat.JSON -> {
+//                intent.type = "text/*"
+//            }
+//
+//            DataFormat.IOF_XML -> {
+//                intent.type = "text/*"
+//            }
+//
+//            else -> {}
+//        }
     }
 
     private fun getCurrentType(): DataType {
@@ -102,35 +123,76 @@ class DataImportDialogFragment : DialogFragment() {
         return dataProcessor.dataFormatFromString(text)
     }
 
-    private fun importData(uri: Uri) {
+    private fun openData(uri: Uri) {
         val currType = getCurrentType()
         val format = getCurrentFormat()
+
         when (currType) {
-            DataType.CATEGORIES -> importCategories(uri, format)
-            DataType.C0MPETITORS -> importCompetitors(uri, format)
-            DataType.COMPETITOR_STARTS_TIME -> importStarts(uri, format)
+            DataType.C0MPETITORS -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    data = selectedRaceViewModel.importData(
+                        uri, DataType.C0MPETITORS,
+                        format
+                    )
+                }
+            }
+
+            DataType.CATEGORIES -> TODO()
+            DataType.COMPETITOR_STARTS_TIME -> TODO()
             else -> {}
         }
-    }
 
-    private fun importCompetitors(uri: Uri, format: DataFormat) {
-        val competitorWrapper = selectedRaceViewModel.importCompetitors(
-            uri,
-            format
-        )
-        if (competitorWrapper != null) {
+        if (data != null) {
+            dataPreviewRecyclerView.adapter =
+                DataPreviewRecyclerViewAdapater(data!!, currType)
+            errorView.error = null
+            dataPreviewLayout.visibility = View.VISIBLE
 
         } else {
-
+            errorView.error = getString(R.string.data_import_erorr)
+            dataPreviewLayout.visibility = View.GONE
         }
     }
 
-    private fun importCategories(uri: Uri, format: DataFormat) {
 
+    //Import data after confirmation
+    private fun confirmImport() {
+        if (data != null) {
+            val currType = getCurrentType()
+            when (currType) {
+                DataType.CATEGORIES -> {
+                    for (catData in data!!.categories) {
+                        selectedRaceViewModel.createCategory(
+                            catData.category,
+                            catData.controlPoints
+                        )
+                    }
+                }
+
+                DataType.C0MPETITORS -> {
+                    //Upsert categories
+                    for (catData in data!!.categories) {
+                        selectedRaceViewModel.updateCategory(
+                            catData.category,
+                            catData.controlPoints
+                        )
+                    }
+                    //Create competitors - TODO: ADD duplicates check
+                    for (compData in data!!.competitorCategories) {
+                        selectedRaceViewModel.createOrUpdateCompetitor(compData.competitor)
+                    }
+                }
+
+                DataType.COMPETITOR_STARTS_TIME -> {
+                    //Save competitor starts - TODO: ADD duplicates check
+                    for (compData in data!!.competitorCategories) {
+                        selectedRaceViewModel.createOrUpdateCompetitor(compData.competitor)
+                    }
+                }
+
+                else -> {}
+            }
+        }
     }
 
-
-    private fun importStarts(uri: Uri, format: DataFormat) {
-
-    }
 }

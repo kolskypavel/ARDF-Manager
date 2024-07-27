@@ -6,15 +6,36 @@
     android:layout_height="match_parent">
 
     <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/results_data_type_layout"
+        style="@style/dialog_dropdown"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="@string/data_type"
+        android:padding="8dp"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <AutoCompleteTextView
+            android:id="@+id/results_data_type_picker"
+            style="@style/dialog_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            app:simpleItems="@array/data_types" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/results_data_format_layout"
         style="@style/dialog_dropdown"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:hint="@string/data_format"
-        android:padding="12dp"
+        android:padding="8dp"
         android:textColor="@color/black"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/results_data_type_layout">
 
         <AutoCompleteTextView
             android:id="@+id/results_data_format_picker"
@@ -26,6 +47,7 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+
     <Button
         android:id="@+id/results_file_preview_btn"
         android:layout_width="wrap_content"
@@ -35,6 +57,7 @@
         android:layout_marginEnd="12dp"
         android:layout_weight="1"
         android:text="@string/preview"
+        android:visibility="gone"
         app:layout_constraintEnd_toStartOf="@+id/results_file_export_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/results_data_format_layout" />
@@ -57,7 +80,7 @@
         style="@style/dialog_ok_cancel_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="12dp"
         android:layout_weight="1"
         android:text="@string/cancel"
         app:layout_constraintEnd_toEndOf="parent"

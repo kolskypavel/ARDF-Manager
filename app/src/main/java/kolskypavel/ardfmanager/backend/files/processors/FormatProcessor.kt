@@ -6,18 +6,16 @@ import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
 import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 
-object JteProcessor : FormatProcessor {
-
-    override fun importData(
+interface FormatProcessor {
+    fun importData(
         uri: Uri,
         dataType: DataType,
         race: Race,
         categories: List<CategoryData>
-    ): DataImportWrapper {
-        TODO("Not yet implemented")
-    }
+    ): DataImportWrapper
 
-    override fun exportData(uri: Uri, dataType: DataType): Boolean {
-        TODO("Not yet implemented")
-    }
+    fun exportData(
+        uri: Uri,
+        dataType: DataType
+    ): Boolean
 }

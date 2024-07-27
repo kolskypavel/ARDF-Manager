@@ -36,7 +36,7 @@ class ReadoutDataRecyclerViewAdapter(
         if (item.competitorCategory?.competitor != null) {
             holder.competitorView.text = item.competitorCategory!!.competitor.getFullName()
         } else {
-            holder.competitorView.setText(R.string.unknown_competitor)
+            holder.competitorView.setText(R.string.unknown)
         }
 
         if (item.competitorCategory?.category != null) {

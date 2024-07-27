@@ -22,6 +22,9 @@ interface CategoryDao {
     @Query("SELECT * FROM category WHERE id=(:id) AND race_id=(:raceId) LIMIT 1")
     suspend fun getCategoryData(id: UUID?, raceId: UUID): CategoryData?
 
+    @Query("SELECT * FROM category WHERE  race_id=(:raceId) ")
+    suspend fun getCategoryDataForRace(raceId: UUID): List<CategoryData>
+
     @Query("SELECT `order` FROM category WHERE race_id =(:raceId) ORDER BY `order` DESC LIMIT 1")
     suspend fun getHighestCategoryOrder(raceId: UUID): Int
 

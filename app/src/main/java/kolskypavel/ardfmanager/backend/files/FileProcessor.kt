@@ -7,19 +7,13 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.files.processors.CsvProcessor
-import kolskypavel.ardfmanager.backend.files.wrappers.CompetitorImportDataWrapper
-import kolskypavel.ardfmanager.backend.room.entitity.Category
+import kolskypavel.ardfmanager.backend.files.processors.FormatProcessorFactory
+import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
 import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutResult
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.io.OutputStream
 import java.lang.ref.WeakReference
-import java.util.UUID
 
 class FileProcessor(private val appContext: WeakReference<Context>) {
     private val dataProcessor = DataProcessor.get()
@@ -43,82 +37,50 @@ class FileProcessor(private val appContext: WeakReference<Context>) {
         return null
     }
 
-    fun importCategories(
+    suspend fun importData(
         uri: Uri,
+        dataType: DataType,
         format: DataFormat,
-        raceId: UUID, existing: List<Category>
-    ): List<CategoryData> {
-        val categories = emptyArray<CategoryData>()
+        race: Race
+    ): DataImportWrapper? {
 
-
-        return categories.toList()
-    }
-
-    suspend fun importCompetitors(
-        uri: Uri,
-        format: DataFormat,
-        raceId: UUID
-    ): CompetitorImportDataWrapper? {
-
-        CoroutineScope(Dispatchers.IO).launch {
-            val inStream = openInputStream(uri)
-            if (inStream != null) {
-                when (format) {
-                    DataFormat.CSV -> {
-                        // val competitorData = CSVProcessor.parseCompetitorDataCsv(inStream)
-
-                    }
-
-
-                    else -> {
-                        TODO()
-                    }
-                }
-            } else {
-
-            }
+        val inStream = openInputStream(uri)
+        if (inStream != null) {
+            val formatProcessorFactory = FormatProcessorFactory()
+            val proc = formatProcessorFactory.getFormatProcessor(format)
+            val categories = dataProcessor.getCategoryDataForRace(race.id)
+            return proc.importData(uri, dataType, race, categories)
         }
         return null
     }
 
-    fun exportCompetitors(uri: Uri, format: DataFormat, race: Race): Boolean {
-        CoroutineScope(Dispatchers.IO).launch {
-            when (format) {
-                DataFormat.IOF_XML -> {}
-
-
-                else -> {
-                    TODO()
-                }
-            }
-        }
-        return true
-    }
-
-    suspend fun exportReadoutData(uri: Uri, readouts: List<ReadoutResult>): Boolean {
-
-        return true
-    }
-
-    fun importData(uri: Uri, dataType: DataType, dataFormat: DataFormat) {
-
-    }
-
     suspend fun exportData(
         uri: Uri,
+        dataType: DataType,
         dataFormat: DataFormat,
         results: List<ReadoutData>
     ): Boolean {
         val outStream = openOutputStream(uri)
         if (outStream != null) {
-            try {
-                when (dataFormat) {
-                    DataFormat.CSV -> CsvProcessor.exportsResults(results, outStream)
-                    else -> {}
+            when (dataType) {
+                DataType.RESULTS_SIMPLE -> {
+                    try {
+                        when (dataFormat) {
+                            DataFormat.CSV -> CsvProcessor.exportsResults(results, outStream)
+                            else -> {}
+                        }
+                        return true
+                    } catch (e: Exception) {
+                        return false
+                    }
                 }
-                return true
-            } catch (e: Exception) {
-                return false
+
+                DataType.CATEGORIES -> TODO()
+                DataType.C0MPETITORS -> TODO()
+                DataType.COMPETITOR_STARTS_TIME -> TODO()
+                DataType.COMPETITOR_STARTS_CATEGORIES -> TODO()
+                DataType.COMPETITOR_STARTS_CLUBS -> TODO()
+                DataType.RESULTS_SPLITS -> TODO()
             }
         }
         return false

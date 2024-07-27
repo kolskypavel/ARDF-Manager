@@ -1,238 +1,242 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    style="@style/add_dialog"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:paddingHorizontal="10dp">
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/dialog_textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:hint="@string/name">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/race_dialog_name"
-            style="@style/dialog_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:maxLines="1" />
-    </com.google.android.material.textfield.TextInputLayout>
+    android:layout_height="match_parent">
 
     <LinearLayout
+        style="@style/add_dialog"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/dialog_dropdown"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/race_type"
-            android:textColor="@color/black">
-
-            <AutoCompleteTextView
-                android:id="@+id/category_dialog_type"
-                style="@style/dialog_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
-                app:simpleItems="@array/race_types_array" />
-        </com.google.android.material.textfield.TextInputLayout>
-
+        android:orientation="vertical"
+        android:paddingHorizontal="10dp">
 
         <com.google.android.material.textfield.TextInputLayout
             style="@style/dialog_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/external_id"
-            android:textColor="@color/black">
+            android:layout_marginTop="10dp"
+            android:hint="@string/name">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/race_dialog_external_id"
+                android:id="@+id/race_dialog_name"
                 style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:inputType="numberSigned"
-                android:maxLength="9" />
-
+                android:inputType="text"
+                android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/dialog_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/race_type"
+                android:textColor="@color/black">
+
+                <AutoCompleteTextView
+                    android:id="@+id/category_dialog_type"
+                    style="@style/dialog_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    app:simpleItems="@array/race_types_array" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/dialog_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/external_id"
+                android:textColor="@color/black">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/race_dialog_external_id"
+                    style="@style/dialog_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:inputType="numberSigned"
+                    android:maxLength="9" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+
+                style="@style/dialog_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="0.9"
+                android:hint="@string/date"
+                app:endIconDrawable="@drawable/ic_calendar"
+                app:endIconMode="custom">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/race_dialog_date"
+                    style="@style/dialog_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="false" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/dialog_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/start_time_hint"
+                app:endIconDrawable="@drawable/ic_clock"
+                app:endIconMode="custom">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/race_dialog_start_time"
+                    style="@style/dialog_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:inputType="time"
+                    android:maxLength="5" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/dialog_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="0.9"
+                android:hint="@string/race_level">
+
+                <AutoCompleteTextView
+                    android:id="@+id/race_dialog_level"
+                    style="@style/dialog_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    app:simpleItems="@array/race_levels_array" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/dialog_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="@string/band">
+
+                <AutoCompleteTextView
+                    android:id="@+id/race_dialog_band"
+                    style="@style/dialog_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    app:simpleItems="@array/race_bands_array" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-
             style="@style/dialog_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="0.9"
-            android:hint="@string/date"
-            app:endIconDrawable="@drawable/ic_calendar"
-            app:endIconMode="custom">
+            android:hint="@string/limit">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/race_dialog_date"
+                android:id="@+id/race_dialog_limit"
                 style="@style/dialog_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="false" />
-
+                android:inputType="numberSigned" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/dialog_textView"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/start_time_hint"
-            app:endIconDrawable="@drawable/ic_clock"
-            app:endIconMode="custom">
+            android:orientation="horizontal">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/race_dialog_start_time"
-                style="@style/dialog_text"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/dialog_dropdown"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+
+                android:hint="@string/start_time_source">
+
+                <AutoCompleteTextView
+                    android:id="@+id/race_dialog_start_time_source"
+                    style="@style/dialog_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    app:simpleItems="@array/start_time_sources" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/dialog_dropdown"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:clickable="true"
-                android:inputType="time"
-                android:maxLength="5" />
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:hint="@string/finish_time_source">
 
-        </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/dialog_dropdown"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_weight="0.9"
-            android:hint="@string/race_level">
-
-            <AutoCompleteTextView
-                android:id="@+id/race_dialog_level"
-                style="@style/dialog_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
-                app:simpleItems="@array/race_levels_array" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/dialog_dropdown"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/band">
-
-            <AutoCompleteTextView
-                android:id="@+id/race_dialog_band"
-                style="@style/dialog_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
-                app:simpleItems="@array/race_bands_array" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-    </LinearLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        style="@style/dialog_textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/limit">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/race_dialog_limit"
-            style="@style/dialog_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="numberSigned" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/dialog_dropdown"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-
-            android:hint="@string/start_time_source">
-
-            <AutoCompleteTextView
-                android:id="@+id/race_dialog_start_time_source"
-                style="@style/dialog_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
-                app:simpleItems="@array/start_time_sources" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/dialog_dropdown"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:hint="@string/finish_time_source">
-
-            <AutoCompleteTextView
-                android:id="@+id/race_dialog_finish_time_source"
-                style="@style/dialog_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="none"
-                app:simpleItems="@array/finish_time_sources" />
-        </com.google.android.material.textfield.TextInputLayout>
-    </LinearLayout>
+                <AutoCompleteTextView
+                    android:id="@+id/race_dialog_finish_time_source"
+                    style="@style/dialog_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none"
+                    app:simpleItems="@array/finish_time_sources" />
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
 
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="15dp"
-        android:layout_marginBottom="10dp"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/race_dialog_cancel"
-            style="@style/dialog_ok_cancel_button"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="15dp"
             android:layout_marginEnd="15dp"
-            android:layout_weight="1"
-            android:text="@string/cancel" />
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/race_dialog_ok"
-            style="@style/dialog_ok_cancel_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/ok" />
+            <Button
+                android:id="@+id/race_dialog_cancel"
+                style="@style/dialog_ok_cancel_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="15dp"
+                android:layout_weight="1"
+                android:text="@string/cancel" />
+
+            <Button
+                android:id="@+id/race_dialog_ok"
+                style="@style/dialog_ok_cancel_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/ok" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</ScrollView>

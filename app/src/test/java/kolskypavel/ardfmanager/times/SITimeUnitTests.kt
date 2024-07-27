@@ -28,6 +28,19 @@ class SITimeUnitTests {
 
         time.addHalfDay()
         assertEquals("75600", time.getSeconds().toString())
+
+        assertEquals("0", time.getDayOfWeek().toString())
+        assertEquals("0", time.getWeek().toString())
+        time.addHalfDay()
+        assertEquals("1", time.getDayOfWeek().toString())
+
+        for (i in 1..13) {
+            time.addHalfDay()
+        }
+        assertEquals("0", time.getDayOfWeek().toString())
+        assertEquals("1", time.getWeek().toString())
+        time.addHalfDay()
+        assertEquals("1", time.getDayOfWeek().toString())
     }
 
     @Test

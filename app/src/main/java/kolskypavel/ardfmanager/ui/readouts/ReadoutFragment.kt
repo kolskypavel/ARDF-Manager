@@ -116,6 +116,13 @@ class ReadoutFragment : Fragment() {
     private fun setFragmentMenuActions(menuItem: MenuItem): Boolean {
 
         when (menuItem.itemId) {
+            R.id.readout_menu_export_data -> {
+                return true
+            }
+
+            R.id.readout_menu_delete_all_readouts -> {
+                return true
+            }
 
             R.id.readout_menu_edit_race -> {
                 findNavController().navigate(

@@ -7,7 +7,6 @@
     <string name="title_results">Results</string>
     <string name="global_settings">Global settings</string>
     <string name="about_the_app">About the app</string>
-    <string name="data_import_data">Import data</string>
     <string name="unknown" translatable="false">\?</string>
 
     <!--General strings -->
@@ -26,20 +25,21 @@
     <string name="start_time">Start time</string>
     <string name="automatic">Automatic</string>
 
-
     <!--    Sportident-->
     <string name="no_si_card">No SI card!</string>
     <string name="duplicate_si_number">Duplicate SI number!</string>
     <string name="si_number_invalid_range">Invalid SI number range!</string>
     <string name="si_number">SI number</string>
 
-    <!--Files-->
+    <!--Imports-->
     <string name="files_data">Files and data</string>
     <string name="data_type">Data type</string>
     <string name="data_format">Data format</string>
     <string name="data_import">Import</string>
     <string name="data_export">Export</string>
     <string name="data_preview">Preview</string>
+    <string name="data_import_data">Import data</string>
+    <string name="data_import_erorr">Error when importing data!</string>
 
     <!--Race-->
     <string name="race_import_text">Import race from a file</string>
@@ -159,6 +159,7 @@
     <string name="readout_print_ticket">Print ticket</string>
     <string name="readout_delete_readout">Delete readout</string>
     <string name="readout_export_readout_data">Export readout data</string>
+    <string name="readout_delete_all_readouts">Delete all readouts</string>
     <string name="readout_create_category_from_readout">Create a category from this readout</string>
     <string name="readout_delete_readout_confirmation">Do you really want to delete readout for SI card %1$d?</string>
 
@@ -254,6 +255,8 @@
     <string name="data_type_competitor_starts_time">Competitor starts</string>
     <string name="data_type_competitor_starts_categories">Competitor starts by categories</string>
     <string name="data_type_competitor_starts_clubs">Competitor starts by clubs</string>
+    <string name="data_type_results">Results</string>
+    <string name="data_type_results_splits">Results with splits</string>
 
     <string-array name="race_types_array">
         <item>@string/race_type_classics</item>
@@ -356,6 +359,8 @@
         <item>@string/data_type_competitor_starts_time</item>
         <item>@string/data_type_competitor_starts_categories</item>
         <item>@string/data_type_competitor_starts_clubs</item>
+        <item>@string/data_type_results</item>
+        <item>@string/data_type_results_splits</item>
     </string-array>
 
     <string-array name="competitor_data_types">
