@@ -58,6 +58,7 @@ class ResultsProcessor {
                 SIRecordType.CONTROL,
                 orderCounter,
                 PunchStatus.UNKNOWN,
+                Duration.ZERO
             )
             punches.add(punch)
             orderCounter++
@@ -66,6 +67,7 @@ class ResultsProcessor {
         //Add start punch
         if (readout.startTime != null) {
             punches.add(
+                0,
                 Punch(
                     UUID.randomUUID(),
                     race.id,
@@ -77,6 +79,7 @@ class ResultsProcessor {
                     SIRecordType.START,
                     0,
                     PunchStatus.VALID,
+                    Duration.ZERO
                 )
             )
         }
@@ -95,6 +98,7 @@ class ResultsProcessor {
                     SIRecordType.FINISH,
                     orderCounter,
                     PunchStatus.VALID,
+                    Duration.ZERO
                 )
             )
         }
@@ -357,17 +361,27 @@ class ResultsProcessor {
         }
 
         if (readout != null) {
-            val result = dataProcessor.getResultByCompetitor(competitorId)
+            var result = dataProcessor.getResultByCompetitor(competitorId)
             val punches = ArrayList(dataProcessor.getPunchesByReadout(readout.id))
-            if (competitor?.categoryId != null) {
-                val category = dataProcessor.getCategory(competitor.categoryId!!)
-                evaluatePunches(punches, category!!, result!!)
-            } else {
-                clearEvaluation(punches, result!!)
+            val category = competitor?.categoryId?.let { dataProcessor.getCategory(it) }
+
+            if (result == null) {
+                result = Result(
+                    UUID.randomUUID(),
+                    readout.id,
+                    competitor?.categoryId,
+                    competitor?.id,
+                    true,
+                    RaceStatus.NOT_PROCESSED,
+                    0,
+                    Duration.ZERO
+                )
             }
 
-            //Save into db
-            dataProcessor.saveReadoutAndResult(readout, punches, result)
+            if (category == null) {
+                clearEvaluation(punches, result)
+            }
+            calculateResult(readout, result, category, punches, null)
         }
     }
 

@@ -30,7 +30,7 @@ data class Punch(
     @ColumnInfo(name = "punch_type") var punchType: SIRecordType,
     @ColumnInfo(name = "order") var order: Int,
     @ColumnInfo(name = "punch_status") var punchStatus: PunchStatus,      //Holds the original SI Time in case a punch was modified
-    var split: Duration? = null
+    @ColumnInfo(name = "split") var split: Duration
 ) : Serializable {
     fun toCsvString(): String {
         return "${cardNumber ?: ""};${siCode};${siTime}"

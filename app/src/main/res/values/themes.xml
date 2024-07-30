@@ -48,6 +48,7 @@
 
     <style name="dialog_text">
         <item name="android:textColor">@color/black</item>
+        <item name="android:colorForeground">@color/black</item>
     </style>
 
     <!--    <style name="si_status_ok">-->

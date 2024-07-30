@@ -5,12 +5,12 @@
         android:id="@+id/readout_detail_menu_edit_readout"
         android:icon="@drawable/ic_edit"
         android:title="@string/readout_edit_readout"
-        app:showAsAction="always|withText" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/readout_detail_menu_print_ticket"
         android:icon="@drawable/ic_print"
         android:title="@string/readout_print_ticket"
-        app:showAsAction="always|withText" />
+        app:showAsAction="always" />
 
     <item
         android:id="@+id/readout_detail_menu_create_category"

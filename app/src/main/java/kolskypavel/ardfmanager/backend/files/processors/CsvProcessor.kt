@@ -1,9 +1,9 @@
 package kolskypavel.ardfmanager.backend.files.processors
 
-import android.net.Uri
 import android.util.Log
 import com.github.doyaaaaaken.kotlincsv.client.CsvReader
 import com.github.doyaaaaaken.kotlincsv.dsl.context.CsvReaderContext
+import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.files.constants.FileConstants
 import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
@@ -14,6 +14,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorCategory
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
+import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -31,18 +32,58 @@ import java.util.UUID
  */
 object CsvProcessor : FormatProcessor {
 
-    override fun importData(
-        uri: Uri,
+    override suspend fun importData(
+        inStream: InputStream,
         dataType: DataType,
         race: Race,
         categories: List<CategoryData>
     ): DataImportWrapper {
-        TODO("Not yet implemented")
+        return when (dataType) {
+            DataType.CATEGORIES -> return importCategories(inStream, race)
+            DataType.C0MPETITORS -> return importCompetitorData(
+                inStream,
+                race,
+                categories.toHashSet()
+            )
+
+            DataType.COMPETITOR_STARTS_TIME -> return importCompetitorStarts(inStream, race)
+            else -> DataImportWrapper(emptyList(), emptyList())
+        }
     }
 
-    override fun exportData(uri: Uri, dataType: DataType): Boolean {
-        TODO("Not yet implemented")
+    override suspend fun exportData(
+        outStream: OutputStream,
+        dataType: DataType,
+        format: DataFormat,
+        race: Race,
+        categories: List<CategoryData>,
+        competitors: List<CompetitorData>,
+        readouts: List<ReadoutData>,
+        results: List<ResultDisplayWrapper>
+    ): Boolean {
+        try {
+
+            when (dataType) {
+                DataType.CATEGORIES -> exportCategories(outStream, categories)
+                DataType.C0MPETITORS -> exportCompetitors(outStream, competitors)
+                DataType.COMPETITOR_STARTS_TIME,
+                DataType.COMPETITOR_STARTS_CATEGORIES,
+                DataType.COMPETITOR_STARTS_CLUBS -> exportStarts(outStream, competitors, race)
+
+                DataType.RESULTS_SIMPLE, DataType.RESULTS_SPLITS -> exportsResults(
+                    outStream,
+                    results
+                )
+
+                DataType.READOUT_DATA -> exportReadoutData(outStream, readouts)
+            }
+            return true
+        } catch (e: Exception) {
+            Log.e("EXPORT", e.stackTraceToString())
+            return false
+        }
     }
+
 
     //Use reader with semicolon separator
     private fun getReader(): CsvReader {
@@ -76,7 +117,7 @@ object CsvProcessor : FormatProcessor {
     }
 
     @Throws(IOException::class)
-    suspend fun exportCategories(categories: List<CategoryData>, outStream: OutputStream) {
+    suspend fun exportCategories(outStream: OutputStream, categories: List<CategoryData>) {
 
         withContext(Dispatchers.IO) {
             val writer = outStream.bufferedWriter()
@@ -176,15 +217,15 @@ object CsvProcessor : FormatProcessor {
 
     @Throws(IOException::class)
     suspend fun exportCompetitors(
-        competitorData: List<CompetitorData>,
-        outStream: OutputStream
+        outStream: OutputStream,
+        competitorData: List<CompetitorData>
     ) {
         val writer = outStream.bufferedWriter()
         withContext(Dispatchers.IO) {
 
             for (com in competitorData) {
                 writer.write(
-                    com.competitorCategory.competitor.toCsvString(
+                    com.competitorCategory.competitor.toSimpleCsvString(
                         com.competitorCategory.category?.name ?: ""
                     )
                 )
@@ -194,27 +235,56 @@ object CsvProcessor : FormatProcessor {
         }
     }
 
-    @Throws(IOException::class)
-    suspend fun exportCompetitorStarts(
-        competitorData: List<CompetitorData>,
-        outStream: OutputStream
-    ) {
-
+    suspend fun importCompetitorStarts(
+        inStream: InputStream,
+        race: Race
+    ): DataImportWrapper {
+        return DataImportWrapper(emptyList(), emptyList())
     }
 
-    /**
-     * Format:
-     */
     @Throws(IOException::class)
-    suspend fun exportReadoutData(readoutData: List<ReadoutData>, outStream: OutputStream) {
-        readoutData.forEach { readoutData ->
-
+    suspend fun exportStarts(
+        outStream: OutputStream,
+        competitorData: List<CompetitorData>,
+        race: Race
+    ) {
+        val writer = outStream.bufferedWriter()
+        withContext(Dispatchers.IO) {
+            for (com in competitorData) {
+                val category = com.competitorCategory.category
+                writer.write(
+                    com.competitorCategory.competitor.toStartCsvString(
+                        category?.name ?: "",
+                        race.startDateTime
+                    )
+                )
+                writer.newLine()
+            }
+            writer.flush()
         }
     }
 
+    @Throws(IOException::class)
+    suspend fun exportReadoutData(outStream: OutputStream, readoutData: List<ReadoutData>) {
+        val writer = outStream.bufferedWriter()
+        withContext(Dispatchers.IO) {
+            for (rd in readoutData) {
+
+                writer.newLine()
+            }
+            writer.flush()
+        }
+    }
 
     @Throws(IOException::class)
-    suspend fun exportsResults(results: List<ReadoutData>, outputStream: OutputStream) {
+    suspend fun exportsResults(outStream: OutputStream, results: List<ResultDisplayWrapper>) {
+        val writer = outStream.bufferedWriter()
+        withContext(Dispatchers.IO) {
+            for (res in results) {
 
+                writer.newLine()
+            }
+            writer.flush()
+        }
     }
 }

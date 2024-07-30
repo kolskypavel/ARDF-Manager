@@ -42,6 +42,7 @@ data class Category(
     @ColumnInfo(name = "start_source") var startTimeSource: StartTimeSource?,
     @ColumnInfo(name = "finish_source") var finishTimeSource: FinishTimeSource?
 ) : Serializable {
+
     fun toCSVString(): String {
         return "$name;${isMan.compareTo(false)};${maxAge ?: 0};${length};${climb};${order};${raceType?.value ?: ""};${timeLimit?.toMinutes() ?: ""};${startTimeSource?.value ?: ""};${finishTimeSource?.value ?: ""}"
     }

@@ -145,7 +145,7 @@ class RaceCreateDialogFragment : DialogFragment() {
         if (race.externalId != null) {
             externalIdEditText.setText(race.externalId.toString())
         }
-        startTimeView.setText(TimeProcessor.getHoursMinutesFromTime(race.startDateTime))
+        startTimeView.setText(TimeProcessor.hoursMinutesFormatter(race.startDateTime))
         limitEditText.setText("120") //TODO: Fix with default values from settings
 
         raceTypePicker.setText(dataProcessor.raceTypeToString(race.raceType), false)

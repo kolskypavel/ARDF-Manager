@@ -2,10 +2,15 @@ package kolskypavel.ardfmanager.backend.helpers
 
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 object TimeProcessor {
-    fun getHoursMinutesFromTime(time: LocalDateTime): String {
+    fun hoursMinutesFormatter(time: LocalDateTime): String {
+        return DateTimeFormatter.ofPattern("HH:mm").format(time).toString()
+    }
+
+    fun hoursMinutesFormatter(time: LocalTime): String {
         return DateTimeFormatter.ofPattern("HH:mm").format(time).toString()
     }
 

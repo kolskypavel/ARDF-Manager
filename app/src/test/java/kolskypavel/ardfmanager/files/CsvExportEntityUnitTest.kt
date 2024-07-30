@@ -32,7 +32,7 @@ class CsvExportEntityUnitTest {
         val categoryStr = "M20"
         assertEquals(
             "123456789;Test;Tester;M20;1;2000;;AC Test;;0;ACT0001",
-            competitor.toCsvString(categoryStr)
+            competitor.toSimpleCsvString(categoryStr)
         )
     }
 }

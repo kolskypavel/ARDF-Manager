@@ -5,6 +5,7 @@ import androidx.room.Relation
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.Result
+import java.io.Serializable
 
 data class ReadoutResult(
     @Embedded var readout: Readout,
@@ -17,4 +18,4 @@ data class ReadoutResult(
         parentColumn = "id"
     )
     var punches: List<Punch>
-)
+) : Serializable

@@ -14,7 +14,7 @@ interface CategoryDao {
     fun getCategoryFlowForRace(raceId: UUID): Flow<List<CategoryData>>
 
     @Query("SELECT * FROM category WHERE race_id=(:raceId) ORDER BY `order`")
-    fun getCategoriesForRace(raceId: UUID): List<Category>
+   suspend fun getCategoriesForRace(raceId: UUID): List<Category>
 
     @Query("SELECT * FROM category WHERE id=(:id) LIMIT 1")
     suspend fun getCategory(id: UUID): Category?

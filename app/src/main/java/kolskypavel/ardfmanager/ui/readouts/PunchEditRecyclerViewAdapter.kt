@@ -13,6 +13,7 @@ import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.backend.wrappers.PunchEditItemWrapper
+import java.time.Duration
 import java.time.LocalTime
 import java.util.UUID
 
@@ -113,8 +114,8 @@ class PunchEditRecyclerViewAdapter(
                     values[position].punch.siTime,
                     SIRecordType.CONTROL,
                     values[position].punch.order++,
-                    PunchStatus.UNKNOWN
-                ), true, true, true, true
+                    PunchStatus.UNKNOWN, Duration.ZERO,
+                ), false, true, true, true
             )
         )
         notifyItemInserted(position + 1)
@@ -129,7 +130,7 @@ class PunchEditRecyclerViewAdapter(
     private fun codeWatcher(position: Int, text: String): Boolean {
         try {
             val code = text.toInt()
-            if (code >= SIConstants.SI_MIN_CODE && code <= SIConstants.SI_MAX_CODE) {
+            if (SIConstants.isSICodeValid(code)) {
                 values[position].punch.siCode = code
                 values[position].isCodeValid = true
             } else {

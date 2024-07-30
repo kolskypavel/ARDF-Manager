@@ -116,11 +116,9 @@ class ReadoutFragment : Fragment() {
     private fun setFragmentMenuActions(menuItem: MenuItem): Boolean {
 
         when (menuItem.itemId) {
-            R.id.readout_menu_export_data -> {
-                return true
-            }
 
             R.id.readout_menu_delete_all_readouts -> {
+                confirmAllReadoutDeletion()
                 return true
             }
 
@@ -142,6 +140,22 @@ class ReadoutFragment : Fragment() {
 
         }
         return false
+    }
+
+    private fun confirmAllReadoutDeletion() {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(getString(R.string.readout_delete_all))
+        builder.setMessage(R.string.readout_delete_all_confirmation)
+
+        builder.setPositiveButton(R.string.ok) { dialog, _ ->
+            selectedRaceViewModel.deleteAllReadoutsByRace()
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton(R.string.cancel) { dialog, _ ->
+            dialog.cancel()
+        }
+        builder.show()
     }
 
     private fun setResultListener() {
@@ -166,13 +180,11 @@ class ReadoutFragment : Fragment() {
     ) {
         when (action) {
             0 -> {
-                if (readoutData.competitorCategory != null) {
-                    findNavController().navigate(
-                        ReadoutFragmentDirections.editOrCreateReadout(
-                            false, readoutData, position
-                        )
+                findNavController().navigate(
+                    ReadoutFragmentDirections.editOrCreateReadout(
+                        false, readoutData, position
                     )
-                }
+                )
             }
 
             1 -> {

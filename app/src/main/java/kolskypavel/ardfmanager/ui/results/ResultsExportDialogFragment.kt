@@ -4,27 +4,32 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 
 class ResultsExportDialogFragment : DialogFragment() {
 
+    private val selectedRaceViewModel: SelectedRaceViewModel by activityViewModels()
     val dataProcessor = DataProcessor.get()
     private lateinit var dataTypePicker: MaterialAutoCompleteTextView
     private lateinit var dataFormatPicker: MaterialAutoCompleteTextView
+    private lateinit var errorText: TextView
     private lateinit var previewButton: Button
     private lateinit var exportButton: Button
     private lateinit var cancelButton: Button
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,6 +59,8 @@ class ResultsExportDialogFragment : DialogFragment() {
 
         dataTypePicker = view.findViewById(R.id.results_data_type_picker)
         dataFormatPicker = view.findViewById(R.id.results_data_format_picker)
+        errorText = view.findViewById(R.id.results_error_view)
+
         previewButton = view.findViewById(R.id.results_file_preview_btn)
         exportButton = view.findViewById(R.id.results_file_export_button)
         cancelButton = view.findViewById(R.id.results_file_cancel)
@@ -109,7 +116,6 @@ class ResultsExportDialogFragment : DialogFragment() {
                 intent.putExtra(Intent.EXTRA_TITLE, "results.pdf")
             }
 
-
             DataFormat.HTML -> {
                 intent.type = "text/html"
                 intent.putExtra(Intent.EXTRA_TITLE, "results.html")
@@ -129,7 +135,26 @@ class ResultsExportDialogFragment : DialogFragment() {
     }
 
     private fun exportData(uri: Uri) {
-
+        if (selectedRaceViewModel.exportData(
+                uri,
+                getCurrentType(),
+                getCurrentFormat()
+            )
+        ) {
+            try {
+                errorText.error = ""
+                val intent = Intent()
+                intent.setAction(Intent.ACTION_VIEW)
+                intent.setData(uri)
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                startActivity(intent)
+            } catch (e: Exception) {
+                Log.e("File intent opening", e.stackTraceToString())
+                errorText.error = getString(R.string.results_open_error)
+            }
+        } else {
+            errorText.error = getString(R.string.results_export_error)
+        }
     }
 
     private fun previewData() {
@@ -144,6 +169,7 @@ class ResultsExportDialogFragment : DialogFragment() {
             DataType.COMPETITOR_STARTS_CLUBS -> TODO()
             DataType.RESULTS_SIMPLE -> TODO()
             DataType.RESULTS_SPLITS -> TODO()
+            DataType.READOUT_DATA -> TODO()
         }
     }
 }

@@ -5,8 +5,10 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import java.io.Serializable
 import java.time.Duration
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity(
@@ -52,8 +54,21 @@ data class Competitor(
         return "${lastName.uppercase()} $firstName (${startNumber})"
     }
 
-    fun toCsvString(categoryName: String): String {
+    fun toSimpleCsvString(categoryName: String): String {
         return "${siNumber ?: ""};${firstName};${lastName};${categoryName};${isMan.compareTo(false)};${birthYear};;${club};;${startNumber};${index}"
+    }
+
+    fun toStartCsvString(
+        categoryName: String,
+        raceStart: LocalDateTime
+    ): String {
+
+        val real =
+            if (drawnRelativeStartTime != null) {
+                TimeProcessor.hoursMinutesFormatter(raceStart + drawnRelativeStartTime)
+            } else null
+
+        return "${startNumber};${lastName};${firstName};${categoryName};;${real ?: ""};${index};;${club};${siNumber ?: ""}"
     }
 
     companion object {

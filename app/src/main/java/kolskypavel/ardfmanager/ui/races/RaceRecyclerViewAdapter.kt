@@ -37,7 +37,7 @@ class RaceRecyclerViewAdapter(
         holder.title.text = item.name
         holder.date.text =
             item.startDateTime.toLocalDate()
-                .toString() + " " + TimeProcessor.getHoursMinutesFromTime(item.startDateTime)
+                .toString() + " " + TimeProcessor.hoursMinutesFormatter(item.startDateTime)
         holder.type.text = dataProcessor.raceTypeToString(item.raceType)
         holder.level.text = dataProcessor.raceLevelToString(
             item.raceLevel

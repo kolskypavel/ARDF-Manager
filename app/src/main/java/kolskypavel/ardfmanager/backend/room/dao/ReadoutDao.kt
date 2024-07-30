@@ -18,6 +18,9 @@ interface ReadoutDao {
     @Transaction
     fun getReadoutDataByRace(raceId: UUID): Flow<List<ReadoutData>>
 
+    @Query("SELECT * FROM readout WHERE id = (:readoutId) LIMIT 1 ")
+    fun getReadoutDataByReadout(readoutId:UUID):ReadoutData?
+
     @Query("SELECT * FROM readout WHERE si_number=(:siNumber) AND race_id=(:raceId) LIMIT 1")
     suspend fun getReadoutForSINumber(siNumber: Int, raceId: UUID): Readout?
 
@@ -25,10 +28,13 @@ interface ReadoutDao {
     suspend fun getReadoutByCompetitor(competitorId: UUID): Readout?
 
     @Upsert
-    suspend fun createReadout(readout: Readout)
+    suspend fun createOrUpdateReadout(readout: Readout)
 
     @Query("DELETE FROM readout WHERE id =(:id) ")
     suspend fun deleteReadout(id: UUID)
+
+    @Query("DELETE FROM readout WHERE race_id =(:raceId) ")
+    suspend fun deleteAllReadoutsByRace(raceId: UUID)
 
     @Query("DELETE FROM readout WHERE competitor_id =(:competitorId) ")
     suspend fun deleteReadoutByCompetitor(competitorId: UUID)

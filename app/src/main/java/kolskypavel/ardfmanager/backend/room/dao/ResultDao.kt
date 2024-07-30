@@ -21,7 +21,7 @@ interface ResultDao {
     suspend fun getResultByCategory(categoryId: UUID?): List<Result>
 
     @Upsert
-    suspend fun createResult(result: Result)
+    suspend fun createOrUpdateResult(result: Result)
 
     @Query("DELETE FROM result WHERE id =(:id) ")
     suspend fun deleteResult(id: UUID)

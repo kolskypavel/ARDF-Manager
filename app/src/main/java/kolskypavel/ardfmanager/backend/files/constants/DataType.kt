@@ -7,7 +7,8 @@ enum class DataType(var value: Int) {
     COMPETITOR_STARTS_CATEGORIES(3),
     COMPETITOR_STARTS_CLUBS(4),
     RESULTS_SIMPLE(5),
-    RESULTS_SPLITS(6);
+    RESULTS_SPLITS(6),
+    READOUT_DATA(7);
 
     companion object {
         fun getByValue(value: Int) = DataType.entries.firstOrNull { it.value == value }

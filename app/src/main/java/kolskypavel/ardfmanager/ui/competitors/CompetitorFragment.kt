@@ -301,7 +301,7 @@ class CompetitorFragment : Fragment() {
         builder.setMessage(R.string.competitor_delete_all_confirmation)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            selectedRaceViewModel.deleteAllCompetitors()
+            selectedRaceViewModel.deleteAllCompetitorsByRace()
             dialog.dismiss()
         }
 

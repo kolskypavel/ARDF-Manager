@@ -2,12 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/readout_menu_export_data"
-        android:title="@string/readout_export_readout_data" />
-
-    <item
         android:id="@+id/readout_menu_delete_all_readouts"
-        android:title="@string/readout_delete_all_readouts" />
+        android:title="@string/readout_delete_all" />
     <item
         android:id="@+id/readout_menu_edit_race"
         android:title="@string/race_edit" />

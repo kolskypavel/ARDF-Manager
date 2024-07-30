@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
 /**
@@ -85,12 +86,12 @@ class SelectedRaceViewModel : ViewModel() {
             }
 
             launch {
-                dataProcessor.getReadoutDataByRace(id).collect {
+                dataProcessor.getReadoutDataFlowByRace(id).collect {
                     _readoutData.value = it
                 }
             }
             launch {
-                dataProcessor.getResultDataByRace(id).collect {
+                dataProcessor.getResultDataFlowByRace(id).collect {
                     _resultData.value = it
                 }
             }
@@ -207,10 +208,10 @@ class SelectedRaceViewModel : ViewModel() {
             )
         }
 
-    fun deleteAllCompetitors() =
+    fun deleteAllCompetitorsByRace() =
         CoroutineScope(Dispatchers.IO).launch {
             race.value?.let {
-                dataProcessor.deleteAllCompetitors(
+                dataProcessor.deleteAllCompetitorsByRace(
                     it.id
                 )
             }
@@ -238,13 +239,23 @@ class SelectedRaceViewModel : ViewModel() {
 
     fun getLastReadCard() = dataProcessor.getLastReadCard()
 
-    fun processManualPunches(
+    suspend fun processManualPunches(
         readout: Readout,
         punches: ArrayList<Punch>,
         manualStatus: RaceStatus?
-    ) = CoroutineScope(Dispatchers.IO).launch {
+    ) {
         dataProcessor.processManualPunches(readout, punches, manualStatus)
     }
+
+    fun getReadoutDataByReadout(readoutId: UUID): ReadoutData? {
+        val data = runBlocking {
+            withContext(Dispatchers.IO) {
+                return@withContext dataProcessor.getReadoutDataByReadout(readoutId)
+            }
+        }
+        return data
+    }
+
 
     fun getReadoutBySINumber(siNumber: Int, raceId: UUID) =
         runBlocking {
@@ -261,6 +272,15 @@ class SelectedRaceViewModel : ViewModel() {
         }
     }
 
+    fun deleteAllReadoutsByRace() =
+        CoroutineScope(Dispatchers.IO).launch {
+            race.value?.let {
+                dataProcessor.deleteAllReadoutsByRace(
+                    it.id
+                )
+            }
+        }
+
     fun getPunchesByReadout(readoutId: UUID): List<Punch> {
         return runBlocking {
             return@runBlocking dataProcessor.getPunchesByReadout(readoutId)
@@ -268,7 +288,7 @@ class SelectedRaceViewModel : ViewModel() {
     }
 
     //DATA IMPORT/EXPORT
-     fun importData(
+    fun importData(
         uri: Uri,
         dataType: DataType,
         dataFormat: DataFormat
@@ -288,8 +308,13 @@ class SelectedRaceViewModel : ViewModel() {
         dataType: DataType,
         dataFormat: DataFormat
     ): Boolean {
-        CoroutineScope(Dispatchers.IO).run {
-            return dataProcessor.exportData(uri, dataType, dataFormat)
+        return runBlocking {
+            return@runBlocking dataProcessor.exportData(
+                uri,
+                dataType,
+                dataFormat,
+                getCurrentRace().id
+            )
         }
     }
 }

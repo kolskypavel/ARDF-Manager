@@ -508,7 +508,7 @@ class SIPort(
                 punch.value.siTime.addHalfDay()
             }
             //Check first punch against start time
-            else if (cardData.startTime != null &&
+            else if (punch.index == 0 && cardData.startTime != null &&
                 punch.value.siTime.getTime()
                     .isBefore(cardData.startTime!!.getTime())
             ) {
@@ -521,6 +521,13 @@ class SIPort(
 
             if (punches.size != 0
                 && punches[punches.size - 1].siTime.getTime()
+                    .isAfter(cardData.finishTime!!.getTime())
+            ) {
+                cardData.finishTime!!.addHalfDay()
+            }
+
+            //If no control points were punched, compare against start time
+            else if (cardData.startTime != null && cardData.startTime!!.getTime()
                     .isAfter(cardData.finishTime!!.getTime())
             ) {
                 cardData.finishTime!!.addHalfDay()

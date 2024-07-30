@@ -9,9 +9,11 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Button
+import androidx.core.os.bundleOf
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
@@ -29,6 +31,8 @@ import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.backend.sportident.SITime
 import kolskypavel.ardfmanager.backend.wrappers.PunchEditItemWrapper
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
+import kotlinx.coroutines.runBlocking
+import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.UUID
@@ -131,6 +135,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
                 siNumberInputLayout.isEnabled = false
             } else {
                 siNumberInputLayout.isEnabled = true
+                competitorPicker.setText(getString(R.string.unknown_competitor), false)
             }
         }
 
@@ -184,7 +189,8 @@ class ReadoutEditDialogFragment : DialogFragment() {
                         SITime(LocalTime.MIN),
                         SIRecordType.START,
                         0,
-                        PunchStatus.VALID
+                        PunchStatus.VALID,
+                        Duration.ZERO
                     ), true, true, true, true
                 )
             )
@@ -200,7 +206,8 @@ class ReadoutEditDialogFragment : DialogFragment() {
                         SITime(LocalTime.MIN),
                         SIRecordType.FINISH,
                         0,
-                        PunchStatus.VALID
+                        PunchStatus.VALID,
+                        Duration.ZERO
                     ), true, true, true, true
                 )
             )
@@ -235,13 +242,21 @@ class ReadoutEditDialogFragment : DialogFragment() {
                 if (siNumberInput.text?.isNotEmpty() == true) {
                     readout.siNumber = siNumberInput.text.toString().toInt()
                 }
+                val punches = PunchEditItemWrapper.getPunches(
+                    (punchEditRecyclerView.adapter as PunchEditRecyclerViewAdapter).values
+                )
+                runBlocking {
+                    selectedRaceViewModel.processManualPunches(
+                        readout,
+                        punches,
+                        getRaceStatusFromPicker()
+                    )
+                }
 
-                selectedRaceViewModel.processManualPunches(
-                    readout,
-                    PunchEditItemWrapper.getPunches(
-                        (punchEditRecyclerView.adapter as PunchEditRecyclerViewAdapter).values
-                    ),
-                    getRaceStatusFromPicker()
+                setFragmentResult(
+                    REQUEST_READOUT_MODIFICATION, bundleOf(
+                        BUNDLE_READOUT_ID to readout.id.toString()
+                    )
                 )
                 dialog?.dismiss()
             }
@@ -325,5 +340,10 @@ class ReadoutEditDialogFragment : DialogFragment() {
         } else {
             dataProcessor.raceStatusStringToEnum(raceStatusString)
         }
+    }
+
+    companion object {
+        const val REQUEST_READOUT_MODIFICATION = "REQUEST_READOUT_MODIFICATION"
+        const val BUNDLE_READOUT_ID = "BUNDLE_KEY_READOUT_ID"
     }
 }

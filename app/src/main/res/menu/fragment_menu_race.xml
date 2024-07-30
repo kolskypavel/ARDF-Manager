@@ -7,7 +7,7 @@
         android:id="@+id/race_menu_import_file"
         android:icon="@drawable/ic_import_file"
         android:title="@string/race_import_text"
-        app:showAsAction="always|withText" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/race_menu_global_settings"
         android:icon="@drawable/ic_settings"

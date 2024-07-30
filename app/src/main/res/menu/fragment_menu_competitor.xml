@@ -7,7 +7,7 @@
         android:id="@+id/competitor_menu_import_file"
         android:icon="@drawable/ic_import_file"
         android:title="@string/data_import_data"
-        app:showAsAction="always|withText" />
+        app:showAsAction="always" />
     <item
         android:id="@+id/competitor_menu_edit_race"
         android:title="@string/race_edit" />

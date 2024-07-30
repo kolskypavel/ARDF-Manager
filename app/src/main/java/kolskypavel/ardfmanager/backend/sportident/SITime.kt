@@ -19,18 +19,22 @@ class SITime(
     constructor() : this(LocalTime.MIDNIGHT, 0, 0)
     constructor(time: LocalTime) : this() {
         this.time = time
+    }
+
+    init {
         calculateSeconds()
     }
 
     constructor(orig: Long) : this() {
-        seconds = orig
+        this.seconds = orig
         this.time = LocalTime.of(
             ((orig / 3600) % 24).toInt(),   // max 24 hours in a day
             ((orig / 60) % 60).toInt(),     // max 60 minutes in an hour
             (orig % 60).toInt()             // max 60 seconds in a minute
         )
-        week = (orig % SIConstants.SECONDS_WEEK).toInt()    //Weeks from SI synchronization
-        dayOfWeek = ((orig / SIConstants.SECONDS_DAY) % 7).toInt()  //Days from SI synchronization
+        this.week = (orig / SIConstants.SECONDS_WEEK).toInt()    //Weeks from SI synchronization
+        this.dayOfWeek =
+            ((orig / SIConstants.SECONDS_DAY) % 7).toInt()  //Days from SI synchronization
     }
 
     private fun calculateSeconds() {
@@ -103,7 +107,9 @@ class SITime(
                 val dayOfWeek = split[1].toInt()
                 val week = split[2].toInt()
 
-                return SITime(time, dayOfWeek, week)
+                val siTime = SITime(time, dayOfWeek, week)
+                siTime.calculateSeconds()
+                return siTime
 
             } catch (e: Exception) {
                 throw java.lang.IllegalArgumentException("Error when parsing SI time")

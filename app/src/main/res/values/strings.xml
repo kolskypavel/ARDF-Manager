@@ -24,6 +24,7 @@
     <string name="copy">Copy</string>
     <string name="start_time">Start time</string>
     <string name="automatic">Automatic</string>
+    <string name="print">Print</string>
 
     <!--    Sportident-->
     <string name="no_si_card">No SI card!</string>
@@ -158,8 +159,8 @@
     <string name="readout_edit_readout">Edit readout</string>
     <string name="readout_print_ticket">Print ticket</string>
     <string name="readout_delete_readout">Delete readout</string>
-    <string name="readout_export_readout_data">Export readout data</string>
-    <string name="readout_delete_all_readouts">Delete all readouts</string>
+    <string name="readout_delete_all">Delete all readouts</string>
+    <string name="readout_delete_all_confirmation">Do you really want to delete all readouts? This action CAN\'T be undone!</string>
     <string name="readout_create_category_from_readout">Create a category from this readout</string>
     <string name="readout_delete_readout_confirmation">Do you really want to delete readout for SI card %1$d?</string>
 
@@ -192,6 +193,8 @@
     <!--Results-->
     <string name="results_share">Share results</string>
     <string name="results_service">Results service</string>
+    <string name="results_export_error">Error when exporting data!</string>
+    <string name="results_open_error">No app to open the file found!</string>
 
     <string name="data_format_txt" translatable="false">TXT</string>
     <string name="data_format_csv" translatable="false">CSV</string>
@@ -257,6 +260,7 @@
     <string name="data_type_competitor_starts_clubs">Competitor starts by clubs</string>
     <string name="data_type_results">Results</string>
     <string name="data_type_results_splits">Results with splits</string>
+    <string name="data_type_readout_data">SI Readout data</string>
 
     <string-array name="race_types_array">
         <item>@string/race_type_classics</item>
@@ -361,6 +365,7 @@
         <item>@string/data_type_competitor_starts_clubs</item>
         <item>@string/data_type_results</item>
         <item>@string/data_type_results_splits</item>
+        <item>@string/data_type_readout_data</item>
     </string-array>
 
     <string-array name="competitor_data_types">

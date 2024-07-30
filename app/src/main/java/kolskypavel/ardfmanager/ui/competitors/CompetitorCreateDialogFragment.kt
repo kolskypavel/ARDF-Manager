@@ -226,7 +226,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         //Set startTime
         if (competitor.drawnRelativeStartTime != null) {
             startTimeTextView.setText(
-                TimeProcessor.getHoursMinutesFromTime(
+                TimeProcessor.hoursMinutesFormatter(
                     TimeProcessor.getAbsoluteDateTimeFromRelativeTime(
                         dataProcessor.getCurrentRace().startDateTime,
                         competitor.drawnRelativeStartTime!!

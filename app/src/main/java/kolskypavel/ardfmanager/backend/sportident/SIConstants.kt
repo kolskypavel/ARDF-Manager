@@ -54,4 +54,8 @@ object SIConstants {
     fun isSINumberValid(siNumber: Int): Boolean {
         return (siNumber in (SI_MIN_NUMBER + 1)..SI_MAX_NUMBER)
     }
+
+    fun isSICodeValid(siCode: Int): Boolean {
+        return (siCode in (SI_MIN_CODE + 1)..SI_MAX_CODE)
+    }
 }

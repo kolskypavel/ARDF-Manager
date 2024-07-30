@@ -12,6 +12,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -37,7 +38,7 @@ class ARDFRepository private constructor(context: Context) {
     fun getCategoryDataFlowForRace(raceId: UUID) =
         eventDatabase.categoryDao().getCategoryFlowForRace(raceId)
 
-    fun getCategoriesForRace(raceId: UUID): List<Category> =
+   suspend fun getCategoriesForRace(raceId: UUID): List<Category> =
         eventDatabase.categoryDao().getCategoriesForRace(raceId)
 
     suspend fun getCategory(id: UUID) =
@@ -108,8 +109,8 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun deleteCompetitor(id: UUID) = eventDatabase.competitorDao().deleteCompetitor(id)
 
-    suspend fun deleteAllCompetitors(raceId: UUID) =
-        eventDatabase.competitorDao().deleteAllCompetitors(raceId)
+    suspend fun deleteAllCompetitorsByRace(raceId: UUID) =
+        eventDatabase.competitorDao().deleteAllCompetitorsByRace(raceId)
 
     suspend fun checkIfSINumberExists(siNumber: Int, raceId: UUID): Int =
         eventDatabase.competitorDao().checkIfSINumberExists(siNumber, raceId)
@@ -122,6 +123,9 @@ class ARDFRepository private constructor(context: Context) {
     fun getReadoutDataByRace(raceId: UUID) =
         eventDatabase.readoutDao().getReadoutDataByRace(raceId)
 
+    suspend fun getReadoutDataByReadout(readoutId: UUID): ReadoutData? =
+        eventDatabase.readoutDao().getReadoutDataByReadout(readoutId)
+
     suspend fun getReadoutBySINumber(siNumber: Int, raceId: UUID) =
         eventDatabase.readoutDao().getReadoutForSINumber(siNumber, raceId)
 
@@ -129,7 +133,7 @@ class ARDFRepository private constructor(context: Context) {
         eventDatabase.readoutDao().getReadoutByCompetitor(competitorId)
 
     suspend fun createReadout(readout: Readout) =
-        eventDatabase.readoutDao().createReadout(readout)
+        eventDatabase.readoutDao().createOrUpdateReadout(readout)
 
     suspend fun checkIfReadoutExistsById(siNumber: Int, raceId: UUID) =
         eventDatabase.readoutDao().checkIfReadoutExistsById(siNumber, raceId)
@@ -139,8 +143,12 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun deleteReadoutForCompetitor(competitorId: UUID) =
         eventDatabase.readoutDao().deleteReadoutByCompetitor(competitorId)
 
+    suspend fun deleteAllReadoutsByRace(raceId: UUID) =
+        eventDatabase.readoutDao().deleteAllReadoutsByRace(raceId)
+
+
     //PUNCHES
-    suspend fun createPunch(punch: Punch) = eventDatabase.punchDao().createPunch(punch)
+    suspend fun createPunch(punch: Punch) = eventDatabase.punchDao().createOrUpdatePunch(punch)
 
     suspend fun getPunchesByReadout(readoutId: UUID) =
         eventDatabase.punchDao().getPunchesByReadout(readoutId)
@@ -160,16 +168,19 @@ class ARDFRepository private constructor(context: Context) {
         eventDatabase.resultDao().getResultByReadout(readoutId)
 
 
-    suspend fun createResult(result: Result) = eventDatabase.resultDao().createResult(result)
+    suspend fun createResult(result: Result) =
+        eventDatabase.resultDao().createOrUpdateResult(result)
+
     suspend fun saveReadoutAndResult(
         readout: Readout,
         punches: ArrayList<Punch>,
         result: Result
     ) {
         eventDatabase.withTransaction {
-            eventDatabase.readoutDao().createReadout(readout)
-            punches.forEach { punch -> eventDatabase.punchDao().createPunch(punch) }
-            eventDatabase.resultDao().createResult(result)
+            eventDatabase.readoutDao().createOrUpdateReadout(readout)
+            eventDatabase.punchDao().deletePunchesByReadout(readout.id)
+            punches.forEach { punch -> eventDatabase.punchDao().createOrUpdatePunch(punch) }
+            eventDatabase.resultDao().createOrUpdateResult(result)
         }
     }
 

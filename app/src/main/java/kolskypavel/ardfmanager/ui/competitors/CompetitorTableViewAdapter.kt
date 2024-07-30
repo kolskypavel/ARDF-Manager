@@ -33,16 +33,11 @@ class CompetitorTableViewAdapter(
             CompetitorTableDisplayType.OVERVIEW -> {
                 when (columnIndex) {
                     0 -> text.text =
-                        item.competitorCategory.competitor!!.startNumber.toString()
+                        item.competitorCategory.competitor.startNumber.toString()
 
                     1 -> {
-                        if (item.competitorCategory.competitor != null) {
-                            text.text =
-                                item.competitorCategory.competitor!!.lastName.uppercase() + " " + item.competitorCategory.competitor!!.firstName
-
-                        } else {
-                            text.text = context.getString(R.string.unknown_competitor)
-                        }
+                        text.text =
+                            item.competitorCategory.competitor!!.lastName.uppercase() + " " + item.competitorCategory.competitor!!.firstName
                     }
 
                     2 -> text.text = item.competitorCategory.competitor!!.club
@@ -63,7 +58,7 @@ class CompetitorTableViewAdapter(
                     1 -> {
                         if (item.competitorCategory.competitor.drawnRelativeStartTime != null) {
                             text.text =
-                                item.competitorCategory.competitor.drawnRelativeStartTime.toString()
+                                TimeProcessor.durationToMinuteString(item.competitorCategory.competitor.drawnRelativeStartTime!!)
                         } else {
                             text.text = "-"
                         }
@@ -103,9 +98,9 @@ class CompetitorTableViewAdapter(
                         ?: context.getString(R.string.no_category)
 
                     2 -> {
-                        if (item.competitorCategory.competitor!!.drawnRelativeStartTime != null) {
+                        if (item.competitorCategory.competitor.drawnRelativeStartTime != null) {
                             text.text =
-                                item.competitorCategory.competitor!!.drawnRelativeStartTime.toString()
+                                TimeProcessor.durationToMinuteString(item.competitorCategory.competitor.drawnRelativeStartTime!!)
                         } else {
                             text.text = "-"
                         }

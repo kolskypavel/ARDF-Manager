@@ -11,6 +11,7 @@ import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
+import kolskypavel.ardfmanager.backend.prints.PrintProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.room.entitity.Category
@@ -36,6 +37,7 @@ import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.UUID
@@ -52,6 +54,7 @@ class DataProcessor private constructor(context: Context) {
     var currentState = MutableLiveData<AppState>()
     var resultsProcessor: ResultsProcessor? = null
     var fileProcessor: FileProcessor? = null
+    var printProcessor = PrintProcessor()
 
     companion object {
         private var INSTANCE: DataProcessor? = null
@@ -96,7 +99,7 @@ class DataProcessor private constructor(context: Context) {
     }
 
     //METHODS TO HANDLE RACES
-    suspend fun getRaces(): Flow<List<Race>> = ardfRepository.getRaces()
+    fun getRaces(): Flow<List<Race>> = ardfRepository.getRaces()
 
     private suspend fun getRace(id: UUID): Race = ardfRepository.getRace(id)
 
@@ -140,6 +143,15 @@ class DataProcessor private constructor(context: Context) {
         //Calculate the age difference
         val age = LocalDate.now().year - birthYear
         return ardfRepository.getCategoryByBirthYear(age, isWoman, raceId)
+    }
+
+    suspend fun getStartTimeForCategory(categoryId: UUID): Duration? {
+        val competitors = ardfRepository.getCompetitorsByCategory(categoryId)
+            .sortedBy { it.drawnRelativeStartTime }
+
+        return if (competitors.isNotEmpty()) {
+            competitors.first().drawnRelativeStartTime
+        } else null
     }
 
     suspend fun getHighestCategoryOrder(raceId: UUID) =
@@ -305,14 +317,17 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    suspend fun deleteAllCompetitors(raceId: UUID) {
-        ardfRepository.deleteAllCompetitors(raceId)
+    suspend fun deleteAllCompetitorsByRace(raceId: UUID) {
+        ardfRepository.deleteAllCompetitorsByRace(raceId)
     }
 
     //READOUTS
-    fun getReadoutDataByRace(raceId: UUID): Flow<List<ReadoutData>> {
+    fun getReadoutDataFlowByRace(raceId: UUID): Flow<List<ReadoutData>> {
         return ardfRepository.getReadoutDataByRace(raceId)
     }
+
+    suspend fun getReadoutDataByReadout(readoutId: UUID): ReadoutData? =
+        ardfRepository.getReadoutDataByReadout(readoutId)
 
     suspend fun getReadoutBySINumber(siNumber: Int, raceId: UUID): Readout? =
         ardfRepository.getReadoutBySINumber(siNumber, raceId)
@@ -331,6 +346,11 @@ class DataProcessor private constructor(context: Context) {
     }
 
     suspend fun deleteReadout(id: UUID) = ardfRepository.deleteReadout(id)
+
+
+    suspend fun deleteAllReadoutsByRace(raceId: UUID) {
+        ardfRepository.deleteAllReadoutsByRace(raceId)
+    }
 
     //PUNCHES
     suspend fun getPunchesByReadout(readoutId: UUID) =
@@ -355,7 +375,7 @@ class DataProcessor private constructor(context: Context) {
     ) = resultsProcessor?.processManualPunchData(readout, punches, manualStatus)
 
     //RESULTS
-    fun getResultDataByRace(raceId: UUID) = resultsProcessor!!.getResultDataByRace(raceId)
+    fun getResultDataFlowByRace(raceId: UUID) = resultsProcessor!!.getResultDataByRace(raceId)
 
     suspend fun getResultByCompetitor(competitorId: UUID) =
         ardfRepository.getResultByCompetitor(competitorId)
@@ -389,12 +409,18 @@ class DataProcessor private constructor(context: Context) {
         return fileProcessor?.importData(uri, dataType, dataFormat, getRace(raceId))
     }
 
-    fun exportData(
+    suspend fun exportData(
         uri: Uri,
         dataType: DataType,
-        dataFormat: DataFormat
+        dataFormat: DataFormat,
+        raceId: UUID
     ): Boolean {
-        return true
+        return fileProcessor?.exportData(
+            uri,
+            dataType,
+            dataFormat,
+            getRace(raceId)
+        ) ?: false
     }
 
 
@@ -416,6 +442,11 @@ class DataProcessor private constructor(context: Context) {
     }
 
     fun getLastReadCard(): Int? = currentState.value?.siReaderState?.lastCard
+
+    //PRINTING
+    fun enablePrinting() {
+        printProcessor.printerReady = true
+    }
 
     //GENERAL HELPER METHODS
 

@@ -1,5 +1,6 @@
 package kolskypavel.ardfmanager.ui.readouts
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,12 +9,15 @@ import android.widget.TextView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
+import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import java.util.UUID
 
@@ -22,6 +26,7 @@ class ReadoutDetailFragment : Fragment() {
     private val dataProcessor = DataProcessor.get()
     private val args: ReadoutDetailFragmentArgs by navArgs()
     private val selectedRaceViewModel: SelectedRaceViewModel by activityViewModels()
+    private lateinit var readoutDetail: ReadoutData
 
     private lateinit var readoutDetailToolbar: Toolbar
     private lateinit var punchRecyclerView: RecyclerView
@@ -45,6 +50,7 @@ class ReadoutDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        readoutDetail = args.readoutDetail
 
         readoutDetailToolbar = view.findViewById(R.id.readout_detail_toolbar)
         punchRecyclerView = view.findViewById(R.id.readout_detail_punch_recycler_view)
@@ -57,20 +63,21 @@ class ReadoutDetailFragment : Fragment() {
         categoryView = view.findViewById(R.id.readout_detail_category)
         pointsView = view.findViewById(R.id.readout_detail_points)
         placeView = view.findViewById(R.id.readout_detail_place)
-        populateFields()
-    }
-
-    private fun populateFields() {
-        val readoutDetail = args.readoutDetail
 
         readoutDetailToolbar.setNavigationIcon(R.drawable.ic_back)
         readoutDetailToolbar.setTitle(R.string.readout_detail_title)
-        readoutDetailToolbar.subtitle = readoutDetail.readoutResult.readout.siNumber?.toString()
+        readoutDetailToolbar.subtitle =
+            args.readoutDetail.readoutResult.readout.siNumber?.toString()
         readoutDetailToolbar.inflateMenu(R.menu.fragment_menu_readout_detail)
 
         readoutDetailToolbar.setNavigationOnClickListener {
             requireActivity().onBackPressedDispatcher.onBackPressed()
         }
+        setResultListener()
+        populateFields()
+    }
+
+    private fun populateFields() {
 
         if (readoutDetail.competitorCategory?.competitor != null) {
             clubView.text = readoutDetail.competitorCategory!!.competitor.club
@@ -101,10 +108,11 @@ class ReadoutDetailFragment : Fragment() {
         runTimeView.text =
             TimeProcessor.durationToMinuteString(readoutDetail.readoutResult.result.runTime)
 
-        placeView.text = getText(R.string.unknown) //TODO: Place
+        placeView.text = readoutDetail.readoutResult.result.place?.toString()
+            ?: getText(R.string.unknown) //TODO: Place
 
         setMenuActions()
-        setRecyclerViewAdapter(readoutDetail.readoutResult.readout.id)
+        setRecyclerViewAdapter(readoutDetail.readoutResult.punches)
     }
 
     private fun setMenuActions() {
@@ -114,7 +122,7 @@ class ReadoutDetailFragment : Fragment() {
                     findNavController().navigate(
                         ReadoutDetailFragmentDirections.editReadout(
                             false,
-                            args.readoutDetail, -1
+                            readoutDetail, -1
                         )
                     )
                     true
@@ -129,6 +137,7 @@ class ReadoutDetailFragment : Fragment() {
                 }
 
                 R.id.readout_detail_menu_delete_readout -> {
+                    confirmReadoutDeletion(readoutDetail)
                     true
                 }
 
@@ -139,9 +148,44 @@ class ReadoutDetailFragment : Fragment() {
         }
     }
 
-    private fun setRecyclerViewAdapter(readoutId: UUID) {
-        val punches = selectedRaceViewModel.getPunchesByReadout(readoutId)
-        punchRecyclerView.adapter = PunchRecyclerViewAdapter(punches, requireContext())
+    private fun confirmReadoutDeletion(readoutData: ReadoutData) {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(getString(R.string.readout_delete_readout))
+        val message =
+            getString(
+                R.string.readout_delete_readout_confirmation,
+                readoutData.readoutResult.readout!!.siNumber
+            )
+        builder.setMessage(message)
 
+        builder.setPositiveButton(R.string.ok) { dialog, _ ->
+            selectedRaceViewModel.deleteReadout(readoutData.readoutResult.readout.id)
+            dialog.dismiss()
+            parentFragmentManager.popBackStackImmediate();
+        }
+
+        builder.setNegativeButton(R.string.cancel) { dialog, _ ->
+            dialog.cancel()
+        }
+        builder.show()
+    }
+
+    private fun setResultListener() {
+        setFragmentResultListener(ReadoutEditDialogFragment.REQUEST_READOUT_MODIFICATION) { _, bundle ->
+            val readoutId = bundle.getString(
+                ReadoutEditDialogFragment.BUNDLE_READOUT_ID
+            )
+            val newData =
+                selectedRaceViewModel.getReadoutDataByReadout(UUID.fromString(readoutId))
+
+            if (newData != null) {
+                readoutDetail = newData
+                populateFields()
+            }
+        }
+    }
+
+    private fun setRecyclerViewAdapter(punches: List<Punch>) {
+        punchRecyclerView.adapter = PunchRecyclerViewAdapter(punches, requireContext())
     }
 }
