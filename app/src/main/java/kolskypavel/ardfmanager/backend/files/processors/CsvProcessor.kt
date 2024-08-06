@@ -3,6 +3,7 @@ package kolskypavel.ardfmanager.backend.files.processors
 import android.util.Log
 import com.github.doyaaaaaken.kotlincsv.client.CsvReader
 import com.github.doyaaaaaken.kotlincsv.dsl.context.CsvReaderContext
+import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.files.constants.FileConstants
@@ -16,10 +17,13 @@ import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import java.time.Duration
+import java.time.LocalTime
 import java.util.UUID
 
 /**
@@ -36,17 +40,22 @@ object CsvProcessor : FormatProcessor {
         inStream: InputStream,
         dataType: DataType,
         race: Race,
-        categories: List<CategoryData>
+        dataProcessor: DataProcessor
     ): DataImportWrapper {
         return when (dataType) {
             DataType.CATEGORIES -> return importCategories(inStream, race)
             DataType.C0MPETITORS -> return importCompetitorData(
                 inStream,
                 race,
-                categories.toHashSet()
+                dataProcessor.getCategoryDataFlowForRace(race.id).first().toHashSet()
             )
 
-            DataType.COMPETITOR_STARTS_TIME -> return importCompetitorStarts(inStream, race)
+            DataType.COMPETITOR_STARTS_TIME -> return importCompetitorStarts(
+                inStream,
+                race,
+                dataProcessor.getCompetitorDataFlowByRace(race.id).first().toHashSet()
+            )
+
             else -> DataImportWrapper(emptyList(), emptyList())
         }
     }
@@ -55,27 +64,39 @@ object CsvProcessor : FormatProcessor {
         outStream: OutputStream,
         dataType: DataType,
         format: DataFormat,
-        race: Race,
-        categories: List<CategoryData>,
-        competitors: List<CompetitorData>,
-        readouts: List<ReadoutData>,
-        results: List<ResultDisplayWrapper>
+        dataProcessor: DataProcessor,
+        raceId: UUID
     ): Boolean {
         try {
 
             when (dataType) {
-                DataType.CATEGORIES -> exportCategories(outStream, categories)
-                DataType.C0MPETITORS -> exportCompetitors(outStream, competitors)
+                DataType.CATEGORIES -> exportCategories(
+                    outStream,
+                    dataProcessor.getCategoryDataForRace(raceId)
+                )
+
+                DataType.C0MPETITORS -> exportCompetitors(
+                    outStream,
+                    dataProcessor.getCompetitorDataFlowByRace(raceId).first()
+                )
+
                 DataType.COMPETITOR_STARTS_TIME,
                 DataType.COMPETITOR_STARTS_CATEGORIES,
-                DataType.COMPETITOR_STARTS_CLUBS -> exportStarts(outStream, competitors, race)
+                DataType.COMPETITOR_STARTS_CLUBS -> exportStarts(
+                    outStream,
+                    dataProcessor.getCompetitorDataFlowByRace(raceId).first(),
+                    dataProcessor.getCurrentRace()
+                )
 
                 DataType.RESULTS_SIMPLE, DataType.RESULTS_SPLITS -> exportsResults(
                     outStream,
-                    results
+                    dataProcessor.getResultDataFlowByRace(raceId).first()
                 )
 
-                DataType.READOUT_DATA -> exportReadoutData(outStream, readouts)
+                DataType.READOUT_DATA -> exportReadoutData(
+                    outStream,
+                    dataProcessor.getReadoutDataFlowByRace(raceId).first()
+                )
             }
             return true
         } catch (e: Exception) {
@@ -150,65 +171,66 @@ object CsvProcessor : FormatProcessor {
         categories: HashSet<CategoryData>
     ): DataImportWrapper {
 
-
         val csvReader = getReader().readAll(inStream)
         val competitors = ArrayList<CompetitorCategory>()
 
-        if (csvReader.isNotEmpty()) {
-            for (row in csvReader) {
+        for (row in csvReader) {
 
-                if (row.size == FileConstants.OCM_COMPETITOR_CSV_COLUMNS) {
-                    try {
-                        var category: CategoryData? = null
+            if (row.size == FileConstants.OCM_COMPETITOR_CSV_COLUMNS) {
+                try {
+                    var category: CategoryData? = null
 
-                        //Check if category exists
-                        if (row[3].isNotEmpty()) {
-                            val catName = row[3]
-                            val origCat = categories.find { it.category.name == catName }
-                            if (origCat != null) {
-                                category = origCat
-                            } else {
-                                category = CategoryData(
-                                    Category(
-                                        UUID.randomUUID(),
-                                        race.id,
-                                        row[3],
-                                        false,
-                                        null,
-                                        0F,
-                                        0F,
-                                        0,
-                                        false,
-                                        race.raceType, race.timeLimit,
-                                        race.startTimeSource, race.finishTimeSource
-                                    ), emptyList(), emptyList()
-                                )
-                                categories.add(category)
-                            }
-                        }
-
-                        val competitor =
-                            Competitor(
-                                UUID.randomUUID(),
-                                race.id,
-                                category?.category?.id,
-                                row[1],
-                                row[2],
-                                row[7],
-                                row[10],
-                                row[4].toInt() == 0,
-                                row[5].toInt(),
-                                row[0].toInt(),
-                                false,
-                                row[9].toInt(),
-                                null
+                    //Check if category exists
+                    if (row[3].isNotEmpty()) {
+                        val catName = row[3]
+                        val origCat = categories.find { it.category.name == catName }
+                        if (origCat != null) {
+                            category = origCat
+                        } else {
+                            category = CategoryData(
+                                Category(
+                                    UUID.randomUUID(),
+                                    race.id,
+                                    row[3],
+                                    false,
+                                    null,
+                                    0F,
+                                    0F,
+                                    0,
+                                    false,
+                                    race.raceType, race.timeLimit,
+                                    race.startTimeSource, race.finishTimeSource
+                                ), emptyList(), emptyList()
                             )
-                        if (category != null) {
-                            competitors.add(CompetitorCategory(competitor, category.category))
+                            categories.add(category)
                         }
-                    } catch (ex: Exception) {
-                        Log.e("CSV import", "Failed to import competitor")
                     }
+
+                    val competitor =
+                        Competitor(
+                            UUID.randomUUID(),
+                            race.id,
+                            category?.category?.id,
+                            row[1],
+                            row[2],
+                            row[7],
+                            row[10],
+                            row[4].toInt() == 0,
+                            row[5].toInt(),
+                            row[0].toInt(),
+                            false,
+                            row[9].toInt(),
+                            null
+                        )
+                    if (category != null) {
+                        competitors.add(CompetitorCategory(competitor, category.category))
+                    }
+                } catch (e: Exception) {
+                    Log.e(
+                        "CSV import",
+                        "Failed to import competitor \n\" " + e.stackTraceToString()
+                    )
+                    //TODO: Add break based on option
                 }
             }
         }
@@ -235,11 +257,49 @@ object CsvProcessor : FormatProcessor {
         }
     }
 
-    suspend fun importCompetitorStarts(
+    private fun importCompetitorStarts(
         inStream: InputStream,
-        race: Race
+        race: Race,
+        competitors: HashSet<CompetitorData>
     ): DataImportWrapper {
-        return DataImportWrapper(emptyList(), emptyList())
+        val csvReader = getReader().readAll(inStream)
+
+        for (start in csvReader) {
+            if (start.size == FileConstants.OCM_START_CSV_COLUMNS) {
+                try {
+                    val startNumber = start[0].toInt()
+
+                    val relativeTime = if (start[4].isNotEmpty()) {
+                        Duration.parse(start[4])
+                    } else null
+
+                    val realTime = if (start[5].isNotEmpty()) {
+                        LocalTime.parse(start[5])
+                    } else null
+
+                    val match =
+                        competitors.find { it.competitorCategory.competitor.startNumber == startNumber }
+
+                    if (match != null) {
+                        if (relativeTime != null) {
+                            match.competitorCategory.competitor.drawnRelativeStartTime =
+                                relativeTime
+                        } else if (realTime != null) {
+                            match.competitorCategory.competitor.drawnRelativeStartTime =
+                                Duration.between(race.startDateTime.toLocalTime(), realTime)
+                        } else throw IllegalArgumentException("Nor relative or real start time entered")
+                    }
+                } catch (e: Exception) {
+                    Log.e(
+                        "CSV import",
+                        "Failed to import competitor start: \n" + e.stackTraceToString()
+                    )
+                    //TODO: Add break based on option
+                }
+            }
+        }
+
+        return DataImportWrapper(competitors.map { it.competitorCategory }, emptyList())
     }
 
     @Throws(IOException::class)

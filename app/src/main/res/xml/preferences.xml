@@ -50,12 +50,20 @@
             android:title="@string/preferences_files_file_import_skip"
             app:summary="@string/preferences_file_import_skip_description" />
 
+        <CheckBoxPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="1"
+            android:summary=""
+            android:title="@string/preferences_files_prefer_app_start_time"
+            app:summary="@string/preferences_file_prefer_app_start_time_description" />
+
     </PreferenceCategory>
 
     <PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/preferences_prints"/>
+        android:title="@string/preferences_prints" />
 
     <PreferenceCategory
         android:layout_width="wrap_content"

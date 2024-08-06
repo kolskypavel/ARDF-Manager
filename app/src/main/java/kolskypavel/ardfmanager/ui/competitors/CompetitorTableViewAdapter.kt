@@ -87,11 +87,8 @@ class CompetitorTableViewAdapter(
             CompetitorTableDisplayType.ON_THE_WAY -> {
                 when (columnIndex) {
                     0 -> {
-                        if (item.competitorCategory.competitor != null) {
-                            text.text =
-                                item.competitorCategory.competitor!!.lastName.uppercase() + " " + item.competitorCategory.competitor!!.firstName
-
-                        }
+                        text.text =
+                            item.competitorCategory.competitor.lastName.uppercase() + " " + item.competitorCategory.competitor!!.firstName
                     }
 
                     1 -> text.text = item.competitorCategory.category?.name

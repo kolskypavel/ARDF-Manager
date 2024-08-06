@@ -152,14 +152,22 @@
                     android:focusable="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
-                android:id="@+id/competitor_dialog_automatic_category_checkbox"
+            <com.google.android.material.textfield.TextInputLayout
+
+                style="@style/dialog_textView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@color/teal_200"
-                android:checked="false"
-                android:text="@string/automatic" />
+                android:hint="@string/competitor_start_number">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/competitor_dialog_start_number"
+                    style="@style/dialog_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="numberSigned"
+                    android:maxLength="5" />
+            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
 
@@ -188,22 +196,14 @@
                     android:maxLength="10" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-
-                style="@style/dialog_textView"
+            <CheckBox
+                android:id="@+id/competitor_dialog_si_rent"
+                style="@style/dialog_checkbox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@string/competitor_start_number">
+                android:text="@string/competitor_rent_chip" />
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/competitor_dialog_start_number"
-                    style="@style/dialog_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="numberSigned"
-                    android:maxLength="5" />
-            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -214,7 +214,7 @@
             <com.google.android.material.textfield.TextInputLayout
 
                 style="@style/dialog_textView"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="0.6"
@@ -226,16 +226,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="time"
-                    android:maxLength="5" />
+                    android:maxLength="6" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <CheckBox
-                android:id="@+id/competitor_dialog_si_rent"
-                style="@style/dialog_checkbox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/competitor_rent_chip" />
+
 
         </LinearLayout>
 

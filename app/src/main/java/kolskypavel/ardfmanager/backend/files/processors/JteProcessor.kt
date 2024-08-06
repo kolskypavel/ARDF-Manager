@@ -1,15 +1,13 @@
 package kolskypavel.ardfmanager.backend.files.processors
 
+import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
 import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
-import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
 import java.io.InputStream
 import java.io.OutputStream
+import java.util.UUID
 
 object JteProcessor : FormatProcessor {
 
@@ -17,7 +15,7 @@ object JteProcessor : FormatProcessor {
         inStream: InputStream,
         dataType: DataType,
         race: Race,
-        categories: List<CategoryData>
+        dataProcessor: DataProcessor
     ): DataImportWrapper {
         TODO("Not yet implemented")
     }
@@ -26,11 +24,8 @@ object JteProcessor : FormatProcessor {
         outStream: OutputStream,
         dataType: DataType,
         format: DataFormat,
-        race: Race,
-        categories: List<CategoryData>,
-        competitors: List<CompetitorData>,
-        readouts: List<ReadoutData>,
-        results: List<ResultDisplayWrapper>
+        dataProcessor: DataProcessor,
+        raceId: UUID
     ): Boolean {
         TODO("Not yet implemented")
     }

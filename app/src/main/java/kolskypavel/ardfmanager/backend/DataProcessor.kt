@@ -419,7 +419,7 @@ class DataProcessor private constructor(context: Context) {
             uri,
             dataType,
             dataFormat,
-            getRace(raceId)
+            raceId
         ) ?: false
     }
 
@@ -536,6 +536,9 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
+    /**
+     * @return false for woman, true for man
+     */
     fun genderFromString(string: String): Boolean {
         val genderStrings =
             appContext.get()?.resources?.getStringArray(R.array.genders)!!

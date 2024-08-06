@@ -48,7 +48,6 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private lateinit var womanCheckBox: CheckBox
     private lateinit var categoryPicker: MaterialAutoCompleteTextView
     private lateinit var categoryLayout: TextInputLayout
-    private lateinit var automaticCategoryButton: Button
     private lateinit var siNumberLayout: TextInputLayout
     private lateinit var siNumberTextView: TextInputEditText
     private lateinit var startNumberTextView: TextInputEditText
@@ -91,8 +90,6 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         birthYearTextView = view.findViewById(R.id.competitor_dialog_year_of_birth)
         womanCheckBox = view.findViewById(R.id.competitor_dialog_woman_checkbox)
         categoryLayout = view.findViewById(R.id.competitor_dialog_category_layout)
-        automaticCategoryButton =
-            view.findViewById(R.id.competitor_dialog_automatic_category_checkbox)
         categoryPicker = view.findViewById(R.id.competitor_dialog_category)
         siNumberLayout = view.findViewById(R.id.competitor_dialog_si_layout)
         startTimeTextView = view.findViewById(R.id.competitor_dialog_start_time)
@@ -193,48 +190,14 @@ class CompetitorCreateDialogFragment : DialogFragment() {
             competitor.isMan = checked
         }
 
-        //TODO: Enable the automatic category, based on the year of birth
-        automaticCategoryButton.setOnClickListener {
-            if (birthYearTextView.text.toString().isNotBlank()) {
-
-                val formatter = DateTimeFormatter.ofPattern("yyyy")
-                val year = birthYearTextView.text.toString()
-                try {
-                    formatter.parse(year)
-                    if (year.toInt() > LocalDate.now().year) {
-                        throw IllegalArgumentException("Invalid year")
-                    }
-                    runBlocking {
-                        val calc = dataProcessor.getCategoryByBirthYear(
-                            year.toInt(),
-                            competitor.isMan,
-                            selectedRaceViewModel.race.value!!.id
-                        )
-                        if (calc != null) {
-                            categoryPicker.setText(calc.name, false)
-                        } else {
-                            categoryLayout.error = getString(R.string.automatic_category_not_found)
-                        }
-                    }
-
-                } catch (e: Exception) {
-                    birthYearTextView.error = getString(R.string.nonexistent_year)
-                }
-            }
-        }
-
         //Set startTime
         if (competitor.drawnRelativeStartTime != null) {
             startTimeTextView.setText(
-                TimeProcessor.hoursMinutesFormatter(
-                    TimeProcessor.getAbsoluteDateTimeFromRelativeTime(
-                        dataProcessor.getCurrentRace().startDateTime,
-                        competitor.drawnRelativeStartTime!!
-                    )
+                TimeProcessor.durationToMinuteString(
+                    competitor.drawnRelativeStartTime!!
                 )
             )
         }
-
     }
 
     private fun setButtons() {

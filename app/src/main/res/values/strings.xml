@@ -48,7 +48,7 @@
     <string name="race_level">Level</string>
     <string name="race_type">Race type</string>
     <string name="limit">Limit (min)</string>
-    <string name="start_time_hint">Start time (hh:mm)</string>
+    <string name="start_time_hint">Relative start time (mm:ss)</string>
     <string name="external_id">External ID</string>
     <string name="start_time_source"> Start time source</string>
     <string name="finish_time_source"> Finish time source</string>
@@ -230,6 +230,8 @@
     <!--Preferences:files-->
     <string name="preferences_files_file_import_skip">Skip invalid lines during import</string>
     <string name="preferences_file_import_skip_description">If not selected, an invalid line stops the import.</string>
+    <string name="preferences_files_prefer_app_start_time">Don\'t overwrite start time</string>
+    <string name="preferences_file_prefer_app_start_time_description"> When importing start times, a preset start time in the app won\'t be overwritten by the one in a file.</string>
 
     <!--Preferences:print-->
     <string name="preferences_print_select_printer">Select printer</string>
@@ -284,8 +286,8 @@
     </string-array>
 
     <string-array name="genders">
-        <item>@string/gender_man</item>
         <item>@string/gender_woman</item>
+        <item>@string/gender_man</item>
     </string-array>
 
     <string-array name="start_time_sources">

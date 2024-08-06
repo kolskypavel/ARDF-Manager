@@ -9,10 +9,10 @@ import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.files.processors.FormatProcessorFactory
 import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
 import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kotlinx.coroutines.flow.first
 import java.io.InputStream
 import java.io.OutputStream
 import java.lang.ref.WeakReference
+import java.util.UUID
 
 class FileProcessor(private val appContext: WeakReference<Context>) {
     private val dataProcessor = DataProcessor.get()
@@ -47,8 +47,7 @@ class FileProcessor(private val appContext: WeakReference<Context>) {
         if (inStream != null) {
             val formatProcessorFactory = FormatProcessorFactory()
             val proc = formatProcessorFactory.getFormatProcessor(format)
-            val categories = dataProcessor.getCategoryDataForRace(race.id)
-            return proc.importData(inStream, type, race, categories)
+            return proc.importData(inStream, type, race, dataProcessor)
         }
         return null
     }
@@ -57,26 +56,19 @@ class FileProcessor(private val appContext: WeakReference<Context>) {
         uri: Uri,
         type: DataType,
         format: DataFormat,
-        race: Race,
+        raceId: UUID,
     ): Boolean {
         val outStream = openOutputStream(uri)
         if (outStream != null) {
             val formatProcessorFactory = FormatProcessorFactory()
             val proc = formatProcessorFactory.getFormatProcessor(format)
-            val categories = dataProcessor.getCategoryDataForRace(race.id)
-            val competitors = dataProcessor.getCompetitorDataFlowByRace(race.id).first()
-            val results = dataProcessor.getResultDataFlowByRace(race.id).first()
-            val readouts = dataProcessor.getReadoutDataFlowByRace(race.id).first()
 
             return proc.exportData(
                 outStream,
                 type,
                 format,
-                race,
-                categories,
-                competitors,
-                readouts,
-                results
+                dataProcessor,
+                raceId
             )
         }
         return false
