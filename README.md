@@ -22,21 +22,7 @@ Currently availabe functions:
 Other formats (Long, Custom) are to be implemented.
 
 ## Supported file formats
-### Category import / export
-- CSV
-- TLN
-- IOF XML
+Please refer to the [wiki](https://github.com/kolskypavel/ARDF-Manager_mobile/wiki/Data-formats) for further information.
 
-### Competitor import / export
-- CSV CHEB
-- TLN
-- IOF XML
-
-### Results
-- CSV CHEB
-- PDF (basic or splits)
-- HTML (basic or splits)
-- IOF XML
-
-## Icons
-SportIdent by Gonzo from <a href="https://thenounproject.com/browse/icons/term/sportident/" target="_blank" title="SportIdent Icons">Noun Project</a> (CC BY 3.0)
+## Third party libraries and resources
+ - **Logo** - using SportIdent by Gonzo from <a href="https://thenounproject.com/browse/icons/term/sportident/" target="_blank" title="SportIdent Icons">Noun Project</a> (CC BY 3.0)
