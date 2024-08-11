@@ -32,6 +32,7 @@ import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import kolskypavel.ardfmanager.ui.races.RaceCreateDialogFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -40,6 +41,8 @@ class ReadoutFragment : Fragment() {
     private var _binding: FragmentReadoutsBinding? = null
     private val selectedRaceViewModel: SelectedRaceViewModel by activityViewModels()
     private val dataProcessor = DataProcessor.get()
+
+    private var statsJob: Job? = null
 
     private lateinit var readoutToolbar: Toolbar
     private lateinit var startedTextView: TextView
@@ -110,7 +113,9 @@ class ReadoutFragment : Fragment() {
         setResultListener()
         setRecyclerAdapter()
         setBackButton()
-        setStatusLayout()
+
+        statsJob = getStatsJob()
+        statsJob!!.start()
     }
 
     private fun setFragmentMenuActions(menuItem: MenuItem): Boolean {
@@ -193,8 +198,8 @@ class ReadoutFragment : Fragment() {
         }
     }
 
-    private fun setStatusLayout() {
-        CoroutineScope(Dispatchers.Main).launch {
+    private fun getStatsJob(): Job {
+        return CoroutineScope(Dispatchers.Main).launch {
             while (true) {
                 val statistics =
                     selectedRaceViewModel.getStatistics(selectedRaceViewModel.getCurrentRace().id)
@@ -281,7 +286,9 @@ class ReadoutFragment : Fragment() {
             builder.setMessage(message)
 
             builder.setPositiveButton(R.string.ok) { dialog, _ ->
-                dataProcessor.removeReaderRace()
+                selectedRaceViewModel.removeReaderRace()
+                statsJob?.cancel()
+
                 findNavController().navigate(ReadoutFragmentDirections.closeRace())
             }
 

@@ -48,7 +48,8 @@
     <string name="race_level">Level</string>
     <string name="race_type">Race type</string>
     <string name="limit">Limit (min)</string>
-    <string name="start_time_hint">Relative start time (mm:ss)</string>
+    <string name="start_time_hint">Start time (hh:mm)</string>
+    <string name="relative_start_time_hint">Relative start time (mm:ss)</string>
     <string name="external_id">External ID</string>
     <string name="start_time_source"> Start time source</string>
     <string name="finish_time_source"> Finish time source</string>
@@ -215,8 +216,10 @@
 
     <!--Preferences:general-->
     <string name="preferences_general_keep_screen_open">Prevent system from locking screen</string>
+    <string name="preferences_general_keep_screen_open_hint">When selected, the screen won\'t automatically turn off.</string>
     <string name="preferences_general_show_log">Show log</string>
     <string name="preferences_general_language">Language</string>
+    <string name="preferences_general_language_hint">Manually select a language of the app. The app needs to be restarted after.</string>
 
     <!--Preferences: readouts-->
     <string name="preferences_readout_duplicate">Action for duplicate readouts</string>
@@ -234,10 +237,22 @@
     <string name="preferences_file_prefer_app_start_time_description"> When importing start times, a preset start time in the app won\'t be overwritten by the one in a file.</string>
 
     <!--Preferences:print-->
+    <string name="preferences_print">Printing preferences</string>
+    <string name="preferences_print_hint">Printer selection, automatic printing etc.</string>
     <string name="preferences_print_select_printer">Select printer</string>
     <string name="preferences_print_when_to_print">Select when to print the tickets </string>
 
+    <!--Preferences: about the app-->
+    <string name="preferences_changelog">Changelog</string>
+
     <!--Preference values -->
+    <string name="lang_en" translatable="false">English</string>
+    <string name="lang_cz" translatable="false">Čeština</string>
+
+    <array name="languages">
+        <item>@string/lang_en</item>
+        <item>@string/lang_cz</item>
+    </array>
     <!--    DATA ARRAYS-->
 
     <string name="race_type_classics">Classics</string>

@@ -20,7 +20,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
-import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
+import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -49,9 +49,9 @@ class SelectedRaceViewModel : ViewModel() {
     val readoutData: StateFlow<List<ReadoutData>> get() = _readoutData.asStateFlow()
 
 
-    private val _resultData: MutableStateFlow<List<ResultDisplayWrapper>> =
+    private val _resultData: MutableStateFlow<List<ResultWrapper>> =
         MutableStateFlow(emptyList())
-    val resultData: StateFlow<List<ResultDisplayWrapper>> get() = _resultData.asStateFlow()
+    val resultData: StateFlow<List<ResultWrapper>> get() = _resultData.asStateFlow()
 
     private val _competitorData: MutableStateFlow<List<CompetitorData>> =
         MutableStateFlow(emptyList())
@@ -59,6 +59,7 @@ class SelectedRaceViewModel : ViewModel() {
         get() =
             _competitorData.asStateFlow()
 
+    @Throws(IllegalStateException::class)
     fun getCurrentRace(): Race {
         if (race.value != null) {
             return race.value!!
@@ -104,6 +105,8 @@ class SelectedRaceViewModel : ViewModel() {
             _race.postValue(race)
         }
     }
+
+    fun removeReaderRace() = dataProcessor.removeReaderRace()
 
     //Category
     suspend fun getCategory(id: UUID) = dataProcessor.getCategory(id)

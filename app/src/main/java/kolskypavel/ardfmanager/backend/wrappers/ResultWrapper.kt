@@ -7,7 +7,7 @@ import java.io.Serializable
 /**
  * Used for displaying the result data
  */
-data class ResultDisplayWrapper(
+data class ResultWrapper(
     val category: Category? = null,
     var isChild: Int = 0,
     var subList: MutableList<CompetitorData> = ArrayList(),

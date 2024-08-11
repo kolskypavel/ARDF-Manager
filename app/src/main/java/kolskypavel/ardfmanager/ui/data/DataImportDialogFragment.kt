@@ -126,20 +126,13 @@ class DataImportDialogFragment : DialogFragment() {
     private fun openData(uri: Uri) {
         val currType = getCurrentType()
         val format = getCurrentFormat()
+        val dataType = getCurrentType()
 
-        when (currType) {
-            DataType.C0MPETITORS -> {
-                CoroutineScope(Dispatchers.IO).launch {
-                    data = selectedRaceViewModel.importData(
-                        uri, DataType.C0MPETITORS,
-                        format
-                    )
-                }
-            }
-
-            DataType.CATEGORIES -> TODO()
-            DataType.COMPETITOR_STARTS_TIME -> TODO()
-            else -> {}
+        CoroutineScope(Dispatchers.IO).launch {
+            data = selectedRaceViewModel.importData(
+                uri, dataType,
+                format
+            )
         }
 
         if (data != null) {
@@ -194,5 +187,4 @@ class DataImportDialogFragment : DialogFragment() {
             }
         }
     }
-
 }

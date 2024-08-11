@@ -17,7 +17,7 @@ object JteProcessor : FormatProcessor {
         race: Race,
         dataProcessor: DataProcessor
     ): DataImportWrapper {
-        TODO("Not yet implemented")
+        throw NotImplementedError("Jte processor not intended for data import")
     }
 
     override suspend fun exportData(
@@ -30,5 +30,7 @@ object JteProcessor : FormatProcessor {
         TODO("Not yet implemented")
     }
 
+    fun exportTxtResults() {
 
+    }
 }

@@ -12,11 +12,11 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
-import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
+import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 
 class ResultsFragmentRecyclerViewAdapter(
-    var values: ArrayList<ResultDisplayWrapper>,
+    var values: ArrayList<ResultWrapper>,
     var context: Context,
     var selectedRaceViewModel: SelectedRaceViewModel
 ) :
@@ -121,7 +121,7 @@ class ResultsFragmentRecyclerViewAdapter(
         }
     }
 
-    private fun expandOrCollapseParentItem(singleBoarding: ResultDisplayWrapper, position: Int) {
+    private fun expandOrCollapseParentItem(singleBoarding: ResultWrapper, position: Int) {
 
         if (singleBoarding.isExpanded) {
             collapseParentRow(position)
@@ -139,7 +139,7 @@ class ResultsFragmentRecyclerViewAdapter(
         if (currentBoardingRow.isChild == 0) {
 
             competitors.forEach { service ->
-                val parentModel = ResultDisplayWrapper()
+                val parentModel = ResultWrapper()
                 parentModel.isChild = 1
                 val subList: ArrayList<CompetitorData> = ArrayList()
                 subList.add(service)

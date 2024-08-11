@@ -15,7 +15,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorCategory
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
-import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
+import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
@@ -337,7 +337,7 @@ object CsvProcessor : FormatProcessor {
     }
 
     @Throws(IOException::class)
-    suspend fun exportsResults(outStream: OutputStream, results: List<ResultDisplayWrapper>) {
+    suspend fun exportsResults(outStream: OutputStream, results: List<ResultWrapper>) {
         val writer = outStream.bufferedWriter()
         withContext(Dispatchers.IO) {
             for (res in results) {

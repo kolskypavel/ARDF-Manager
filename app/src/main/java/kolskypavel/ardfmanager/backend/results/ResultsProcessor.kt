@@ -20,7 +20,7 @@ import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SITime
-import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
+import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -412,7 +412,7 @@ class ResultsProcessor {
         return sorted
     }
 
-    private fun List<CompetitorData>.toResultDisplayWrappers(): List<ResultDisplayWrapper> {
+    private fun List<CompetitorData>.toResultDisplayWrappers(): List<ResultWrapper> {
         // Transform each ReadoutData item into a ResultDisplayWrapper
         val res = this.groupByCategory().toMutableMap()
         res.forEach { cg ->
@@ -420,7 +420,7 @@ class ResultsProcessor {
         }
 
         return res.map { result ->
-            ResultDisplayWrapper(
+            ResultWrapper(
                 category = result.key,
                 subList = result.value.toMutableList()
             )
@@ -431,7 +431,7 @@ class ResultsProcessor {
         return this.groupBy { it.competitorCategory.category }
     }
 
-    fun getResultDataByRace(raceId: UUID): Flow<List<ResultDisplayWrapper>> {
+    fun getResultDataByRace(raceId: UUID): Flow<List<ResultWrapper>> {
         return dataProcessor.getCompetitorDataFlowByRace(raceId).map { readoutDataList ->
             readoutDataList.toResultDisplayWrappers()
         }

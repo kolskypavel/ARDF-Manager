@@ -9,17 +9,23 @@
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="preferences_general_keep_screen_open"
+            android:key="keep_screen_open"
+            android:summary="@string/preferences_general_keep_screen_open_hint"
             android:title="@string/preferences_general_keep_screen_open" />
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="preference_show_log"
+            android:key="show_log"
             android:title="@string/preferences_general_show_log" />
+
         <ListPreference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:defaultValue="1"
+            android:entries="@array/languages"
+            android:entryValues="@array/languages"
+            android:key="language"
+            android:summary="@string/preferences_general_language_hint"
             android:title="@string/preferences_general_language" />
 
     </PreferenceCategory>
@@ -65,6 +71,14 @@
         android:layout_height="wrap_content"
         android:title="@string/preferences_prints" />
 
+    <Preference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:defaultValue="1"
+        android:fragment="kolskypavel.ardfmanager.ui.settings.PrintsFragment"
+        android:summary="@string/preferences_print_hint"
+        android:title="@string/preferences_print" />
+
     <PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -76,7 +90,7 @@
             android:defaultValue="Default value"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title="Edit text preference" />
+            android:title="@string/about_the_app" />
 
 
         <EditTextPreference
@@ -85,7 +99,7 @@
             android:defaultValue="Default value"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title="Edit text preference" />
+            android:title="@string/preferences_changelog" />
     </PreferenceCategory>
 
 </PreferenceScreen>
