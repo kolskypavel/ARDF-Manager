@@ -45,7 +45,7 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     30 + i,
-                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, Duration.ZERO
                 )
             )
             controlPoints.add(
@@ -102,7 +102,7 @@ class ResultsEvaluationUnitTests {
                         null,
                         null,
                         randCode,
-                        SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
+                        SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, Duration.ZERO
                     )
                 )
                 controlPoints.add(
@@ -150,7 +150,7 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     30 + i,
-                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, Duration.ZERO
                 )
             )
             controlPoints.add(
@@ -176,7 +176,7 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 36,
-                SITime(), SIRecordType.CONTROL, 19, PunchStatus.UNKNOWN, null
+                SITime(), SIRecordType.CONTROL, 19, PunchStatus.UNKNOWN, Duration.ZERO
             )
         )
 
@@ -229,7 +229,7 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     30 + i,
-                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, Duration.ZERO
                 )
             )
         }
@@ -243,7 +243,7 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     30 + i,
-                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, Duration.ZERO
                 )
             )
         }
@@ -280,7 +280,7 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 31,
-                SITime(), SIRecordType.CONTROL, 0, PunchStatus.UNKNOWN, null
+                SITime(), SIRecordType.CONTROL, 0, PunchStatus.UNKNOWN, Duration.ZERO
             )
         )
         controlPoints.add(
@@ -305,7 +305,7 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 32,
-                SITime(), SIRecordType.CONTROL, 0, PunchStatus.UNKNOWN, null
+                SITime(), SIRecordType.CONTROL, 0, PunchStatus.UNKNOWN, Duration.ZERO
             )
         )
         controlPoints.add(
@@ -348,7 +348,7 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     30 + i,
-                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, Duration.ZERO
                 )
             )
             controlPoints.add(
@@ -393,7 +393,7 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     30 + i,
-                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, Duration.ZERO
                 )
             )
             controlPoints.add(
@@ -417,7 +417,7 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 62,
-                SITime(), SIRecordType.CONTROL, 0, PunchStatus.UNKNOWN, null
+                SITime(), SIRecordType.CONTROL, 0, PunchStatus.UNKNOWN, Duration.ZERO
             )
         )
         punches.add(
@@ -428,7 +428,7 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 64,
-                SITime(), SIRecordType.CONTROL, 0, PunchStatus.UNKNOWN, null
+                SITime(), SIRecordType.CONTROL, 0, PunchStatus.UNKNOWN, Duration.ZERO
             )
         )
         ResultsProcessor.evaluateOrienteering(punches, controlPoints, result)
@@ -462,7 +462,7 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     30 + i,
-                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, Duration.ZERO
                 )
             )
             controlPoints.add(
@@ -509,7 +509,7 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     30 + i,
-                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, Duration.ZERO
                 )
             )
             controlPoints.add(
@@ -545,7 +545,7 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 99,
-                SITime(), SIRecordType.CONTROL, 15, PunchStatus.UNKNOWN, null
+                SITime(), SIRecordType.CONTROL, 15, PunchStatus.UNKNOWN, Duration.ZERO
             )
         )
 
@@ -557,7 +557,7 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 67,
-                SITime(), SIRecordType.CONTROL, 15, PunchStatus.UNKNOWN, null
+                SITime(), SIRecordType.CONTROL, 15, PunchStatus.UNKNOWN, Duration.ZERO
             )
         )
         ResultsProcessor.evaluateSprint(punches, controlPoints, result)
@@ -594,7 +594,7 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     30 + i,
-                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, Duration.ZERO
                 )
             )
             controlPoints.add(
@@ -623,7 +623,7 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 34,
-                SITime(), SIRecordType.CONTROL, 15, PunchStatus.UNKNOWN, null
+                SITime(), SIRecordType.CONTROL, 15, PunchStatus.UNKNOWN, Duration.ZERO
             )
         )
 
@@ -635,7 +635,7 @@ class ResultsEvaluationUnitTests {
                 null,
                 null,
                 37,
-                SITime(), SIRecordType.CONTROL, 15, PunchStatus.UNKNOWN, null
+                SITime(), SIRecordType.CONTROL, 15, PunchStatus.UNKNOWN, Duration.ZERO
             )
         )
         for (pun in punches.withIndex()) {
@@ -673,7 +673,7 @@ class ResultsEvaluationUnitTests {
                     null,
                     null,
                     30 + i,
-                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, null
+                    SITime(), SIRecordType.CONTROL, i, PunchStatus.UNKNOWN, Duration.ZERO
                 )
             )
             controlPoints.add(

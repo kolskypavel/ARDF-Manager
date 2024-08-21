@@ -53,7 +53,8 @@
     <de.codecrafters.tableview.SortableTableView xmlns:table="http://schemas.android.com/apk/res-auto"
         android:id="@+id/competitor_fragment_table_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_marginTop="140dp"
         table:layout_constraintTop_toBottomOf="@id/competitor_fragment_view_type_layout"
         table:tableView_columnCount="5" />
 

@@ -126,11 +126,10 @@ class DataImportDialogFragment : DialogFragment() {
     private fun openData(uri: Uri) {
         val currType = getCurrentType()
         val format = getCurrentFormat()
-        val dataType = getCurrentType()
 
-        CoroutineScope(Dispatchers.IO).launch {
+        CoroutineScope(Dispatchers.Main).launch {
             data = selectedRaceViewModel.importData(
-                uri, dataType,
+                uri, currType,
                 format
             )
         }

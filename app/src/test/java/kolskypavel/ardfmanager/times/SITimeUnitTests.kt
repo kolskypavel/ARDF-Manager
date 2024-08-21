@@ -18,7 +18,7 @@ class SITimeUnitTests {
     @Test
     fun checkToString() {
         val time = SITime(LocalTime.of(19, 20), 0, 0)
-        assertEquals("19:20;0;0", time.toString())
+        assertEquals("19:20:00,0,0", time.toString())
     }
 
     @Test

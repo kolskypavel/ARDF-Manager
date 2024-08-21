@@ -129,6 +129,8 @@
             android:layout_height="wrap_content"
             app:layoutManager="LinearLayoutManager"
             app:layout_constraintTop_toBottomOf="@+id/readouts_status_layout"
+            app:reverseLayout="true"
+            app:stackFromEnd="true"
             tools:context=".ui.races.RaceSelectionFragment"
             tools:layout_editor_absoluteX="0dp"
             tools:listitem="@layout/recycler_item_race">

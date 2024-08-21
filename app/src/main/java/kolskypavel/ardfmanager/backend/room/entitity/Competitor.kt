@@ -40,7 +40,7 @@ data class Competitor(
     @ColumnInfo(name = "club") var club: String,
     @ColumnInfo(name = "index") var index: String,
     @ColumnInfo(name = "is_man") var isMan: Boolean = false,
-    @ColumnInfo(name = "birth_year") var birthYear: Int,
+    @ColumnInfo(name = "birth_year") var birthYear: Int? = null,
     @ColumnInfo(name = "si_number") var siNumber: Int? = null,
     @ColumnInfo(name = "si_rent") var siRent: Boolean = false,
     @ColumnInfo(name = "start_number") var startNumber: Int,

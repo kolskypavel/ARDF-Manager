@@ -35,7 +35,6 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private val dataProcessor = DataProcessor.get()
 
     private lateinit var competitor: Competitor
-    private var modifiedPunches = false
 
     private lateinit var categories: List<Category>
     private val categoryArr = ArrayList<String>()
@@ -208,21 +207,29 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 competitor.lastName = lastNameTextView.text.toString()
                 competitor.club = clubTextView.text.toString()
                 competitor.index = indexTextView.text.toString()
+
                 if (startTimeTextView.text.toString().isNotBlank()) {
                     competitor.drawnRelativeStartTime =
                         TimeProcessor.minuteStringToDuration(startTimeTextView.text.toString())
+                } else {
+                    competitor.drawnRelativeStartTime = null
                 }
                 if (birthYearTextView.text.toString().isNotEmpty()) {
                     competitor.birthYear = birthYearTextView.text.toString().toInt()
+                } else {
+                    competitor.birthYear = -1
                 }
 
                 if (siNumberTextView.text.toString().isNotEmpty()) {
                     competitor.siNumber = siNumberTextView.text.toString().toInt()
+                } else {
+                    competitor.siNumber = null
                 }
 
                 if (startNumberTextView.text.toString().isNotEmpty()) {
                     competitor.startNumber = startNumberTextView.text.toString().toInt()
                 }
+
 
                 //0 is reserved for no category
                 val catPos = categoryArr.indexOf(categoryPicker.text.toString()).or(0)

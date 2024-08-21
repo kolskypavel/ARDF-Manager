@@ -10,16 +10,15 @@ import java.time.format.DateTimeFormatter
  */
 class SITime(
     private var time: LocalTime,
-    private var dayOfWeek: Int = 0, //0 - Monday, 6 - Sunday
+    private var dayOfWeek: Int = 0, //0 - Sunday, 6 - Saturday
     private var week: Int = 0
 ) : Serializable {
 
     private var seconds: Long = 0
 
     constructor() : this(LocalTime.MIDNIGHT, 0, 0)
-    constructor(time: LocalTime) : this() {
-        this.time = time
-    }
+    constructor(time: LocalTime) : this(time, 0, 0) {}
+    constructor(other: SITime) : this(other.time, other.dayOfWeek, other.week)
 
     init {
         calculateSeconds()
@@ -43,7 +42,8 @@ class SITime(
     }
 
     override fun toString(): String {
-        return "$time,$dayOfWeek,$week"
+        val timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+        return "${time.format(timeFormatter)},$dayOfWeek,$week"
     }
 
     fun addHalfDay() {
@@ -52,6 +52,12 @@ class SITime(
             adjustDayWeek()
         }
         this.time = time.plusHours(12)
+        calculateSeconds()
+    }
+
+    fun addDay() {
+        dayOfWeek++
+        adjustDayWeek()
         calculateSeconds()
     }
 
@@ -96,6 +102,10 @@ class SITime(
      */
     fun isAtOrAfter(other: SITime): Boolean {
         return this.seconds >= other.seconds
+    }
+
+    fun isAfter(other: SITime): Boolean {
+        return this.seconds > other.seconds
     }
 
     companion object {

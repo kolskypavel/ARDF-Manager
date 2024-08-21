@@ -2,11 +2,21 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Preference
+    <ListPreference
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:defaultValue="1"
-        android:summary="@string/preferences_print_hint"
-        android:title="@string/preferences_print" />
+        android:summary="@string/preferences_print_select_printer_hint"
+        android:title="@string/preferences_print_select_printer" />
+
+    <ListPreference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:defaultValue="1"
+        android:entries="@array/automatic_prints"
+        android:entryValues="@array/automatic_prints"
+        android:key="print_automatic"
+        android:summary="@string/preferences_print_automatic"
+        android:title="@string/preferences_print_automatic_hint" />
 
 </PreferenceScreen>

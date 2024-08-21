@@ -17,6 +17,7 @@ import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD8_MAX_PUNCH
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD8_SERIES
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD9_MAX_PUNCHES
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD9_SERIES
+import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD_10_11_SIAC_MIN_NUMBER
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD_PCARD_MAX_PUNCHES
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD_PCARD_SERIES
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_CARD_REMOVED
@@ -32,10 +33,10 @@ import java.time.LocalTime
 import kotlin.experimental.and
 
 class SIPort(
-    private val port: UsbSerialDevice
+    private val port: UsbSerialDevice,
+    private val dataProcessor: DataProcessor = DataProcessor.get()
 ) {
 
-    val dataProcessor = DataProcessor.get()
     private val msgCache: ArrayList<ByteArray> = ArrayList()
     private var extendedMode =
         false                            //  Marks if station uses SI extended mode
@@ -45,7 +46,7 @@ class SIPort(
     /**
      * Stores the temp readout data
      */
-    inner class CardData(
+    data class CardData(
         var cardType: Byte,
         var siNumber: Int,
         var checkTime: SITime? = null,
@@ -57,7 +58,7 @@ class SIPort(
     /**
      * Stores the temp punch data
      */
-    inner class PunchData(var siCode: Int, var siTime: SITime)
+    data class PunchData(var siCode: Int, var siTime: SITime)
 
     fun workJob(): Job {
         val job = CoroutineScope(Dispatchers.IO).launch {
@@ -99,7 +100,6 @@ class SIPort(
                         (byteToUnsignedInt(reply[5]) shl 24) + (byteToUnsignedInt(reply[6]) shl 16) + (byteToUnsignedInt(
                             reply[7]
                         ) shl 8) + byteToUnsignedInt(reply[8])
-
                 }
 
                 else -> Log.d("SI", "Got unknown command waiting for card inserted event")
@@ -471,7 +471,8 @@ class SIPort(
                 punch.siTime = SITime()
                 cardData.punchData.add(punch)
             }
-            card5TimeAdjust(cardData)
+            val zeroTimeBase = dataProcessor.getCurrentRace().startDateTime.toLocalTime()
+            card5TimeAdjust(cardData, zeroTimeBase)
             ret = true
         }
         return ret
@@ -481,8 +482,7 @@ class SIPort(
     /**
      * Adjust the times for the SI_CARD5, because it operates on 12h mode instead of 24h
      */
-    private fun card5TimeAdjust(cardData: CardData) {
-        val zeroTimeBase = dataProcessor.getCurrentRace().startDateTime.toLocalTime()
+    fun card5TimeAdjust(cardData: CardData, zeroTimeBase: LocalTime) {
 
         //Solve start and check
         if (cardData.startTime != null &&
@@ -501,36 +501,57 @@ class SIPort(
         //Adjust the punches
         for (punch in punches.withIndex()) {
 
-            //Check if the previous punch time is not before the current one
-            if (punch.index != 0 && punches[punch.index - 1].siTime.getTime()
-                    .isAfter(punch.value.siTime.getTime())
-            ) {
-                punch.value.siTime.addHalfDay()
+            val previousTime = if (punch.index == 0) {
+                if (cardData.startTime != null) {
+                    cardData.startTime!!
+                } else {
+                    SITime(zeroTimeBase)
+                }
+            } else {
+                punches[punch.index - 1].siTime
             }
-            //Check first punch against start time
-            else if (punch.index == 0 && cardData.startTime != null &&
-                punch.value.siTime.getTime()
-                    .isBefore(cardData.startTime!!.getTime())
-            ) {
-                punch.value.siTime.addHalfDay()
+
+            val currentTime = punch.value.siTime
+            currentTime.setDayOfWeek(previousTime.getDayOfWeek())
+            currentTime.setWeek(previousTime.getWeek())
+
+            if (currentTime.isAfter(previousTime)) {
+                continue
+            }
+
+            val cmp = SITime(currentTime)
+            cmp.addHalfDay()
+
+            if (cmp.isAfter(previousTime)) {
+                punches[punch.index].siTime = cmp
+            } else {
+                currentTime.addDay()
             }
         }
 
-        //Adjust finish
         if (cardData.finishTime != null) {
 
-            if (punches.size != 0
-                && punches[punches.size - 1].siTime.getTime()
-                    .isAfter(cardData.finishTime!!.getTime())
-            ) {
-                cardData.finishTime!!.addHalfDay()
+            val prefinishTime = if (punches.isEmpty()) {
+                if (cardData.startTime != null) {
+                    cardData.startTime!!
+                } else {
+                    SITime(zeroTimeBase)
+                }
+            } else {
+                punches.last().siTime
             }
 
-            //If no control points were punched, compare against start time
-            else if (cardData.startTime != null && cardData.startTime!!.getTime()
-                    .isAfter(cardData.finishTime!!.getTime())
-            ) {
-                cardData.finishTime!!.addHalfDay()
+            val finishTime = cardData.finishTime!!
+            finishTime.setDayOfWeek(prefinishTime.getDayOfWeek())
+            finishTime.setWeek(prefinishTime.getWeek())
+
+            val cmp = SITime(finishTime)
+            finishTime.addHalfDay()
+
+            if (cmp.isAfter(prefinishTime)) {
+                cardData.finishTime = cmp
+            } else {
+                finishTime.addDay()
             }
         }
     }
@@ -624,10 +645,9 @@ class SIPort(
         //Proceed with punch data blocks
         var nextBlock = 1
         var blockCount = 1
-        val series = tmpReply[9].toInt() and SI_CARD10_11_SIAC_SERIES
 
         //Check if the card is SIAC - if so, adjust the blocks size
-        if (series == SI_CARD10_11_SIAC_SERIES) {
+        if (cardData.siNumber >= SI_CARD_10_11_SIAC_MIN_NUMBER) {
             nextBlock = 4
             blockCount = 7       //(tmpReply[22] + 31) / 32
         }

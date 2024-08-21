@@ -38,6 +38,7 @@ object SIConstants {
     const val SI_CARD9_SERIES = 1
     const val SI_CARD_PCARD_SERIES = 4
     const val SI_CARD10_11_SIAC_SERIES = 15
+    const val SI_CARD_10_11_SIAC_MIN_NUMBER = 7E6
 
     //Max number of punches per card
     const val SI_CARD5_MAX_PUNCHES = 30

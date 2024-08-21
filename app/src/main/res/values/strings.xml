@@ -231,8 +231,8 @@
     </string-array>
 
     <!--Preferences:files-->
-    <string name="preferences_files_file_import_skip">Skip invalid lines during import</string>
-    <string name="preferences_file_import_skip_description">If not selected, an invalid line stops the import.</string>
+    <string name="preferences_files_invalid_stops">Stop import on invalid record</string>
+    <string name="preferences_file_import_skip_description">If selected, an invalid line or record stops the import.</string>
     <string name="preferences_files_prefer_app_start_time">Don\'t overwrite start time</string>
     <string name="preferences_file_prefer_app_start_time_description"> When importing start times, a preset start time in the app won\'t be overwritten by the one in a file.</string>
 
@@ -240,12 +240,15 @@
     <string name="preferences_print">Printing preferences</string>
     <string name="preferences_print_hint">Printer selection, automatic printing etc.</string>
     <string name="preferences_print_select_printer">Select printer</string>
-    <string name="preferences_print_when_to_print">Select when to print the tickets </string>
+    <string name="preferences_print_select_printer_hint">Select the device you want to print with. Make sure BT is on and the device is paired.</string>
+    <string name="preferences_print_automatic_hint">Automatic ticket printout </string>
+    <string name="preferences_print_automatic">Select when to print the tickets automatically. </string>
 
     <!--Preferences: about the app-->
     <string name="preferences_changelog">Changelog</string>
 
     <!--Preference values -->
+
     <string name="lang_en" translatable="false">English</string>
     <string name="lang_cz" translatable="false">Čeština</string>
 
@@ -253,6 +256,19 @@
         <item>@string/lang_en</item>
         <item>@string/lang_cz</item>
     </array>
+
+    <string name="print_automatic_manually">Print manually</string>
+    <string name="print_automatic_category_matched">Print when competitor and his category are matched to the readout</string>
+    <string name="print_automatic_competitor_matched">Print when competitor is matched to the readout</string>
+    <string name="print_automatic_always">Always print automatic</string>
+
+    <array name="automatic_prints">
+        <item>@string/print_automatic_manually</item>
+        <item>@string/print_automatic_category_matched</item>
+        <item>@string/print_automatic_competitor_matched</item>
+        <item>@string/print_automatic_always</item>
+    </array>
+
     <!--    DATA ARRAYS-->
 
     <string name="race_type_classics">Classics</string>
