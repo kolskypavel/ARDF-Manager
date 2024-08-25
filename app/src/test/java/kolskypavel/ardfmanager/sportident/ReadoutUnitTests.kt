@@ -42,10 +42,7 @@ class ReadoutUnitTests {
 
         var zeroTimeBase = LocalTime.of(10, 0)
         val cardData = CardData(SIConstants.SI_CARD5, 12345, checkTime, startTime, finishTime, punchData)
-        val dataProcessorReflection = DataProcessor::class.java.getDeclaredField("INSTANCE")
-        dataProcessorReflection.isAccessible = true
-        dataProcessorReflection.set(null, mock(DataProcessor::class.java))
-        val mockResultsProcessor = ResultsProcessor()
+        val mockResultsProcessor = ResultsProcessor(mock())
 
         var readout =
             Readout(

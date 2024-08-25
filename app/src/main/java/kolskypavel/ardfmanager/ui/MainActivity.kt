@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
         ARDFRepository.initialize(this)
         DataProcessor.initialize(this)
         dataProcessor = DataProcessor.get()
-        dataProcessor.resultsProcessor = ResultsProcessor()
+        dataProcessor.resultsProcessor = ResultsProcessor(dataProcessor)
         dataProcessor.fileProcessor = FileProcessor(WeakReference(this))
         Printooth.init(baseContext)
 

@@ -35,10 +35,9 @@ import java.util.TreeSet
 import java.util.UUID
 
 
-class ResultsProcessor {
-    val dataProcessor = DataProcessor.get()
-
-
+class ResultsProcessor(
+    private val dataProcessor: DataProcessor = DataProcessor.get()
+) {
     fun adjustTime(previous : SITime, current : SITime) : SITime {
         if (current.isAtOrAfter(previous)) {
             return current
