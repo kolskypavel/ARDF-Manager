@@ -471,89 +471,9 @@ class SIPort(
                 punch.siTime = SITime()
                 cardData.punchData.add(punch)
             }
-            val zeroTimeBase = dataProcessor.getCurrentRace().startDateTime.toLocalTime()
-            card5TimeAdjust(cardData, zeroTimeBase)
             ret = true
         }
         return ret
-    }
-
-
-    /**
-     * Adjust the times for the SI_CARD5, because it operates on 12h mode instead of 24h
-     */
-    fun card5TimeAdjust(cardData: CardData, zeroTimeBase: LocalTime) {
-
-        //Solve start and check
-        if (cardData.startTime != null &&
-            cardData.startTime!!.getTime().isBefore(zeroTimeBase)
-        ) {
-            cardData.startTime!!.addHalfDay()
-        }
-        if (cardData.checkTime != null &&
-            cardData.checkTime!!.getTime().isBefore(zeroTimeBase)
-        ) {
-            cardData.checkTime!!.addHalfDay()
-        }
-
-        val punches = cardData.punchData
-
-        //Adjust the punches
-        for (punch in punches.withIndex()) {
-
-            val previousTime = if (punch.index == 0) {
-                if (cardData.startTime != null) {
-                    cardData.startTime!!
-                } else {
-                    SITime(zeroTimeBase)
-                }
-            } else {
-                punches[punch.index - 1].siTime
-            }
-
-            val currentTime = punch.value.siTime
-            currentTime.setDayOfWeek(previousTime.getDayOfWeek())
-            currentTime.setWeek(previousTime.getWeek())
-
-            if (currentTime.isAfter(previousTime)) {
-                continue
-            }
-
-            val cmp = SITime(currentTime)
-            cmp.addHalfDay()
-
-            if (cmp.isAfter(previousTime)) {
-                punches[punch.index].siTime = cmp
-            } else {
-                currentTime.addDay()
-            }
-        }
-
-        if (cardData.finishTime != null) {
-
-            val prefinishTime = if (punches.isEmpty()) {
-                if (cardData.startTime != null) {
-                    cardData.startTime!!
-                } else {
-                    SITime(zeroTimeBase)
-                }
-            } else {
-                punches.last().siTime
-            }
-
-            val finishTime = cardData.finishTime!!
-            finishTime.setDayOfWeek(prefinishTime.getDayOfWeek())
-            finishTime.setWeek(prefinishTime.getWeek())
-
-            val cmp = SITime(finishTime)
-            finishTime.addHalfDay()
-
-            if (cmp.isAfter(prefinishTime)) {
-                cardData.finishTime = cmp
-            } else {
-                finishTime.addDay()
-            }
-        }
     }
 
     private fun card6Readout(cardData: CardData): Boolean {

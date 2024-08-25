@@ -26,7 +26,7 @@ data class ControlPoint(
     @ColumnInfo(name = "category_id") var categoryId: UUID,
     @ColumnInfo(name = "si_code") var siCode: Int,
     @ColumnInfo(name = "name") var name: String?,
-    @ColumnInfo(name = "beacon") var type: ControlPointType,
+    @ColumnInfo(name = "type") var type: ControlPointType,
     @ColumnInfo(name = "order") var order: Int,
     @ColumnInfo(name = "points") var points: Int = 1
 ) : Serializable {

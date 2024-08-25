@@ -105,6 +105,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
                     UUID.randomUUID(), null, 0,
                     selectedRaceViewModel.getCurrentRace().id,
                     null, null, null, null,
+                    null, null, null,
                     LocalDateTime.now(),
                     true
                 )
@@ -187,6 +188,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
                         null,
                         0,
                         SITime(LocalTime.MIN),
+                        SITime(LocalTime.MIN),
                         SIRecordType.START,
                         0,
                         PunchStatus.VALID,
@@ -203,6 +205,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
                         null,
                         null,
                         0,
+                        SITime(LocalTime.MIN),
                         SITime(LocalTime.MIN),
                         SIRecordType.FINISH,
                         0,

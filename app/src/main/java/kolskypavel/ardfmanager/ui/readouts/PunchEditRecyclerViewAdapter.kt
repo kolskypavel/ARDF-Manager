@@ -112,6 +112,7 @@ class PunchEditRecyclerViewAdapter(
                     null,
                     0,
                     values[position].punch.siTime,
+                    values[position].punch.siTime,
                     SIRecordType.CONTROL,
                     values[position].punch.order++,
                     PunchStatus.UNKNOWN, Duration.ZERO,

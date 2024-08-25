@@ -27,6 +27,7 @@ data class Punch(
     @ColumnInfo(name = "card_number") var cardNumber: Int? = null,
     @ColumnInfo(name = "si_code") var siCode: Int,
     @ColumnInfo(name = "si_time") var siTime: SITime,
+    @ColumnInfo(name = "orig_si_time") var origSiTime: SITime, // Immutable copy of original SI Time, used mainly for SI 5 cards
     @ColumnInfo(name = "punch_type") var punchType: SIRecordType,
     @ColumnInfo(name = "order") var order: Int,
     @ColumnInfo(name = "punch_status") var punchStatus: PunchStatus,      //Holds the original SI Time in case a punch was modified

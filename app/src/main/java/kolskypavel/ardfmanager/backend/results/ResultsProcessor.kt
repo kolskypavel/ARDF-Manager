@@ -18,6 +18,8 @@ import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
+import kolskypavel.ardfmanager.backend.sportident.SIConstants
+import kolskypavel.ardfmanager.backend.sportident.SIPort
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SITime
 import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
@@ -28,6 +30,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.util.TreeSet
 import java.util.UUID
 
@@ -35,13 +38,80 @@ import java.util.UUID
 class ResultsProcessor {
     val dataProcessor = DataProcessor.get()
 
+
+    fun adjustTime(previous : SITime, current : SITime) : SITime {
+        if (current.isAtOrAfter(previous)) {
+            return current
+        }
+
+        val cmp = SITime(current)
+        cmp.addHalfDay()
+
+        if (cmp.isAtOrAfter(previous)) {
+            return cmp
+        }
+
+        current.addDay()
+        return current
+    }
+
+    /**
+     * Adjust the times for the SI_CARD5, because it operates on 12h mode instead of 24h
+     */
+    fun card5TimeAdjust(readout: Readout, punches: List<Punch>, zeroTimeBase: LocalTime) {
+        //Solve start and check
+        if (readout.startTime != null) {
+            readout.startTime = adjustTime(SITime(zeroTimeBase), readout.origStartTime!!)
+        }
+
+        //Adjust the punches
+        for (punch in punches.withIndex()) {
+
+            val previousTime = if (punch.index == 0) {
+                if (readout.startTime != null) {
+                    readout.startTime!!
+                } else {
+                    SITime(zeroTimeBase)
+                }
+            } else {
+                punches[punch.index - 1].siTime
+            }
+
+            val currentTime = punch.value.siTime
+            currentTime.setDayOfWeek(previousTime.getDayOfWeek())
+            currentTime.setWeek(previousTime.getWeek())
+            punches[punch.index].siTime = adjustTime(previousTime, currentTime)
+        }
+
+        if (readout.finishTime != null) {
+
+            val prefinishTime = if (punches.isEmpty()) {
+                if (readout.startTime != null) {
+                    readout.startTime!!
+                } else {
+                    SITime(zeroTimeBase)
+                }
+            } else {
+                punches.last().siTime
+            }
+
+            val finishTime = readout.finishTime!!
+            finishTime.setDayOfWeek(prefinishTime.getDayOfWeek())
+            finishTime.setWeek(prefinishTime.getWeek())
+
+            readout.finishTime = adjustTime(prefinishTime, finishTime)
+        }
+    }
+
     /**
      * Processes the punches - converts PunchData to Punch entity
      */
-    private fun processCardPunches(
+    fun processCardPunches(
         cardData: CardData,
-        race: Race,
-        readout: Readout, competitorId: UUID?
+        raceId: UUID,
+        readout: Readout,
+        zeroTimeBase: LocalTime,
+        competitorId: UUID?
     ): ArrayList<Punch> {
         val punches = ArrayList<Punch>()
 
@@ -49,11 +119,12 @@ class ResultsProcessor {
         cardData.punchData.forEach { punchData ->
             val punch = Punch(
                 UUID.randomUUID(),
-                race.id,
+                raceId,
                 readout.id,
                 competitorId,
                 cardData.siNumber,
                 punchData.siCode,
+                punchData.siTime,
                 punchData.siTime,
                 SIRecordType.CONTROL,
                 orderCounter,
@@ -64,46 +135,10 @@ class ResultsProcessor {
             orderCounter++
         }
 
-        //Add start punch
-        if (readout.startTime != null) {
-            punches.add(
-                0,
-                Punch(
-                    UUID.randomUUID(),
-                    race.id,
-                    readout.id,
-                    competitorId,
-                    cardData.siNumber,
-                    0,
-                    readout.startTime!!,
-                    SIRecordType.START,
-                    0,
-                    PunchStatus.VALID,
-                    Duration.ZERO
-                )
-            )
+        if (cardData.cardType == SIConstants.SI_CARD5) {
+            card5TimeAdjust(readout, punches, zeroTimeBase)
         }
 
-        //Add finish punch
-        if (readout.finishTime != null) {
-            punches.add(
-                Punch(
-                    UUID.randomUUID(),
-                    race.id,
-                    readout.id,
-                    competitorId,
-                    cardData.siNumber,
-                    0,
-                    readout.finishTime!!,
-                    SIRecordType.FINISH,
-                    orderCounter,
-                    PunchStatus.VALID,
-                    Duration.ZERO
-                )
-            )
-        }
-
-        calculateSplits(punches)
         return punches
     }
 
@@ -135,7 +170,10 @@ class ResultsProcessor {
                     race.id,
                     competitor?.id,
                     cardData.checkTime,
+                    cardData.checkTime,
                     cardData.startTime,
+                    cardData.startTime,
+                    cardData.finishTime,
                     cardData.finishTime,
                     LocalDateTime.now(),
                     false
@@ -168,8 +206,9 @@ class ResultsProcessor {
             //Process the punches
             val punches = processCardPunches(
                 cardData,
-                race,
+                race.id,
                 readout,
+                dataProcessor.getCurrentRace().startDateTime.toLocalTime(),
                 competitor?.id
             )
 
@@ -239,11 +278,13 @@ class ResultsProcessor {
         }
 
         //Modify the start and finish times
-        if (punches[0].punchType == SIRecordType.START) {
+        if (punches.first().punchType == SIRecordType.START) {
             readout.startTime = punches.first().siTime
+            punches.removeFirst()
         }
         if (punches.last().punchType == SIRecordType.FINISH) {
             readout.finishTime = punches.last().siTime
+            punches.removeLast()
         }
 
         calculateResult(
@@ -266,10 +307,61 @@ class ResultsProcessor {
             result.runTime = SITime.split(readout.startTime!!, readout.finishTime!!)
         }
 
-        calculateSplits(punches)
         if (category != null) {
             evaluatePunches(punches, category, result)
         }
+
+        val originalStartTime = readout.startTime
+        val originalFinishTime = readout.finishTime
+
+        if (readout.cardType == SIConstants.SI_CARD5) {
+            val zeroTimeBase = dataProcessor.getCurrentRace().startDateTime.toLocalTime()
+            card5TimeAdjust(readout, punches, zeroTimeBase)
+        }
+
+        // Add back start and finish
+        if (readout.startTime != null) {
+
+            punches.add(
+                0,
+                Punch(
+                    UUID.randomUUID(),
+                    readout.raceId,
+                    readout.id,
+                    readout.competitorID,
+                    readout.siNumber,
+                    0,
+                    readout.startTime!!,
+                    originalStartTime!!,
+                    SIRecordType.START,
+                    0,
+                    PunchStatus.VALID,
+                    Duration.ZERO
+                )
+            )
+        }
+
+        //Add finish punch
+        if (readout.finishTime != null) {
+            punches.add(
+                Punch(
+                    UUID.randomUUID(),
+                    readout.raceId,
+                    readout.id,
+                    readout.competitorID,
+                    readout.siNumber,
+                    0,
+                    readout.finishTime!!,
+                    originalFinishTime!!,
+                    SIRecordType.FINISH,
+                    punches.size,
+                    PunchStatus.VALID,
+                    Duration.ZERO
+                )
+            )
+        }
+
+        calculateSplits(punches)
 
         // Set the result status based on user preference
         if (manualStatus != null) {
@@ -465,7 +557,6 @@ class ResultsProcessor {
                 if (controlPoints.isNotEmpty() && controlPoints.last().type == ControlPointType.BEACON) {
                     controlPoints.last().siCode
                 } else -1
-
 
             punches.forEach { punch ->
                 if (punch.punchType == SIRecordType.CONTROL && codes.contains(punch.siCode)) {
