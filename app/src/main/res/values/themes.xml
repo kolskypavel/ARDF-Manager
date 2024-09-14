@@ -85,4 +85,12 @@
         <item name="background">@color/yellow_warning</item>
     </style>
 
+    <!-- Customised App Theme with the Toolbar-->
+    <style name="SettingsTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+
 </resources>

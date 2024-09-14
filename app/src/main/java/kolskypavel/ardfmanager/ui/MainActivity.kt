@@ -6,17 +6,19 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.res.Configuration
 import android.hardware.usb.UsbDevice
 import android.hardware.usb.UsbManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.view.WindowManager
 import android.widget.TextView
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
+import androidx.preference.PreferenceManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mazenrashed.printooth.Printooth
 import kolskypavel.ardfmanager.R
@@ -27,14 +29,13 @@ import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
 import kolskypavel.ardfmanager.databinding.ActivityMainBinding
-import kolskypavel.ardfmanager.ui.races.RaceViewModel
 import java.lang.ref.WeakReference
+import java.util.Locale
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val raceViewModel: RaceViewModel by viewModels()
     private lateinit var siStatusTextView: TextView
     private lateinit var dataProcessor: DataProcessor
 
@@ -55,8 +56,41 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun attachBaseContext(newBase: Context?) {
+
+        val languageCode: String = if (newBase != null) {
+            PreferenceManager.getDefaultSharedPreferences(newBase).getString("app_language", "en")
+                ?: "en"
+        } else {
+            "en"
+        }
+
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+
+        val config = Configuration()
+        config.setLocale(locale)
+
+        val context = newBase?.createConfigurationContext(config)
+        super.attachBaseContext(context)
+    }
+
+    //Apply preferences based on Shared preferences values
+    private fun setPreferences() {
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(baseContext)
+        val keepOpen = sharedPref.getBoolean(getString(R.string.key_keep_screen_open), false)
+        if (keepOpen) {
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        } else {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+
+
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setPreferences()
 
         //Initialize singletons
         ARDFRepository.initialize(this)

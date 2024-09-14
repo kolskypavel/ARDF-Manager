@@ -150,7 +150,7 @@ class ResultsExportDialogFragment : DialogFragment() {
                 startActivity(intent)
             } catch (e: Exception) {
                 Log.e("File intent opening", e.stackTraceToString())
-                errorText.error = getString(R.string.results_open_error)
+                errorText.error = getString(R.string.results_export_error)
             }
         } else {
             errorText.error = getString(R.string.results_export_error)

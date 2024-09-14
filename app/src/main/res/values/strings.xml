@@ -38,7 +38,6 @@
     <string name="data_format">Data format</string>
     <string name="data_import">Import</string>
     <string name="data_export">Export</string>
-    <string name="data_preview">Preview</string>
     <string name="data_import_data">Import data</string>
     <string name="data_import_erorr">Error when importing data!</string>
 
@@ -51,8 +50,8 @@
     <string name="start_time_hint">Start time (hh:mm)</string>
     <string name="relative_start_time_hint">Relative start time (mm:ss)</string>
     <string name="external_id">External ID</string>
-    <string name="start_time_source"> Start time source</string>
-    <string name="finish_time_source"> Finish time source</string>
+    <string name="start_time_source">Start time source</string>
+    <string name="finish_time_source">Finish time source</string>
     <string name="start_time_source_drawn">Drawn</string>
     <string name="start_time_source_start_control">Start control</string>
     <string name="start_time_source_first_control">First control</string>
@@ -104,7 +103,7 @@
     <string name="competitor_last_name">First name</string>
     <string name="competitor_start_number">Start number</string>
     <string name="competitor_start_time">Start time</string>
-    <string name="competitor_start_number_header">Start #</string>
+    <string name="competitor_start_number_header" translatable="false">Start #</string>
     <string name="competitor_to_limit">To limit</string>
     <string name="club">Club</string>
     <string name="competitor_create">Create competitor</string>
@@ -115,7 +114,6 @@
     <string name="competitor_delete_confirmation">Do you really want to delete this competitor?</string>
     <string name="competitor_delete_all_confirmation">Do you really want to delete all competitors? This action CAN\'T be undone!</string>
     <string name="index_callsign">Index/Callsign</string>
-    <string name="automatic_category_not_found">Automatic category not found!</string>
     <string name="competitor_rent_chip">Rent chip</string>
     <string name="competitor_edit_punches">Edit punches</string>
 
@@ -195,7 +193,6 @@
     <string name="results_share">Share results</string>
     <string name="results_service">Results service</string>
     <string name="results_export_error">Error when exporting data!</string>
-    <string name="results_open_error">No app to open the file found!</string>
 
     <string name="data_format_txt" translatable="false">TXT</string>
     <string name="data_format_csv" translatable="false">CSV</string>
@@ -206,12 +203,10 @@
 
     <!--    Preferences    -->
     <string name="preferences_general">General</string>
-    <string name="preferences_readouts">Readouts</string>
-    <string name="preferences_results">Results</string>
     <string name="preferences_prints">Prints</string>
-    <string name="preferences_sportident">Sportident</string>
     <string name="preferences_help">Help</string>
     <string name="preferences_replace">Replace</string>
+    <string name="preferences_keep_original">Keep original</string>
     <string name="preferences_ignore">Ignore</string>
 
     <!--Preferences:general-->
@@ -219,30 +214,58 @@
     <string name="preferences_general_keep_screen_open_hint">When selected, the screen won\'t automatically turn off.</string>
     <string name="preferences_general_show_log">Show log</string>
     <string name="preferences_general_language">Language</string>
-    <string name="preferences_general_language_hint">Manually select a language of the app. The app needs to be restarted after.</string>
+    <string name="preferences_general_language_hint">Manually select a language of the app. The app needs to be restarted after.\n[%1$s]</string>
 
-    <!--Preferences: readouts-->
+    <!--Preferences:categories-->
+
+
+    <!--Preferences:readouts-->
     <string name="preferences_readout_duplicate">Action for duplicate readouts</string>
-    <string name="preferences_readout_duplicate_description">Select an action for duplicate readout for the same competitor.</string>
+    <string name="preferences_readout_duplicate_hint">Select an action for duplicate readout of the same card.\n[%1$s]</string>
 
     <string-array name="preferences_readout_duplicate_options">
+        <item>@string/preferences_keep_original</item>
         <item>@string/preferences_replace</item>
-        <item>@string/preferences_ignore</item>
+    </string-array>
+
+    <!--Preferences:sounds-->
+    <string name="preferences_readout_sounds">Sounds</string>
+    <string name="preferences_readout_sounds_hint">Select sound that should be used when a card is read out.</string>
+
+    <string name="preferences_sounds_enable_sounds">Enable sounds</string>
+    <string name="preferences_sounds_enable_sounds_hint">Enable if you want sounds after card was read</string>
+    <string name="preferences_sounds_ok">Category and competitor matched</string>
+    <string name="preferences_sounds_ok_hint">Competitor was found by SI number and had a category\n[%1$s]</string>
+    <string name="preferences_sounds_unknown_category">Unknown category</string>
+    <string name="preferences_sounds_unknown_category_hint">Competitor was matched by SI number but was not placed in a category\n[%1$s]</string>
+    <string name="preferences_sounds_unknown_competitor">Unknown competitor</string>
+    <string name="preferences_sounds_unknown_competitor_hint">Competitor wasn\'t natched by SI number\n[%1$s]</string>
+
+    <!--Preferences:results-->
+    <string name="preferences_results_time_format">Time format</string>
+    <string name="preferences_results_time_format_hint">Time format used in results display. Either mm:ss or hh:mm:ss\n[%1$s]</string>
+
+    <string name="preferences_results_time_format_minutes">mm:ss</string>
+    <string name="preferences_results_time_format_hours">hh:mm:ss</string>
+
+    <string-array name="preferences_results_time_format_options">
+        <item>@string/preferences_results_time_format_minutes</item>
+        <item>@string/preferences_results_time_format_hours</item>
     </string-array>
 
     <!--Preferences:files-->
-    <string name="preferences_files_invalid_stops">Stop import on invalid record</string>
-    <string name="preferences_file_import_skip_description">If selected, an invalid line or record stops the import.</string>
+    <string name="preferences_files_invalid_stops_import">Stop import on invalid record</string>
+    <string name="preferences_file_import_skip_hint">If selected, an invalid line or record stops the import.</string>
     <string name="preferences_files_prefer_app_start_time">Don\'t overwrite start time</string>
-    <string name="preferences_file_prefer_app_start_time_description"> When importing start times, a preset start time in the app won\'t be overwritten by the one in a file.</string>
+    <string name="preferences_file_prefer_app_start_time_hint"> When importing start times, a preset start time in the app won\'t be overwritten by the one in a file.</string>
 
     <!--Preferences:print-->
-    <string name="preferences_print">Printing preferences</string>
-    <string name="preferences_print_hint">Printer selection, automatic printing etc.</string>
-    <string name="preferences_print_select_printer">Select printer</string>
-    <string name="preferences_print_select_printer_hint">Select the device you want to print with. Make sure BT is on and the device is paired.</string>
-    <string name="preferences_print_automatic_hint">Automatic ticket printout </string>
-    <string name="preferences_print_automatic">Select when to print the tickets automatically. </string>
+    <string name="preferences_prints_hint">Printer selection, automatic printing etc.</string>
+    <string name="preferences_prints_enable">Enable printing</string>
+    <string name="preferences_prints_select_printer">Select printer</string>
+    <string name="preferences_prints_select_printer_hint">Select the device you want to print with. Make sure Bluetooth is on and the device is paired.\n[%1$s]</string>
+    <string name="preferences_prints_automatic_hint">Automatic ticket printout </string>
+    <string name="preferences_prints_automatic">Select when to print the tickets automatically.\n[%1$s] </string>
 
     <!--Preferences: about the app-->
     <string name="preferences_changelog">Changelog</string>
@@ -252,15 +275,21 @@
     <string name="lang_en" translatable="false">English</string>
     <string name="lang_cz" translatable="false">Čeština</string>
 
-    <array name="languages">
+    <array name="language_names">
         <item>@string/lang_en</item>
         <item>@string/lang_cz</item>
+    </array>
+
+    <array name="language_codes">
+        <item>en</item>
+        <item>cs</item>
     </array>
 
     <string name="print_automatic_manually">Print manually</string>
     <string name="print_automatic_category_matched">Print when competitor and his category are matched to the readout</string>
     <string name="print_automatic_competitor_matched">Print when competitor is matched to the readout</string>
     <string name="print_automatic_always">Always print automatic</string>
+    <string name="print_bluetooth_not_supported">Unfortunately, your device does not support Bluetooth.</string>
 
     <array name="automatic_prints">
         <item>@string/print_automatic_manually</item>

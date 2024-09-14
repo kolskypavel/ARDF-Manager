@@ -1,22 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/key_prints_enabled"
+        android:title="@string/preferences_prints_enable"
+        app:iconSpaceReserved="false" />
+    <ListPreference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:key="@string/key_prints_select_printer"
+        android:summary="@string/preferences_prints_select_printer_hint"
+        android:title="@string/preferences_prints_select_printer"
+        app:iconSpaceReserved="false" />
 
     <ListPreference
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:defaultValue="1"
-        android:summary="@string/preferences_print_select_printer_hint"
-        android:title="@string/preferences_print_select_printer" />
-
-    <ListPreference
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:defaultValue="1"
+        android:defaultValue="@string/automatic"
+        android:enabled="false"
         android:entries="@array/automatic_prints"
         android:entryValues="@array/automatic_prints"
-        android:key="print_automatic"
-        android:summary="@string/preferences_print_automatic"
-        android:title="@string/preferences_print_automatic_hint" />
+        android:key="@string/key_prints_automatic_printout"
+        android:summary="@string/preferences_prints_automatic"
+        android:title="@string/preferences_prints_automatic_hint"
+        app:iconSpaceReserved="false" />
 
 </PreferenceScreen>

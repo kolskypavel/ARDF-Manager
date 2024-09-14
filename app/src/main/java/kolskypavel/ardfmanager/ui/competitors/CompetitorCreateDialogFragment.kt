@@ -118,7 +118,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 null,
                 "", "", "", "",
                 false,
-                LocalDate.now().year,
+                null,
                 null,
                 siRent = false,
                 startNumber,
@@ -133,7 +133,10 @@ class CompetitorCreateDialogFragment : DialogFragment() {
             lastNameTextView.setText(competitor.lastName)
             clubTextView.setText(competitor.club)
             indexTextView.setText(competitor.index)
-            birthYearTextView.setText(competitor.birthYear.toString())
+
+            if (competitor.birthYear != null) {
+                birthYearTextView.setText(competitor.birthYear.toString())
+            }
 
             //Pre-set SI number
             if (competitor.siNumber != null) {
@@ -217,7 +220,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 if (birthYearTextView.text.toString().isNotEmpty()) {
                     competitor.birthYear = birthYearTextView.text.toString().toInt()
                 } else {
-                    competitor.birthYear = -1
+                    competitor.birthYear = null
                 }
 
                 if (siNumberTextView.text.toString().isNotEmpty()) {

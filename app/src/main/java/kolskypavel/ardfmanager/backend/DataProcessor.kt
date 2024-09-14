@@ -103,13 +103,8 @@ class DataProcessor private constructor(context: Context) {
 
     private suspend fun getRace(id: UUID): Race = ardfRepository.getRace(id)
 
-    fun createRace(
-        race: Race
-    ) {
-        runBlocking {
-            ardfRepository.createRace(race)
-        }
-    }
+    suspend fun createRace(race: Race) = ardfRepository.createRace(race)
+
 
     suspend fun updateRace(race: Race) {
         ardfRepository.updateRace(race)

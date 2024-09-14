@@ -20,7 +20,7 @@ class RaceViewModel : ViewModel() {
 
     fun createRace(
         race: Race
-    ) = dataProcessor.createRace(race)
+    ) = CoroutineScope(Dispatchers.IO).launch { dataProcessor.createRace(race) }
 
     fun updateRace(
         race: Race

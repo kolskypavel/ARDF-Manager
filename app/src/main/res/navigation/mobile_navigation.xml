@@ -215,10 +215,24 @@
         <action
             android:id="@+id/configurePrints"
             app:destination="@id/printsFragment" />
+        <action
+            android:id="@+id/openAppInfo"
+            app:destination="@id/aboutAppDialogFragment" />
+        <action
+            android:id="@+id/configureSounds"
+            app:destination="@id/soundsFragment" />
     </fragment>
     <fragment
         android:id="@+id/printsFragment"
         android:name="kolskypavel.ardfmanager.ui.settings.PrintsFragment"
         android:label="PrintsFragment" />
+    <fragment
+        android:id="@+id/soundsFragment"
+        android:name="kolskypavel.ardfmanager.ui.settings.SoundsFragment"
+        android:label="SoundsFragment" />
+    <dialog
+        android:id="@+id/aboutAppDialogFragment"
+        android:name="kolskypavel.ardfmanager.ui.settings.AboutAppDialogFragment"
+        android:label="AboutAppDialogFragment" />
 
 </navigation>

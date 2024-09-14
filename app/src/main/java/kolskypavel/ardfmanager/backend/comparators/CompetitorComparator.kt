@@ -47,10 +47,14 @@ class CompetitorStartTimeComparator : Comparator<CompetitorData> {
 class CompetitorSINumberComparator : Comparator<CompetitorData> {
     override fun compare(o1: CompetitorData, o2: CompetitorData): Int {
 
-        return o2.competitorCategory.competitor.siNumber?.let {
-            o1.competitorCategory.competitor.siNumber?.compareTo(
-                it
-            )
-        } ?: 0
+        val si1 = o1.competitorCategory.competitor.siNumber
+        val si2 = o2.competitorCategory.competitor.siNumber
+
+        return when {
+            si1 == null && si2 == null -> 0            // Both null, consider them equal
+            si1 == null -> 1                            // si1 is null, place it after si2
+            si2 == null -> -1                           // si2 is null, place it after si1
+            else -> si1.compareTo(si2)                  // Both are non-null, compare by value
+        }
     }
 }

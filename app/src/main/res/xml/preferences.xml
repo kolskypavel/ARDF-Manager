@@ -5,13 +5,15 @@
     <PreferenceCategory
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:title="@string/preferences_general">
+        android:title="@string/preferences_general"
+        app:iconSpaceReserved="false">
 
         <CheckBoxPreference
             android:defaultValue="false"
-            android:key="keep_screen_open"
+            android:key="@string/key_keep_screen_open"
             android:summary="@string/preferences_general_keep_screen_open_hint"
-            android:title="@string/preferences_general_keep_screen_open" />
+            android:title="@string/preferences_general_keep_screen_open"
+            app:iconSpaceReserved="false" />
 
         <!--        <CheckBoxPreference-->
         <!--            android:defaultValue="false"-->
@@ -21,86 +23,137 @@
         <ListPreference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:defaultValue="1"
-            android:entries="@array/languages"
-            android:entryValues="@array/languages"
-            android:key="language"
+            android:defaultValue="en"
+            android:entries="@array/language_names"
+            android:entryValues="@array/language_codes"
+            android:key="@string/key_app_language"
             android:summary="@string/preferences_general_language_hint"
-            android:title="@string/preferences_general_language" />
+            android:title="@string/preferences_general_language"
+            app:iconSpaceReserved="false" />
 
     </PreferenceCategory>
+    <PreferenceCategory
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/title_categories"
+        app:iconSpaceReserved="false">
 
+
+    </PreferenceCategory>
     <PreferenceCategory
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:title="@string/preferences_readouts">
+        android:title="@string/title_readouts"
+        app:iconSpaceReserved="false">
+
+        <ListPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/preferences_readout_duplicate_options"
+            android:entryValues="@array/preferences_readout_duplicate_options"
+            android:key="@string/key_readout_duplicate"
+            android:summary="@string/preferences_readout_duplicate_hint"
+            android:title="@string/preferences_readout_duplicate"
+            app:defaultValue="@string/preferences_keep_original"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="1"
+            android:enabled="false"
+            android:key="@string/key_readout_sounds"
+            android:summary="@string/preferences_readout_sounds_hint"
+            android:title="@string/preferences_readout_sounds"
+            app:iconSpaceReserved="false" />
 
     </PreferenceCategory>
     <PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/preferences_results">
+        android:title="@string/title_results"
+        app:iconSpaceReserved="false">
+
+        <ListPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="@string/preferences_results_time_format_minutes"
+            android:entries="@array/preferences_results_time_format_options"
+            android:entryValues="@array/preferences_results_time_format_options"
+            android:key="@string/key_results_time_format"
+            android:summary="@string/preferences_results_time_format_hint"
+            android:title="@string/preferences_results_time_format"
+            app:iconSpaceReserved="false" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/files_data">
+        android:title="@string/files_data"
+        app:iconSpaceReserved="false">
 
         <CheckBoxPreference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:defaultValue="1"
+            android:key="@string/key_files_invalid_stops_import"
             android:summary=""
-            android:title="@string/preferences_files_invalid_stops"
-            app:summary="@string/preferences_file_import_skip_description" />
+            android:title="@string/preferences_files_invalid_stops_import"
+            app:iconSpaceReserved="false"
+            app:summary="@string/preferences_file_import_skip_hint" />
 
         <CheckBoxPreference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:defaultValue="1"
+            android:defaultValue="0"
+            android:key="@string/key_files_prefer_app_start_time"
             android:summary=""
             android:title="@string/preferences_files_prefer_app_start_time"
-            app:summary="@string/preferences_file_prefer_app_start_time_description" />
+            app:iconSpaceReserved="false"
+            app:summary="@string/preferences_file_prefer_app_start_time_hint" />
 
     </PreferenceCategory>
 
     <PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/preferences_prints" />
+        android:title="@string/preferences_prints"
+        app:iconSpaceReserved="false" />
 
     <Preference
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:defaultValue="1"
-        android:fragment="kolskypavel.ardfmanager.ui.settings.PrintsFragment"
-        android:key="prints"
-        android:summary="@string/preferences_print_hint"
-        android:title="@string/preferences_print" />
+        android:key="@string/key_prints"
+        android:summary="@string/preferences_prints_hint"
+        android:title="@string/preferences_prints"
+        app:iconSpaceReserved="false" />
 
     <PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/preferences_help">
+        android:title="@string/preferences_help"
+        app:iconSpaceReserved="false">
 
-        <EditTextPreference
+        <Preference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:defaultValue="Default value"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title="@string/about_the_app" />
+            android:title="@string/about_the_app"
+            app:iconSpaceReserved="false" />
 
 
-        <EditTextPreference
+        <Preference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:defaultValue="Default value"
             android:selectAllOnFocus="true"
             android:singleLine="true"
-            android:title="@string/preferences_changelog" />
+            android:title="@string/preferences_changelog"
+            app:iconSpaceReserved="false" />
     </PreferenceCategory>
 
 </PreferenceScreen>
