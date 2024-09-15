@@ -79,6 +79,7 @@
     <string name="categories_age_based">Age based</string>
     <string name="si_codes">SI codes</string>
     <string name="category_create_standard_categories">Create standard categories</string>
+    <string name="category_manage_aliases">Manage aliases</string>
     <string name="no_category">No category</string>
     <string name="category_create">Create category</string>
     <string name="category_edit">Edit category</string>

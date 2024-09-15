@@ -228,9 +228,6 @@
                     android:inputType="time"
                     android:maxLength="6" />
             </com.google.android.material.textfield.TextInputLayout>
-
-
-
         </LinearLayout>
 
         <LinearLayout

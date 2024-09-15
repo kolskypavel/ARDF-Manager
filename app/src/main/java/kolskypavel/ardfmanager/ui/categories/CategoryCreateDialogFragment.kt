@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -50,7 +51,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
     private lateinit var maxAgeEditText: TextInputEditText
     private lateinit var lengthEditText: TextInputEditText
     private lateinit var climbEditText: TextInputEditText
-    private lateinit var controlPointRecyclerView: RecyclerView
+    private lateinit var controlPoints: EditText
 
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
@@ -94,8 +95,8 @@ class CategoryCreateDialogFragment : DialogFragment() {
         maxAgeEditText = view.findViewById(R.id.category_dialog_max_age)
         lengthEditText = view.findViewById(R.id.category_dialog_length)
         climbEditText = view.findViewById(R.id.category_dialog_climb)
-        controlPointRecyclerView =
-            view.findViewById(R.id.category_dialog_control_point_recycler_view)
+        controlPoints =
+            view.findViewById(R.id.category_dialog_control_points)
 
         cancelButton = view.findViewById(R.id.category_dialog_cancel)
         okButton = view.findViewById(R.id.category_dialog_ok)
@@ -244,11 +245,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                     raceTypeWatcher(position)
                 }
             }
-            setAdapter(null)
         }
-
-        //Set the punches
-        setAdapter(ArrayList(selectedRaceViewModel.getControlPointsByCategory(category.id)))
 
         //TODO: Process the saving - this is just to prrace the filtering after screen rotation
         raceTypePicker.isSaveEnabled = false
@@ -256,31 +253,9 @@ class CategoryCreateDialogFragment : DialogFragment() {
         finishTimeSourcePicker.isSaveEnabled = false
     }
 
-    private fun setAdapter(values: ArrayList<ControlPoint>?) {
-        val race = selectedRaceViewModel.getCurrentRace()
-
-        if (values != null) {
-            controlPointRecyclerView.adapter =
-                ControlPointRecyclerViewAdapter(
-                    ControlPointItemWrapper.getWrappers(values),
-                    selectedRaceViewModel.race.value!!.id,
-                    category.id,
-                    category.raceType ?: race.raceType, requireContext()
-                )
-        } else {
-            controlPointRecyclerView.adapter =
-                ControlPointRecyclerViewAdapter(
-                    (controlPointRecyclerView.adapter as ControlPointRecyclerViewAdapter).getOriginalValues(),
-                    selectedRaceViewModel.race.value!!.id,
-                    category.id,
-                    category.raceType ?: race.raceType, requireContext()
-                )
-        }
-    }
 
     private fun raceTypeWatcher(position: Int) {
         category.raceType = RaceType.getByValue(position)!!
-        setAdapter(null)
     }
 
     private fun checkFields(): Boolean {
@@ -324,10 +299,8 @@ class CategoryCreateDialogFragment : DialogFragment() {
             }
         }
 
-        //Check control points
-        if (!(controlPointRecyclerView.adapter as ControlPointRecyclerViewAdapter).checkCodes()) {
-            valid = false
-        }
+        //TODO: Check control points
+
 
         return valid
     }
@@ -371,17 +344,15 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 }
 
                 //Get control points
-                val parsed = selectedRaceViewModel.adjustControlPoints(
-                    (controlPointRecyclerView.adapter as ControlPointRecyclerViewAdapter).getControlPoints(),
-                    category.raceType ?: selectedRaceViewModel.getCurrentRace().raceType
-                )
 
-                //Create or update the category
-                if (args.create) {
-                    selectedRaceViewModel.createCategory(category, parsed)
-                } else {
-                    selectedRaceViewModel.updateCategory(category, parsed)
-                }
+
+//                //Create or update the category
+//                if (args.create) {
+//                    selectedRaceViewModel.createCategory(category, parsed)
+//                } else {
+//                    selectedRaceViewModel.updateCategory(category, parsed)
+//                }
+
                 setFragmentResult(
                     REQUEST_CATEGORY_MODIFICATION, bundleOf(
                         BUNDLE_KEY_CREATE to args.create,

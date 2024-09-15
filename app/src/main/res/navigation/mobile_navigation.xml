@@ -25,6 +25,10 @@
         app:startDestination="@id/navigation_categories">
 
         <dialog
+            android:id="@+id/aliasEditDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.aliases.AliasEditDialogFragment"
+            android:label="AliasEditDialogFragment" />
+        <dialog
             android:id="@+id/readoutEditDialogFragment"
             android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutEditDialogFragment"
             android:label="ReadoutEditDialogFragment">
@@ -93,6 +97,9 @@
             <action
                 android:id="@+id/importExportData"
                 app:destination="@id/DataImportExportDialogFragment" />
+            <action
+                android:id="@+id/manageAliases"
+                app:destination="@id/aliasEditDialogFragment" />
         </fragment>
         <dialog
             android:id="@+id/DataImportExportDialogFragment"

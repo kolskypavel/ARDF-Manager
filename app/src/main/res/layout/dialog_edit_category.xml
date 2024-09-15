@@ -212,14 +212,24 @@
             android:text="@string/control_points"
             android:textStyle="bold" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/category_dialog_control_point_recycler_view"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/category_control_points_layout"
+            style="@style/dialog_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:padding="10dp"
-            android:theme="@style/punch_record_recycler"
-            app:layoutManager="LinearLayoutManager" />
+            android:hint="@string/control_points">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/category_dialog_control_points"
+                style="@style/dialog_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLength="50"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
 
         <LinearLayout
             android:layout_width="wrap_content"

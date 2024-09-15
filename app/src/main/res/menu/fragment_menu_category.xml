@@ -10,6 +10,11 @@
         app:showAsAction="always" />
 
     <item
+        android:id="@+id/category_menu_manage_aliases"
+        android:title="@string/category_manage_aliases" />
+
+
+    <item
         android:id="@+id/category_menu_import_standard_categories"
         android:title="@string/category_create_standard_categories" />
 

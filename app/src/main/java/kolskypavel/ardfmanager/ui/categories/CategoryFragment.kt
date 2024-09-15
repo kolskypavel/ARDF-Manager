@@ -99,6 +99,11 @@ class CategoryFragment : Fragment() {
                 return true
             }
 
+            R.id.category_menu_manage_aliases -> {
+                findNavController().navigate(CategoryFragmentDirections.manageAliases())
+                return true
+            }
+
             R.id.category_menu_edit_race -> {
                 findNavController().navigate(
                     BottomNavDirections.modifyRaceProperties(
@@ -114,8 +119,6 @@ class CategoryFragment : Fragment() {
                 findNavController().navigate(BottomNavDirections.openSettingsFromRace())
                 return true
             }
-
-
         }
         return false
     }
