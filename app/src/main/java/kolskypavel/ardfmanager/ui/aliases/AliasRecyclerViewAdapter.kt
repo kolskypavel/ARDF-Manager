@@ -8,9 +8,12 @@ import android.widget.ImageButton
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.Alias
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
+import java.util.UUID
 
 class AliasRecyclerViewAdapter(
-    var values: ArrayList<Alias>
+    var values: ArrayList<Alias>,
+    var selectedRaceViewModel: SelectedRaceViewModel
 ) :
     RecyclerView.Adapter<AliasRecyclerViewAdapter.AliasViewHolder>() {
 
@@ -25,14 +28,38 @@ class AliasRecyclerViewAdapter(
     override fun getItemCount(): Int = values.size
 
     override fun onBindViewHolder(holder: AliasViewHolder, position: Int) {
+        holder.addBtn.setOnClickListener {
+            addAlias(holder.adapterPosition)
+        }
+
+        holder.deleteBtn.setOnClickListener {
+            deleteAlias(holder.adapterPosition)
+        }
+
         val item = values[position]
         holder.siCode.setText(item.siCode.toString())
         holder.name.setText(item.name)
+
     }
 
-    private fun addAlias(position: Int) {}
+    fun addAlias(position: Int) {
+        values.add(
+            position, Alias(
+                UUID.randomUUID(),
+                selectedRaceViewModel.getCurrentRace().id,
+                0,
+                ""
+            )
+        )
+        notifyItemInserted(position)
+    }
 
-    private fun deleteAlias(position: Int) {}
+    private fun deleteAlias(position: Int) {
+        if (position in 0..<values.size) {
+            values.removeAt(position)
+            notifyItemRemoved(position)
+        }
+    }
 
     inner class AliasViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var siCode: EditText = view.findViewById(R.id.alias_item_code)

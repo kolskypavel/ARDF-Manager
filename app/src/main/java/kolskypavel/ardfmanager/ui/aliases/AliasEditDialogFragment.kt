@@ -7,15 +7,22 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.activityViewModels
+import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 
 class AliasEditDialogFragment : DialogFragment() {
     private val dataProcessor = DataProcessor.get()
+    private lateinit var selectedRaceViewModel: SelectedRaceViewModel
 
+    private lateinit var addButton: ImageButton
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
+    private lateinit var aliasRecyclerView: RecyclerView
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,16 +45,26 @@ class AliasEditDialogFragment : DialogFragment() {
         setStyle(STYLE_NORMAL, R.style.add_dialog)
         setWidthPercent(95)
 
+        val sl: SelectedRaceViewModel by activityViewModels()
+        selectedRaceViewModel = sl
+
+        addButton = view.findViewById(R.id.alias_dialog_add_btn)
         cancelButton = view.findViewById(R.id.alias_dialog_cancel)
         okButton = view.findViewById(R.id.alias_dialog_ok)
+        aliasRecyclerView = view.findViewById(R.id.alias_recycler_view)
 
         dialog?.setTitle(getString(R.string.category_manage_aliases))
         setAdapter()
         setButtons()
+
+        addButton.setOnClickListener {
+            (aliasRecyclerView.adapter as AliasRecyclerViewAdapter).addAlias(0)
+        }
     }
 
     private fun setAdapter() {
-
+        aliasRecyclerView.adapter =
+            AliasRecyclerViewAdapter(ArrayList(), selectedRaceViewModel)
     }
 
     private fun setButtons() {
