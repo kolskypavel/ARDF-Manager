@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.withTransaction
 import kolskypavel.ardfmanager.backend.room.database.EventDatabase
+import kolskypavel.ardfmanager.backend.room.entitity.Alias
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
@@ -33,6 +34,12 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun updateRace(race: Race) = eventDatabase.raceDao().updateRace(race)
     suspend fun deleteRace(id: UUID) = eventDatabase.raceDao().deleteRace(id)
 
+
+    //Aliases
+    suspend fun createAlias(alias: Alias) = eventDatabase.aliasDao().createOrUpdateAlias(alias)
+
+    suspend fun getAliasesByRace(raceId: UUID) =
+        eventDatabase.aliasDao().getAliasesByRace(raceId)
 
     //Categories
     fun getCategoryDataFlowForRace(raceId: UUID) =

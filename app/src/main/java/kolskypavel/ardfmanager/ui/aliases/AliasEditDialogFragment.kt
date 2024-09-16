@@ -73,7 +73,7 @@ class AliasEditDialogFragment : DialogFragment() {
         }
 
         okButton.setOnClickListener {
-
+            (aliasRecyclerView.adapter as AliasRecyclerViewAdapter).getValues();
             dialog?.dismiss()
         }
     }

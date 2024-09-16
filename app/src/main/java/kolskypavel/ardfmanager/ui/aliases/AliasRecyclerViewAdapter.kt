@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageButton
+import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.Alias
@@ -12,7 +13,7 @@ import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import java.util.UUID
 
 class AliasRecyclerViewAdapter(
-    var values: ArrayList<Alias>,
+    var values: ArrayList<AliasEditItemWrapper>,
     var selectedRaceViewModel: SelectedRaceViewModel
 ) :
     RecyclerView.Adapter<AliasRecyclerViewAdapter.AliasViewHolder>() {
@@ -28,6 +29,16 @@ class AliasRecyclerViewAdapter(
     override fun getItemCount(): Int = values.size
 
     override fun onBindViewHolder(holder: AliasViewHolder, position: Int) {
+        holder.name.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
+            if (!nameWatcher(position, cs.toString()))
+                holder.name.error = holder.name.context.getString(R.string.invalid)
+        }
+
+        holder.siCode.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
+            if (!codeWatcher(position, cs.toString()))
+                holder.siCode.error = holder.siCode.context.getString(R.string.invalid)
+        }
+
         holder.addBtn.setOnClickListener {
             addAlias(holder.adapterPosition)
         }
@@ -37,19 +48,60 @@ class AliasRecyclerViewAdapter(
         }
 
         val item = values[position]
-        holder.siCode.setText(item.siCode.toString())
-        holder.name.setText(item.name)
+        holder.siCode.setText(item.alias.siCode.toString())
+        holder.name.setText(item.alias.name)
 
     }
 
+    private fun codeWatcher(position: Int, code: String) : Boolean {
+        values[position].isCodeValid = isCodeValid(code)
+        values[position].alias.siCode = if (code.isEmpty()) 0 else code.toInt()
+        return values[position].isCodeValid
+    }
+
+    private fun nameWatcher(position: Int, name: String) : Boolean {
+        values[position].isNameValid = isNameValid(name)
+        values[position].alias.name = name
+        return values[position].isNameValid
+    }
+
+    private fun isCodeValid(code: String) : Boolean {
+        if (code.isEmpty()) {
+            return false
+        }
+
+        return isCodeAvailable(code.toInt())
+    }
+
+    private fun isNameValid(name: String) : Boolean {
+        if (name.isEmpty()) {
+            return false
+        }
+
+        return isNameAvailable(name)
+    }
+
+    private fun isCodeAvailable(code: Int) : Boolean = values.all { a -> code != a.alias.siCode }
+
+    private fun isNameAvailable(name: String) : Boolean = values.all { a -> name != a.alias.name }
+
+    private fun checkCodes() : Boolean = values.all { a -> a.isCodeValid }
+
+    private fun checkNames() : Boolean = values.all { a -> a.isNameValid }
+
+    fun checkFields() : Boolean = values.all { a -> a.isNameValid && a.isCodeValid }
+
+    fun getValues() = values.map { a -> a.alias }
+
     fun addAlias(position: Int) {
         values.add(
-            position, Alias(
+            position, AliasEditItemWrapper(Alias(
                 UUID.randomUUID(),
                 selectedRaceViewModel.getCurrentRace().id,
                 0,
                 ""
-            )
+            ),
+                isCodeValid = false, isNameValid = false)
         )
         notifyItemInserted(position)
     }
