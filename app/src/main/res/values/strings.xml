@@ -245,9 +245,10 @@
     <!--Preferences:results-->
     <string name="preferences_results_time_format">Time format</string>
     <string name="preferences_results_time_format_hint">Time format used in results display. Either mm:ss or hh:mm:ss\n[%1$s]</string>
-
     <string name="preferences_results_time_format_minutes">mm:ss</string>
     <string name="preferences_results_time_format_hours">hh:mm:ss</string>
+    <string name="preferences_results_use_aliases">Use aliases</string>
+    <string name="preferences_results_use_aliases_hint">Use defined aliases for control points instead of SI codes</string>
 
     <string-array name="preferences_results_time_format_options">
         <item>@string/preferences_results_time_format_minutes</item>

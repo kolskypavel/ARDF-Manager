@@ -11,6 +11,7 @@
 
     <!--RESULTS-->
     <string name="key_results_time_format" translatable="false">results_time_format</string>
+    <string name="key_results_use_aliases" translatable="false">results_use_aliases</string>
 
     <!--FILES-->
     <string name="key_files_invalid_stops_import" translatable="false">invalid_stops_import</string>

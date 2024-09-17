@@ -73,8 +73,12 @@ class AliasEditDialogFragment : DialogFragment() {
         }
 
         okButton.setOnClickListener {
-            (aliasRecyclerView.adapter as AliasRecyclerViewAdapter).getValues();
-            dialog?.dismiss()
+            val adapter = (aliasRecyclerView.adapter as AliasRecyclerViewAdapter)
+
+            if (adapter.checkFields()) {
+                val values = adapter.getValues()
+                dialog?.dismiss()
+            }
         }
     }
 

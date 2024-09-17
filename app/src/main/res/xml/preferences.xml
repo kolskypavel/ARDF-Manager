@@ -85,6 +85,17 @@
             android:title="@string/preferences_results_time_format"
             app:iconSpaceReserved="false" />
 
+        <CheckBoxPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="1"
+            android:key="@string/key_results_use_aliases"
+            android:summary=""
+            android:title="@string/preferences_results_use_aliases"
+            app:iconSpaceReserved="false"
+            app:summary="@string/preferences_results_use_aliases_hint" />
+
+
     </PreferenceCategory>
 
     <PreferenceCategory

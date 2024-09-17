@@ -89,6 +89,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 true
             }
 
+        //Time format
+
+
+        //Aliases
+        findPreference<CheckBoxPreference>(requireContext().getString(R.string.key_results_use_aliases))
+            ?.setOnPreferenceChangeListener { _, useAliases ->
+
+                editor.putBoolean(
+                    requireContext().getString(R.string.key_results_use_aliases),
+                    useAliases as Boolean
+                )
+                editor.apply()
+                true
+            }
+
         findPreference<CheckBoxPreference>(requireContext().getString(R.string.key_files_prefer_app_start_time))
             ?.setOnPreferenceChangeListener { _, keepOpen ->
 
