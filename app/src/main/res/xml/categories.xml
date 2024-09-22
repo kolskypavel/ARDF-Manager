@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="categories_international">
-        <item>W19</item>
+        <item>W19;0;</item>
         <item>W21</item>
         <item>W35</item>
         <item>W45</item>
