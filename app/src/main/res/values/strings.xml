@@ -39,7 +39,7 @@
     <string name="data_import">Import</string>
     <string name="data_export">Export</string>
     <string name="data_import_data">Import data</string>
-    <string name="data_import_erorr">Error when importing data!</string>
+    <string name="data_import_error">Error when importing data!</string>
 
     <!--Race-->
     <string name="race_import_text">Import race from a file</string>
@@ -97,6 +97,19 @@
 
     <string name="separator">Separator</string>
     <string name="beacon">Beacon</string>
+
+    <!--Control points-->
+    <string name="control_point_unknown_specifier"> Unknown special control specifier: %1$s</string>
+    <string name="control_point_wrong_si_code_parsing"> Could not parse SI code from string: %1$s</string>
+    <string name="control_point_illegal_si_code">" SI Code [%1$s] out of range."</string>
+    <string name="control_point_two_in_row">" Two identical control points can't be in a row."</string>
+    <string name="control_point_orienteering_special"> Orienteering can\'t contain special control points.</string>
+    <string name="control_point_classics_duplicate"> Duplicate control points are not allowed in a classics race.</string>
+    <string name="control_point_non_last_beacon"> Beacon must be the last control point.</string>
+    <string name="control_point_classics_spectator_not_allowed"> Spectator control points are not allowed on a classic race.</string>
+    <string name="control_point_sprint_duplicate"> Duplicate controls are not allowed in a single lap of a sprint race.</string>
+    <string name="control_point_sprint_two_usages">" Control point with SI code [%1$d] used as a separator / beacon and as a control."</string>
+
 
     <!--Competitors-->
     <string name="competitor">Competitor</string>

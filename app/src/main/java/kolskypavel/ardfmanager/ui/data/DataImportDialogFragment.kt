@@ -141,7 +141,7 @@ class DataImportDialogFragment : DialogFragment() {
             dataPreviewLayout.visibility = View.VISIBLE
 
         } else {
-            errorView.error = getString(R.string.data_import_erorr)
+            errorView.error = getString(R.string.data_import_error)
             dataPreviewLayout.visibility = View.GONE
         }
     }
