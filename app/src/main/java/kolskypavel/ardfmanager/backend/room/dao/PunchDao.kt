@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.AliasPunch
 import java.util.UUID
 
 @Dao
@@ -14,7 +15,6 @@ interface PunchDao {
 
     @Query("SELECT * FROM punch WHERE competitor_id = (:competitorId)")
     suspend fun getPunchesByCompetitor(competitorId: UUID): List<Punch>
-
 
     @Query("SELECT * FROM punch WHERE id=(:id)")
     suspend fun getPunch(id: UUID): Punch

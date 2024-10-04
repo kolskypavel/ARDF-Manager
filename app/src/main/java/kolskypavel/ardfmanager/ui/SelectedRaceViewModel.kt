@@ -170,7 +170,7 @@ class SelectedRaceViewModel : ViewModel() {
                 dataProcessor.getCurrentRace().id,
                 categoryId,
                 -1,
-                null, type = ControlPointType.CONTROL, 0, 1
+                type = ControlPointType.CONTROL, 0, 1
             )
         )
         return controlPoints

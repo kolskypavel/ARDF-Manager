@@ -25,7 +25,6 @@ data class ControlPoint(
     @ColumnInfo(name = "race_id") var raceId: UUID,
     @ColumnInfo(name = "category_id") var categoryId: UUID,
     @ColumnInfo(name = "si_code") var siCode: Int,
-    @ColumnInfo(name = "name") var name: String?,
     @ColumnInfo(name = "type") var type: ControlPointType,
     @ColumnInfo(name = "order") var order: Int,
     @ColumnInfo(name = "points") var points: Int = 1
@@ -33,7 +32,7 @@ data class ControlPoint(
 
     //Format: Code # Name # Type # Order # Points
     fun toCsvString(): String {
-        return "${siCode}#${name ?: ""}#${type.value}#${order}#${points}"
+        return "TODO"
     }
 
     companion object {
@@ -43,7 +42,6 @@ data class ControlPoint(
                 UUID.randomUUID(),
                 UUID.randomUUID(),
                 31,
-                "TEST",
                 ControlPointType.CONTROL,
                 0
             )
@@ -64,7 +62,6 @@ data class ControlPoint(
                     raceId,
                     categoryId,
                     split[0].toInt(),
-                    split[1],
                     ControlPointType.getByValue(split[2].toInt())!!,
                     split[3].toInt(),
                     points

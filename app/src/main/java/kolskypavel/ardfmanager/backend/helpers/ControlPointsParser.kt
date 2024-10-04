@@ -57,7 +57,6 @@ object ControlPointsParser {
             raceId,
             categoryId,
             siCode,
-            null,
             controlPointType,
             order
         )
