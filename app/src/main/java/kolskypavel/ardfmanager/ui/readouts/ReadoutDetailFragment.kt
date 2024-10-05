@@ -17,6 +17,7 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.AliasPunch
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import java.util.UUID
@@ -185,7 +186,7 @@ class ReadoutDetailFragment : Fragment() {
         }
     }
 
-    private fun setRecyclerViewAdapter(punches: List<Punch>) {
+    private fun setRecyclerViewAdapter(punches: List<AliasPunch>) {
         punchRecyclerView.adapter = PunchRecyclerViewAdapter(punches, requireContext())
     }
 }

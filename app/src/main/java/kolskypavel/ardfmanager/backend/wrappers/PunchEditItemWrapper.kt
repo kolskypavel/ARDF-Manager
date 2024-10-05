@@ -1,6 +1,7 @@
 package kolskypavel.ardfmanager.backend.wrappers
 
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.AliasPunch
 
 data class PunchEditItemWrapper(
     var punch: Punch,
@@ -10,10 +11,10 @@ data class PunchEditItemWrapper(
     var isWeekValid: Boolean,
 ) {
     companion object {
-        fun getWrappers(punches: ArrayList<Punch>): ArrayList<PunchEditItemWrapper> {
-            return ArrayList(punches.map { punch ->
+        fun getWrappers(punches: ArrayList<AliasPunch>): ArrayList<PunchEditItemWrapper> {
+            return ArrayList(punches.map { ap ->
                 PunchEditItemWrapper(
-                    punch,
+                    ap.punch,
                     isCodeValid = true,
                     isTimeValid = true,
                     isDayValid = true,

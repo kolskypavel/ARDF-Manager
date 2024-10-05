@@ -8,6 +8,7 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
+import kolskypavel.ardfmanager.backend.room.entitity.Alias
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
@@ -176,19 +177,17 @@ class SelectedRaceViewModel : ViewModel() {
         return controlPoints
     }
 
-    //TODO: Complete / remove
-    fun checkIfControlPointNameExists(siCode: Int?, name: String): Boolean {
-        runBlocking {
-            dataProcessor.getControlPointByName(race.value!!.id, name)
-        }
-        return false
-    }
-
     fun adjustControlPoints(
         controlPoints: ArrayList<ControlPoint>,
         raceType: RaceType
     ) = dataProcessor.adjustControlPoints(controlPoints, raceType)
 
+    //Alias
+    fun createOrUpdateAliases(aliases: List<Alias>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            dataProcessor.createOrUpdateAliases(aliases)
+        }
+    }
 
     //Competitor
     fun getCompetitors(): List<Competitor> =

@@ -718,9 +718,9 @@ class ResultsProcessor(
             for (cp in controlPoints) {
                 cp.order = order
 
-                if (cp.name == null) {
-                    cp.name = cp.siCode.toString()
-                }
+//                if (cp.name == null) {
+//                    cp.name = cp.siCode.toString()
+//                }
                 order++
             }
             return controlPoints.toList()
@@ -738,10 +738,10 @@ class ResultsProcessor(
                 if (cp.type == ControlPointType.SEPARATOR) {
                     codes += "!"
                 }
-                if (cp.name != null) {
-                    codes += " (" + cp.name + "), "
-
-                }
+//                if (cp.name != null) {
+//                    codes += " (" + cp.name + "), "
+//
+//                }
             }
             return codes
         }

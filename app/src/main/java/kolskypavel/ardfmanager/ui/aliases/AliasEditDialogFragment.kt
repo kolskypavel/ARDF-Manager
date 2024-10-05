@@ -77,6 +77,7 @@ class AliasEditDialogFragment : DialogFragment() {
 
             if (adapter.checkFields()) {
                 val values = adapter.getValues()
+                selectedRaceViewModel.createOrUpdateAliases(values)
                 dialog?.dismiss()
             }
         }

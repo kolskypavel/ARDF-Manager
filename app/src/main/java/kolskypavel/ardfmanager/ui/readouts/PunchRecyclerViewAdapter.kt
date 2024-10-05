@@ -8,12 +8,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.AliasPunch
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 
 class PunchRecyclerViewAdapter(
-    private var values: List<Punch>,
+    private var values: List<AliasPunch>,
     private val context: Context
 ) :
     RecyclerView.Adapter<PunchRecyclerViewAdapter.PunchViewHolder>() {
@@ -30,11 +30,11 @@ class PunchRecyclerViewAdapter(
     override fun onBindViewHolder(holder: PunchViewHolder, position: Int) {
         val item = values[position]
 
-        holder.punchRealTime.text = item.siTime.getTimeString()
-        holder.punchSplit.text = TimeProcessor.durationToMinuteString(item.split)
+        holder.punchRealTime.text = item.punch.siTime.getTimeString()
+        holder.punchSplit.text = TimeProcessor.durationToMinuteString(item.punch.split)
 
         //Set the fields, based on the type of the punch
-        when (item.punchType) {
+        when (item.punch.punchType) {
             SIRecordType.START -> {
                 holder.punchSiCode.text = context.getText(R.string.punch_type_start)
             }
@@ -45,8 +45,13 @@ class PunchRecyclerViewAdapter(
 
             else -> {
                 holder.punchOrder.text = position.toString()
-                holder.punchSiCode.text = item.siCode.toString()
-                holder.punchStatus.text = when (item.punchStatus) {
+                var cpDisplay = item.punch.siCode.toString()
+
+                if (item.alias != null) {
+                    cpDisplay += " (${item.alias!!.name})"
+                }
+                holder.punchSiCode.text = cpDisplay
+                holder.punchStatus.text = when (item.punch.punchStatus) {
                     PunchStatus.VALID -> context.getString(R.string.punch_status_valid)
                     PunchStatus.INVALID -> context.getString(R.string.punch_status_invalid)
                     PunchStatus.DUPLICATE -> context.getString(R.string.punch_status_duplicate)

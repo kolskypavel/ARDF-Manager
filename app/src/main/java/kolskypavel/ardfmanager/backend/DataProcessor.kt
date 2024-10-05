@@ -14,6 +14,7 @@ import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.prints.PrintProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
+import kolskypavel.ardfmanager.backend.room.entitity.Alias
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
@@ -219,16 +220,19 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    suspend fun getControlPointByName(raceId: UUID, name: String) =
-        ardfRepository.getControlPointByName(raceId, name)
-
-
     suspend fun getControlPointByCode(raceId: UUID, code: Int) =
         ardfRepository.getControlPointByCode(raceId, code)
 
 
     fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): String {
         return ResultsProcessor.getCodesNameFromControlPoints(controlPoints)
+    }
+
+    //Aliases
+    suspend fun createOrUpdateAliases(aliases: List<Alias>) {
+        for (alias in aliases) {
+            ardfRepository.createOrUpdateAlias(alias)
+        }
     }
 
     //COMPETITORS

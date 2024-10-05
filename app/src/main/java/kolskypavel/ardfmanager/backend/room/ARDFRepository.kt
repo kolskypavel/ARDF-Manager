@@ -45,7 +45,7 @@ class ARDFRepository private constructor(context: Context) {
     fun getCategoryDataFlowForRace(raceId: UUID) =
         eventDatabase.categoryDao().getCategoryFlowForRace(raceId)
 
-   suspend fun getCategoriesForRace(raceId: UUID): List<Category> =
+    suspend fun getCategoriesForRace(raceId: UUID): List<Category> =
         eventDatabase.categoryDao().getCategoriesForRace(raceId)
 
     suspend fun getCategory(id: UUID) =
@@ -82,15 +82,15 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun getControlPointsByCategory(categoryId: UUID) =
         eventDatabase.controlPointDao().getControlPointsByCategory(categoryId)
 
-    suspend fun getControlPointByName(raceId: UUID, name: String) =
-        eventDatabase.controlPointDao().getControlPointByName(raceId, name)
-
     suspend fun getControlPointByCode(raceId: UUID, code: Int) =
         eventDatabase.controlPointDao().getControlPointByCode(raceId, code)
 
     suspend fun deleteControlPointsByCategory(categoryId: UUID) =
         eventDatabase.controlPointDao().deleteControlPointsByCategory(categoryId)
 
+    //Aliases
+    suspend fun createOrUpdateAlias(aliass: Alias) =
+        eventDatabase.aliasDao().createOrUpdateAlias(aliass)
 
     //Competitors
     suspend fun getCompetitor(id: UUID) =
