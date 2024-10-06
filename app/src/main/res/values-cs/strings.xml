@@ -59,6 +59,7 @@
     <string name="year_of_birth">Ročník</string>
     <string name="si_codes">SI kódy</string>
     <string name="category_create_standard_categories">Vytvořit standardní kategorie</string>
+    <string name="category_manage_aliases">Spravovat aliasy</string>
     <string name="no_category">Bez kategorie</string>
     <string name="category_create">Vytvořit kategorii</string>
     <string name="category_edit">Upravit kategorii</string>
@@ -144,8 +145,10 @@
     <string name="readout_delete_readout_confirmation">Opravdu chcete smazat data čipu %1$d?</string>
     <string name="readout_create_category_from_readout">Vytvořit kategorii podle vyčítání</string>
     <string name="race_status_valid">Validní</string>
+    <string name="race_status_mispunched">Chyba ražení</string>
     <string name="race_status_no_ranking">Nehodnocen</string>
     <string name="race_status_disqualified">Diskvalfikován</string>
+    <string name="race_status_did_not_start">Nestartoval</string>
     <string name="race_status_did_not_finish">Nedokončil</string>
     <string name="race_status_over_limit">Přes limit</string>
     <string name="race_status_unofficial">Neoficiální</string>

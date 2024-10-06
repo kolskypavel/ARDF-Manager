@@ -18,7 +18,6 @@ import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
-import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
@@ -43,7 +42,6 @@ class SelectedRaceViewModel : ViewModel() {
     val race: LiveData<Race> get() = _race
     private val _categories: MutableStateFlow<List<CategoryData>> = MutableStateFlow(emptyList())
     val categories: StateFlow<List<CategoryData>> get() = _categories.asStateFlow()
-
 
     private val _readoutData: MutableStateFlow<List<ReadoutData>> =
         MutableStateFlow(emptyList())
@@ -158,23 +156,9 @@ class SelectedRaceViewModel : ViewModel() {
 
 
     fun getControlPointsByCategory(categoryId: UUID): ArrayList<ControlPoint> {
-        val controlPoints =
-            runBlocking {
-                ArrayList(dataProcessor.getControlPointsByCategory(categoryId))
-            }
-
-        //Add the first control point
-        controlPoints.add(
-            0,
-            ControlPoint(
-                UUID.randomUUID(),
-                dataProcessor.getCurrentRace().id,
-                categoryId,
-                -1,
-                type = ControlPointType.CONTROL, 0, 1
-            )
-        )
-        return controlPoints
+        return runBlocking {
+            ArrayList(dataProcessor.getControlPointsByCategory(categoryId))
+        }
     }
 
     fun adjustControlPoints(
@@ -183,6 +167,8 @@ class SelectedRaceViewModel : ViewModel() {
     ) = dataProcessor.adjustControlPoints(controlPoints, raceType)
 
     //Alias
+    fun getAliasesByRace(raceId: UUID) = runBlocking { dataProcessor.getAliasesByRace(raceId) }
+
     fun createOrUpdateAliases(aliases: List<Alias>) {
         CoroutineScope(Dispatchers.IO).launch {
             dataProcessor.createOrUpdateAliases(aliases)

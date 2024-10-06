@@ -9,6 +9,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.Alias
+import kolskypavel.ardfmanager.backend.wrappers.AliasEditItemWrapper
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import java.util.UUID
 
@@ -91,7 +92,6 @@ class AliasRecyclerViewAdapter(
 
     fun checkFields() : Boolean = values.all { a -> a.isNameValid && a.isCodeValid }
 
-    fun getValues() = values.map { a -> a.alias }
 
     fun addAlias(position: Int) {
         values.add(

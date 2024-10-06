@@ -13,6 +13,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.wrappers.AliasEditItemWrapper
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 
 class AliasEditDialogFragment : DialogFragment() {
@@ -63,8 +64,14 @@ class AliasEditDialogFragment : DialogFragment() {
     }
 
     private fun setAdapter() {
+        val aliases =
+            selectedRaceViewModel.getAliasesByRace(selectedRaceViewModel.getCurrentRace().id)
         aliasRecyclerView.adapter =
-            AliasRecyclerViewAdapter(ArrayList(), selectedRaceViewModel)
+            AliasRecyclerViewAdapter(
+                AliasEditItemWrapper.getWrappers(
+                    ArrayList(aliases)
+                ), selectedRaceViewModel
+            )
     }
 
     private fun setButtons() {
@@ -76,11 +83,11 @@ class AliasEditDialogFragment : DialogFragment() {
             val adapter = (aliasRecyclerView.adapter as AliasRecyclerViewAdapter)
 
             if (adapter.checkFields()) {
-                val values = adapter.getValues()
+                val values =
+                    AliasEditItemWrapper.getAliases((aliasRecyclerView.adapter as AliasRecyclerViewAdapter).values)
                 selectedRaceViewModel.createOrUpdateAliases(values)
                 dialog?.dismiss()
             }
         }
     }
-
 }

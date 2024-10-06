@@ -228,7 +228,9 @@ class DataProcessor private constructor(context: Context) {
         return ResultsProcessor.getCodesNameFromControlPoints(controlPoints)
     }
 
-    //Aliases
+    //ALIASES
+    suspend fun getAliasesByRace(raceId: UUID) = ardfRepository.getAliasesByRace(raceId)
+
     suspend fun createOrUpdateAliases(aliases: List<Alias>) {
         for (alias in aliases) {
             ardfRepository.createOrUpdateAlias(alias)
