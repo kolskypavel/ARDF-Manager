@@ -389,8 +389,10 @@
 
     <string-array name="race_status_array">
         <item>@string/race_status_valid</item>
+        <item>@string/race_status_mispunched</item>
         <item>@string/race_status_no_ranking</item>
         <item>@string/race_status_disqualified</item>
+        <item>@string/race_status_did_not_start</item>
         <item>@string/race_status_did_not_finish</item>
         <item>@string/race_status_over_limit</item>
         <item>@string/race_status_unofficial</item>
@@ -400,8 +402,10 @@
 
     <string-array name="race_status_array_short">
         <item>@string/race_status_valid_short</item>
+        <item>@string/race_status_mispunched_short</item>
         <item>@string/race_status_no_ranking_short</item>
         <item>@string/race_status_disqualified_short</item>
+        <item>@string/race_status_did_not_start_short</item>
         <item>@string/race_status_did_not_finish_short</item>
         <item>@string/race_status_over_limit_short</item>
         <item>@string/race_status_unofficial_short</item>
