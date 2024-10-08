@@ -54,19 +54,19 @@ class AliasRecyclerViewAdapter(
 
     }
 
-    private fun codeWatcher(position: Int, code: String) : Boolean {
+    private fun codeWatcher(position: Int, code: String): Boolean {
         values[position].isCodeValid = isCodeValid(code)
         values[position].alias.siCode = if (code.isEmpty()) 0 else code.toInt()
         return values[position].isCodeValid
     }
 
-    private fun nameWatcher(position: Int, name: String) : Boolean {
+    private fun nameWatcher(position: Int, name: String): Boolean {
         values[position].isNameValid = isNameValid(name)
         values[position].alias.name = name
         return values[position].isNameValid
     }
 
-    private fun isCodeValid(code: String) : Boolean {
+    private fun isCodeValid(code: String): Boolean {
         if (code.isEmpty()) {
             return false
         }
@@ -74,7 +74,7 @@ class AliasRecyclerViewAdapter(
         return isCodeAvailable(code.toInt())
     }
 
-    private fun isNameValid(name: String) : Boolean {
+    private fun isNameValid(name: String): Boolean {
         if (name.isEmpty()) {
             return false
         }
@@ -82,32 +82,39 @@ class AliasRecyclerViewAdapter(
         return isNameAvailable(name)
     }
 
-    private fun isCodeAvailable(code: Int) : Boolean = values.all { a -> code != a.alias.siCode }
+    private fun isCodeAvailable(code: Int): Boolean = values.all { a -> code != a.alias.siCode }
 
-    private fun isNameAvailable(name: String) : Boolean = values.all { a -> name != a.alias.name }
+    private fun isNameAvailable(name: String): Boolean = values.all { a -> name != a.alias.name }
 
-    private fun checkCodes() : Boolean = values.all { a -> a.isCodeValid }
+    private fun checkCodes(): Boolean = values.all { a -> a.isCodeValid }
 
-    private fun checkNames() : Boolean = values.all { a -> a.isNameValid }
+    private fun checkNames(): Boolean = values.all { a -> a.isNameValid }
 
-    fun checkFields() : Boolean = values.all { a -> a.isNameValid && a.isCodeValid }
+    fun checkFields(): Boolean = values.all { a -> a.isNameValid && a.isCodeValid }
 
 
     fun addAlias(position: Int) {
-        values.add(
-            position, AliasEditItemWrapper(Alias(
+        val aliasWrapper = AliasEditItemWrapper(
+            Alias(
                 UUID.randomUUID(),
                 selectedRaceViewModel.getCurrentRace().id,
                 0,
                 ""
             ),
-                isCodeValid = false, isNameValid = false)
+            isCodeValid = false, isNameValid = false
         )
-        notifyItemInserted(position)
+
+        if (position == values.size - 1) {
+            values.add(aliasWrapper)
+        } else {
+            values.add(position + 1, aliasWrapper)
+        }
+        notifyItemInserted(position + 1)
     }
 
     private fun deleteAlias(position: Int) {
         if (position in 0..<values.size) {
+            //TODO: Remove focus to prevent crashes
             values.removeAt(position)
             notifyItemRemoved(position)
         }

@@ -89,8 +89,11 @@ class ARDFRepository private constructor(context: Context) {
         eventDatabase.controlPointDao().deleteControlPointsByCategory(categoryId)
 
     //Aliases
-    suspend fun createOrUpdateAlias(aliass: Alias) =
-        eventDatabase.aliasDao().createOrUpdateAlias(aliass)
+    suspend fun createOrUpdateAlias(alias: Alias) =
+        eventDatabase.aliasDao().createOrUpdateAlias(alias)
+
+    suspend fun deleteAliasesByRace(raceId: UUID) =
+        eventDatabase.aliasDao().deleteAliasesByRace(raceId)
 
     //Competitors
     suspend fun getCompetitor(id: UUID) =

@@ -3,6 +3,7 @@ package kolskypavel.ardfmanager.backend.room.entitity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import java.io.Serializable
 import java.util.UUID
@@ -11,7 +12,10 @@ import java.util.UUID
  * Used to store aliases for the control points
  */
 @Entity(
-    tableName = "alias", foreignKeys = [ForeignKey(
+    tableName = "alias", indices = [Index(
+        value = ["name", "race_id", "si_code"],
+        unique = true
+    )], foreignKeys = [ForeignKey(
         entity = Race::class,
         parentColumns = arrayOf("id"),
         childColumns = arrayOf("race_id"),

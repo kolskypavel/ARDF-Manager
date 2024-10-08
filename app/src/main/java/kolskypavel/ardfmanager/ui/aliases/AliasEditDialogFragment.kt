@@ -12,12 +12,10 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
-import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.wrappers.AliasEditItemWrapper
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 
 class AliasEditDialogFragment : DialogFragment() {
-    private val dataProcessor = DataProcessor.get()
     private lateinit var selectedRaceViewModel: SelectedRaceViewModel
 
     private lateinit var addButton: ImageButton
@@ -59,7 +57,7 @@ class AliasEditDialogFragment : DialogFragment() {
         setButtons()
 
         addButton.setOnClickListener {
-            (aliasRecyclerView.adapter as AliasRecyclerViewAdapter).addAlias(0)
+            (aliasRecyclerView.adapter as AliasRecyclerViewAdapter).addAlias(-1)
         }
     }
 

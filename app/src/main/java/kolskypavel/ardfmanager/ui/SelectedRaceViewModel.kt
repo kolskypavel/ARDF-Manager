@@ -171,7 +171,7 @@ class SelectedRaceViewModel : ViewModel() {
 
     fun createOrUpdateAliases(aliases: List<Alias>) {
         CoroutineScope(Dispatchers.IO).launch {
-            dataProcessor.createOrUpdateAliases(aliases)
+            dataProcessor.createOrUpdateAliases(aliases, getCurrentRace().id)
         }
     }
 
