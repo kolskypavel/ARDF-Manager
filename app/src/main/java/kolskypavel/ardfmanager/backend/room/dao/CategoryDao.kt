@@ -38,7 +38,7 @@ interface CategoryDao {
     suspend fun getCategoryByAge(age: Int, woman: Boolean, raceId: UUID): Category?
 
     @Upsert
-    suspend fun createOrUpdateCategory(category: Category): Long
+    suspend fun createOrUpdateCategory(category: Category)
 
     @Query("DELETE FROM category WHERE id=(:id) ")
     suspend fun deleteCategory(id: UUID)

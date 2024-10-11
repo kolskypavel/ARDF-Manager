@@ -10,7 +10,7 @@
     <LinearLayout
         style="@style/add_dialog"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <com.google.android.material.textfield.TextInputLayout
@@ -213,7 +213,7 @@
             android:textStyle="bold" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/category_control_points_layout"
+            android:id="@+id/category_dialog_control_points_layout"
             style="@style/dialog_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -226,8 +226,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:maxLength="50"
-                android:maxLines="1" />
+                android:digits="0123456789B! "
+                android:maxLines="1"
+                />
         </com.google.android.material.textfield.TextInputLayout>
 
 

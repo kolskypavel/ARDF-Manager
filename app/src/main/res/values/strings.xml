@@ -100,6 +100,7 @@
 
     <!--Control points-->
     <string name="control_point_unknown_specifier"> Unknown special control specifier: %1$s</string>
+    <string name="control_point_invalid_range"> Invalid SI range: %1$s. The code must be greater than 30 and less than 256 </string>
     <string name="control_point_wrong_si_code_parsing"> Could not parse SI code from string: %1$s</string>
     <string name="control_point_illegal_si_code">" SI Code [%1$s] out of range."</string>
     <string name="control_point_two_in_row">" Two identical control points can't be in a row."</string>

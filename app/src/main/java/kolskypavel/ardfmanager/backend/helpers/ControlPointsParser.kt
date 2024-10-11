@@ -47,10 +47,8 @@ object ControlPointsParser {
 
         if (!(SI_MIN_CODE..SI_MAX_CODE).contains(siCode))
             throw IllegalArgumentException(
-                context.getString(R.string.control_point_unknown_specifier, controlPointString)
+                context.getString(R.string.control_point_invalid_range, controlPointString)
             )
-
-        //TODO: Get name
 
         return ControlPoint(
             UUID.randomUUID(),
@@ -95,29 +93,22 @@ object ControlPointsParser {
         if (controlPoints.isEmpty()) {
             return
         }
-
         val previousCodes = HashSet<Int>()
-        previousCodes.add(controlPoints.first().siCode)
 
-        for (i in 1..<controlPoints.size) {
+        for (i in controlPoints.indices) {
             val controlPoint = controlPoints[i]
-            val previousControlPoint = controlPoints[i - 1]
 
-            if (controlPoint.siCode == previousControlPoint.siCode) {
-                throw IllegalArgumentException(context.getString(R.string.control_point_two_in_row))
+            if (controlPoint.type == ControlPointType.SEPARATOR) {
+                throw IllegalArgumentException(context.getString(R.string.control_point_classics_spectator_not_allowed))
             }
 
             if (previousCodes.contains(controlPoint.siCode)) {
                 throw IllegalArgumentException(context.getString(R.string.control_point_classics_duplicate))
             }
 
-            if (controlPoint.type != ControlPointType.CONTROL) {
-                if (i != controlPoints.size - 1)
-                    throw IllegalArgumentException(context.getString(R.string.control_point_non_last_beacon))
-                if (controlPoint.type != ControlPointType.BEACON)
-                    throw IllegalArgumentException(context.getString(R.string.control_point_classics_spectator_not_allowed))
+            if (controlPoint.type == ControlPointType.BEACON && i != controlPoints.size - 1) {
+                throw IllegalArgumentException(context.getString(R.string.control_point_non_last_beacon))
             }
-
             previousCodes.add(controlPoint.siCode)
         }
     }

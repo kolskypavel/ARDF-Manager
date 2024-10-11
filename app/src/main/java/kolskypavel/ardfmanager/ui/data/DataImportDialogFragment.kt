@@ -154,7 +154,7 @@ class DataImportDialogFragment : DialogFragment() {
             when (currType) {
                 DataType.CATEGORIES -> {
                     for (catData in data!!.categories) {
-                        selectedRaceViewModel.createCategory(
+                        selectedRaceViewModel.createOrUpdateCategory(
                             catData.category,
                             catData.controlPoints
                         )
@@ -164,7 +164,7 @@ class DataImportDialogFragment : DialogFragment() {
                 DataType.C0MPETITORS -> {
                     //Upsert categories
                     for (catData in data!!.categories) {
-                        selectedRaceViewModel.updateCategory(
+                        selectedRaceViewModel.createOrUpdateCategory(
                             catData.category,
                             catData.controlPoints
                         )

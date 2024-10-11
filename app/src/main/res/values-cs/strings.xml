@@ -68,6 +68,7 @@
     <string name="separator">Separátor</string>
     <string name="beacon">Maják</string>
     <string name="control_point_unknown_specifier">Neznámý specifikátor: %1$s</string>
+    <string name="control_point_invalid_range">SI kód mimo rozsah: %1$s. Kód musí být větší než 30 a menší než 256.</string>
     <string name="control_point_wrong_si_code_parsing">Nebylo možné parsovat kód kontroly: %1$s</string>
     <string name="control_point_illegal_si_code">Kód kontroly [%1$s] je mimo povolený rozsah.</string>
     <string name="control_point_two_in_row">Stejná kontrola nemůže být dvakrát za sebou.</string>

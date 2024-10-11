@@ -11,6 +11,9 @@
       <SelectionState runConfigName="ControlPointsParsingUnitTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
+      <SelectionState runConfigName="Tests in 'kolskypavel.ardfmanager'">
+        <option name="selectionMode" value="DROPDOWN" />
+      </SelectionState>
     </selectionStates>
   </component>
 </project>

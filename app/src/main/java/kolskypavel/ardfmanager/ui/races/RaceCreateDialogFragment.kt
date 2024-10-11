@@ -168,9 +168,9 @@ class RaceCreateDialogFragment : DialogFragment() {
             //Send the arguments to create a new race
             if (checkValidity()) {
 
-                race.name = nameEditText.text.toString()
-                if (externalIdEditText.text.toString().isNotBlank()) {
-                    race.externalId = externalIdEditText.text.toString().toLong()
+                race.name = nameEditText.text.toString().trim()
+                if (externalIdEditText.text.toString().trim().isNotBlank()) {
+                    race.externalId = externalIdEditText.text.toString().trim().toLong()
                 } else {
                     race.externalId = null
                 }
@@ -180,7 +180,7 @@ class RaceCreateDialogFragment : DialogFragment() {
                     dataProcessor.raceLevelStringToEnum(raceLevelPicker.text.toString())
                 race.raceBand =
                     dataProcessor.raceBandStringToEnum(raceBandPicker.text.toString())
-                race.timeLimit = Duration.ofMinutes(limitEditText.text.toString().toLong())
+                race.timeLimit = Duration.ofMinutes(limitEditText.text.toString().trim().toLong())
                 race.startTimeSource =
                     dataProcessor.startTimeSourceStringToEnum(startTimeSourcePicker.text.toString())
                 race.finishTimeSource =
@@ -213,12 +213,12 @@ class RaceCreateDialogFragment : DialogFragment() {
         }
 
         //Validate start time
-        if (startTimeView.text.toString().isBlank()) {
+        if (startTimeView.text?.isBlank() == true) {
             startTimeView.error = getString(R.string.required)
             valid = false
         } else {
             try {
-                LocalTime.parse(startTimeView.text.toString())
+                LocalTime.parse(startTimeView.text.toString().trim())
             } catch (e: Exception) {
                 startTimeView.error = getString(R.string.invalid)
                 valid = false
@@ -227,7 +227,7 @@ class RaceCreateDialogFragment : DialogFragment() {
 
         if (limitEditText.text?.isBlank() == false) {
             try {
-                Duration.ofMinutes(limitEditText.text.toString().toLong())
+                Duration.ofMinutes(limitEditText.text.toString().trim().toLong())
             } catch (e: Exception) {
                 limitEditText.error = getString(R.string.invalid)
                 valid = false

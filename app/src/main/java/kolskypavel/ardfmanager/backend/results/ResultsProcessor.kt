@@ -37,7 +37,7 @@ import java.util.UUID
 class ResultsProcessor(
     private val dataProcessor: DataProcessor = DataProcessor.get()
 ) {
-    fun adjustTime(previous : SITime, current : SITime) : SITime {
+    fun adjustTime(previous: SITime, current: SITime): SITime {
         if (current.isAtOrAfter(previous)) {
             return current
         }
@@ -738,10 +738,6 @@ class ResultsProcessor(
                 if (cp.type == ControlPointType.SEPARATOR) {
                     codes += "!"
                 }
-//                if (cp.name != null) {
-//                    codes += " (" + cp.name + "), "
-//
-//                }
             }
             return codes
         }

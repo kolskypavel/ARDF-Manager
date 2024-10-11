@@ -50,7 +50,7 @@ import java.util.UUID
 class DataProcessor private constructor(context: Context) {
 
     private val ardfRepository = ARDFRepository.get()
-    private var appContext: WeakReference<Context>
+    private var appContext: WeakReference<Context> = WeakReference(context)
 
     var currentState = MutableLiveData<AppState>()
     var resultsProcessor: ResultsProcessor? = null
@@ -71,7 +71,6 @@ class DataProcessor private constructor(context: Context) {
     }
 
     init {
-        appContext = WeakReference(context)
         currentState.postValue(
             AppState(null, SIReaderState(SIReaderStatus.DISCONNECTED))
         )
@@ -156,9 +155,9 @@ class DataProcessor private constructor(context: Context) {
     suspend fun getCategoryByMaxAge(maxAge: Int, raceId: UUID) =
         ardfRepository.getCategoryByMaxAge(maxAge, raceId)
 
-    suspend fun createCategory(category: Category, controlPoints: List<ControlPoint>) {
-        ardfRepository.createOrUpdateCategory(category)
-        createControlPoints(controlPoints)
+    suspend fun createOrUpdateCategory(category: Category, controlPoints: List<ControlPoint>?) {
+        ardfRepository.createOrUpdateCategory(category, controlPoints)
+        updateResultsForCategory(category.id, false)
     }
 
     /**
@@ -175,17 +174,7 @@ class DataProcessor private constructor(context: Context) {
             cp.categoryId = categoryData.category.id
         }
 
-        createCategory(categoryData.category, categoryData.controlPoints)
-    }
-
-    suspend fun updateCategory(category: Category, controlPoints: List<ControlPoint>?) {
-        ardfRepository.createOrUpdateCategory(category)
-
-        if (controlPoints != null) {
-            ardfRepository.deleteControlPointsByCategory(category.id)
-            createControlPoints(controlPoints)
-            updateResultsForCategory(category.id, false)
-        }
+        createOrUpdateCategory(categoryData.category, categoryData.controlPoints)
     }
 
     suspend fun deleteCategory(id: UUID, raceId: UUID) {
@@ -200,7 +189,7 @@ class DataProcessor private constructor(context: Context) {
         val categories = ardfRepository.getCategoriesForRace(raceId)
         for (c in categories.withIndex()) {
             c.value.order = c.index
-            ardfRepository.createOrUpdateCategory(c.value)
+            ardfRepository.createOrUpdateCategory(c.value,null)
         }
     }
 
@@ -214,11 +203,6 @@ class DataProcessor private constructor(context: Context) {
         raceType: RaceType
     ) = ResultsProcessor.adjustControlPoints(controlPoints, raceType)
 
-    private suspend fun createControlPoints(controlPoints: List<ControlPoint>) {
-        controlPoints.forEach { cp ->
-            ardfRepository.createControlPoint(cp)
-        }
-    }
 
     suspend fun getControlPointByCode(raceId: UUID, code: Int) =
         ardfRepository.getControlPointByCode(raceId, code)
@@ -237,7 +221,6 @@ class DataProcessor private constructor(context: Context) {
             ardfRepository.createOrUpdateAlias(alias)
         }
     }
-
 
     //COMPETITORS
     fun getCompetitorDataFlowByRace(raceId: UUID) =

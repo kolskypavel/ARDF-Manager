@@ -206,31 +206,33 @@ class CompetitorCreateDialogFragment : DialogFragment() {
 
         okButton.setOnClickListener {
             if (validateFields(competitor.siNumber, competitor.startNumber)) {
-                competitor.firstName = firstNameTextView.text.toString()
-                competitor.lastName = lastNameTextView.text.toString()
-                competitor.club = clubTextView.text.toString()
-                competitor.index = indexTextView.text.toString()
+                competitor.firstName = firstNameTextView.text.toString().trim()
+                competitor.lastName = lastNameTextView.text.toString().trim()
+                competitor.club = clubTextView.text.toString().trim()
+                competitor.index = indexTextView.text.toString().trim()
 
-                if (startTimeTextView.text.toString().isNotBlank()) {
+                if (startTimeTextView.text.toString().trim().isNotBlank()) {
                     competitor.drawnRelativeStartTime =
-                        TimeProcessor.minuteStringToDuration(startTimeTextView.text.toString())
+                        TimeProcessor.minuteStringToDuration(
+                            startTimeTextView.text.toString().trim()
+                        )
                 } else {
                     competitor.drawnRelativeStartTime = null
                 }
-                if (birthYearTextView.text.toString().isNotEmpty()) {
-                    competitor.birthYear = birthYearTextView.text.toString().toInt()
+                if (birthYearTextView.text.toString().trim().isNotEmpty()) {
+                    competitor.birthYear = birthYearTextView.text.toString().trim().toInt()
                 } else {
                     competitor.birthYear = null
                 }
 
-                if (siNumberTextView.text.toString().isNotEmpty()) {
-                    competitor.siNumber = siNumberTextView.text.toString().toInt()
+                if (siNumberTextView.text.toString().trim().isNotEmpty()) {
+                    competitor.siNumber = siNumberTextView.text.toString().trim().toInt()
                 } else {
                     competitor.siNumber = null
                 }
 
-                if (startNumberTextView.text.toString().isNotEmpty()) {
-                    competitor.startNumber = startNumberTextView.text.toString().toInt()
+                if (startNumberTextView.text.toString().trim().isNotEmpty()) {
+                    competitor.startNumber = startNumberTextView.text.toString().trim().toInt()
                 }
 
 
@@ -262,20 +264,20 @@ class CompetitorCreateDialogFragment : DialogFragment() {
     private fun validateFields(origSiNumber: Int?, origStartNumber: Int): Boolean {
         var valid = true
 
-        if (firstNameTextView.text.toString().isBlank()) {
+        if (firstNameTextView.text.toString().trim().isBlank()) {
             valid = false
             firstNameTextView.error = getString(R.string.required)
         }
-        if (lastNameTextView.text.toString().isBlank()) {
+        if (lastNameTextView.text.toString().trim().isBlank()) {
             valid = false
             lastNameTextView.error = getString(R.string.required)
         }
 
         //Check the birth year
-        if (birthYearTextView.text.toString().isNotBlank()) {
+        if (birthYearTextView.text.toString().trim().isNotBlank()) {
 
             val formatter = DateTimeFormatter.ofPattern("yyyy")
-            val year = birthYearTextView.text.toString()
+            val year = birthYearTextView.text.toString().trim()
             try {
                 formatter.parse(year)
                 if (year.toInt() > LocalDate.now().year) {
@@ -288,9 +290,9 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         }
 
         //Check if the SI number is valid
-        if (siNumberTextView.text.toString().isNotEmpty()) {
+        if (siNumberTextView.text.toString().trim().isNotEmpty()) {
             try {
-                val siNumber = siNumberTextView.text.toString().toInt()
+                val siNumber = siNumberTextView.text.toString().trim().toInt()
 
                 if (siNumber != origSiNumber) {
                     //Invalid range
@@ -313,9 +315,9 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         }
 
         //Check if the start number is valid
-        if (startNumberTextView.text.toString().isNotEmpty()) {
+        if (startNumberTextView.text.toString().trim().isNotEmpty()) {
             try {
-                val startNumber = startNumberTextView.text.toString().toInt()
+                val startNumber = startNumberTextView.text.toString().trim().toInt()
                 if (startNumber != origStartNumber && selectedRaceViewModel.checkIfStartNumberExists(
                         startNumber
                     )
@@ -335,9 +337,9 @@ class CompetitorCreateDialogFragment : DialogFragment() {
         }
 
         //Check the start time
-        if (startTimeTextView.text.toString().isNotBlank()) {
+        if (startTimeTextView.text.toString().trim().isNotBlank()) {
             try {
-                TimeProcessor.minuteStringToDuration(startTimeTextView.text.toString())
+                TimeProcessor.minuteStringToDuration(startTimeTextView.text.toString().trim())
             } catch (e: Exception) {
                 startTimeTextView.error = getString(R.string.invalid)
                 valid = false

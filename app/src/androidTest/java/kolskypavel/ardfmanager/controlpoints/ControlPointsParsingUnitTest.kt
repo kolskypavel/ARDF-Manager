@@ -171,7 +171,25 @@ class ControlPointsParsingUnitTest {
                 RaceType.CLASSICS, appContext
             )
         }.message)
+        cpString = "31! 32B" //Beacon must be the last CP - check first
+        System.err.println(assertThrows(java.lang.IllegalArgumentException::class.java) {
+            ControlPointsParser.getControlPointsFromString(
+                cpString,
+                raceId,
+                categoryId,
+                RaceType.CLASSICS, appContext
+            )
+        }.message)
         cpString = "31 32 33 34! 35 99" //No spectator controls are allowed on classics
+        System.err.println(assertThrows(java.lang.IllegalArgumentException::class.java) {
+            ControlPointsParser.getControlPointsFromString(
+                cpString,
+                raceId,
+                categoryId,
+                RaceType.CLASSICS, appContext
+            )
+        }.message)
+        cpString = "31! 32" //No spectator controls are allowed on classics - check first
         System.err.println(assertThrows(java.lang.IllegalArgumentException::class.java) {
             ControlPointsParser.getControlPointsFromString(
                 cpString,

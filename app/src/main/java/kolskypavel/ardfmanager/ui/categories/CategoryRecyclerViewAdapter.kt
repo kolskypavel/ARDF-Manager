@@ -37,15 +37,14 @@ class CategoryRecyclerViewAdapter(
         val item = values[position]
         holder.title.text = item.category.name
         holder.numCompeititors.text =
-            "(${item.competitors.size.toString()} ${
+            "(${item.competitors.size} ${
                 context.getString(R.string.title_competitors).lowercase()
             })"
         holder.type.text = dataProcessor.raceTypeToString(
             item.category.raceType ?: dataProcessor.getCurrentRace().raceType
-        ) //TODO: fix crash
+        )
         holder.gender.text = dataProcessor.genderToString(item.category.isMan)
-        holder.siCodes.text =
-            dataProcessor.getCodesNameFromControlPoints(item.controlPoints).ifEmpty { "-" }
+        holder.siCodes.text =item.category.controlPointsString
 
         if (item.category.maxAge != null) {
             holder.maxAge.text = item.category.maxAge.toString()
@@ -107,14 +106,14 @@ class CategoryRecyclerViewAdapter(
         if (up) {
             values[position - 1].category.order++
             values[position].category.order--
-            selectedRaceViewModel.updateCategory(values[position - 1].category, null)
-            selectedRaceViewModel.updateCategory(values[position].category, null)
+            selectedRaceViewModel.createOrUpdateCategory(values[position - 1].category, null)
+            selectedRaceViewModel.createOrUpdateCategory(values[position].category, null)
             notifyItemMoved(position, position - 1)
         } else {
             values[position + 1].category.order--
             values[position].category.order++
-            selectedRaceViewModel.updateCategory(values[position + 1].category, null)
-            selectedRaceViewModel.updateCategory(values[position].category, null)
+            selectedRaceViewModel.createOrUpdateCategory(values[position + 1].category, null)
+            selectedRaceViewModel.createOrUpdateCategory(values[position].category, null)
             notifyItemMoved(position, position + 1)
         }
     }

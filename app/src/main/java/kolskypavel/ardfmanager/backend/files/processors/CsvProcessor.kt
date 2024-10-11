@@ -199,7 +199,7 @@ object CsvProcessor : FormatProcessor {
                                     0,
                                     false,
                                     race.raceType, race.timeLimit,
-                                    race.startTimeSource, race.finishTimeSource
+                                    race.startTimeSource, race.finishTimeSource, ""
                                 ), emptyList(), emptyList()
                             )
                             categories.add(category)

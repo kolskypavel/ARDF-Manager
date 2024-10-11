@@ -13,10 +13,7 @@
         android:icon="@drawable/ic_print"
         android:title="@string/print"
         app:showAsAction="always" />
-
-    <item
-        android:id="@+id/result_menu_results_service"
-        android:title="@string/results_service" />
+    
     <item
         android:id="@+id/result_menu_edit_race"
         android:title="@string/race_edit" />

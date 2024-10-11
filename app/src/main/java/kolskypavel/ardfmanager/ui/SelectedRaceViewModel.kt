@@ -129,15 +129,9 @@ class SelectedRaceViewModel : ViewModel() {
         }
     }
 
-    fun createCategory(category: Category, controlPoints: List<ControlPoint>) {
+    fun createOrUpdateCategory(category: Category, controlPoints: List<ControlPoint>?) =
         CoroutineScope(Dispatchers.IO).launch {
-            dataProcessor.createCategory(category, controlPoints)
-        }
-    }
-
-    fun updateCategory(category: Category, controlPoints: List<ControlPoint>?) =
-        CoroutineScope(Dispatchers.IO).launch {
-            dataProcessor.updateCategory(category, controlPoints)
+            dataProcessor.createOrUpdateCategory(category, controlPoints)
         }
 
     fun duplicateCategory(categoryData: CategoryData) {

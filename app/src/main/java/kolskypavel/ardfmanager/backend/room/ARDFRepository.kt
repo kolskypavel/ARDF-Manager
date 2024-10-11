@@ -69,14 +69,27 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun getCategoryByBirthYear(birthYear: Int, woman: Boolean, raceId: UUID): Category? =
         eventDatabase.categoryDao().getCategoryByAge(birthYear, woman, raceId)
 
-    suspend fun createOrUpdateCategory(category: Category) =
-        eventDatabase.categoryDao().createOrUpdateCategory(category)
+    suspend fun createOrUpdateCategory(category: Category, controlPoints: List<ControlPoint>?) {
+        eventDatabase.withTransaction {
+            eventDatabase.categoryDao().createOrUpdateCategory(category)
+
+            if (controlPoints != null) {
+                deleteControlPointsByCategory(category.id)
+                createControlPoints(controlPoints)
+            }
+        }
+    }
+
+    private suspend fun createControlPoints(controlPoints: List<ControlPoint>) {
+        controlPoints.forEach { cp ->
+            createControlPoint(cp)
+        }
+    }
 
     suspend fun deleteCategory(id: UUID) = eventDatabase.categoryDao().deleteCategory(id)
 
     suspend fun createControlPoint(cp: ControlPoint) =
         eventDatabase.controlPointDao().createControlPoint(cp)
-
 
     //Control point
     suspend fun getControlPointsByCategory(categoryId: UUID) =

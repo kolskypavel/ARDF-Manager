@@ -30,7 +30,7 @@ data class ControlPoint(
     @ColumnInfo(name = "points") var points: Int = 1
 ) : Serializable {
 
-    //Format: Code # Name # Type # Order # Points
+    //Format:
     fun toCsvString(): String {
         return "TODO"
     }

@@ -3,27 +3,26 @@ package kolskypavel.ardfmanager.ui.categories
 import android.content.res.Resources
 import android.graphics.Rect
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
-import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.navArgs
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.helpers.ControlPointsParser
 import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
-import kolskypavel.ardfmanager.backend.wrappers.ControlPointItemWrapper
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import java.time.Duration
 import java.util.UUID
@@ -51,7 +50,8 @@ class CategoryCreateDialogFragment : DialogFragment() {
     private lateinit var maxAgeEditText: TextInputEditText
     private lateinit var lengthEditText: TextInputEditText
     private lateinit var climbEditText: TextInputEditText
-    private lateinit var controlPoints: EditText
+    private lateinit var controlPointsLayout: TextInputLayout
+    private lateinit var controlPointsEditText: TextInputEditText
 
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
@@ -95,7 +95,8 @@ class CategoryCreateDialogFragment : DialogFragment() {
         maxAgeEditText = view.findViewById(R.id.category_dialog_max_age)
         lengthEditText = view.findViewById(R.id.category_dialog_length)
         climbEditText = view.findViewById(R.id.category_dialog_climb)
-        controlPoints =
+        controlPointsLayout = view.findViewById(R.id.category_dialog_control_points_layout)
+        controlPointsEditText =
             view.findViewById(R.id.category_dialog_control_points)
 
         cancelButton = view.findViewById(R.id.category_dialog_cancel)
@@ -104,7 +105,6 @@ class CategoryCreateDialogFragment : DialogFragment() {
         populateFields()
         setButtons()
     }
-
 
     /**
      * Populate the data fields - text views, pickers
@@ -128,7 +128,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 race.raceType,
                 race.timeLimit,
                 race.startTimeSource,
-                race.finishTimeSource
+                race.finishTimeSource, ""
             )
 
             //Preset the data from the race
@@ -211,43 +211,9 @@ class CategoryCreateDialogFragment : DialogFragment() {
             false -> genderPicker.setText(getString(R.string.gender_man), false)
         }
 
-        //Set the race type checkbox functionality
-        samePropertiesCheckBox.setOnClickListener {
-            if (samePropertiesCheckBox.isChecked) {
-                raceTypePicker.setText(
-                    dataProcessor.raceTypeToString(race.raceType),
-                    false
-                )
-                raceTypeWatcher(race.raceType.value)
-                limitEditText.setText(race.timeLimit.toMinutes().toString())
-                startTimeSourcePicker.setText(
-                    dataProcessor.startTimeSourceToString(race.startTimeSource),
-                    false
-                )
-                finishTimeSourcePicker.setText(
-                    dataProcessor.finishTimeSourceToString(race.finishTimeSource),
-                    false
-                )
+        controlPointsEditText.setText(category.controlPointsString)
 
-                raceTypeLayout.isEnabled = false
-                limitLayout.isEnabled = false
-                startTimeSourceLayout.isEnabled = false
-                finishTimeSourceLayout.isEnabled = false
-            }
-
-            //Hide the shading and enable input
-            else {
-                raceTypeLayout.isEnabled = true
-                limitLayout.isEnabled = true
-                startTimeSourceLayout.isEnabled = true
-                finishTimeSourceLayout.isEnabled = true
-                raceTypePicker.setOnItemClickListener { _, _, position, _ ->
-                    raceTypeWatcher(position)
-                }
-            }
-        }
-
-        //TODO: Process the saving - this is just to prrace the filtering after screen rotation
+        //TODO: Process the saving - this is just to preserve the filtering after screen rotation
         raceTypePicker.isSaveEnabled = false
         startTimeSourcePicker.isSaveEnabled = false
         finishTimeSourcePicker.isSaveEnabled = false
@@ -290,7 +256,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
         }
 
         if (maxAgeEditText.text.toString().isNotBlank()) {
-            val maxYear: String = maxAgeEditText.text.toString()
+            val maxYear: String = maxAgeEditText.text.toString().trim()
 
             val orig = selectedRaceViewModel.getCategoryByMaxAge(maxYear.toInt())
             if (orig != null && orig.id != category.id) {
@@ -299,29 +265,88 @@ class CategoryCreateDialogFragment : DialogFragment() {
             }
         }
 
-        //TODO: Check control points
+        if (controlPointsEditText.text.toString().isNotBlank()) {
+            val text = controlPointsEditText.text.toString().trim()
 
-
+            try {
+                ControlPointsParser.getControlPointsFromString(
+                    text,
+                    category.id,
+                    category.raceId,
+                    category.raceType ?: selectedRaceViewModel.getCurrentRace().raceType,
+                    requireContext()
+                )
+            } catch (e: Exception) {
+                controlPointsLayout.error = e.message
+                valid = false
+            }
+        }
         return valid
     }
 
     private fun setButtons() {
+        controlPointsEditText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                controlPointsLayout.error = ""
+            }
+
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        //Set the race type checkbox functionality
+        samePropertiesCheckBox.setOnClickListener {
+            val race = selectedRaceViewModel.getCurrentRace()
+            if (samePropertiesCheckBox.isChecked) {
+                raceTypePicker.setText(
+                    dataProcessor.raceTypeToString(race.raceType),
+                    false
+                )
+                raceTypeWatcher(race.raceType.value)
+                limitEditText.setText(race.timeLimit.toMinutes().toString())
+                startTimeSourcePicker.setText(
+                    dataProcessor.startTimeSourceToString(race.startTimeSource),
+                    false
+                )
+                finishTimeSourcePicker.setText(
+                    dataProcessor.finishTimeSourceToString(race.finishTimeSource),
+                    false
+                )
+
+                raceTypeLayout.isEnabled = false
+                limitLayout.isEnabled = false
+                startTimeSourceLayout.isEnabled = false
+                finishTimeSourceLayout.isEnabled = false
+            }
+
+            //Hide the shading and enable input
+            else {
+                raceTypeLayout.isEnabled = true
+                limitLayout.isEnabled = true
+                startTimeSourceLayout.isEnabled = true
+                finishTimeSourceLayout.isEnabled = true
+                raceTypePicker.setOnItemClickListener { _, _, position, _ ->
+                    raceTypeWatcher(position)
+                }
+            }
+        }
 
         okButton.setOnClickListener {
             if (checkFields()) {
-                category.name = nameEditText.text.toString()
+                category.name = nameEditText.text.toString().trim()
 
                 if (maxAgeEditText.text.toString().isNotBlank()) {
-                    category.maxAge = (maxAgeEditText.text.toString()).toInt()
+                    category.maxAge = (maxAgeEditText.text.toString().trim()).toInt()
                 } else {
                     category.maxAge = null
                 }
 
                 if (lengthEditText.text?.isBlank() == false) {
-                    category.length = lengthEditText.text.toString().toFloat()
+                    category.length = lengthEditText.text.toString().trim().toFloat()
                 }
                 if (climbEditText.text?.isBlank() == false) {
-                    category.climb = climbEditText.text.toString().toFloat()
+                    category.climb = climbEditText.text.toString().trim().toFloat()
                 }
 
                 //Set the data from pickers
@@ -342,16 +367,18 @@ class CategoryCreateDialogFragment : DialogFragment() {
                     category.startTimeSource = null
                     category.finishTimeSource = null
                 }
-
+                val controlPointsString =
+                    controlPointsEditText.text.toString().trim()
                 //Get control points
-
-
-//                //Create or update the category
-//                if (args.create) {
-//                    selectedRaceViewModel.createCategory(category, parsed)
-//                } else {
-//                    selectedRaceViewModel.updateCategory(category, parsed)
-//                }
+                val controlPoints = ControlPointsParser.getControlPointsFromString(
+                    controlPointsString,
+                    category.raceId,
+                    category.id,
+                    category.raceType ?: selectedRaceViewModel.getCurrentRace().raceType,
+                    requireContext()
+                )
+                selectedRaceViewModel.createOrUpdateCategory(category, controlPoints)
+                category.controlPointsString = controlPointsString
 
                 setFragmentResult(
                     REQUEST_CATEGORY_MODIFICATION, bundleOf(

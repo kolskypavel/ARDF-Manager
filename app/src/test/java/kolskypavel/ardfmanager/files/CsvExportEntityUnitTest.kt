@@ -21,7 +21,6 @@ class CsvExportEntityUnitTest {
         assertEquals("31#TEST#0#0#1", controlPoint.toCsvString())
         controlPoint.siCode = 99
         controlPoint.points = 2
-        controlPoint.name = "B"
         controlPoint.type = ControlPointType.BEACON
         assertEquals("99#B#1#0#2", controlPoint.toCsvString())
     }

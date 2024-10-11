@@ -40,7 +40,8 @@ data class Category(
     @ColumnInfo(name = "race_type") var raceType: RaceType?,
     @ColumnInfo(name = "limit") var timeLimit: Duration?,
     @ColumnInfo(name = "start_source") var startTimeSource: StartTimeSource?,
-    @ColumnInfo(name = "finish_source") var finishTimeSource: FinishTimeSource?
+    @ColumnInfo(name = "finish_source") var finishTimeSource: FinishTimeSource?,
+    @ColumnInfo(name = "control_points_string") var controlPointsString: String
 ) : Serializable {
 
     fun toCSVString(): String {
@@ -62,7 +63,8 @@ data class Category(
                 null,
                 null,
                 null,
-                null
+                null,
+                ""
             )
         }
     }
