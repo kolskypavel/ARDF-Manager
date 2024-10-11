@@ -1,0 +1,211 @@
+{
+  "title": "ARDF JSON v1.0",
+  "description": "Data standard for storing ARDF competition data",
+  "type": "object",
+  "properties": {
+    "eventName": {
+      "type": "string"
+    },
+    "event_date_start": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Start date of the event"
+    },
+    "event_date_end": {
+      "type": "string",
+      "format": "date-time",
+      "description": "End date of the event"
+    },
+    "event_organiser": {
+      "type": "string",
+      "description": "Organising body - club / nation etc."
+    },
+    "races": {
+      "type": "array",
+      "required": [],
+      "items": {
+        "type": "object",
+        "id": " ",
+        "description": "One race of the event",
+        "properties": {
+          "race_name": {
+            "type": "string"
+          },
+          "race_location": {
+            "type": "string",
+            "description": "Location of the start"
+          },
+          "race_id": {
+            "type": "integer",
+            "description": "External ID of the race"
+          },
+          "race_start": {
+            "type": "string",
+            "description": "Time of 00",
+            "format": "date-time"
+          },
+          "race_type": {
+            "type": {
+              "enum": [
+                "CLASSIC",
+                "SPRINT",
+                "FOXORING",
+                "LONG",
+                "RELAY",
+                "ORIENTEERING"
+              ]
+            },
+            "description": "Type of the race"
+          },
+          "race_band": {
+            "type": {
+              "enum": [
+                "M80",
+                "M2",
+                "COMBINED"
+              ]
+            },
+            "description": "Band of the race"
+          },
+          "race_level": {
+            "type": {
+              "enum": [
+                "INTERNATIONAL",
+                "NATIONAL",
+                "REGIONAL",
+                "DISTRICT",
+                "PRACTICE",
+                "OTHER"
+              ]
+            },
+            "description": "Level of the race"
+          },
+          "race_time_limit": {
+            "type": "string",
+            "format": "time",
+            "description": "Time limit in mm:ss"
+          },
+          "raceStartTimeSource": {
+            "type": {
+              "enum": [
+                "DRAWN_TIME",
+                "START_CONTROL",
+                "FIRST_CONTROL"
+              ]
+            },
+            "description": "Start time source of the race - e. g. first control is counted as start"
+          },
+          "raceFinishTimeSource": {
+            "type": {
+              "enum": [
+                "FINISH_CONTROL",
+                "LAST_CONTROL"
+              ]
+            },
+            "description": "Finish time source of the race - e. g. if finish failed"
+          },
+          "categories": {
+            "type": "array",
+            "required": [],
+            "items": {
+              "type": "object",
+              "description": "One category in the race",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "required": [],
+                  "description": "Name of the category"
+                },
+                "gender": {
+                  "type": "boolean",
+                  "required": [],
+                  "description": "false - man, true - woman"
+                },
+                "max_age": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "Maximal permitted age of a competitor in this category"
+                },
+                "length": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Length of the course in meters"
+                },
+                "climb": {
+                  "type": "number",
+                  "minimum": 0,
+                  "description": "Climb of the course in meters"
+                },
+                "differentProperties": {
+                  "type": "boolean",
+                  "description": "Marks whenever the category follows the race rule settings, or has its own"
+                },
+                "controlPoints": {
+                  "type": "array",
+                  "description": "Control points for the category",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "siCode": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 255,
+                        "description": "SI code of the control point"
+                      },
+                      "control_type": {
+                        "enum": [
+                          "CONTROL",
+                          "BEACON",
+                          "SEPARATOR"
+                        ],
+                        "description": "Type of the control - regular, beacon, separator"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "competitors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "description": "One competitor in the race",
+              "properties": {
+                "first_name": {
+                  "type": "string",
+                  "description": "First name"
+                },
+                "last_name": {
+                  "type": "string",
+                  "description": "Last name"
+                },
+                "club": {
+                  "type": "string",
+                  "description": "Competitor's club / country"
+                },
+                "category": {
+                  "type": "string",
+                  "description": "Competitor's category in the race"
+                },
+                "index": {
+                  "type": "string",
+                  "description": "Index / callsign of the competitor"
+                },
+                "si_number": {
+                  "type": "integer",
+                  "description": "SI number of the competitor"
+                }
+              }
+            }
+          },
+          "readouts": {
+            "type": "array"
+          },
+          "results": {
+          }
+        }
+      }
+    }
+  }
+}
