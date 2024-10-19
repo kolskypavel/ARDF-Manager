@@ -221,6 +221,6 @@ object ControlPointsParser {
         return controlPoints
     }
 
-    private const val SPECTATOR_CONTROL_MARKER = '!'
-    private const val BEACON_CONTROL_MARKER = 'B'
+    const val SPECTATOR_CONTROL_MARKER = '!'
+    const val BEACON_CONTROL_MARKER = 'B'
 }

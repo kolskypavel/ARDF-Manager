@@ -1,5 +1,6 @@
 package kolskypavel.ardfmanager.ui.aliases
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.Alias
+import kolskypavel.ardfmanager.backend.sportident.SIConstants.isSICodeValid
 import kolskypavel.ardfmanager.backend.wrappers.AliasEditItemWrapper
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import java.util.UUID
@@ -18,7 +20,6 @@ class AliasRecyclerViewAdapter(
     var selectedRaceViewModel: SelectedRaceViewModel
 ) :
     RecyclerView.Adapter<AliasRecyclerViewAdapter.AliasViewHolder>() {
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AliasViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
@@ -30,14 +31,26 @@ class AliasRecyclerViewAdapter(
     override fun getItemCount(): Int = values.size
 
     override fun onBindViewHolder(holder: AliasViewHolder, position: Int) {
+        val item = values[position]
+        holder.siCode.setText(item.alias.siCode.toString())
+        holder.name.setText(item.alias.name)
+
         holder.name.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
-            if (!nameWatcher(position, cs.toString()))
-                holder.name.error = holder.name.context.getString(R.string.invalid)
+            try {
+                nameWatcher(holder.adapterPosition, cs.toString(), holder.name.context)
+            }
+            catch (e : IllegalArgumentException) {
+                holder.name.error = e.message
+            }
         }
 
         holder.siCode.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
-            if (!codeWatcher(position, cs.toString()))
-                holder.siCode.error = holder.siCode.context.getString(R.string.invalid)
+            try {
+                codeWatcher(holder.adapterPosition, cs.toString(), holder.name.context)
+            }
+            catch (e : IllegalArgumentException) {
+                holder.siCode.error = e.message
+            }
         }
 
         holder.addBtn.setOnClickListener {
@@ -47,51 +60,50 @@ class AliasRecyclerViewAdapter(
         holder.deleteBtn.setOnClickListener {
             deleteAlias(holder.adapterPosition)
         }
-
-        val item = values[position]
-        holder.siCode.setText(item.alias.siCode.toString())
-        holder.name.setText(item.alias.name)
-
     }
 
-    private fun codeWatcher(position: Int, code: String): Boolean {
-        values[position].isCodeValid = isCodeValid(code)
-        values[position].alias.siCode = if (code.isEmpty()) 0 else code.toInt()
-        return values[position].isCodeValid
-    }
-
-    private fun nameWatcher(position: Int, name: String): Boolean {
-        values[position].isNameValid = isNameValid(name)
-        values[position].alias.name = name
-        return values[position].isNameValid
-    }
-
-    private fun isCodeValid(code: String): Boolean {
+    private fun codeWatcher(position: Int, code: String, context: Context) {
         if (code.isEmpty()) {
-            return false
+            values[position].isCodeValid = true
+            throw IllegalArgumentException(context.getString(R.string.required))
         }
 
-        return isCodeAvailable(code.toInt())
+        val codeValue = code.toInt();
+
+        if (!isSICodeValid(codeValue)) {
+            values[position].isCodeValid = false
+            throw IllegalArgumentException(context.getString(R.string.invalid))
+        }
+
+        if (!isCodeAvailable(codeValue)) {
+            values[position].isCodeValid = false
+            throw IllegalArgumentException(context.getString(R.string.duplicate))
+        }
+
+        values[position].isCodeValid = true
+        values[position].alias.siCode = if (code.isEmpty()) 0 else code.toInt()
     }
 
-    private fun isNameValid(name: String): Boolean {
+    private fun nameWatcher(position: Int, name: String, context: Context) {
         if (name.isEmpty()) {
-            return false
+            values[position].isNameValid = false
+            throw IllegalArgumentException(context.getString(R.string.required))
         }
 
-        return isNameAvailable(name)
+        if (!isNameAvailable(name)) {
+            values[position].isNameValid = false
+            throw IllegalArgumentException(context.getString(R.string.duplicate))
+        }
+
+        values[position].isNameValid = true
+        values[position].alias.name = name
     }
 
     private fun isCodeAvailable(code: Int): Boolean = values.all { a -> code != a.alias.siCode }
 
     private fun isNameAvailable(name: String): Boolean = values.all { a -> name != a.alias.name }
 
-    private fun checkCodes(): Boolean = values.all { a -> a.isCodeValid }
-
-    private fun checkNames(): Boolean = values.all { a -> a.isNameValid }
-
     fun checkFields(): Boolean = values.all { a -> a.isNameValid && a.isCodeValid }
-
 
     fun addAlias(position: Int) {
         val aliasWrapper = AliasEditItemWrapper(

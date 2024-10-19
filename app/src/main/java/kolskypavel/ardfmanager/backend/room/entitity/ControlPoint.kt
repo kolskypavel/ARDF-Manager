@@ -4,6 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import kolskypavel.ardfmanager.backend.helpers.ControlPointsParser.BEACON_CONTROL_MARKER
+import kolskypavel.ardfmanager.backend.helpers.ControlPointsParser.SPECTATOR_CONTROL_MARKER
 import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import java.io.Serializable
 import java.util.UUID
@@ -26,13 +28,16 @@ data class ControlPoint(
     @ColumnInfo(name = "category_id") var categoryId: UUID,
     @ColumnInfo(name = "si_code") var siCode: Int,
     @ColumnInfo(name = "type") var type: ControlPointType,
-    @ColumnInfo(name = "order") var order: Int,
-    @ColumnInfo(name = "points") var points: Int = 1
+    @ColumnInfo(name = "order") var order: Int
 ) : Serializable {
 
-    //Format:
     fun toCsvString(): String {
-        return "TODO"
+        val type = when (type) {
+            ControlPointType.BEACON -> BEACON_CONTROL_MARKER
+            ControlPointType.SEPARATOR -> SPECTATOR_CONTROL_MARKER
+            ControlPointType.CONTROL -> ""
+        }
+        return "${siCode}${type}"
     }
 
     companion object {
@@ -47,28 +52,27 @@ data class ControlPoint(
             )
         }
 
-        @Throws(java.lang.IllegalArgumentException::class)
-        fun parseControlPoint(string: String, raceId: UUID, categoryId: UUID): ControlPoint {
-            val split = string.split('#')
-            try {
-                var points = 1
-
-                //Check if points are present
-                if (split.size == 5) {
-                    points = split[4].toInt()
-                }
-                return ControlPoint(
-                    UUID.randomUUID(),
-                    raceId,
-                    categoryId,
-                    split[0].toInt(),
-                    ControlPointType.getByValue(split[2].toInt())!!,
-                    split[3].toInt(),
-                    points
-                )
-            } catch (e: Exception) {
-                throw IllegalArgumentException("Invalid control point format")
-            }
-        }
+//        @Throws(java.lang.IllegalArgumentException::class)
+//        fun parseControlPoint(string: String, raceId: UUID, categoryId: UUID): ControlPoint {
+//            try {
+////                when (val lastCharacter = string.last()) {
+////                    SPECTATOR_CONTROL_MARKER -> ControlPointType.SEPARATOR
+////                    BEACON_CONTROL_MARKER -> ControlPointType.BEACON
+////                    else -> if (lastCharacter.isDigit()) ControlPointType.CONTROL
+////                    else throw IllegalArgumentException("Can't parse last char $lastCharacter")
+////                }
+////
+////                return ControlPoint(
+////                    UUID.randomUUID(),
+////                    raceId,
+////                    categoryId,
+////                    split[0].toInt(),
+////                    ControlPointType.getByValue(split[2].toInt())!!,
+////                    split[3].toInt()
+////                )
+//            } catch (e: Exception) {
+//                throw IllegalArgumentException("Invalid control point format")
+//            }
+//        }
     }
 }
