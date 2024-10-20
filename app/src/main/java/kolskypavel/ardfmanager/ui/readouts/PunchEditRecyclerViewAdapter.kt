@@ -43,6 +43,10 @@ class PunchEditRecyclerViewAdapter(
         }
 
         holder.deleteBtn.setOnClickListener {
+            holder.code.clearFocus()
+            holder.time.clearFocus()
+            holder.week.clearFocus()
+            holder.weekday.clearFocus()
             deletePunch(holder.layoutPosition)
         }
 

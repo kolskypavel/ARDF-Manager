@@ -38,8 +38,7 @@ class AliasRecyclerViewAdapter(
         holder.name.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
             try {
                 nameWatcher(holder.adapterPosition, cs.toString(), holder.name.context)
-            }
-            catch (e : IllegalArgumentException) {
+            } catch (e: IllegalArgumentException) {
                 holder.name.error = e.message
             }
         }
@@ -47,8 +46,7 @@ class AliasRecyclerViewAdapter(
         holder.siCode.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
             try {
                 codeWatcher(holder.adapterPosition, cs.toString(), holder.name.context)
-            }
-            catch (e : IllegalArgumentException) {
+            } catch (e: IllegalArgumentException) {
                 holder.siCode.error = e.message
             }
         }
@@ -58,6 +56,9 @@ class AliasRecyclerViewAdapter(
         }
 
         holder.deleteBtn.setOnClickListener {
+            //Remove focus to prevent crash
+            holder.name.clearFocus()
+            holder.siCode.clearFocus()
             deleteAlias(holder.adapterPosition)
         }
     }
@@ -126,7 +127,6 @@ class AliasRecyclerViewAdapter(
 
     private fun deleteAlias(position: Int) {
         if (position in 0..<values.size) {
-            //TODO: Remove focus to prevent crashes
             values.removeAt(position)
             notifyItemRemoved(position)
         }
