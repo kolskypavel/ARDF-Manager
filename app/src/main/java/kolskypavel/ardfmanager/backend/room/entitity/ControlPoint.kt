@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import kolskypavel.ardfmanager.backend.helpers.ControlPointsParser.BEACON_CONTROL_MARKER
-import kolskypavel.ardfmanager.backend.helpers.ControlPointsParser.SPECTATOR_CONTROL_MARKER
+import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper.BEACON_CONTROL_MARKER
+import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper.SPECTATOR_CONTROL_MARKER
 import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import java.io.Serializable
 import java.util.UUID

@@ -707,39 +707,5 @@ class ResultsProcessor(
                 result.raceStatus = RaceStatus.DISQUALIFIED
             }
         }
-
-        fun adjustControlPoints(
-            controlPoints: ArrayList<ControlPoint>,
-            raceType: RaceType
-        ): List<ControlPoint> {
-
-            var order = 1
-
-            for (cp in controlPoints) {
-                cp.order = order
-
-//                if (cp.name == null) {
-//                    cp.name = cp.siCode.toString()
-//                }
-                order++
-            }
-            return controlPoints.toList()
-        }
-
-        fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): String {
-            var codes = ""
-
-            for (cp in controlPoints) {
-                codes += cp.siCode
-
-                if (cp.type == ControlPointType.BEACON) {
-                    codes += "B"
-                }
-                if (cp.type == ControlPointType.SEPARATOR) {
-                    codes += "!"
-                }
-            }
-            return codes
-        }
     }
 }

@@ -148,6 +148,9 @@
                 android:name="category"
                 app:argType="kolskypavel.ardfmanager.backend.room.entitity.Category"
                 app:nullable="true" />
+            <argument
+                android:name="controlPoints"
+                app:argType="string" />
 
         </dialog>
         <action
@@ -163,6 +166,9 @@
             <action
                 android:id="@+id/editReadout"
                 app:destination="@id/readoutEditDialogFragment" />
+            <action
+                android:id="@+id/createCategoryFromReadout"
+                app:destination="@id/categoryCreateDialogFragment" />
         </fragment>
 
         <action

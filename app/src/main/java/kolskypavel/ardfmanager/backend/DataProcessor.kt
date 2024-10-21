@@ -10,6 +10,7 @@ import kolskypavel.ardfmanager.backend.files.FileProcessor
 import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
+import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.prints.PrintProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
@@ -189,7 +190,7 @@ class DataProcessor private constructor(context: Context) {
         val categories = ardfRepository.getCategoriesForRace(raceId)
         for (c in categories.withIndex()) {
             c.value.order = c.index
-            ardfRepository.createOrUpdateCategory(c.value,null)
+            ardfRepository.createOrUpdateCategory(c.value, null)
         }
     }
 
@@ -198,19 +199,15 @@ class DataProcessor private constructor(context: Context) {
         ardfRepository.getControlPointsByCategory(categoryId)
 
 
-    fun adjustControlPoints(
-        controlPoints: ArrayList<ControlPoint>,
-        raceType: RaceType
-    ) = ResultsProcessor.adjustControlPoints(controlPoints, raceType)
-
-
     suspend fun getControlPointByCode(raceId: UUID, code: Int) =
         ardfRepository.getControlPointByCode(raceId, code)
 
 
-    fun getCodesNameFromControlPoints(controlPoints: List<ControlPoint>): String {
-        return ResultsProcessor.getCodesNameFromControlPoints(controlPoints)
-    }
+    fun getStringFromControlPoints(controlPoints: List<ControlPoint>): String =
+        ControlPointsHelper.getStringFromControlPoints(controlPoints)
+
+    fun getStringFromPunches(punches: List<Punch>): String =
+        ControlPointsHelper.getStringFromPunches(punches)
 
     //ALIASES
     suspend fun getAliasesByRace(raceId: UUID) = ardfRepository.getAliasesByRace(raceId)

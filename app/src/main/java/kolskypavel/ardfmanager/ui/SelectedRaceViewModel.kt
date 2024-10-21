@@ -19,7 +19,6 @@ import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
-import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
 import kotlinx.coroutines.CoroutineScope
@@ -154,11 +153,6 @@ class SelectedRaceViewModel : ViewModel() {
             ArrayList(dataProcessor.getControlPointsByCategory(categoryId))
         }
     }
-
-    fun adjustControlPoints(
-        controlPoints: ArrayList<ControlPoint>,
-        raceType: RaceType
-    ) = dataProcessor.adjustControlPoints(controlPoints, raceType)
 
     //Alias
     fun getAliasesByRace(raceId: UUID) = runBlocking { dataProcessor.getAliasesByRace(raceId) }

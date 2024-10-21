@@ -43,7 +43,7 @@ class DataPreviewRecyclerViewAdapater(
                 holder.columnTwo.text = dataProcessor.genderToString(item.category.isMan)
                 holder.columnThree.text = item.category.maxAge.toString()
                 holder.columnFour.text =
-                    dataProcessor.getCodesNameFromControlPoints(item.controlPoints)
+                    dataProcessor.getStringFromControlPoints(item.controlPoints)
             }
 
             DataType.C0MPETITORS -> {

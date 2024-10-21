@@ -75,7 +75,7 @@ class CategoryFragment : Fragment() {
                 findNavController().navigate(
                     CategoryFragmentDirections.modifyCategory(
                         true,
-                        -1, null
+                        -1, null, ""
                     )
                 )
             }
@@ -195,7 +195,8 @@ class CategoryFragment : Fragment() {
                 CategoryFragmentDirections.modifyCategory(
                     false,
                     position,
-                    categoryData.category
+                    categoryData.category,
+                    categoryData.category.controlPointsString
                 )
             )
 

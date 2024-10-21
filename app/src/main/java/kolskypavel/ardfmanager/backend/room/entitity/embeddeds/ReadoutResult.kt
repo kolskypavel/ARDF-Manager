@@ -21,4 +21,8 @@ data class ReadoutResult(
         entity = Punch::class
     )
     var punches: List<AliasPunch>
-) : Serializable
+) : Serializable {
+    fun getPunchList(): List<Punch> {
+        return punches.map { p -> p.punch }
+    }
+}

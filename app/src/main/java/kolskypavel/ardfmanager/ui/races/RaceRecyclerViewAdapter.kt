@@ -16,7 +16,6 @@ import java.util.UUID
 
 /**
  * [RecyclerView.Adapter] that can display a [Race].
- * TODO: Replace the implementation with code for your data type.
  */
 class RaceRecyclerViewAdapter(
     private var values: List<Race>, private val onRaceClicked: (raceId: UUID) -> Unit,

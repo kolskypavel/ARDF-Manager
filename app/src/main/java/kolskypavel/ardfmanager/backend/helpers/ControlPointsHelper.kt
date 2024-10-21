@@ -3,13 +3,15 @@ package kolskypavel.ardfmanager.backend.helpers
 import android.content.Context
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
+import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
+import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_MAX_CODE
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_MIN_CODE
 import java.util.UUID
 
-object ControlPointsParser {
+object ControlPointsHelper {
     /**
      * Creates a control point from given string
      * Throws Illegal Argument Exception when invalid
@@ -219,6 +221,32 @@ object ControlPointsParser {
         validateControlSequence(controlPoints, raceType, context)
 
         return controlPoints
+    }
+
+    fun getStringFromControlPoints(controlPoints: List<ControlPoint>): String {
+        var codes = ""
+
+        for (cp in controlPoints) {
+            codes += cp.siCode
+
+            if (cp.type == ControlPointType.BEACON) {
+                codes += "B"
+            }
+            if (cp.type == ControlPointType.SEPARATOR) {
+                codes += "!"
+            }
+        }
+        return codes
+    }
+
+    fun getStringFromPunches(punches: List<Punch>): String {
+        var string = ""
+        for (punch in punches) {
+            if (punch.punchType == SIRecordType.CONTROL) {
+                string += "${punch.siCode} "
+            }
+        }
+        return string
     }
 
     const val SPECTATOR_CONTROL_MARKER = '!'

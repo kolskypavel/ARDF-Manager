@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.AliasPunch
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
@@ -84,7 +83,7 @@ class ReadoutDetailFragment : Fragment() {
             clubView.text = readoutDetail.competitorCategory!!.competitor.club
             indexView.text = readoutDetail.competitorCategory!!.competitor.index
             competitorNameView.text =
-                "${readoutDetail.competitorCategory!!.competitor.firstName} ${readoutDetail.competitorCategory!!.competitor?.lastName}"
+                "${readoutDetail.competitorCategory!!.competitor.firstName} ${readoutDetail.competitorCategory!!.competitor.lastName}"
             pointsView.text = readoutDetail.readoutResult.result.points.toString()
         } else {
             competitorNameView.text = getText(R.string.unknown_competitor)
@@ -134,6 +133,14 @@ class ReadoutDetailFragment : Fragment() {
                 }
 
                 R.id.readout_detail_menu_create_category -> {
+                    findNavController().navigate(
+                        ReadoutDetailFragmentDirections.createCategoryFromReadout(
+                            true,
+                            -1,
+                            null,
+                            dataProcessor.getStringFromPunches(readoutDetail.readoutResult.getPunchList())
+                        )
+                    )
                     true
                 }
 
@@ -155,7 +162,7 @@ class ReadoutDetailFragment : Fragment() {
         val message =
             getString(
                 R.string.readout_delete_readout_confirmation,
-                readoutData.readoutResult.readout!!.siNumber
+                readoutData.readoutResult.readout.siNumber
             )
         builder.setMessage(message)
 

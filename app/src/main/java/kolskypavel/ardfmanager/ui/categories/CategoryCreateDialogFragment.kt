@@ -20,7 +20,7 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.helpers.ControlPointsParser
+import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper
 import kolskypavel.ardfmanager.backend.room.entitity.Category
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
@@ -128,7 +128,8 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 race.raceType,
                 race.timeLimit,
                 race.startTimeSource,
-                race.finishTimeSource, ""
+                race.finishTimeSource,
+                args.controlPoints
             )
 
             //Preset the data from the race
@@ -269,7 +270,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
             val text = controlPointsEditText.text.toString().trim()
 
             try {
-                ControlPointsParser.getControlPointsFromString(
+                ControlPointsHelper.getControlPointsFromString(
                     text,
                     category.id,
                     category.raceId,
@@ -370,7 +371,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 val controlPointsString =
                     controlPointsEditText.text.toString().trim()
                 //Get control points
-                val controlPoints = ControlPointsParser.getControlPointsFromString(
+                val controlPoints = ControlPointsHelper.getControlPointsFromString(
                     controlPointsString,
                     category.raceId,
                     category.id,
