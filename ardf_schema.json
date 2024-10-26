@@ -45,39 +45,36 @@
             "format": "date-time"
           },
           "race_type": {
-            "type": {
-              "enum": [
-                "CLASSIC",
-                "SPRINT",
-                "FOXORING",
-                "LONG",
-                "RELAY",
-                "ORIENTEERING"
-              ]
-            },
+            "type": "string",
+            "enum": [
+              "CLASSIC",
+              "SPRINT",
+              "FOXORING",
+              "LONG",
+              "RELAY",
+              "ORIENTEERING"
+            ],
             "description": "Type of the race"
           },
           "race_band": {
-            "type": {
-              "enum": [
-                "M80",
-                "M2",
-                "COMBINED"
-              ]
-            },
+            "type": "string",
+            "enum": [
+              "M80",
+              "M2",
+              "COMBINED"
+            ],
             "description": "Band of the race"
           },
           "race_level": {
-            "type": {
-              "enum": [
-                "INTERNATIONAL",
-                "NATIONAL",
-                "REGIONAL",
-                "DISTRICT",
-                "PRACTICE",
-                "OTHER"
-              ]
-            },
+            "type": "string",
+            "enum": [
+              "INTERNATIONAL",
+              "NATIONAL",
+              "REGIONAL",
+              "DISTRICT",
+              "PRACTICE",
+              "OTHER"
+            ],
             "description": "Level of the race"
           },
           "race_time_limit": {
@@ -85,23 +82,21 @@
             "format": "time",
             "description": "Time limit in mm:ss"
           },
-          "raceStartTimeSource": {
-            "type": {
-              "enum": [
-                "DRAWN_TIME",
-                "START_CONTROL",
-                "FIRST_CONTROL"
-              ]
-            },
+          "race_start_time_source": {
+            "type": "string",
+            "enum": [
+              "DRAWN_TIME",
+              "START_CONTROL",
+              "FIRST_CONTROL"
+            ],
             "description": "Start time source of the race - e. g. first control is counted as start"
           },
-          "raceFinishTimeSource": {
-            "type": {
-              "enum": [
-                "FINISH_CONTROL",
-                "LAST_CONTROL"
-              ]
-            },
+          "race_finish_time_source": {
+            "type": "string",
+            "enum": [
+              "FINISH_CONTROL",
+              "LAST_CONTROL"
+            ],
             "description": "Finish time source of the race - e. g. if finish failed"
           },
           "categories": {
@@ -119,7 +114,8 @@
                 "gender": {
                   "type": "boolean",
                   "required": [],
-                  "description": "false - man, true - woman"
+                  "default": false,
+                  "description": "true - man, false - woman"
                 },
                 "max_age": {
                   "type": "integer",
@@ -136,17 +132,14 @@
                   "minimum": 0,
                   "description": "Climb of the course in meters"
                 },
-                "differentProperties": {
-                  "type": "boolean",
-                  "description": "Marks whenever the category follows the race rule settings, or has its own"
-                },
-                "controlPoints": {
+                "control_points": {
                   "type": "array",
                   "description": "Control points for the category",
                   "items": {
                     "type": "object",
+                    "description": "One control point",
                     "properties": {
-                      "siCode": {
+                      "si_code": {
                         "type": "integer",
                         "minimum": 0,
                         "maximum": 255,
@@ -162,6 +155,67 @@
                       }
                     }
                   }
+                },
+                "different_properties": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Marks whenever the category follows the race rule settings, or has its own"
+                },
+                "category_race_type": {
+                  "type": "string",
+                  "enum": [
+                    "CLASSIC",
+                    "SPRINT",
+                    "FOXORING",
+                    "LONG",
+                    "RELAY",
+                    "ORIENTEERING"
+                  ],
+                  "description": "Category - different type of the race"
+                },
+                "category_time_limit": {
+                  "type": "string",
+                  "format": "time",
+                  "description": "Category - different time limit in mm:ss"
+                },
+                "category_start_time_source": {
+                  "type": "string",
+                  "enum": [
+                    "DRAWN_TIME",
+                    "START_CONTROL",
+                    "FIRST_CONTROL"
+                  ],
+                  "description": "Start time source for the category - e. g. first control is counted as start"
+                },
+                "category_finish_time_source": {
+                  "type": "string",
+                  "enum": [
+                    "FINISH_CONTROL",
+                    "LAST_CONTROL"
+                  ],
+                  "description": "Finish time source of the category - e. g. if finish failed"
+                }
+              }
+            }
+          },
+          "aliases": {
+            "type": "array",
+            "description": "Aliases of the control points - e.g. F4 for SI code 44",
+            "items": {
+              "type": "object",
+              "description": "One alias",
+              "properties": {
+                "si_code": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 255,
+                  "required": [],
+                  "description": "SI code of the control point"
+                },
+                "name": {
+                  "type": "string",
+                  "required": [],
+                  "description": "Name of the control point - e.g. F4"
                 }
               }
             }
@@ -174,13 +228,13 @@
               "properties": {
                 "first_name": {
                   "type": "string",
-                  "description": "First name"
+                  "description": "Competitor's first name"
                 },
                 "last_name": {
                   "type": "string",
-                  "description": "Last name"
+                  "description": "Competitor's last name"
                 },
-                "club": {
+                "club_name": {
                   "type": "string",
                   "description": "Competitor's club / country"
                 },
@@ -190,19 +244,95 @@
                 },
                 "index": {
                   "type": "string",
-                  "description": "Index / callsign of the competitor"
+                  "description": "Competitor's index / callsign"
+                },
+                "gender": {
+                  "type": "boolean",
+                  "required": [],
+                  "default": false,
+                  "description": "true - man, false - woman"
+                },
+                "birth_year": {
+                  "type": "integer",
+                  "minimum": 1900,
+                  "description": "Birth year of the competitor"
                 },
                 "si_number": {
                   "type": "integer",
-                  "description": "SI number of the competitor"
+                  "minimum": 1000,
+                  "description": "Competitor's SI number"
+                },
+                "si_rent": {
+                  "type": "boolean",
+                  "description": "Mark if competitor's SI was rented or not"
+                },
+                "start_number": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "description": "Competitor's start number"
+                },
+                "start_time": {
+                  "type": "string",
+                  "format": "time",
+                  "minimum": 0,
+                  "description": "Competitor's relative start time from start 0, in MM:SS"
+                },
+                "result": {
+                  "type": "object",
+                  "description": "Competitor's result",
+                  "properties": {
+                    "check_time": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "SI check time"
+                    },
+                    "start_time": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Start time of the competitor"
+                    },
+                    "finish_time": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Finish time of the competitor"
+                    },
+                    "run_time": {
+                      "type": "string",
+                      "format": "time",
+                      "description": "Run time of the competitor, in the form of MM:ss"
+                    },
+                    "result_status": {
+                      "type": "string",
+                      "enum": [
+                        "OK",
+                        "MP",
+                        "DNS",
+                        "DNF",
+                        "NR",
+                        "OVT",
+                        "UNF",
+                        "ERR"
+                      ],
+                      "description": "Status of the result: OK - valid, MP - misspunched, DNS - did not start, DNF - did not finish, NR - no ranking, OVT - overtime, UNF - unofficial, ERR - error"
+                    },
+                    "controls_count": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Number of control points found"
+                    },
+                    "place": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "description": "Place of the competitor"
+                    },
+                    "modified": {
+                      "type": "boolean",
+                      "description": "Marks if the readout was modified - e.g referee's decision"
+                    }
+                  }
                 }
               }
             }
-          },
-          "readouts": {
-            "type": "array"
-          },
-          "results": {
           }
         }
       }
