@@ -77,6 +77,8 @@ class DataProcessor private constructor(context: Context) {
         )
     }
 
+    fun getContext(): Context = appContext.get()!!
+
     fun updateReaderState(newSIState: SIReaderState) {
         val stateToUpdate = currentState.value
 
@@ -165,7 +167,8 @@ class DataProcessor private constructor(context: Context) {
      * Creates a duplicate of the category
      */
     suspend fun duplicateCategory(categoryData: CategoryData) {
-        categoryData.category.name += "_" + (appContext.get()?.getString(R.string.copy) ?: "_copy")
+        categoryData.category.name += "_" + (appContext.get()?.getString(R.string.general_copy)
+            ?: "_copy")
         categoryData.category.order = getHighestCategoryOrder(categoryData.category.raceId) + 1
 
         //Adjust the IDs
@@ -514,8 +517,8 @@ class DataProcessor private constructor(context: Context) {
 
     fun genderToString(isMan: Boolean?): String {
         return when (isMan) {
-            false -> appContext.get()!!.resources.getString(R.string.gender_woman)
-            else -> appContext.get()!!.resources.getString(R.string.gender_man)
+            false -> appContext.get()!!.resources.getString(R.string.general_gender_woman)
+            else -> appContext.get()!!.resources.getString(R.string.general_gender_man)
         }
     }
 

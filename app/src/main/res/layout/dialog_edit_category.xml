@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:hint="@string/name">
+            android:hint="@string/general_name">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/category_dialog_name"
@@ -42,7 +42,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@string/gender"
+                android:hint="@string/general_gender"
                 android:textColor="@color/black">
 
                 <AutoCompleteTextView
@@ -62,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_weight="1"
-                android:hint="@string/max_age">
+                android:hint="@string/general_max_age">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/category_dialog_max_age"
@@ -152,7 +152,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="5dp"
                 android:layout_weight="1"
-                android:hint="@string/limit">
+                android:hint="@string/race_limit_hint">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/category_dialog_limit"

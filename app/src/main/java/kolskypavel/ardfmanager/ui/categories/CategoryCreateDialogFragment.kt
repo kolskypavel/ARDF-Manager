@@ -208,8 +208,8 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
         //Set gender
         when (category.isMan) {
-            true -> genderPicker.setText(getString(R.string.gender_woman), false)
-            false -> genderPicker.setText(getString(R.string.gender_man), false)
+            true -> genderPicker.setText(getString(R.string.general_gender_woman), false)
+            false -> genderPicker.setText(getString(R.string.general_gender_man), false)
         }
 
         controlPointsEditText.setText(category.controlPointsString)

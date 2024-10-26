@@ -53,7 +53,7 @@ class ResultsFragmentRecyclerViewAdapter(
                             dataList.subList.size
                         } ${
                             categoryName.context.getString(
-                                R.string.title_competitors
+                                R.string.general_competitors
                             ).lowercase()
                         })"
                 } else {

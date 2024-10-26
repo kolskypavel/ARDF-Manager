@@ -4,19 +4,19 @@
     <item
         android:id="@+id/navigation_categories"
         android:icon="@drawable/ic_category"
-        android:title="@string/title_categories" />
+        android:title="@string/general_categories" />
     <item
         android:id="@+id/navigation_competitors"
         android:icon="@drawable/ic_runner"
-        android:title="@string/title_competitors" />
+        android:title="@string/general_competitors" />
 
     <item
         android:id="@+id/navigation_readouts"
         android:icon="@drawable/ic_sportident"
-        android:title="@string/title_readouts" />
+        android:title="@string/general_readouts" />
 
     <item
         android:id="@+id/navigation_results"
         android:icon="@drawable/ic_results"
-        android:title="@string/title_results" />
+        android:title="@string/general_results" />
 </menu>

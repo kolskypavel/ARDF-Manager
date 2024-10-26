@@ -70,7 +70,7 @@
         <fragment
             android:id="@+id/navigation_competitors"
             android:name="kolskypavel.ardfmanager.ui.competitors.CompetitorFragment"
-            android:label="@string/title_competitors"
+            android:label="@string/general_competitors"
             tools:layout="@layout/fragment_competitors">
             <action
                 android:id="@+id/modifyCompetitor"
@@ -86,7 +86,7 @@
         <fragment
             android:id="@+id/navigation_categories"
             android:name="kolskypavel.ardfmanager.ui.categories.CategoryFragment"
-            android:label="@string/title_categories"
+            android:label="@string/general_categories"
             tools:layout="@layout/fragment_categories">
             <action
                 android:id="@+id/editRace"
@@ -109,7 +109,7 @@
         <fragment
             android:id="@+id/navigation_readouts"
             android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutFragment"
-            android:label="@string/title_readouts"
+            android:label="@string/general_readouts"
             tools:layout="@layout/fragment_readouts">
             <action
                 android:id="@+id/openReadoutDetail"

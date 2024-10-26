@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ARDFManager</string>
-    <string name="title_races">Závody</string>
-    <string name="title_competitors">Závodníci</string>
-    <string name="title_categories">Kategorie</string>
-    <string name="title_readouts">Vyčítání</string>
-    <string name="title_results">Výsledky</string>
+    <string name="race_title">Závody</string>
+    <string name="general_competitors">Závodníci</string>
+    <string name="general_categories">Kategorie</string>
+    <string name="general_readouts">Vyčítání</string>
+    <string name="general_results">Výsledky</string>
     <string name="global_settings">Globální nastavení</string>
     <string name="data_import_error">Chyba při importování dat</string>
     <string name="race_import_text">Importovat závod ze souboru</string>
@@ -16,15 +16,15 @@
     <string name="race_level_2">Krajský</string>
     <string name="race_level_3">Okresní</string>
     <string name="band_combined">Kombinované</string>
-    <string name="name">Jméno</string>
-    <string name="date">Datum</string>
+    <string name="general_name">Jméno</string>
+    <string name="general_date">Datum</string>
     <string name="race_level">Úroveň</string>
     <string name="race_type">Typ</string>
     <string name="race_export">Exportovat závod</string>
     <string name="race_delete">Odstranit závod</string>
     <string name="race_edit">Upravit závod</string>
     <string name="cancel">Zrušit</string>
-    <string name="limit">Limit (min)</string>
+    <string name="race_limit_hint">Limit (min)</string>
     <string name="start_time_hint">Startovní čas (hh:mm)</string>
     <string name="relative_start_time_hint">Relativní startovní čas (mm:ss)</string>
     <string name="external_id">Externí ID</string>
@@ -36,12 +36,12 @@
     <string name="finish_time_source_finish_control">Cílová krabička</string>
     <string name="finish_time_source_last_control">Poslední kontrola</string>
     <string name="race_create">Vytvořit závod</string>
-    <string name="display">Zobraz</string>
-    <string name="preview">Náhled</string>
-    <string name="duplicate">Duplikát</string>
-    <string name="copy">Kopírovat</string>
-    <string name="start_time">Čas startu</string>
-    <string name="band">Pásmo</string>
+    <string name="general_display">Zobraz</string>
+    <string name="general_preview">Náhled</string>
+    <string name="general_duplicate">Duplikát</string>
+    <string name="general_copy">Kopírovat</string>
+    <string name="general_start_time">Čas startu</string>
+    <string name="general_band">Pásmo</string>
     <string name="race_end">Ukončit závod</string>
     <string name="race_end_confirmation">Opravdu chcete ukončit závod?</string>
     <string name="race_type_classics">Klasická trať</string>
@@ -55,8 +55,8 @@
     <string name="same_category_type">Stejný typ jako závod</string>
     <string name="category">Kategorie</string>
     <string name="categories_age_based">Podle věku</string>
-    <string name="max_age">Maximalní věk</string>
-    <string name="year_of_birth">Ročník</string>
+    <string name="general_max_age">Maximalní věk</string>
+    <string name="general_year_of_birth">Ročník</string>
     <string name="si_codes">SI kódy</string>
     <string name="category_create_standard_categories">Vytvořit standardní kategorie</string>
     <string name="category_manage_aliases">Spravovat aliasy</string>
@@ -91,9 +91,9 @@
     <string name="competitor_start_time">Startovní čas</string>
     <string name="competitor_to_limit">Do limitu</string>
     <string name="club">Klub</string>
-    <string name="gender">Pohlaví</string>
-    <string name="gender_man">Muž</string>
-    <string name="gender_woman">Žena</string>
+    <string name="general_gender">Pohlaví</string>
+    <string name="general_gender_man">Muž</string>
+    <string name="general_gender_woman">Žena</string>
     <string name="competitor_create">Vytvořit závodníka</string>
     <string name="competitor_edit">Upravit závodníka</string>
     <string name="competitor_delete_all">Smazat všechny závodníky</string>
@@ -101,7 +101,7 @@
     <string name="competitor_delete_all_confirmation">Opravdu chcete smazat všechny závodníky? Tuto akci NELZE vrátit.</string>
     <string name="index_callsign">Index/Volačka</string>
     <string name="si_number">Číslo SI</string>
-    <string name="automatic">Automaticky</string>
+    <string name="general_automatic">Automaticky</string>
     <string name="competitor_rent_chip">Půjčit čip</string>
     <string name="length">Délka (km)</string>
     <string name="category_exists">Kategorie už existuje!</string>
@@ -115,7 +115,7 @@
     <string name="competitor_delete">Smazat závodníka</string>
     <string name="category_duplicate">Duplikovat kategorii</string>
     <string name="category_delete">Smazat kategorii</string>
-    <string name="print">Tisk</string>
+    <string name="general_print">Tisk</string>
     <string name="no_si_card">Žádný čip</string>
     <string name="duplicate_si_number">Čip již existuje!</string>
     <string name="si_number_invalid_range">Číslo čipu mimo rozsah!</string>
@@ -197,4 +197,5 @@
     <string name="data_type_results">Výsledky</string>
     <string name="data_type_results_splits">Výsledky s mezičasy</string>
     <string name="data_type_readout_data">Data z vyčítání</string>
+    <string name="general_race">Závod</string>
 </resources>

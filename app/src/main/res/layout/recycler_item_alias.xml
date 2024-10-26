@@ -23,7 +23,7 @@
         android:layout_height="45dp"
         android:layout_marginEnd="20dp"
         android:ems="10"
-        android:hint="@string/name"
+        android:hint="@string/general_name"
         android:inputType="text"
         android:maxLength="3"
         android:digits="abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"

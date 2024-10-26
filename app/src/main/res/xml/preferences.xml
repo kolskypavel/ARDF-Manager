@@ -35,7 +35,7 @@
     <PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/title_categories"
+        android:title="@string/general_categories"
         app:iconSpaceReserved="false">
 
 
@@ -43,7 +43,7 @@
     <PreferenceCategory
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:title="@string/title_readouts"
+        android:title="@string/general_readouts"
         app:iconSpaceReserved="false">
 
         <ListPreference
@@ -71,7 +71,7 @@
     <PreferenceCategory
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:title="@string/title_results"
+        android:title="@string/general_results"
         app:iconSpaceReserved="false">
 
         <ListPreference

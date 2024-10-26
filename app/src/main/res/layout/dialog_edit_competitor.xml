@@ -79,7 +79,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@string/year_of_birth">
+                android:hint="@string/general_year_of_birth">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/competitor_dialog_year_of_birth"
@@ -124,7 +124,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="@string/gender_woman" />
+                android:text="@string/general_gender_woman" />
         </LinearLayout>
 
         <LinearLayout

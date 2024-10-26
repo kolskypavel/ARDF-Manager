@@ -38,7 +38,7 @@ class CategoryRecyclerViewAdapter(
         holder.title.text = item.category.name
         holder.numCompeititors.text =
             "(${item.competitors.size} ${
-                context.getString(R.string.title_competitors).lowercase()
+                context.getString(R.string.general_competitors).lowercase()
             })"
         holder.type.text = dataProcessor.raceTypeToString(
             item.category.raceType ?: dataProcessor.getCurrentRace().raceType

@@ -23,7 +23,7 @@ data class Result(
     @ColumnInfo(name = "readout_id") var readoutId: UUID,
     @ColumnInfo(name = "category_id") var categoryId: UUID? = null,
     @ColumnInfo(name = "competitor_id") var competitorID: UUID? = null,
-    var automaticStatus: Boolean,
+    @ColumnInfo(name = "automatic_status")var automaticStatus: Boolean,
     @ColumnInfo(name = "race_status") var raceStatus: RaceStatus,
     @ColumnInfo(name = "points") var points: Int,
     @ColumnInfo(name = "run_time") var runTime: Duration,

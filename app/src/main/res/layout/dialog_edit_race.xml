@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:hint="@string/name">
+            android:hint="@string/general_name">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/race_dialog_name"
@@ -82,7 +82,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
                 android:layout_weight="0.9"
-                android:hint="@string/date"
+                android:hint="@string/general_date"
                 app:endIconDrawable="@drawable/ic_calendar"
                 app:endIconMode="custom">
 
@@ -145,7 +145,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="@string/band">
+                android:hint="@string/general_band">
 
                 <AutoCompleteTextView
                     android:id="@+id/race_dialog_band"
@@ -162,7 +162,7 @@
             style="@style/dialog_textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/limit">
+            android:hint="@string/race_limit_hint">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/race_dialog_limit"

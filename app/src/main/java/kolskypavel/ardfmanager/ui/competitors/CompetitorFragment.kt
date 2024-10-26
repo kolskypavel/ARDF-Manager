@@ -150,7 +150,7 @@ class CompetitorFragment : Fragment() {
                 headers =
                     intArrayOf(
                         R.string.competitor_start_number_header,
-                        R.string.name,
+                        R.string.general_name,
                         R.string.club,
                         R.string.category,
                         R.string.si_number
@@ -169,8 +169,8 @@ class CompetitorFragment : Fragment() {
                 headers =
                     intArrayOf(
                         R.string.competitor_start_number_header,
-                        R.string.start_time,
-                        R.string.name,
+                        R.string.general_start_time,
+                        R.string.general_name,
                         R.string.category,
                         R.string.si_number
                     )
@@ -184,9 +184,9 @@ class CompetitorFragment : Fragment() {
             CompetitorTableDisplayType.FINISH_REACHED -> {
                 headers =
                     intArrayOf(
-                        R.string.name,
+                        R.string.general_name,
                         R.string.run_time,
-                        R.string.start_time,
+                        R.string.general_start_time,
                         R.string.finish_time,
                         R.string.category,
                     )
@@ -198,9 +198,9 @@ class CompetitorFragment : Fragment() {
             CompetitorTableDisplayType.ON_THE_WAY -> {
                 headers =
                     intArrayOf(
-                        R.string.name,
+                        R.string.general_name,
                         R.string.category,
-                        R.string.start_time,
+                        R.string.general_start_time,
                         R.string.run_time,
                         R.string.competitor_to_limit,
                     )

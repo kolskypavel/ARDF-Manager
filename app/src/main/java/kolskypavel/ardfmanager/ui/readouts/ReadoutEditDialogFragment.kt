@@ -109,7 +109,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
                     LocalDateTime.now(),
                     true
                 )
-            raceStatusPicker.setText(getString(R.string.automatic), false)
+            raceStatusPicker.setText(getString(R.string.general_automatic), false)
             competitorPicker.setText(getString(R.string.unknown_competitor), false)
 
         } else {
@@ -127,7 +127,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
                     false
                 )
             } else {
-                raceStatusPicker.setText(getString(R.string.automatic), false)
+                raceStatusPicker.setText(getString(R.string.general_automatic), false)
             }
 
             if (readout.competitorID != null) {
@@ -227,7 +227,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
             statusArr.add(dataProcessor.raceStatusToString(status))
         }
 
-        statusArr.add(0, getString(R.string.automatic))
+        statusArr.add(0, getString(R.string.general_automatic))
         val statusAdapter: ArrayAdapter<String> =
             ArrayAdapter(
                 requireContext(),
@@ -337,7 +337,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
     private fun getRaceStatusFromPicker(): RaceStatus? {
         val raceStatusString = raceStatusPicker.text.toString()
         return if (raceStatusString.isNotEmpty()
-            && raceStatusString == requireContext().getString(R.string.automatic)
+            && raceStatusString == requireContext().getString(R.string.general_automatic)
         ) {
             null
         } else {

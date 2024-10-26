@@ -78,7 +78,7 @@ class AliasRecyclerViewAdapter(
 
         if (!isCodeAvailable(codeValue)) {
             values[position].isCodeValid = false
-            throw IllegalArgumentException(context.getString(R.string.duplicate))
+            throw IllegalArgumentException(context.getString(R.string.general_duplicate))
         }
 
         values[position].isCodeValid = true
@@ -93,7 +93,7 @@ class AliasRecyclerViewAdapter(
 
         if (!isNameAvailable(name)) {
             values[position].isNameValid = false
-            throw IllegalArgumentException(context.getString(R.string.duplicate))
+            throw IllegalArgumentException(context.getString(R.string.general_duplicate))
         }
 
         values[position].isNameValid = true

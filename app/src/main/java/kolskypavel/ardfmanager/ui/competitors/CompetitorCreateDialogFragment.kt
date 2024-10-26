@@ -324,7 +324,7 @@ class CompetitorCreateDialogFragment : DialogFragment() {
                 ) {
                     valid = false
                     startNumberTextView.error =
-                        getString(R.string.duplicate)
+                        getString(R.string.general_duplicate)
                 }
 
             } catch (e: Exception) {
