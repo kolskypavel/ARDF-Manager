@@ -2,7 +2,7 @@ package kolskypavel.ardfmanager.backend.room.entitity.embeddeds
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import kolskypavel.ardfmanager.backend.room.entitity.Readout
+import kolskypavel.ardfmanager.backend.room.entitity.Result
 import java.io.Serializable
 
 /**
@@ -13,7 +13,7 @@ data class CompetitorData(
     @Relation(
         parentColumn = "id",
         entityColumn = "competitor_id",
-        entity = Readout::class
+        entity = Result::class
     )
-    var readoutResult: ReadoutResult?,
+    var resultData: ResultData?,
 ) : Serializable

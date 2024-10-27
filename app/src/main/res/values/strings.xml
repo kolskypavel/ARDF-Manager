@@ -196,7 +196,6 @@
     <string name="race_status_did_not_finish">Did not finish</string>
     <string name="race_status_over_limit">Over time limit</string>
     <string name="race_status_unofficial">Unofficial</string>
-    <string name="race_status_not_processed">Not evaluated</string>
     <string name="race_status_error">Error</string>
 
     <string name="race_status_valid_short" translatable="false">OK</string>
@@ -207,7 +206,6 @@
     <string name="race_status_did_not_finish_short" translatable="false">DNF</string>
     <string name="race_status_over_limit_short" translatable="false">OVT</string>
     <string name="race_status_unofficial_short" translatable="false">UNF</string>
-    <string name="race_status_not_processed_short" translatable="false">NPR</string>
     <string name="race_status_error_short" translatable="false">ERR</string>
 
     <!--Results-->
@@ -402,7 +400,6 @@
         <item>@string/race_status_did_not_finish</item>
         <item>@string/race_status_over_limit</item>
         <item>@string/race_status_unofficial</item>
-        <item>@string/race_status_not_processed</item>
         <item>@string/race_status_error</item>
     </string-array>
 
@@ -415,7 +412,6 @@
         <item>@string/race_status_did_not_finish_short</item>
         <item>@string/race_status_over_limit_short</item>
         <item>@string/race_status_unofficial_short</item>
-        <item>@string/race_status_not_processed_short</item>
         <item>@string/race_status_error_short</item>
     </string-array>
 

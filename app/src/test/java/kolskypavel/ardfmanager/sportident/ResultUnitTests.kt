@@ -1,10 +1,8 @@
 package kolskypavel.ardfmanager.sportident
 
-import com.felhr.usbserial.UsbSerialDevice
 import junit.framework.TestCase.assertEquals
-import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Readout
+import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.backend.sportident.SIPort
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
@@ -15,7 +13,7 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.util.UUID
 
-class ReadoutUnitTests {
+class ResultUnitTests {
 
     //Test the SI5 time adjustment because of the 12h format
     @Test
@@ -44,8 +42,8 @@ class ReadoutUnitTests {
         val cardData = CardData(SIConstants.SI_CARD5, 12345, checkTime, startTime, finishTime, punchData)
         val mockResultsProcessor = ResultsProcessor(mock())
 
-        var readout =
-            Readout(
+        var result =
+            Result(
                 UUID.randomUUID(),
                 cardData.siNumber,
                 cardData.cardType,
@@ -61,7 +59,7 @@ class ReadoutUnitTests {
                 false
             )
 
-        val resultPunches = mockResultsProcessor.processCardPunches(cardData, UUID.randomUUID(), readout, zeroTimeBase, UUID.randomUUID())
+        val resultPunches = mockResultsProcessor.processCardPunches(cardData, UUID.randomUUID(), result, zeroTimeBase, UUID.randomUUID())
 
 
         assertEquals("10:05:00,0,0", cardData.checkTime.toString())
@@ -98,8 +96,8 @@ class ReadoutUnitTests {
             SIPort.PunchData(11, SITime(LocalTime.of(2, 33, 33))),
         )
 
-        readout =
-            Readout(
+        result =
+            Result(
                 UUID.randomUUID(),
                 cardData.siNumber,
                 cardData.cardType,
@@ -115,8 +113,8 @@ class ReadoutUnitTests {
                 false
             )
 
-        mockResultsProcessor.processCardPunches(cardData, UUID.randomUUID(), readout, zeroTimeBase, UUID.randomUUID())
+        mockResultsProcessor.processCardPunches(cardData, UUID.randomUUID(), result, zeroTimeBase, UUID.randomUUID())
 
-        assertEquals("14:33:33,0,0", readout.finishTime.toString())
+        assertEquals("14:33:33,0,0", result.finishTime.toString())
     }
 }

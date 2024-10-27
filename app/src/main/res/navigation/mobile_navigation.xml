@@ -36,8 +36,8 @@
                 android:name="create"
                 app:argType="boolean" />
             <argument
-                android:name="readoutData"
-                app:argType="kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData"
+                android:name="resultData"
+                app:argType="kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData"
                 app:nullable="true" />
             <argument
                 android:name="position"
@@ -161,8 +161,8 @@
             android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutDetailFragment"
             android:label="ReadoutDetailFragment">
             <argument
-                android:name="readoutDetail"
-                app:argType="kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData" />
+                android:name="resultData"
+                app:argType="kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData" />
             <action
                 android:id="@+id/editReadout"
                 app:destination="@id/readoutEditDialogFragment" />

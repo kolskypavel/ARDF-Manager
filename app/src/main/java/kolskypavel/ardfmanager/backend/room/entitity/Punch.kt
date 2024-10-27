@@ -13,17 +13,16 @@ import java.util.UUID
 
 @Entity(
     tableName = "punch", foreignKeys = [ForeignKey(
-        entity = Readout::class,
+        entity = Result::class,
         parentColumns = arrayOf("id"),
-        childColumns = arrayOf("readout_id"),
+        childColumns = arrayOf("result_id"),
         onDelete = ForeignKey.CASCADE
     )]
 )
 data class Punch(
     @PrimaryKey var id: UUID,
     @ColumnInfo(name = "race_id") var raceId: UUID,
-    @ColumnInfo(name = "readout_id") var readoutId: UUID?,
-    @ColumnInfo(name = "competitor_id") var competitorId: UUID? = null,
+    @ColumnInfo(name = "result_id") var resultId: UUID?,
     @ColumnInfo(name = "card_number") var cardNumber: Int? = null,
     @ColumnInfo(name = "si_code") var siCode: Int,
     @ColumnInfo(name = "si_time") var siTime: SITime,

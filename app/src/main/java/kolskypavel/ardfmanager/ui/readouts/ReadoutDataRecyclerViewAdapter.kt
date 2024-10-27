@@ -11,13 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData
 
 class ReadoutDataRecyclerViewAdapter(
-    private var values: List<ReadoutData>,
+    private var values: List<ResultData>,
     private val context: Context,
-    private val onReadoutClicked: (readoutData: ReadoutData) -> Unit,
-    private val onMoreClicked: (action: Int, position: Int, readoutData: ReadoutData) -> Unit
+    private val onReadoutClicked: (readoutData: ResultData) -> Unit,
+    private val onMoreClicked: (action: Int, position: Int, readoutData: ResultData) -> Unit
 ) : RecyclerView.Adapter<ReadoutDataRecyclerViewAdapter.ReadoutViewHolder>() {
     val dataProcessor = DataProcessor.get()
 
@@ -45,30 +45,30 @@ class ReadoutDataRecyclerViewAdapter(
             holder.categoryView.text = context.getString(R.string.no_category)
         }
 
-        holder.siNumberView.text = if (item.readoutResult.readout.siNumber != null) {
-            item.readoutResult.readout.siNumber.toString()
+        holder.siNumberView.text = if (item.result.siNumber != null) {
+            item.result.siNumber.toString()
         } else {
             "-"
         }
         holder.runTimeView.text = "${
-            TimeProcessor.durationToMinuteString(item.readoutResult.result.runTime)
-        } (${dataProcessor.raceStatusToShortString(item.readoutResult.result.raceStatus)})"
+            TimeProcessor.durationToMinuteString(item.result.runTime)
+        } (${dataProcessor.raceStatusToShortString(item.result.raceStatus)})"
 
         //Set the start + finish + readout time
-        holder.startTimeView.text = if (item.readoutResult.readout.startTime != null) {
-            item.readoutResult.readout.startTime!!.getTime().toString()
+        holder.startTimeView.text = if (item.result.startTime != null) {
+            item.result.startTime!!.getTime().toString()
         } else {
             context.getString(R.string.unknown)
         }
 
-        holder.finishTimeView.text = if (item.readoutResult.readout.finishTime != null) {
-            item.readoutResult.readout.finishTime!!.getTime().toString()
+        holder.finishTimeView.text = if (item.result.finishTime != null) {
+            item.result.finishTime!!.getTime().toString()
         } else {
             context.getString(R.string.unknown)
         }
 
         holder.readoutTimeView.text =
-            item.readoutResult.readout.readoutTime.toLocalTime().toString()
+            item.result.readoutTime.toLocalTime().toString()
 
         //Set readout detail navigation
         holder.itemView.setOnClickListener {

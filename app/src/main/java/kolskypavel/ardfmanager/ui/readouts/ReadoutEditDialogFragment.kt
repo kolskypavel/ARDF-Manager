@@ -23,7 +23,7 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kolskypavel.ardfmanager.backend.room.entitity.Readout
+import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
@@ -42,8 +42,8 @@ class ReadoutEditDialogFragment : DialogFragment() {
     private lateinit var selectedRaceViewModel: SelectedRaceViewModel
     private val dataProcessor = DataProcessor.get()
 
-    private lateinit var readout: Readout
-    private var origReadout: Readout? = null
+    private lateinit var result: Result
+    private var origResult: Result? = null
 
     private lateinit var competitors: List<Competitor>
     private val competitorArr = ArrayList<String>()
@@ -100,38 +100,51 @@ class ReadoutEditDialogFragment : DialogFragment() {
         if (args.create) {
             dialog?.setTitle(R.string.readout_create_readout)
 
-            readout =
-                Readout(
-                    UUID.randomUUID(), null, 0,
+            result =
+                Result(
+                    UUID.randomUUID(),
                     selectedRaceViewModel.getCurrentRace().id,
-                    null, null, null, null,
-                    null, null, null,
+                    null,
+                    null,
+                    null,
+                    10,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
                     LocalDateTime.now(),
+                    true,
+                    RaceStatus.NO_RANKING,
+                    0,
+                    Duration.ZERO,
                     true
                 )
+
             raceStatusPicker.setText(getString(R.string.general_automatic), false)
             competitorPicker.setText(getString(R.string.unknown_competitor), false)
 
         } else {
             dialog?.setTitle(R.string.readout_edit_readout)
-            readout = args.readoutData!!.readoutResult.readout
-            origReadout = readout
+            result = args.resultData!!.result
+            origResult = result
 
-            if (readout.siNumber != null) {
-                siNumberInput.setText(readout.siNumber.toString())
+            if (result.siNumber != null) {
+                siNumberInput.setText(result.siNumber.toString())
             }
 
-            if (!args.readoutData!!.readoutResult.result.automaticStatus) {
+            if (!args.resultData!!.result.automaticStatus) {
                 raceStatusPicker.setText(
-                    dataProcessor.raceStatusToString(args.readoutData!!.readoutResult.result.raceStatus),
+                    dataProcessor.raceStatusToString(args.resultData!!.result.raceStatus),
                     false
                 )
             } else {
                 raceStatusPicker.setText(getString(R.string.general_automatic), false)
             }
 
-            if (readout.competitorID != null) {
-                val competitor = selectedRaceViewModel.getCompetitor(readout.competitorID!!)!!
+            if (result.competitorID != null) {
+                val competitor = selectedRaceViewModel.getCompetitor(result.competitorID!!)!!
                 competitorPicker.setText(competitor.getNameWithStartNumber())
                 siNumberInputLayout.isEnabled = false
             } else {
@@ -162,7 +175,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
             AdapterView.OnItemClickListener { parent, view, position, id ->
                 competitorPickerLayout.error = ""
                 val competitor = getCompetitorFromPicker()
-                readout.competitorID = competitor?.id
+                result.competitorID = competitor?.id
                 siNumberInput.setText("")
 
                 siNumberInputLayout.isEnabled = competitor == null
@@ -171,19 +184,18 @@ class ReadoutEditDialogFragment : DialogFragment() {
         //SINumber setup
         siNumberInput.doOnTextChanged { _, _, _, _ ->
             siNumberInputLayout.error = ""
-            readout.siNumber = getSINumber()
+            result.siNumber = getSINumber()
         }
 
         // Punches setup
         var punchWrappers = ArrayList<PunchEditItemWrapper>()
 
-        if (args.create || args.readoutData?.readoutResult?.punches?.isEmpty() == true) {
+        if (args.create || args.resultData?.punches?.isEmpty() == true) {
             punchWrappers.add(
                 PunchEditItemWrapper(
                     Punch(
                         UUID.randomUUID(),
                         dataProcessor.getCurrentRace().id,
-                        null,
                         null,
                         null,
                         0,
@@ -203,7 +215,6 @@ class ReadoutEditDialogFragment : DialogFragment() {
                         dataProcessor.getCurrentRace().id,
                         null,
                         null,
-                        null,
                         0,
                         SITime(LocalTime.MIN),
                         SITime(LocalTime.MIN),
@@ -216,7 +227,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
             )
         } else {
             punchWrappers =
-                PunchEditItemWrapper.getWrappers(ArrayList(args.readoutData!!.readoutResult.punches))
+                PunchEditItemWrapper.getWrappers(ArrayList(args.resultData!!.punches))
         }
 
         punchEditRecyclerView.adapter =
@@ -243,14 +254,14 @@ class ReadoutEditDialogFragment : DialogFragment() {
             if (validateFields()) {
 
                 if (siNumberInput.text?.isNotEmpty() == true) {
-                    readout.siNumber = siNumberInput.text.toString().toInt()
+                    result.siNumber = siNumberInput.text.toString().toInt()
                 }
                 val punches = PunchEditItemWrapper.getPunches(
                     (punchEditRecyclerView.adapter as PunchEditRecyclerViewAdapter).values
                 )
                 runBlocking {
                     selectedRaceViewModel.processManualPunches(
-                        readout,
+                        result,
                         punches,
                         getRaceStatusFromPicker()
                     )
@@ -258,7 +269,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
 
                 setFragmentResult(
                     REQUEST_READOUT_MODIFICATION, bundleOf(
-                        BUNDLE_READOUT_ID to readout.id.toString()
+                        BUNDLE_RESULT_ID to result.id.toString()
                     )
                 )
                 dialog?.dismiss()
@@ -274,22 +285,22 @@ class ReadoutEditDialogFragment : DialogFragment() {
         var valid = true
 
         //Check competitor
-        if (readout.competitorID != null
-            && origReadout?.competitorID != readout.competitorID
-            && selectedRaceViewModel.getReadoutByCompetitor(readout.competitorID!!) != null
+        if (result.competitorID != null
+            && origResult?.competitorID != result.competitorID
+            && selectedRaceViewModel.getResultByCompetitor(result.competitorID!!) != null
         ) {
             competitorPickerLayout.error = getString(R.string.readout_competitor_exists)
             valid = false
         }
 
         //Check SI
-        if (readout.siNumber != null) {
+        if (result.siNumber != null) {
 
-            if (readout.siNumber != origReadout?.siNumber) {
+            if (result.siNumber != origResult?.siNumber) {
 
                 //Check for duplicate readouts with same SI number
-                if (selectedRaceViewModel.getReadoutBySINumber(
-                        readout.siNumber!!,
+                if (selectedRaceViewModel.getResultBySINumber(
+                        result.siNumber!!,
                         selectedRaceViewModel.getCurrentRace().id
                     ) != null
                 ) {
@@ -298,7 +309,7 @@ class ReadoutEditDialogFragment : DialogFragment() {
                 }
             }
 
-        } else if (readout.competitorID == null) {
+        } else if (result.competitorID == null) {
             siNumberInputLayout.error = getString(R.string.required)
             valid = false
         }
@@ -347,6 +358,6 @@ class ReadoutEditDialogFragment : DialogFragment() {
 
     companion object {
         const val REQUEST_READOUT_MODIFICATION = "REQUEST_READOUT_MODIFICATION"
-        const val BUNDLE_READOUT_ID = "BUNDLE_KEY_READOUT_ID"
+        const val BUNDLE_RESULT_ID = "BUNDLE_KEY_READOUT_ID"
     }
 }

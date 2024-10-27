@@ -14,7 +14,7 @@ import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorCategory
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData
 import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -90,13 +90,13 @@ object CsvProcessor : FormatProcessor {
 
                 DataType.RESULTS_SIMPLE, DataType.RESULTS_SPLITS -> exportsResults(
                     outStream,
-                    dataProcessor.getResultDataFlowByRace(raceId).first()
+                    dataProcessor.getResultWrapperFlowByRace(raceId).first()
                 )
 
-                DataType.READOUT_DATA -> exportReadoutData(
-                    outStream,
-                    dataProcessor.getReadoutDataFlowByRace(raceId).first()
-                )
+                DataType.READOUT_DATA ->{}
+//                exportReadoutData( outStream,
+//                    dataProcessor.getResultDataFlowByRace(raceId).first()
+//                )
             }
             return true
         } catch (e: Exception) {
@@ -325,7 +325,7 @@ object CsvProcessor : FormatProcessor {
     }
 
     @Throws(IOException::class)
-    suspend fun exportReadoutData(outStream: OutputStream, readoutData: List<ReadoutData>) {
+    suspend fun exportReadoutData(outStream: OutputStream, readoutData: List<ResultData>) {
         val writer = outStream.bufferedWriter()
         withContext(Dispatchers.IO) {
             for (rd in readoutData) {

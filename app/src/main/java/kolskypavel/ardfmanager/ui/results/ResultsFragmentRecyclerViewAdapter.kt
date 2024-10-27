@@ -82,8 +82,8 @@ class ResultsFragmentRecyclerViewAdapter(
                 val singleResult = dataList.subList.first()
 
                 //Set the competitor place
-                if (singleResult.readoutResult != null) {
-                    val res = singleResult.readoutResult!!.result
+                if (singleResult.resultData != null) {
+                    val res = singleResult.resultData!!.result
                     competitorPlace.text =
                         if (res.raceStatus == RaceStatus.VALID && res.place != null) {
                             res.place.toString()
@@ -100,8 +100,8 @@ class ResultsFragmentRecyclerViewAdapter(
                     singleResult.competitorCategory.competitor.club.ifEmpty {
                         "-"
                     }
-                competitorTime.text = if (singleResult.readoutResult != null) {
-                    TimeProcessor.durationToMinuteString(singleResult.readoutResult!!.result.runTime)
+                competitorTime.text = if (singleResult.resultData != null) {
+                    TimeProcessor.durationToMinuteString(singleResult.resultData!!.result.runTime)
                 } else if (singleResult.competitorCategory.competitor.drawnRelativeStartTime != null) {
                     "${
                         TimeProcessor.runDurationFromStartString(
@@ -112,8 +112,8 @@ class ResultsFragmentRecyclerViewAdapter(
                 } else {
                     "-"
                 }
-                competitorPoints.text = if (singleResult.readoutResult?.result?.points != null) {
-                    singleResult.readoutResult?.result?.points.toString()
+                competitorPoints.text = if (singleResult.resultData?.result?.points != null) {
+                    singleResult.resultData?.result?.points.toString()
                 } else {
                     "-"
                 }

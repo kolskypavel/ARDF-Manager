@@ -21,10 +21,8 @@ import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kolskypavel.ardfmanager.backend.room.entitity.Readout
 import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.enums.RaceBand
 import kolskypavel.ardfmanager.backend.room.enums.RaceLevel
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
@@ -242,7 +240,7 @@ class DataProcessor private constructor(context: Context) {
             val competitor = cd.competitorCategory.competitor
             val category = cd.competitorCategory.category
 
-            if (cd.readoutResult == null) {
+            if (cd.resultData == null) {
                 if (competitor.drawnRelativeStartTime != null) {
                     //Count started
                     if (TimeProcessor.hasStarted(
@@ -295,11 +293,11 @@ class DataProcessor private constructor(context: Context) {
         updateResultsForCompetitor(competitor.id)
     }
 
-    suspend fun deleteCompetitor(id: UUID, deleteReadout: Boolean) {
+    suspend fun deleteCompetitor(id: UUID, deleteResult: Boolean) {
         ardfRepository.deleteCompetitor(id)
-        // TODO: solve the removal of the readout
-        if (deleteReadout) {
-            ardfRepository.deleteReadoutForCompetitor(id)
+        // TODO: solve the removal of the result
+        if (deleteResult) {
+            ardfRepository.deleteResultForCompetitor(id)
         }
     }
 
@@ -307,43 +305,40 @@ class DataProcessor private constructor(context: Context) {
         ardfRepository.deleteAllCompetitorsByRace(raceId)
     }
 
-    //READOUTS
-    fun getReadoutDataFlowByRace(raceId: UUID): Flow<List<ReadoutData>> {
-        return ardfRepository.getReadoutDataByRace(raceId)
-    }
+    //RESULTS
+    suspend fun getResult(id: UUID) = ardfRepository.getResult(id)
 
-    suspend fun getReadoutDataByReadout(readoutId: UUID): ReadoutData? =
-        ardfRepository.getReadoutDataByReadout(readoutId)
+    suspend fun getResultData(resultId: UUID) = ardfRepository.getResultData(resultId)
 
-    suspend fun getReadoutBySINumber(siNumber: Int, raceId: UUID): Readout? =
-        ardfRepository.getReadoutBySINumber(siNumber, raceId)
+    fun getResultDataFlowByRace(raceId: UUID) = resultsProcessor!!.getResultWrappersByRace(raceId)
 
-    suspend fun getReadoutByCompetitor(competitorId: UUID): Readout? =
-        ardfRepository.getReadoutsByCompetitor(competitorId)
+    fun getResultWrapperFlowByRace(raceId: UUID) =
+        resultsProcessor!!.getResultWrappersByRace(raceId)
 
+    suspend fun getResultByCompetitor(competitorId: UUID) =
+        ardfRepository.getResultByCompetitor(competitorId)
 
-    suspend fun saveReadoutAndResult(readout: Readout, punches: ArrayList<Punch>, result: Result) =
-        ardfRepository.saveReadoutAndResult(readout, punches, result)
+    suspend fun getResultBySINumber(siNumber: Int, raceId: UUID) =
+        ardfRepository.getResultBySINumber(siNumber, raceId)
 
-    fun checkIfReadoutExistsBySI(siNumber: Int, raceId: UUID): Boolean {
-        return runBlocking {
-            return@runBlocking ardfRepository.checkIfReadoutExistsById(siNumber, raceId) > 0
+    suspend fun saveResultPunches(result: Result, punches: List<Punch>) =
+        ardfRepository.saveResultPunches(result, punches)
+
+    private suspend fun updateResults(raceId: UUID) {
+        getCategoriesForRace(raceId).forEach { category ->
+            updateResultsForCategory(category.id, false)
         }
     }
 
-    suspend fun deleteReadout(id: UUID) = ardfRepository.deleteReadout(id)
+    suspend fun deleteResult(id: UUID) = ardfRepository.deleteResult(id)
 
-
-    suspend fun deleteAllReadoutsByRace(raceId: UUID) {
-        ardfRepository.deleteAllReadoutsByRace(raceId)
+    suspend fun deleteAllResultsByRace(raceId: UUID) {
+        ardfRepository.deleteAllResultsByRace(raceId)
     }
 
     //PUNCHES
-    suspend fun getPunchesByReadout(readoutId: UUID) =
-        ardfRepository.getPunchesByReadout(readoutId)
-
-    suspend fun getPunchesByCompetitor(competitorId: UUID) =
-        ardfRepository.getPunchesByCompetitor(competitorId)
+    suspend fun getPunchesByResult(resultId: UUID) =
+        ardfRepository.getPunchesByResult(resultId)
 
     private suspend fun createPunch(punch: Punch) = ardfRepository.createPunch(punch)
 
@@ -355,26 +350,11 @@ class DataProcessor private constructor(context: Context) {
         appContext.get()?.let { resultsProcessor?.processCardData(cardData, race, it) }
 
     suspend fun processManualPunches(
-        readout: Readout,
+        result: Result,
         punches: ArrayList<Punch>,
         manualStatus: RaceStatus?
-    ) = resultsProcessor?.processManualPunchData(readout, punches, manualStatus)
+    ) = resultsProcessor?.processManualPunchData(result, punches, manualStatus)
 
-    //RESULTS
-    fun getResultDataFlowByRace(raceId: UUID) = resultsProcessor!!.getResultDataByRace(raceId)
-
-    suspend fun getResultByCompetitor(competitorId: UUID) =
-        ardfRepository.getResultByCompetitor(competitorId)
-
-    suspend fun getResultByReadout(readoutId: UUID) = ardfRepository.getResultByReadout(readoutId)
-
-    suspend fun createResult(result: Result) = ardfRepository.createResult(result)
-
-    private suspend fun updateResults(raceId: UUID) {
-        getCategoriesForRace(raceId).forEach { category ->
-            updateResultsForCategory(category.id, false)
-        }
-    }
 
     private suspend fun updateResultsForCategory(categoryId: UUID, delete: Boolean) =
         resultsProcessor?.updateResultsForCategory(categoryId, delete)

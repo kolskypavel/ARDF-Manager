@@ -51,7 +51,7 @@ object JteProcessor : FormatProcessor {
 
         params["race"] = dataProcessor.getCurrentRace()
         params["context"] = dataProcessor.getContext()
-        params["results"] = dataProcessor.getResultDataFlowByRace(raceId).first()
+        params["results"] = dataProcessor.getResultWrapperFlowByRace(raceId).first()
 
         val templateOutput = StringOutput()
         engine.render(

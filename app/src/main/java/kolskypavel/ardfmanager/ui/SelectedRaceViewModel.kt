@@ -14,10 +14,10 @@ import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entitity.Punch
 import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kolskypavel.ardfmanager.backend.room.entitity.Readout
+import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
@@ -28,7 +28,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import java.util.UUID
 
 /**
@@ -42,20 +41,15 @@ class SelectedRaceViewModel : ViewModel() {
     private val _categories: MutableStateFlow<List<CategoryData>> = MutableStateFlow(emptyList())
     val categories: StateFlow<List<CategoryData>> get() = _categories.asStateFlow()
 
-    private val _readoutData: MutableStateFlow<List<ReadoutData>> =
-        MutableStateFlow(emptyList())
-    val readoutData: StateFlow<List<ReadoutData>> get() = _readoutData.asStateFlow()
-
-
-    private val _resultData: MutableStateFlow<List<ResultWrapper>> =
-        MutableStateFlow(emptyList())
-    val resultData: StateFlow<List<ResultWrapper>> get() = _resultData.asStateFlow()
-
     private val _competitorData: MutableStateFlow<List<CompetitorData>> =
         MutableStateFlow(emptyList())
     val competitorData: StateFlow<List<CompetitorData>>
         get() =
             _competitorData.asStateFlow()
+
+    private val _resultData: MutableStateFlow<List<ResultWrapper>> =
+        MutableStateFlow(emptyList())
+    val resultData: StateFlow<List<ResultWrapper>> get() = _resultData.asStateFlow()
 
     @Throws(IllegalStateException::class)
     fun getCurrentRace(): Race {
@@ -85,12 +79,7 @@ class SelectedRaceViewModel : ViewModel() {
             }
 
             launch {
-                dataProcessor.getReadoutDataFlowByRace(id).collect {
-                    _readoutData.value = it
-                }
-            }
-            launch {
-                dataProcessor.getResultDataFlowByRace(id).collect {
+                dataProcessor.getResultWrapperFlowByRace(id).collect {
                     _resultData.value = it
                 }
             }
@@ -176,11 +165,11 @@ class SelectedRaceViewModel : ViewModel() {
             dataProcessor.createOrUpdateCompetitor(competitor)
         }
 
-    fun deleteCompetitor(competitorId: UUID, deleteReadout: Boolean) =
+    fun deleteCompetitor(competitorId: UUID, deleteResult: Boolean) =
         CoroutineScope(Dispatchers.IO).launch {
             dataProcessor.deleteCompetitor(
                 competitorId,
-                deleteReadout
+                deleteResult
             )
         }
 
@@ -216,52 +205,43 @@ class SelectedRaceViewModel : ViewModel() {
     fun getLastReadCard() = dataProcessor.getLastReadCard()
 
     suspend fun processManualPunches(
-        readout: Readout,
+        result: Result,
         punches: ArrayList<Punch>,
         manualStatus: RaceStatus?
     ) {
-        dataProcessor.processManualPunches(readout, punches, manualStatus)
+        dataProcessor.processManualPunches(result, punches, manualStatus)
     }
 
-    fun getReadoutDataByReadout(readoutId: UUID): ReadoutData? {
-        val data = runBlocking {
-            withContext(Dispatchers.IO) {
-                return@withContext dataProcessor.getReadoutDataByReadout(readoutId)
-            }
+    fun getResultData(id: UUID): ResultData {
+       return runBlocking {
+            return@runBlocking dataProcessor.getResultData(id)
         }
-        return data
     }
 
-
-    fun getReadoutBySINumber(siNumber: Int, raceId: UUID) =
+    fun getResultBySINumber(siNumber: Int, raceId: UUID) =
         runBlocking {
-            return@runBlocking dataProcessor.getReadoutBySINumber(siNumber, raceId)
+            return@runBlocking dataProcessor.getResultBySINumber(siNumber, raceId)
         }
 
-    fun getReadoutByCompetitor(competitorId: UUID) = runBlocking {
-        return@runBlocking dataProcessor.getReadoutByCompetitor(competitorId)
+    fun getResultByCompetitor(competitorId: UUID) = runBlocking {
+        return@runBlocking dataProcessor.getResultByCompetitor(competitorId)
     }
 
-    fun deleteReadout(id: UUID) {
+    fun deleteResult(id: UUID) {
         CoroutineScope(Dispatchers.IO).launch {
-            dataProcessor.deleteReadout(id)
+            dataProcessor.deleteResult(id)
         }
     }
 
-    fun deleteAllReadoutsByRace() =
+    fun deleteAllResultsByRace() =
         CoroutineScope(Dispatchers.IO).launch {
             race.value?.let {
-                dataProcessor.deleteAllReadoutsByRace(
+                dataProcessor.deleteAllResultsByRace(
                     it.id
                 )
             }
         }
 
-    fun getPunchesByReadout(readoutId: UUID): List<Punch> {
-        return runBlocking {
-            return@runBlocking dataProcessor.getPunchesByReadout(readoutId)
-        }
-    }
 
     //DATA IMPORT/EXPORT
     fun importData(

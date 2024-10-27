@@ -17,7 +17,7 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.AliasPunch
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import java.util.UUID
 
@@ -26,7 +26,7 @@ class ReadoutDetailFragment : Fragment() {
     private val dataProcessor = DataProcessor.get()
     private val args: ReadoutDetailFragmentArgs by navArgs()
     private val selectedRaceViewModel: SelectedRaceViewModel by activityViewModels()
-    private lateinit var readoutDetail: ReadoutData
+    private lateinit var resultData: ResultData
 
     private lateinit var readoutDetailToolbar: Toolbar
     private lateinit var punchRecyclerView: RecyclerView
@@ -50,7 +50,7 @@ class ReadoutDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        readoutDetail = args.readoutDetail
+        resultData = args.resultData
 
         readoutDetailToolbar = view.findViewById(R.id.readout_detail_toolbar)
         punchRecyclerView = view.findViewById(R.id.readout_detail_punch_recycler_view)
@@ -67,7 +67,7 @@ class ReadoutDetailFragment : Fragment() {
         readoutDetailToolbar.setNavigationIcon(R.drawable.ic_back)
         readoutDetailToolbar.setTitle(R.string.readout_detail_title)
         readoutDetailToolbar.subtitle =
-            args.readoutDetail.readoutResult.readout.siNumber?.toString()
+            args.resultData.result.siNumber?.toString()
         readoutDetailToolbar.inflateMenu(R.menu.fragment_menu_readout_detail)
 
         readoutDetailToolbar.setNavigationOnClickListener {
@@ -79,12 +79,12 @@ class ReadoutDetailFragment : Fragment() {
 
     private fun populateFields() {
 
-        if (readoutDetail.competitorCategory?.competitor != null) {
-            clubView.text = readoutDetail.competitorCategory!!.competitor.club
-            indexView.text = readoutDetail.competitorCategory!!.competitor.index
+        if (resultData.competitorCategory?.competitor != null) {
+            clubView.text = resultData.competitorCategory!!.competitor.club
+            indexView.text = resultData.competitorCategory!!.competitor.index
             competitorNameView.text =
-                "${readoutDetail.competitorCategory!!.competitor.firstName} ${readoutDetail.competitorCategory!!.competitor.lastName}"
-            pointsView.text = readoutDetail.readoutResult.result.points.toString()
+                "${resultData.competitorCategory!!.competitor.firstName} ${resultData.competitorCategory!!.competitor.lastName}"
+            pointsView.text = resultData.result.points.toString()
         } else {
             competitorNameView.text = getText(R.string.unknown_competitor)
             pointsView.text = getText(R.string.unknown)
@@ -92,27 +92,27 @@ class ReadoutDetailFragment : Fragment() {
             indexView.text = getText(R.string.unknown)
         }
         raceStatusView.text =
-            dataProcessor.raceStatusToString(readoutDetail.readoutResult.result.raceStatus)
+            dataProcessor.raceStatusToString(resultData.result.raceStatus)
 
-        if (readoutDetail.competitorCategory?.category != null) {
-            categoryView.text = readoutDetail.competitorCategory!!.category!!.name
+        if (resultData.competitorCategory?.category != null) {
+            categoryView.text = resultData.competitorCategory!!.category!!.name
         } else {
             categoryView.text = getText(R.string.unknown)
         }
 
-        siNumberView.text = if (readoutDetail.readoutResult.readout.siNumber != null) {
-            readoutDetail.readoutResult.readout.siNumber.toString()
+        siNumberView.text = if (resultData.result.siNumber != null) {
+            resultData.result.siNumber.toString()
         } else {
             "-"
         }
         runTimeView.text =
-            TimeProcessor.durationToMinuteString(readoutDetail.readoutResult.result.runTime)
+            TimeProcessor.durationToMinuteString(resultData.result.runTime)
 
-        placeView.text = readoutDetail.readoutResult.result.place?.toString()
+        placeView.text = resultData.result.place?.toString()
             ?: getText(R.string.unknown) //TODO: Place
 
         setMenuActions()
-        setRecyclerViewAdapter(readoutDetail.readoutResult.punches)
+        setRecyclerViewAdapter(resultData.punches)
     }
 
     private fun setMenuActions() {
@@ -122,7 +122,7 @@ class ReadoutDetailFragment : Fragment() {
                     findNavController().navigate(
                         ReadoutDetailFragmentDirections.editReadout(
                             false,
-                            readoutDetail, -1
+                            resultData, -1
                         )
                     )
                     true
@@ -138,14 +138,14 @@ class ReadoutDetailFragment : Fragment() {
                             true,
                             -1,
                             null,
-                            dataProcessor.getStringFromPunches(readoutDetail.readoutResult.getPunchList())
+                            dataProcessor.getStringFromPunches(resultData.getPunchList())
                         )
                     )
                     true
                 }
 
                 R.id.readout_detail_menu_delete_readout -> {
-                    confirmReadoutDeletion(readoutDetail)
+                    confirmReadoutDeletion(resultData)
                     true
                 }
 
@@ -156,18 +156,18 @@ class ReadoutDetailFragment : Fragment() {
         }
     }
 
-    private fun confirmReadoutDeletion(readoutData: ReadoutData) {
+    private fun confirmReadoutDeletion(resultData: ResultData) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(getString(R.string.readout_delete_readout))
         val message =
             getString(
                 R.string.readout_delete_readout_confirmation,
-                readoutData.readoutResult.readout.siNumber
+                resultData.result.siNumber
             )
         builder.setMessage(message)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            selectedRaceViewModel.deleteReadout(readoutData.readoutResult.readout.id)
+            selectedRaceViewModel.deleteResult(resultData.result.id)
             dialog.dismiss()
             parentFragmentManager.popBackStackImmediate();
         }
@@ -180,16 +180,14 @@ class ReadoutDetailFragment : Fragment() {
 
     private fun setResultListener() {
         setFragmentResultListener(ReadoutEditDialogFragment.REQUEST_READOUT_MODIFICATION) { _, bundle ->
-            val readoutId = bundle.getString(
-                ReadoutEditDialogFragment.BUNDLE_READOUT_ID
+            val resultId = bundle.getString(
+                ReadoutEditDialogFragment.BUNDLE_RESULT_ID
             )
             val newData =
-                selectedRaceViewModel.getReadoutDataByReadout(UUID.fromString(readoutId))
-
-            if (newData != null) {
-                readoutDetail = newData
+                selectedRaceViewModel.getResultData(UUID.fromString(resultId))
+                resultData = newData
                 populateFields()
-            }
+
         }
     }
 

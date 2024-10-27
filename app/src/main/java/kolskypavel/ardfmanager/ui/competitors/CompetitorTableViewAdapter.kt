@@ -105,7 +105,7 @@ class CompetitorTableViewAdapter(
 
                     3 -> {
                         if (item.competitorCategory.competitor.drawnRelativeStartTime != null) {
-                            if (item.readoutResult == null) {
+                            if (item.resultData == null) {
                                 val runDuration = TimeProcessor
                                     .runDurationFromStart(
                                         selectedRaceViewModel.getCurrentRace().startDateTime,
@@ -118,7 +118,7 @@ class CompetitorTableViewAdapter(
                                 }
                             } else {
                                 text.text =
-                                    TimeProcessor.durationToMinuteString(item.readoutResult!!.result.runTime)
+                                    TimeProcessor.durationToMinuteString(item.resultData!!.result.runTime)
                             }
                         } else {
                             text.text = "-"
@@ -127,7 +127,7 @@ class CompetitorTableViewAdapter(
 
                     4 -> {
                         if (item.competitorCategory.competitor.drawnRelativeStartTime != null) {
-                            if (item.readoutResult == null) {
+                            if (item.resultData == null) {
 
                                 val limit: Duration =
                                     if (item.competitorCategory.category?.timeLimit != null) {

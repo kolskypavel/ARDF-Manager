@@ -26,7 +26,7 @@ import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ReadoutData
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData
 import kolskypavel.ardfmanager.databinding.FragmentReadoutsBinding
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import kolskypavel.ardfmanager.ui.races.RaceCreateDialogFragment
@@ -153,7 +153,7 @@ class ReadoutFragment : Fragment() {
         builder.setMessage(R.string.readout_delete_all_confirmation)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            selectedRaceViewModel.deleteAllReadoutsByRace()
+            selectedRaceViewModel.deleteAllResultsByRace()
             dialog.dismiss()
         }
 
@@ -181,19 +181,19 @@ class ReadoutFragment : Fragment() {
     private fun recyclerViewContextMenuActions(
         action: Int,
         position: Int,
-        readoutData: ReadoutData
+        resultData: ResultData
     ) {
         when (action) {
             0 -> {
                 findNavController().navigate(
                     ReadoutFragmentDirections.editOrCreateReadout(
-                        false, readoutData, position
+                        false, resultData, position
                     )
                 )
             }
 
             1 -> {
-                confirmReadoutDeletion(readoutData)
+                confirmReadoutDeletion(resultData)
             }
         }
     }
@@ -232,18 +232,18 @@ class ReadoutFragment : Fragment() {
         }
     }
 
-    private fun confirmReadoutDeletion(readoutData: ReadoutData) {
+    private fun confirmReadoutDeletion(resultData: ResultData) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(getString(R.string.readout_delete_readout))
         val message =
             getString(
                 R.string.readout_delete_readout_confirmation,
-                readoutData.readoutResult.readout!!.siNumber
+                resultData.result.siNumber
             )
         builder.setMessage(message)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            selectedRaceViewModel.deleteReadout(readoutData.readoutResult.readout.id)
+            selectedRaceViewModel.deleteResult(resultData.result.id)
             dialog.dismiss()
         }
 
@@ -256,10 +256,10 @@ class ReadoutFragment : Fragment() {
     private fun setRecyclerAdapter() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                selectedRaceViewModel.readoutData.collect { readouts ->
+                selectedRaceViewModel.resultData.collect { results ->
                     readoutRecyclerView.adapter =
                         ReadoutDataRecyclerViewAdapter(
-                            readouts,
+                            results,
                             requireContext(),
                             { readoutData -> openReadoutDetail(readoutData) },
                             { action, position, readoutData ->
@@ -274,8 +274,8 @@ class ReadoutFragment : Fragment() {
         }
     }
 
-    private fun openReadoutDetail(readoutData: ReadoutData) {
-        findNavController().navigate(ReadoutFragmentDirections.openReadoutDetail(readoutData))
+    private fun openReadoutDetail(resultData: ResultData) {
+        findNavController().navigate(ReadoutFragmentDirections.openReadoutDetail(resultData))
     }
 
     private fun setBackButton() {

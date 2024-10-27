@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
 import kolskypavel.ardfmanager.backend.room.entitity.Alias
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.AliasPunch
 import java.util.UUID
 
 @Dao
@@ -14,10 +13,7 @@ interface AliasDao {
 
     @Query("SELECT * FROM alias WHERE id=(:id)")
     suspend fun getAlias(id: UUID): Alias
-
-    @Query("SELECT * FROM punch WHERE competitor_id = (:competitorId)")
-    suspend fun getAliasPunchByCompetitor(competitorId: UUID) : List<AliasPunch>
-
+    
     @Upsert
     fun createOrUpdateAlias(alias: Alias)
 
