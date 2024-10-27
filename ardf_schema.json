@@ -271,6 +271,12 @@
                   "minimum": 0,
                   "description": "Competitor's start number"
                 },
+                "start_preference": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4,
+                  "description": "Preferred start group in the race: 0 - first starter, 1,2,3 - preferred group, 4 - last started"
+                },
                 "start_time": {
                   "type": "string",
                   "format": "time",
@@ -315,11 +321,6 @@
                       ],
                       "description": "Status of the result: OK - valid, MP - misspunched, DNS - did not start, DNF - did not finish, NR - no ranking, OVT - overtime, UNF - unofficial, ERR - error"
                     },
-                    "controls_count": {
-                      "type": "integer",
-                      "minimum": 0,
-                      "description": "Number of control points found"
-                    },
                     "place": {
                       "type": "integer",
                       "minimum": 1,
@@ -328,6 +329,47 @@
                     "modified": {
                       "type": "boolean",
                       "description": "Marks if the readout was modified - e.g referee's decision"
+                    },
+                    "punch_count": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "description": "Number of control points found"
+                    },
+                    "punches": {
+                      "type": "array",
+                      "description": "Control punches of the competitor",
+                      "items": {
+                        "type": "object",
+                        "description": "One punch of a control point",
+                        "properties": {
+                          "code": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 255,
+                            "required": [],
+                            "description": "Code of the control point"
+                          },
+                          "alias": {
+                            "type": "string",
+                            "description": "Alias of the control point - e. g. F1"
+                          },
+                          "split_time": {
+                            "type": "string",
+                            "format": "duration",
+                            "required": [],
+                            "description": "Split from the last control"
+                          },
+                          "punch_status": {
+                            "type": "string",
+                            "enum": [
+                              "OK",
+                              "MP",
+                              ""
+                            ],
+                            "description": "Status of the punch: OK - valid"
+                          }
+                        }
+                      }
                     }
                   }
                 }
