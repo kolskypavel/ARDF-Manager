@@ -1,10 +1,16 @@
 {
-  "title": "ARDF JSON v1.0",
+  "title": "ARDF JSON v1.0b",
   "description": "Data standard for storing ARDF competition data",
   "type": "object",
   "properties": {
-    "eventName": {
-      "type": "string"
+    "event_name": {
+      "type": "string",
+      "required": [],
+      "description": "Name of the event"
+    },
+    "event_id": {
+      "type": "integer",
+      "description": "External ID of the event"
     },
     "event_date_start": {
       "type": "string",
@@ -29,11 +35,13 @@
         "description": "One race of the event",
         "properties": {
           "race_name": {
-            "type": "string"
+            "type": "string",
+            "required": [],
+            "description": "Name of the race"
           },
           "race_location": {
             "type": "string",
-            "description": "Location of the start"
+            "description": "Location of the event center"
           },
           "race_id": {
             "type": "integer",
@@ -41,8 +49,9 @@
           },
           "race_start": {
             "type": "string",
-            "description": "Time of 00",
-            "format": "date-time"
+            "format": "date-time",
+            "required": [],
+            "description": "Time of 00"
           },
           "race_type": {
             "type": "string",
@@ -54,6 +63,7 @@
               "RELAY",
               "ORIENTEERING"
             ],
+            "required": [],
             "description": "Type of the race"
           },
           "race_band": {
@@ -75,6 +85,7 @@
               "PRACTICE",
               "OTHER"
             ],
+            "required": [],
             "description": "Level of the race"
           },
           "race_time_limit": {
@@ -106,33 +117,32 @@
               "type": "object",
               "description": "One category in the race",
               "properties": {
-                "name": {
+                "category_name": {
                   "type": "string",
                   "required": [],
                   "description": "Name of the category"
                 },
-                "gender": {
+                "category_gender": {
                   "type": "boolean",
                   "required": [],
-                  "default": false,
                   "description": "true - man, false - woman"
                 },
-                "max_age": {
+                "category_max_age": {
                   "type": "integer",
                   "minimum": 0,
                   "description": "Maximal permitted age of a competitor in this category"
                 },
-                "length": {
+                "category_length": {
                   "type": "number",
                   "minimum": 0,
                   "description": "Length of the course in meters"
                 },
-                "climb": {
+                "category_climb": {
                   "type": "number",
                   "minimum": 0,
                   "description": "Climb of the course in meters"
                 },
-                "control_points": {
+                "category_control_points": {
                   "type": "array",
                   "description": "Control points for the category",
                   "items": {
@@ -143,6 +153,7 @@
                         "type": "integer",
                         "minimum": 0,
                         "maximum": 255,
+                        "required": [],
                         "description": "SI code of the control point"
                       },
                       "control_type": {
@@ -151,12 +162,13 @@
                           "BEACON",
                           "SEPARATOR"
                         ],
+                        "required": [],
                         "description": "Type of the control - regular, beacon, separator"
                       }
                     }
                   }
                 },
-                "different_properties": {
+                "category_different_properties": {
                   "type": "boolean",
                   "default": false,
                   "description": "Marks whenever the category follows the race rule settings, or has its own"
@@ -205,17 +217,17 @@
               "type": "object",
               "description": "One alias",
               "properties": {
-                "si_code": {
+                "alias_si_code": {
                   "type": "integer",
                   "minimum": 0,
                   "maximum": 255,
                   "required": [],
-                  "description": "SI code of the control point"
+                  "description": "SI code of the control point with alias"
                 },
-                "name": {
+                "alias_name": {
                   "type": "string",
                   "required": [],
-                  "description": "Name of the control point - e.g. F4"
+                  "description": "Name of the control point with alias- e.g. F4"
                 }
               }
             }
@@ -228,28 +240,30 @@
               "properties": {
                 "first_name": {
                   "type": "string",
+                  "required": [],
                   "description": "Competitor's first name"
                 },
                 "last_name": {
                   "type": "string",
+                  "required": [],
                   "description": "Competitor's last name"
                 },
-                "club_name": {
+                "competitor_club": {
                   "type": "string",
                   "description": "Competitor's club / country"
                 },
-                "category": {
+                "competitor_category": {
                   "type": "string",
+                  "required": [],
                   "description": "Competitor's category in the race"
                 },
-                "index": {
+                "competitor_index": {
                   "type": "string",
-                  "description": "Competitor's index / callsign"
+                  "description": "Competitor's index / callsign - if available"
                 },
-                "gender": {
+                "competitor_gender": {
                   "type": "boolean",
                   "required": [],
-                  "default": false,
                   "description": "true - man, false - woman"
                 },
                 "birth_year": {
@@ -264,6 +278,7 @@
                 },
                 "si_rent": {
                   "type": "boolean",
+                  "default": "false",
                   "description": "Mark if competitor's SI was rented or not"
                 },
                 "start_number": {
@@ -277,7 +292,7 @@
                   "maximum": 4,
                   "description": "Preferred start group in the race: 0 - first starter, 1,2,3 - preferred group, 4 - last started"
                 },
-                "start_time": {
+                "competitor_start_time": {
                   "type": "string",
                   "format": "time",
                   "minimum": 0,
@@ -292,14 +307,16 @@
                       "format": "date-time",
                       "description": "SI check time"
                     },
-                    "start_time": {
+                    "result_start_time": {
                       "type": "string",
                       "format": "date-time",
+                      "required": [],
                       "description": "Start time of the competitor"
                     },
-                    "finish_time": {
+                    "result_finish_time": {
                       "type": "string",
                       "format": "date-time",
+                      "required": [],
                       "description": "Finish time of the competitor"
                     },
                     "run_time": {
@@ -319,12 +336,13 @@
                         "UNF",
                         "ERR"
                       ],
+                      "required": [],
                       "description": "Status of the result: OK - valid, MP - misspunched, DNS - did not start, DNF - did not finish, NR - no ranking, OVT - overtime, UNF - unofficial, ERR - error"
                     },
                     "place": {
                       "type": "integer",
-                      "minimum": 1,
-                      "description": "Place of the competitor"
+                      "minimum": 0,
+                      "description": "Place of the competitor: 0 - not placed (misspunch, disq). 1... - valid place"
                     },
                     "modified": {
                       "type": "boolean",
@@ -364,9 +382,11 @@
                             "enum": [
                               "OK",
                               "MP",
-                              ""
+                              "DP",
+                              "AD"
                             ],
-                            "description": "Status of the punch: OK - valid"
+                            "required": [],
+                            "description": "Status of the punch: OK - valid, MP - misspunch, DP - duplicate punch, AD - additional punch (unknown SI code)"
                           }
                         }
                       }
