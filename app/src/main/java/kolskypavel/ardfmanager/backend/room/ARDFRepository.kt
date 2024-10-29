@@ -142,7 +142,10 @@ class ARDFRepository private constructor(context: Context) {
     //RESULTS
     suspend fun getResult(id: UUID) = eventDatabase.resultDao().getResult(id)
 
-    suspend fun getResultData(resultId:UUID) = eventDatabase.resultDao().getResultData(resultId)
+    suspend fun getResultData(id: UUID) = eventDatabase.resultDao().getResultData(id)
+
+    fun getResultDataFlowByRace(raceId: UUID) =
+        eventDatabase.resultDao().getResultDataFlowByRace(raceId)
 
     suspend fun getResultBySINumber(siNumber: Int, raceId: UUID) =
         eventDatabase.resultDao().getResultForSINumber(siNumber, raceId)
@@ -165,8 +168,8 @@ class ARDFRepository private constructor(context: Context) {
     ) {
         eventDatabase.withTransaction {
             eventDatabase.punchDao().deletePunchesByResult(result.id)
-            punches.forEach { punch -> eventDatabase.punchDao().createOrUpdatePunch(punch) }
             eventDatabase.resultDao().createOrUpdateResult(result)
+            punches.forEach { punch -> eventDatabase.punchDao().createOrUpdatePunch(punch)}
         }
     }
 

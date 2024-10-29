@@ -183,7 +183,7 @@
                     "RELAY",
                     "ORIENTEERING"
                   ],
-                  "description": "Category - different type of the race"
+                  "description": "Category - different race type"
                 },
                 "category_time_limit": {
                   "type": "string",

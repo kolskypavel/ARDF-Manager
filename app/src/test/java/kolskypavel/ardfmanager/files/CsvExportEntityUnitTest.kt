@@ -20,7 +20,6 @@ class CsvExportEntityUnitTest {
         val controlPoint = ControlPoint.getTestControlPoint()
         assertEquals("31#TEST#0#0#1", controlPoint.toCsvString())
         controlPoint.siCode = 99
-        controlPoint.points = 2
         controlPoint.type = ControlPointType.BEACON
         assertEquals("99#B#1#0#2", controlPoint.toCsvString())
     }

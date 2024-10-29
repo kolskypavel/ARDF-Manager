@@ -129,7 +129,7 @@ class RaceCreateDialogFragment : DialogFragment() {
                 "", null,
                 LocalDateTime.now(),
                 RaceType.CLASSICS,
-                RaceLevel.PRACTICE,
+                RaceLevel.TRAINING,
                 RaceBand.M80,
                 Duration.ofMinutes(120),
                 StartTimeSource.DRAWN_TIME,

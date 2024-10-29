@@ -5,6 +5,7 @@ import androidx.room.Query
 import androidx.room.Upsert
 import kolskypavel.ardfmanager.backend.room.entitity.Result
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData
+import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
 @Dao
@@ -14,6 +15,9 @@ interface ResultDao {
 
     @Query("SELECT * FROM result WHERE id=(:id)")
     suspend fun getResultData(id: UUID): ResultData
+
+    @Query("SELECT * FROM result WHERE race_id=(:raceId)")
+    fun getResultDataFlowByRace(raceId: UUID): Flow<List<ResultData>>
 
     @Query("SELECT * FROM result WHERE competitor_id=(:competitorId) LIMIT 1")
     suspend fun getResultByCompetitor(competitorId: UUID): Result?

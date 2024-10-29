@@ -47,6 +47,10 @@ class SelectedRaceViewModel : ViewModel() {
         get() =
             _competitorData.asStateFlow()
 
+    private val _readoutData: MutableStateFlow<List<ResultData>> =
+        MutableStateFlow(emptyList())
+    val readoutData: StateFlow<List<ResultData>> get() = _readoutData.asStateFlow()
+
     private val _resultData: MutableStateFlow<List<ResultWrapper>> =
         MutableStateFlow(emptyList())
     val resultData: StateFlow<List<ResultWrapper>> get() = _resultData.asStateFlow()
@@ -75,6 +79,11 @@ class SelectedRaceViewModel : ViewModel() {
             launch {
                 dataProcessor.getCompetitorDataFlowByRace(id).collect {
                     _competitorData.value = it
+                }
+            }
+            launch {
+                dataProcessor.getResultDataFlowByRace(id).collect {
+                    _readoutData.value = it
                 }
             }
 
@@ -213,7 +222,7 @@ class SelectedRaceViewModel : ViewModel() {
     }
 
     fun getResultData(id: UUID): ResultData {
-       return runBlocking {
+        return runBlocking {
             return@runBlocking dataProcessor.getResultData(id)
         }
     }

@@ -11,10 +11,10 @@
     <string name="race_import_text">Importovat závod ze souboru</string>
     <string name="race_toolbar_title">Přehled závodů</string>
     <string name="about_the_app">O aplikaci</string>
-    <string name="race_level_0">Národní</string>
-    <string name="race_level_1">Národní</string>
-    <string name="race_level_2">Krajský</string>
-    <string name="race_level_3">Okresní</string>
+    <string name="race_level_international">Národní</string>
+    <string name="race_level_national">Národní</string>
+    <string name="race_level_regional">Krajský</string>
+    <string name="race_level_district">Okresní</string>
     <string name="band_combined">Kombinované</string>
     <string name="general_name">Jméno</string>
     <string name="general_date">Datum</string>
@@ -49,7 +49,7 @@
     <string name="finish_time">Čas cíle</string>
     <string name="run_time">Čas běhu</string>
     <string name="required">Požadováno</string>
-    <string name="race_level_4">Trénink</string>
+    <string name="race_level_training">Trénink</string>
     <string name="invalid">Neplatný</string>
     <string name="race_delete_confirmation">Opravdu chcete smazat závod?</string>
     <string name="same_category_type">Stejný typ jako závod</string>

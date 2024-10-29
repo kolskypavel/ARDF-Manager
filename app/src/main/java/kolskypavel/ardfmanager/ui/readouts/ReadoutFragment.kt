@@ -256,10 +256,10 @@ class ReadoutFragment : Fragment() {
     private fun setRecyclerAdapter() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                selectedRaceViewModel.resultData.collect { results ->
+                selectedRaceViewModel.readoutData.collect { readouts ->
                     readoutRecyclerView.adapter =
                         ReadoutDataRecyclerViewAdapter(
-                            results,
+                            readouts,
                             requireContext(),
                             { readoutData -> openReadoutDetail(readoutData) },
                             { action, position, readoutData ->

@@ -310,7 +310,7 @@ class DataProcessor private constructor(context: Context) {
 
     suspend fun getResultData(resultId: UUID) = ardfRepository.getResultData(resultId)
 
-    fun getResultDataFlowByRace(raceId: UUID) = resultsProcessor!!.getResultWrappersByRace(raceId)
+    fun getResultDataFlowByRace(raceId: UUID) = ardfRepository.getResultDataFlowByRace(raceId)
 
     fun getResultWrapperFlowByRace(raceId: UUID) =
         resultsProcessor!!.getResultWrappersByRace(raceId)

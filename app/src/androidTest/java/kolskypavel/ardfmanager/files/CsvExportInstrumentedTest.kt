@@ -40,7 +40,6 @@ class CsvExportInstrumentedTest {
                     30 + i,
                     ControlPointType.CONTROL,
                     i,
-                    1
                 )
             )
         }

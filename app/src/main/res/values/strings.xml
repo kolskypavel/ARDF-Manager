@@ -328,11 +328,11 @@
     <string name="race_type_foxoring" translatable="false">Foxoring</string>
     <string name="race_type_orienteering">Orienteering</string>
 
-    <string name="race_level_0">International</string>
-    <string name="race_level_1">National</string>
-    <string name="race_level_2">Regional</string>
-    <string name="race_level_3">District</string>
-    <string name="race_level_4">Practice</string>
+    <string name="race_level_international">International</string>
+    <string name="race_level_national">National</string>
+    <string name="race_level_regional">Regional</string>
+    <string name="race_level_district">District</string>
+    <string name="race_level_training">Training</string>
 
     <string name="band_80m" translatable="false">80m</string>
     <string name="band_2m" translatable="false">2m</string>
@@ -355,11 +355,11 @@
     </string-array>
 
     <string-array name="race_levels_array">
-        <item>@string/race_level_0</item>
-        <item>@string/race_level_1</item>
-        <item>@string/race_level_2</item>
-        <item>@string/race_level_3</item>
-        <item>@string/race_level_4</item>
+        <item>@string/race_level_international</item>
+        <item>@string/race_level_national</item>
+        <item>@string/race_level_regional</item>
+        <item>@string/race_level_district</item>
+        <item>@string/race_level_training</item>
     </string-array>
 
     <string-array name="race_bands_array">
