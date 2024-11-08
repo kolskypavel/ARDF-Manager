@@ -1,4 +1,4 @@
-package kolskypavel.ardfmanager.backend.comparators
+package kolskypavel.ardfmanager.ui.competitors
 
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 
@@ -36,14 +36,6 @@ class CompetitorCategoryComparator : Comparator<CompetitorData> {
     }
 }
 
-class CompetitorStartTimeComparator : Comparator<CompetitorData> {
-    override fun compare(o1: CompetitorData, o2: CompetitorData): Int {
-
-        return o1.competitorCategory.competitor.drawnRelativeStartTime?.compareTo(o2.competitorCategory.competitor.drawnRelativeStartTime)
-            ?: -1
-    }
-}
-
 class CompetitorSINumberComparator : Comparator<CompetitorData> {
     override fun compare(o1: CompetitorData, o2: CompetitorData): Int {
 
@@ -58,3 +50,25 @@ class CompetitorSINumberComparator : Comparator<CompetitorData> {
         }
     }
 }
+
+class CompetitorStartTimeComparator : Comparator<CompetitorData> {
+    override fun compare(o1: CompetitorData, o2: CompetitorData): Int {
+
+        return o1.competitorCategory.competitor.drawnRelativeStartTime?.compareTo(o2.competitorCategory.competitor.drawnRelativeStartTime)
+            ?: -1
+    }
+}
+
+class CompetitorFinishTimeComparator : Comparator<CompetitorData> {
+    override fun compare(o1: CompetitorData, o2: CompetitorData): Int {
+        return o1.resultData?.result?.finishTime?.compareTo(o2.resultData?.result?.finishTime) ?: -1
+    }
+}
+
+class CompetitorRunTimeComparator : Comparator<CompetitorData> {
+    override fun compare(o1: CompetitorData, o2: CompetitorData): Int {
+        return o1.resultData?.result?.runTime?.compareTo(o2.resultData?.result?.runTime) ?: -1
+    }
+}
+
+

@@ -26,12 +26,6 @@ import de.codecrafters.tableview.toolkit.TableDataRowBackgroundProviders
 import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.comparators.CompetitorCategoryComparator
-import kolskypavel.ardfmanager.backend.comparators.CompetitorClubComparator
-import kolskypavel.ardfmanager.backend.comparators.CompetitorNameComparator
-import kolskypavel.ardfmanager.backend.comparators.CompetitorSINumberComparator
-import kolskypavel.ardfmanager.backend.comparators.CompetitorStartNumComparator
-import kolskypavel.ardfmanager.backend.comparators.CompetitorStartTimeComparator
 import kolskypavel.ardfmanager.backend.room.entitity.Competitor
 import kolskypavel.ardfmanager.backend.room.entitity.Race
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
@@ -185,14 +179,17 @@ class CompetitorFragment : Fragment() {
                 headers =
                     intArrayOf(
                         R.string.general_name,
+                        R.string.category,
                         R.string.run_time,
                         R.string.general_start_time,
                         R.string.finish_time,
-                        R.string.category,
                     )
-                for (i in 1..5) {
-                    competitorTableView.setColumnComparator(i, null)
-                }
+
+                competitorTableView.setColumnComparator(0, CompetitorNameComparator())
+                competitorTableView.setColumnComparator(1, CompetitorCategoryComparator())
+                competitorTableView.setColumnComparator(2, CompetitorStartTimeComparator())
+                competitorTableView.setColumnComparator(3, CompetitorFinishTimeComparator())
+                competitorTableView.setColumnComparator(4, CompetitorRunTimeComparator())
             }
 
             CompetitorTableDisplayType.ON_THE_WAY -> {
@@ -204,7 +201,7 @@ class CompetitorFragment : Fragment() {
                         R.string.run_time,
                         R.string.competitor_to_limit,
                     )
-                for (i in 1..5) {
+                for (i in 0..4) {
                     competitorTableView.setColumnComparator(i, null)
                 }
             }
@@ -232,6 +229,31 @@ class CompetitorFragment : Fragment() {
         )
     }
 
+    /**
+     * Filter the data based on required display type
+     */
+    private fun filterCompetitorData(
+        data: List<CompetitorData>,
+        displayType: CompetitorTableDisplayType
+    ): List<CompetitorData> {
+        return when (displayType) {
+            CompetitorTableDisplayType.OVERVIEW,
+            CompetitorTableDisplayType.START_LIST -> data
+
+            CompetitorTableDisplayType.FINISH_REACHED -> {
+                data.filter { cd ->
+                    cd.resultData != null
+                }
+            }
+
+            CompetitorTableDisplayType.ON_THE_WAY -> {
+                data.filter { cd ->
+                    cd.resultData == null
+                }
+            }
+        }
+    }
+
     private fun toggleCompetitorDisplay(displayType: CompetitorTableDisplayType) {
         setTableHeaders(displayType)
         setRecyclerAdapter(displayType)
@@ -240,10 +262,10 @@ class CompetitorFragment : Fragment() {
     private fun setRecyclerAdapter(displayType: CompetitorTableDisplayType) {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                selectedRaceViewModel.competitorData.collect { competitorCategories ->
+                selectedRaceViewModel.competitorData.collect { competitorData ->
                     competitorTableView.dataAdapter =
                         CompetitorTableViewAdapter(
-                            competitorCategories,
+                            filterCompetitorData(competitorData, displayType),
                             displayType,
                             requireContext(), selectedRaceViewModel
                         ) { action, position, competitor ->

@@ -46,6 +46,10 @@ class SITime(
         return "${time.format(timeFormatter)},$dayOfWeek,$week"
     }
 
+    fun localTimeFormatter(): String {
+        return DateTimeFormatter.ofPattern("HH:mm:ss").format(time)
+    }
+
     fun addHalfDay() {
         if (time.isAfter(LocalTime.NOON)) {
             dayOfWeek++
@@ -106,6 +110,10 @@ class SITime(
 
     fun isAfter(other: SITime): Boolean {
         return this.seconds > other.seconds
+    }
+
+    fun compareTo(other: SITime?): Int {
+        return this.seconds.compareTo(other?.seconds ?: 0)
     }
 
     companion object {

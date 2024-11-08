@@ -11,6 +11,10 @@ import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.CompetitorTableDisplayType
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -26,25 +30,25 @@ class CompetitorTableViewAdapter(
     override fun getCellView(rowIndex: Int, columnIndex: Int, parentView: ViewGroup?): View {
         val item = values[rowIndex]
         val view = layoutInflater.inflate(R.layout.competitor_table_cell, parentView, false)
-        val text: TextView = view.findViewById(R.id.competitor_table_cell_text)
+        val cell: TextView = view.findViewById(R.id.competitor_table_cell_text)
 
         when (display) {
 
             CompetitorTableDisplayType.OVERVIEW -> {
                 when (columnIndex) {
-                    0 -> text.text =
+                    0 -> cell.text =
                         item.competitorCategory.competitor.startNumber.toString()
 
                     1 -> {
-                        text.text =
-                            item.competitorCategory.competitor!!.lastName.uppercase() + " " + item.competitorCategory.competitor!!.firstName
+                        cell.text =
+                            item.competitorCategory.competitor.lastName.uppercase() + " " + item.competitorCategory.competitor.firstName
                     }
 
-                    2 -> text.text = item.competitorCategory.competitor!!.club
-                    3 -> text.text = item.competitorCategory.category?.name
+                    2 -> cell.text = item.competitorCategory.competitor.club
+                    3 -> cell.text = item.competitorCategory.category?.name
                         ?: context.getString(R.string.no_category)
 
-                    4 -> text.text =
+                    4 -> cell.text =
                         item.competitorCategory.competitor.siNumber?.toString()
                             ?: "-"
                 }
@@ -52,25 +56,25 @@ class CompetitorTableViewAdapter(
 
             CompetitorTableDisplayType.START_LIST -> {
                 when (columnIndex) {
-                    0 -> text.text =
+                    0 -> cell.text =
                         item.competitorCategory.competitor.startNumber.toString()
 
                     1 -> {
                         if (item.competitorCategory.competitor.drawnRelativeStartTime != null) {
-                            text.text =
+                            cell.text =
                                 TimeProcessor.durationToMinuteString(item.competitorCategory.competitor.drawnRelativeStartTime!!)
                         } else {
-                            text.text = "-"
+                            cell.text = "-"
                         }
                     }
 
-                    2 -> text.text =
-                        item.competitorCategory.competitor!!.lastName.uppercase() + " " + item.competitorCategory.competitor!!.firstName
+                    2 -> cell.text =
+                        item.competitorCategory.competitor.lastName.uppercase() + " " + item.competitorCategory.competitor.firstName
 
-                    3 -> text.text = item.competitorCategory.category?.name
+                    3 -> cell.text = item.competitorCategory.category?.name
                         ?: context.getString(R.string.no_category)
 
-                    4 -> text.text =
+                    4 -> cell.text =
                         item.competitorCategory.competitor.siNumber?.toString()
                             ?: "-"
                 }
@@ -79,7 +83,26 @@ class CompetitorTableViewAdapter(
             CompetitorTableDisplayType.FINISH_REACHED -> {
                 when (columnIndex) {
                     0 -> {
+                        cell.text =
+                            item.competitorCategory.competitor.lastName.uppercase() + " " + item.competitorCategory.competitor.firstName
+                    }
 
+                    1 -> {
+                        cell.text = item.competitorCategory.category?.name
+                            ?: context.getString(R.string.no_category)
+                    }
+
+                    2 -> {
+                        cell.text =
+                            TimeProcessor.durationToMinuteString(item.resultData!!.result.runTime)
+                    }
+
+                    3 -> {
+                        cell.text = item.resultData!!.result.startTime?.localTimeFormatter() ?: ""
+                    }
+
+                    4 -> {
+                        cell.text = item.resultData!!.result.finishTime?.localTimeFormatter() ?: ""
                     }
                 }
             }
@@ -87,66 +110,77 @@ class CompetitorTableViewAdapter(
             CompetitorTableDisplayType.ON_THE_WAY -> {
                 when (columnIndex) {
                     0 -> {
-                        text.text =
-                            item.competitorCategory.competitor.lastName.uppercase() + " " + item.competitorCategory.competitor!!.firstName
+                        cell.text =
+                            item.competitorCategory.competitor.lastName.uppercase() + " " + item.competitorCategory.competitor.firstName
                     }
 
-                    1 -> text.text = item.competitorCategory.category?.name
+                    1 -> cell.text = item.competitorCategory.category?.name
                         ?: context.getString(R.string.no_category)
 
                     2 -> {
+
                         if (item.competitorCategory.competitor.drawnRelativeStartTime != null) {
-                            text.text =
+                            cell.text =
                                 TimeProcessor.durationToMinuteString(item.competitorCategory.competitor.drawnRelativeStartTime!!)
                         } else {
-                            text.text = "-"
+                            cell.text = "-"
                         }
+
                     }
 
                     3 -> {
-                        if (item.competitorCategory.competitor.drawnRelativeStartTime != null) {
-                            if (item.resultData == null) {
-                                val runDuration = TimeProcessor
-                                    .runDurationFromStart(
-                                        selectedRaceViewModel.getCurrentRace().startDateTime,
-                                        item.competitorCategory.competitor.drawnRelativeStartTime!!
-                                    )
-                                if (runDuration != null) {
-                                    text.text = TimeProcessor.durationToMinuteString(runDuration)
+                        CoroutineScope(Dispatchers.Main).launch {
+                            while (true) {
+                                if (item.competitorCategory.competitor.drawnRelativeStartTime != null) {
+
+                                    val runDuration = TimeProcessor
+                                        .runDurationFromStart(
+                                            selectedRaceViewModel.getCurrentRace().startDateTime,
+                                            item.competitorCategory.competitor.drawnRelativeStartTime!!
+                                        )
+                                    if (runDuration != null) {
+                                        cell.text =
+                                            TimeProcessor.durationToMinuteString(runDuration)
+                                    } else {
+                                        cell.text = "-"
+                                    }
+
                                 } else {
-                                    text.text = "-"
+                                    cell.text = "-"
                                 }
-                            } else {
-                                text.text =
-                                    TimeProcessor.durationToMinuteString(item.resultData!!.result.runTime)
+                                delay(1000)
                             }
-                        } else {
-                            text.text = "-"
                         }
                     }
 
                     4 -> {
-                        if (item.competitorCategory.competitor.drawnRelativeStartTime != null) {
-                            if (item.resultData == null) {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            while (true) {
+                                if (item.competitorCategory.competitor.drawnRelativeStartTime != null) {
+                                    if (item.resultData == null) {
 
-                                val limit: Duration =
-                                    if (item.competitorCategory.category?.timeLimit != null) {
-                                        item.competitorCategory.category!!.timeLimit!!
-                                    } else {
-                                        selectedRaceViewModel.getCurrentRace().timeLimit
+                                        val limit: Duration =
+                                            if (item.competitorCategory.category?.timeLimit != null) {
+                                                item.competitorCategory.category!!.timeLimit!!
+                                            } else {
+                                                selectedRaceViewModel.getCurrentRace().timeLimit
+                                            }
+                                        val toLimit =
+                                            TimeProcessor.durationToLimit(
+                                                selectedRaceViewModel.getCurrentRace().startDateTime,
+                                                item.competitorCategory.competitor.drawnRelativeStartTime!!,
+                                                limit, LocalDateTime.now()
+                                            )
+
+                                        if (toLimit != null) {
+                                            cell.text =
+                                                TimeProcessor.durationToMinuteString(toLimit)
+                                        } else {
+                                            cell.text = "-"
+                                        }
                                     }
-                                val toLimit =
-                                    TimeProcessor.durationToLimit(
-                                        selectedRaceViewModel.getCurrentRace().startDateTime,
-                                        item.competitorCategory.competitor.drawnRelativeStartTime!!,
-                                        limit, LocalDateTime.now()
-                                    )
-
-                                if (toLimit != null) {
-                                    text.text = TimeProcessor.durationToMinuteString(toLimit)
-                                } else {
-                                    text.text = "-"
                                 }
+                                delay(1000)
                             }
                         }
                     }

@@ -11,14 +11,20 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class ResultsFragmentRecyclerViewAdapter(
     var values: ArrayList<ResultWrapper>,
     var context: Context,
-    var selectedRaceViewModel: SelectedRaceViewModel
+    var selectedRaceViewModel: SelectedRaceViewModel,
+    private val openDetail: (resultData: ResultData) -> Unit
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(
     ) {
@@ -30,12 +36,20 @@ class ResultsFragmentRecyclerViewAdapter(
             val rowView: View =
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.recycler_item_result_category, parent, false)
-            GroupViewHolder(rowView)
+            CategoryViewHolder(rowView)
         } else {
             val rowView: View =
                 LayoutInflater.from(parent.context)
                     .inflate(R.layout.recycler_item_result_competitor, parent, false)
-            ChildViewHolder(rowView)
+            CompetitorViewHolder(rowView)
+        }
+    }
+
+    private fun toggleArrow(expandButton: ImageButton, isExpanded: Boolean) {
+        if (isExpanded) {
+            expandButton.setImageResource(R.drawable.ic_collapse)
+        } else {
+            expandButton.setImageResource(R.drawable.ic_expand)
         }
     }
 
@@ -45,38 +59,39 @@ class ResultsFragmentRecyclerViewAdapter(
 
         val dataList = values[position]
         if (dataList.isChild == 0) {
-            holder as GroupViewHolder
+            holder as CategoryViewHolder
             holder.apply {
                 if (dataList.category != null) {
                     categoryName.text =
                         "${dataList.category.name} (${
                             dataList.subList.size
-                        } ${
-                            categoryName.context.getString(
-                                R.string.general_competitors
-                            ).lowercase()
                         })"
                 } else {
-                    categoryName.text = context.getText(R.string.no_category)
+                    categoryName.text =
+                        "${context.getText(R.string.no_category)} (${dataList.subList.size})"
                 }
                 if (dataList.subList.isNotEmpty()) {
                     expandButton.visibility = View.VISIBLE
 
                     //Set on click expansion + icon
                     holder.itemView.setOnClickListener {
-                        if (dataList.isExpanded) {
-                            expandButton.setImageResource(R.drawable.ic_expand)
-                        } else {
-                            expandButton.setImageResource(R.drawable.ic_collapse)
-                        }
                         expandOrCollapseParentItem(dataList, position)
+                        toggleArrow(holder.expandButton, dataList.isExpanded)
                     }
+
+                    holder.expandButton.setOnClickListener {
+                        expandOrCollapseParentItem(dataList, position)
+                        toggleArrow(holder.expandButton, dataList.isExpanded)
+                    }
+
                 } else {
                     expandButton.visibility = View.GONE
                 }
+                toggleArrow(holder.expandButton, dataList.isExpanded)
             }
+
         } else {
-            holder as ChildViewHolder
+            holder as CompetitorViewHolder
 
             holder.apply {
                 val singleResult = dataList.subList.first()
@@ -100,35 +115,43 @@ class ResultsFragmentRecyclerViewAdapter(
                     singleResult.competitorCategory.competitor.club.ifEmpty {
                         "-"
                     }
-                competitorTime.text = if (singleResult.resultData != null) {
-                    TimeProcessor.durationToMinuteString(singleResult.resultData!!.result.runTime)
+                if (singleResult.resultData != null) {
+                    competitorTime.text =
+                        TimeProcessor.durationToMinuteString(singleResult.resultData!!.result.runTime)
                 } else if (singleResult.competitorCategory.competitor.drawnRelativeStartTime != null) {
-                    "${
-                        TimeProcessor.runDurationFromStartString(
-                            selectedRaceViewModel.getCurrentRace().startDateTime,
-                            singleResult.competitorCategory.competitor.drawnRelativeStartTime!!
-                        )
-                    }?"
+
+                    CoroutineScope(Dispatchers.Main).launch {
+                        while (true) {
+                            competitorTime.text = TimeProcessor.runDurationFromStartString(
+                                selectedRaceViewModel.getCurrentRace().startDateTime,
+                                singleResult.competitorCategory.competitor.drawnRelativeStartTime!!
+                            )
+                            delay(1000)
+                        }
+                    }
                 } else {
-                    "-"
+                    competitorTime.text = "-"
                 }
                 competitorPoints.text = if (singleResult.resultData?.result?.points != null) {
                     singleResult.resultData?.result?.points.toString()
                 } else {
                     "-"
                 }
+                holder.itemView.setOnClickListener {
+                    if (singleResult.resultData != null) {
+                        openDetail(singleResult.resultData!!)
+                    }
+                }
             }
         }
     }
 
     private fun expandOrCollapseParentItem(singleBoarding: ResultWrapper, position: Int) {
-
         if (singleBoarding.isExpanded) {
             collapseParentRow(position)
         } else {
             expandParentRow(position)
         }
-
     }
 
     private fun expandParentRow(position: Int) {
@@ -162,18 +185,28 @@ class ResultsFragmentRecyclerViewAdapter(
         }
     }
 
+    fun expandAllItems() {
+        var index = 0
+        while (index < values.size) {
+            if (values[index].isExpanded) {
+                expandParentRow(index)
+            }
+            index++
+        }
+    }
+
     override fun getItemViewType(position: Int): Int = values[position].isChild
 
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
 
-    class GroupViewHolder(row: View) : RecyclerView.ViewHolder(row) {
+    class CategoryViewHolder(row: View) : RecyclerView.ViewHolder(row) {
         val categoryName: TextView = row.findViewById(R.id.result_category_name)
         val expandButton: ImageButton = row.findViewById(R.id.down_iv)
     }
 
-    class ChildViewHolder(row: View) : RecyclerView.ViewHolder(row) {
+    class CompetitorViewHolder(row: View) : RecyclerView.ViewHolder(row) {
         val competitorPlace: TextView = row.findViewById(R.id.result_competitor_place)
         val competitorName: TextView = row.findViewById(R.id.result_competitor_name)
         val competitorClub: TextView = row.findViewById(R.id.result_competitor_club)

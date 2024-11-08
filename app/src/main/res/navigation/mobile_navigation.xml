@@ -132,6 +132,9 @@
             <action
                 android:id="@+id/exportResults"
                 app:destination="@id/ResultsShareDialogFragment" />
+            <action
+                android:id="@+id/openReadoutDetail"
+                app:destination="@id/readoutDetailFragment" />
         </fragment>
 
         <dialog

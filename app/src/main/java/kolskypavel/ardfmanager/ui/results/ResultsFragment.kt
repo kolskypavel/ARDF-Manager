@@ -21,6 +21,7 @@ import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entitity.Race
+import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData
 import kolskypavel.ardfmanager.databinding.FragmentResultsBinding
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import kolskypavel.ardfmanager.ui.races.RaceCreateDialogFragment
@@ -139,6 +140,10 @@ class ResultsFragment : Fragment() {
 
     }
 
+    private fun openReadoutDetail(resultData: ResultData) {
+        findNavController().navigate(ResultsFragmentDirections.openReadoutDetail(resultData))
+    }
+
     private fun setRecyclerViewAdapter() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -148,7 +153,9 @@ class ResultsFragment : Fragment() {
                             ArrayList(results),
                             requireContext(),
                             selectedRaceViewModel
-                        )
+                        ) { cd -> openReadoutDetail(cd) }
+
+                    (resultsRecyclerView.adapter as ResultsFragmentRecyclerViewAdapter).expandAllItems()
                 }
             }
         }

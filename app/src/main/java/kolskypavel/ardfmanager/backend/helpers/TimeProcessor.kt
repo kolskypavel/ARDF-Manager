@@ -10,8 +10,8 @@ object TimeProcessor {
         return DateTimeFormatter.ofPattern("HH:mm").format(time).toString()
     }
 
-    fun hoursMinutesFormatter(time: LocalTime): String {
-        return DateTimeFormatter.ofPattern("HH:mm").format(time).toString()
+    fun localTimeFormatter(time: LocalTime): String {
+        return DateTimeFormatter.ofPattern("HH:mm:ss").format(time).toString()
     }
 
     fun durationToMinuteString(duration: Duration): String {
