@@ -20,8 +20,8 @@ import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData
+import kolskypavel.ardfmanager.backend.room.entity.Race
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData
 import kolskypavel.ardfmanager.databinding.FragmentResultsBinding
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import kolskypavel.ardfmanager.ui.races.RaceCreateDialogFragment

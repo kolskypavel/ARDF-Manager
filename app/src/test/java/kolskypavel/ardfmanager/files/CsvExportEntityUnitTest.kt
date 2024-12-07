@@ -1,8 +1,8 @@
 package kolskypavel.ardfmanager.files
 
-import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
+import kolskypavel.ardfmanager.backend.room.entity.Category
+import kolskypavel.ardfmanager.backend.room.entity.Competitor
+import kolskypavel.ardfmanager.backend.room.entity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import org.junit.Assert.assertEquals
 import org.junit.Test

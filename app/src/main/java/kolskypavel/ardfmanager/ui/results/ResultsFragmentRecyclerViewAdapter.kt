@@ -10,8 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel

@@ -22,9 +22,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
+import kolskypavel.ardfmanager.backend.room.entity.Category
+import kolskypavel.ardfmanager.backend.room.entity.Race
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.databinding.FragmentCategoriesBinding
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import kolskypavel.ardfmanager.ui.races.RaceCreateDialogFragment
@@ -104,6 +104,11 @@ class CategoryFragment : Fragment() {
                 return true
             }
 
+            R.id.category_menu_create_standard_categories -> {
+                findNavController().navigate(CategoryFragmentDirections.createStandardCategories())
+                return true
+            }
+
             R.id.category_menu_edit_race -> {
                 findNavController().navigate(
                     BottomNavDirections.modifyRaceProperties(
@@ -114,6 +119,7 @@ class CategoryFragment : Fragment() {
                 )
                 return true
             }
+
 
             R.id.category_menu_global_settings -> {
                 findNavController().navigate(BottomNavDirections.openSettingsFromRace())

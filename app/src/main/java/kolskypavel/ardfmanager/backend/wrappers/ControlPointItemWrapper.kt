@@ -1,6 +1,6 @@
 package kolskypavel.ardfmanager.backend.wrappers
 
-import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
+import kolskypavel.ardfmanager.backend.room.entity.ControlPoint
 
 data class ControlPointItemWrapper(
     var controlPoint: ControlPoint,

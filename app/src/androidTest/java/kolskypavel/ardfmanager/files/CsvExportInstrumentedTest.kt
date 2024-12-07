@@ -4,9 +4,9 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
-import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
+import kolskypavel.ardfmanager.backend.room.entity.Category
+import kolskypavel.ardfmanager.backend.room.entity.ControlPoint
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kotlinx.coroutines.runBlocking

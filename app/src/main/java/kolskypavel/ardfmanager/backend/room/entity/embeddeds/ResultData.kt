@@ -1,10 +1,10 @@
-package kolskypavel.ardfmanager.backend.room.entitity.embeddeds
+package kolskypavel.ardfmanager.backend.room.entity.embeddeds
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kolskypavel.ardfmanager.backend.room.entitity.Result
+import kolskypavel.ardfmanager.backend.room.entity.Competitor
+import kolskypavel.ardfmanager.backend.room.entity.Punch
+import kolskypavel.ardfmanager.backend.room.entity.Result
 import java.io.Serializable
 
 

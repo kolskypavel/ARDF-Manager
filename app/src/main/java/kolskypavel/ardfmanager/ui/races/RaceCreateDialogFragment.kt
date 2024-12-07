@@ -16,7 +16,7 @@ import com.google.android.material.textfield.TextInputEditText
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Race
+import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.backend.room.enums.FinishTimeSource
 import kolskypavel.ardfmanager.backend.room.enums.RaceBand
 import kolskypavel.ardfmanager.backend.room.enums.RaceLevel

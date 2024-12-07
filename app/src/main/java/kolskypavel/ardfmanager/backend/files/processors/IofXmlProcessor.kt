@@ -4,8 +4,8 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
-import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
+import kolskypavel.ardfmanager.backend.room.entity.Race
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID

@@ -84,8 +84,6 @@ class MainActivity : AppCompatActivity() {
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         }
-
-
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -125,7 +123,7 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.navigation_categories, R.id.navigation_competitors, R.id.navigation_readouts,
-                R.id.navigation_results, R.id.categoryCreateDialogFragment, R.id.competitorCreateDialogFragment
+                R.id.navigation_results, R.id.categoryEditDialogFragment, R.id.competitorEditDialogFragment, R.id.readoutEditDialogFragment
                 -> {
                     navView.visibility = View.VISIBLE
                     siStatusTextView.visibility = View.VISIBLE

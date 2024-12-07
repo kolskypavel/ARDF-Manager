@@ -2,8 +2,8 @@ package kolskypavel.ardfmanager.backend.helpers
 
 import android.content.Context
 import kolskypavel.ardfmanager.R
-import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entity.ControlPoint
+import kolskypavel.ardfmanager.backend.room.entity.Punch
 import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType

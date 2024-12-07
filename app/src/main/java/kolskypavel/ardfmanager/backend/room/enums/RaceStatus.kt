@@ -12,6 +12,7 @@ enum class RaceStatus(val value: Int) : Comparable<RaceStatus> {
     ERROR(8);              //Error - missing finish record etc
 
     companion object {
-        fun getByValue(value: Int) = RaceStatus.entries.firstOrNull { it.value == value }
+        fun getByValue(value: Int) =
+            RaceStatus.entries.firstOrNull { it.value == value } ?: NO_RANKING
     }
 }

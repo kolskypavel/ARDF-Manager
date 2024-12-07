@@ -8,6 +8,6 @@ enum class RaceLevel(val value: Int) {
     TRAINING(4);
 
     companion object {
-        fun getByValue(value: Int) = entries.firstOrNull { it.value == value }
+        fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: TRAINING
     }
 }

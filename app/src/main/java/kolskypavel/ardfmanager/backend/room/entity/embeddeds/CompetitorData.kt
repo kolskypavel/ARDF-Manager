@@ -1,8 +1,8 @@
-package kolskypavel.ardfmanager.backend.room.entitity.embeddeds
+package kolskypavel.ardfmanager.backend.room.entity.embeddeds
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import kolskypavel.ardfmanager.backend.room.entitity.Result
+import kolskypavel.ardfmanager.backend.room.entity.Result
 import java.io.Serializable
 
 /**

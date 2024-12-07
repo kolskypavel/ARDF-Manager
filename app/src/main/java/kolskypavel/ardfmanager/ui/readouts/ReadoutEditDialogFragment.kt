@@ -21,9 +21,9 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kolskypavel.ardfmanager.backend.room.entitity.Result
+import kolskypavel.ardfmanager.backend.room.entity.Competitor
+import kolskypavel.ardfmanager.backend.room.entity.Punch
+import kolskypavel.ardfmanager.backend.room.entity.Result
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType

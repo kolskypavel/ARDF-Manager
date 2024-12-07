@@ -1,6 +1,6 @@
 package kolskypavel.ardfmanager.backend.wrappers
 
-import kolskypavel.ardfmanager.backend.room.entitity.Alias
+import kolskypavel.ardfmanager.backend.room.entity.Alias
 import java.io.Serializable
 
 data class AliasEditItemWrapper(

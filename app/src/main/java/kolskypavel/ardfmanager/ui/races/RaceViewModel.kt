@@ -3,7 +3,7 @@ package kolskypavel.ardfmanager.ui.races
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Race
+import kolskypavel.ardfmanager.backend.room.entity.Race
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

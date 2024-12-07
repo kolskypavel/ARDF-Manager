@@ -76,6 +76,12 @@
         <item name="buttonTint">@color/black</item>
     </style>
 
+    <style name="dialog_radio_btn" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textStyle">bold</item>
+        <item name="buttonTint">@color/black</item>
+    </style>
+
     <style name="punch_record_recycler">
         <item name="android:textColor">"@color/black"</item>>
     </style>

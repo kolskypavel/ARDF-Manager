@@ -1,9 +1,9 @@
 package kolskypavel.ardfmanager.results
 
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kolskypavel.ardfmanager.backend.room.entitity.Result
+import kolskypavel.ardfmanager.backend.room.entity.ControlPoint
+import kolskypavel.ardfmanager.backend.room.entity.Punch
+import kolskypavel.ardfmanager.backend.room.entity.Result
 import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus

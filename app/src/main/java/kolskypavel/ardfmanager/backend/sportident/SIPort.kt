@@ -4,7 +4,7 @@ import android.util.Log
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Race
+import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.GET_SI_CARD8_9_SIAC
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.GET_SYSTEM_INFO
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.READ_WRITE_TIMEOUT

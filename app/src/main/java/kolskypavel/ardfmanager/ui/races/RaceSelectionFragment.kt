@@ -18,7 +18,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kolskypavel.ardfmanager.R
-import kolskypavel.ardfmanager.backend.room.entitity.Race
+import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import kotlinx.coroutines.launch
 

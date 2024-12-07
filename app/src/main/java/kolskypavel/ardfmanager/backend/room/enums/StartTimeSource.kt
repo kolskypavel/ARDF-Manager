@@ -9,6 +9,7 @@ enum class StartTimeSource(val value: Int) {
     FIRST_CONTROL(2);// First control punched by the competitor, other than start
 
     companion object {
-        fun getByValue(value: Int) = StartTimeSource.entries.firstOrNull { it.value == value }
+        fun getByValue(value: Int) =
+            StartTimeSource.entries.firstOrNull { it.value == value } ?: START_CONTROL
     }
 }

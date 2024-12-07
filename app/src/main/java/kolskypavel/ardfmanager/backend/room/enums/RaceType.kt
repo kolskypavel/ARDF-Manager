@@ -5,7 +5,8 @@ enum class RaceType(val value: Int) {
     SPRINT(1),
     FOXORING(2),
     ORIENTEERING(3);
+
     companion object {
-        fun getByValue(value: Int) = entries.firstOrNull { it.value == value }
+        fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: CLASSICS
     }
 }

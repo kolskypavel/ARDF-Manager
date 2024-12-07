@@ -1,7 +1,7 @@
 package kolskypavel.ardfmanager.backend.wrappers
 
-import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.entity.Category
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import java.io.Serializable
 
 /**

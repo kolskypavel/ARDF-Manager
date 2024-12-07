@@ -3,7 +3,7 @@ package kolskypavel.ardfmanager.backend.room.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entity.Punch
 import java.util.UUID
 
 @Dao

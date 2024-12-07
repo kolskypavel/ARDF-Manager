@@ -15,7 +15,7 @@
 
 
     <item
-        android:id="@+id/category_menu_import_standard_categories"
+        android:id="@+id/category_menu_create_standard_categories"
         android:title="@string/category_create_standard_categories" />
 
     <item

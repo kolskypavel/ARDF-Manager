@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData
 
 class ReadoutDataRecyclerViewAdapter(
     private var values: List<ResultData>,

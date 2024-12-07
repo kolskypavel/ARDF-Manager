@@ -1,6 +1,6 @@
 package kolskypavel.ardfmanager.ui.competitors
 
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 
 class CompetitorNameComparator : Comparator<CompetitorData> {
     override fun compare(o1: CompetitorData, o2: CompetitorData): Int {
@@ -53,9 +53,14 @@ class CompetitorSINumberComparator : Comparator<CompetitorData> {
 
 class CompetitorStartTimeComparator : Comparator<CompetitorData> {
     override fun compare(o1: CompetitorData, o2: CompetitorData): Int {
+        val t1 = o1.competitorCategory.competitor.drawnRelativeStartTime
+        val t2 = o2.competitorCategory.competitor.drawnRelativeStartTime
 
-        return o1.competitorCategory.competitor.drawnRelativeStartTime?.compareTo(o2.competitorCategory.competitor.drawnRelativeStartTime)
-            ?: -1
+        if (t1 == null && t2 == null) return 0
+        else if (t1 == null) return 1
+        else if (t2 == null) return -1
+
+        return t1.compareTo(t2)
     }
 }
 

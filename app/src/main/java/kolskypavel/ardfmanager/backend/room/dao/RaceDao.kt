@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import kolskypavel.ardfmanager.backend.room.entitity.Race
+import kolskypavel.ardfmanager.backend.room.entity.Race
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 

@@ -1,4 +1,4 @@
-@import kolskypavel.ardfmanager.backend.room.entitity.Race
+@import kolskypavel.ardfmanager.backend.room.entity.Race
 @param Race race
 @param List<ResultWrapper> results
 <!DOCTYPE html>

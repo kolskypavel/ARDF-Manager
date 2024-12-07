@@ -25,6 +25,10 @@
         app:startDestination="@id/navigation_categories">
 
         <dialog
+            android:id="@+id/standardCategoriesDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.categories.StandardCategoriesDialogFragment"
+            android:label="StandardCategoriesDialogFragment" />
+        <dialog
             android:id="@+id/aliasEditDialogFragment"
             android:name="kolskypavel.ardfmanager.ui.aliases.AliasEditDialogFragment"
             android:label="AliasEditDialogFragment" />
@@ -37,7 +41,7 @@
                 app:argType="boolean" />
             <argument
                 android:name="resultData"
-                app:argType="kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData"
+                app:argType="kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData"
                 app:nullable="true" />
             <argument
                 android:name="position"
@@ -48,7 +52,7 @@
             android:name="kolskypavel.ardfmanager.ui.results.ResultsExportDialogFragment"
             android:label="ResultsExportDialogFragment" />
         <dialog
-            android:id="@+id/competitorCreateDialogFragment"
+            android:id="@+id/competitorEditDialogFragment"
             android:name="kolskypavel.ardfmanager.ui.competitors.CompetitorCreateDialogFragment"
             android:label="CompetitorCreateDialogFragment">
             <argument
@@ -57,7 +61,7 @@
 
             <argument
                 android:name="competitor"
-                app:argType="kolskypavel.ardfmanager.backend.room.entitity.Competitor"
+                app:argType="kolskypavel.ardfmanager.backend.room.entity.Competitor"
                 app:nullable="true" />
             <argument
                 android:name="position"
@@ -74,7 +78,7 @@
             tools:layout="@layout/fragment_competitors">
             <action
                 android:id="@+id/modifyCompetitor"
-                app:destination="@id/competitorCreateDialogFragment" />
+                app:destination="@id/competitorEditDialogFragment" />
             <action
                 android:id="@+id/editRace"
                 app:destination="@id/RaceCreateDialogFragment" />
@@ -93,13 +97,16 @@
                 app:destination="@id/RaceCreateDialogFragment" />
             <action
                 android:id="@+id/modifyCategory"
-                app:destination="@id/categoryCreateDialogFragment" />
+                app:destination="@id/categoryEditDialogFragment" />
             <action
                 android:id="@+id/importExportData"
                 app:destination="@id/DataImportExportDialogFragment" />
             <action
                 android:id="@+id/manageAliases"
                 app:destination="@id/aliasEditDialogFragment" />
+            <action
+                android:id="@+id/createStandardCategories"
+                app:destination="@id/standardCategoriesDialogFragment" />
         </fragment>
         <dialog
             android:id="@+id/DataImportExportDialogFragment"
@@ -138,7 +145,7 @@
         </fragment>
 
         <dialog
-            android:id="@+id/categoryCreateDialogFragment"
+            android:id="@+id/categoryEditDialogFragment"
             android:name="kolskypavel.ardfmanager.ui.categories.CategoryCreateDialogFragment"
             android:label="CategoryCreateDialogFragment">
             <argument
@@ -149,7 +156,7 @@
                 app:argType="integer" />
             <argument
                 android:name="category"
-                app:argType="kolskypavel.ardfmanager.backend.room.entitity.Category"
+                app:argType="kolskypavel.ardfmanager.backend.room.entity.Category"
                 app:nullable="true" />
             <argument
                 android:name="controlPoints"
@@ -165,13 +172,13 @@
             android:label="ReadoutDetailFragment">
             <argument
                 android:name="resultData"
-                app:argType="kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData" />
+                app:argType="kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData" />
             <action
                 android:id="@+id/editReadout"
                 app:destination="@id/readoutEditDialogFragment" />
             <action
                 android:id="@+id/createCategoryFromReadout"
-                app:destination="@id/categoryCreateDialogFragment" />
+                app:destination="@id/categoryEditDialogFragment" />
         </fragment>
 
         <action
@@ -194,7 +201,7 @@
             app:argType="integer" />
         <argument
             android:name="race"
-            app:argType="kolskypavel.ardfmanager.backend.room.entitity.Race"
+            app:argType="kolskypavel.ardfmanager.backend.room.entity.Race"
             app:nullable="true" />
         <action
             android:id="@+id/action_raceCreateDialogFragment_to_raceSelectionFragment"

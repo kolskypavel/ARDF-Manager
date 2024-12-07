@@ -2,7 +2,7 @@ package kolskypavel.ardfmanager.sportident
 
 import junit.framework.TestCase.assertEquals
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Result
+import kolskypavel.ardfmanager.backend.room.entity.Result
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.backend.sportident.SIPort
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData

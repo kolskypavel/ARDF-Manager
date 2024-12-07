@@ -1,4 +1,4 @@
-package kolskypavel.ardfmanager.backend.room.entitity
+package kolskypavel.ardfmanager.backend.room.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import kolskypavel.ardfmanager.backend.room.database.DateTimeTypeConverter
 import kolskypavel.ardfmanager.backend.room.enums.FinishTimeSource
+import kolskypavel.ardfmanager.backend.room.enums.RaceBand
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import java.io.Serializable
@@ -36,11 +37,12 @@ data class Category(
     @ColumnInfo(name = "length") var length: Float,
     @ColumnInfo(name = "climb") var climb: Float,
     @ColumnInfo(name = "order") var order: Int,
-    @ColumnInfo(name = "different") var differentProperties: Boolean,
-    @ColumnInfo(name = "race_type") var raceType: RaceType?,
-    @ColumnInfo(name = "limit") var timeLimit: Duration?,
-    @ColumnInfo(name = "start_source") var startTimeSource: StartTimeSource?,
-    @ColumnInfo(name = "finish_source") var finishTimeSource: FinishTimeSource?,
+    @ColumnInfo(name = "different") var differentProperties: Boolean = false,
+    @ColumnInfo(name = "race_type") var raceType: RaceType? = null,
+    @ColumnInfo(name = "category_band") var categoryBand: RaceBand? = null,
+    @ColumnInfo(name = "limit") var timeLimit: Duration? = null,
+    @ColumnInfo(name = "start_source") var startTimeSource: StartTimeSource? = null,
+    @ColumnInfo(name = "finish_source") var finishTimeSource: FinishTimeSource? = null,
     @ColumnInfo(name = "control_points_string") var controlPointsString: String
 ) : Serializable {
 
@@ -60,6 +62,7 @@ data class Category(
                 0F,
                 0,
                 false,
+                null,
                 null,
                 null,
                 null,

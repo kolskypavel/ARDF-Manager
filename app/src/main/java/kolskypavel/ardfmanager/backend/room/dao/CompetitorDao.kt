@@ -5,8 +5,8 @@ import androidx.room.Query
 import androidx.room.RewriteQueriesToDropUnusedColumns
 import androidx.room.Transaction
 import androidx.room.Upsert
-import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.entity.Competitor
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -18,9 +18,7 @@ interface CompetitorDao {
     fun getCompetitorDataFlow(raceId: UUID): Flow<List<CompetitorData>>
 
     @Query("SELECT * FROM competitor WHERE race_id=(:raceId) ")
-    @Transaction
-    @RewriteQueriesToDropUnusedColumns
-    suspend fun getCompetitorData(raceId: UUID): List<CompetitorData>
+    suspend fun getCompetitorsByRace(raceId: UUID): List<Competitor>
 
     @Query("SELECT * FROM competitor WHERE id=(:id) LIMIT 1")
     suspend fun getCompetitor(id: UUID): Competitor?
@@ -32,7 +30,7 @@ interface CompetitorDao {
     suspend fun getHighestStartNumberByRace(raceId: UUID): Int
 
     @Query("SELECT * FROM competitor WHERE category_id=(:categoryId)")
-    fun getCompetitorsByCategory(categoryId: UUID): List<Competitor>
+    suspend fun getCompetitorsByCategory(categoryId: UUID): List<Competitor>
 
     @Query("SELECT COUNT(*) FROM competitor WHERE si_number=(:siNumber) AND race_id =(:raceId)  LIMIT 1")
     suspend fun checkIfSINumberExists(siNumber: Int, raceId: UUID): Int

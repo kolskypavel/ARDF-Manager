@@ -1,9 +1,9 @@
-package kolskypavel.ardfmanager.backend.room.entitity.embeddeds
+package kolskypavel.ardfmanager.backend.room.entity.embeddeds
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import kolskypavel.ardfmanager.backend.room.entitity.Alias
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
+import kolskypavel.ardfmanager.backend.room.entity.Alias
+import kolskypavel.ardfmanager.backend.room.entity.Punch
 import java.io.Serializable
 
 data class AliasPunch(

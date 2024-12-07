@@ -15,19 +15,20 @@ import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.prints.PrintProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
-import kolskypavel.ardfmanager.backend.room.entitity.Alias
-import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
-import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kolskypavel.ardfmanager.backend.room.entitity.Result
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
+import kolskypavel.ardfmanager.backend.room.entity.Alias
+import kolskypavel.ardfmanager.backend.room.entity.Category
+import kolskypavel.ardfmanager.backend.room.entity.Competitor
+import kolskypavel.ardfmanager.backend.room.entity.ControlPoint
+import kolskypavel.ardfmanager.backend.room.entity.Race
+import kolskypavel.ardfmanager.backend.room.entity.Punch
+import kolskypavel.ardfmanager.backend.room.entity.Result
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.enums.RaceBand
 import kolskypavel.ardfmanager.backend.room.enums.RaceLevel
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.FinishTimeSource
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
+import kolskypavel.ardfmanager.backend.room.enums.StandardCategoryType
 import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SIReaderService
@@ -35,6 +36,7 @@ import kolskypavel.ardfmanager.backend.sportident.SIReaderState
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
 import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import java.lang.ref.WeakReference
 import java.time.Duration
@@ -162,11 +164,12 @@ class DataProcessor private constructor(context: Context) {
     }
 
     /**
-     * Creates a duplicate of the category
+     * Creates a duplicate of the given category with a suffix "Copy" (or translated)
+     * The control points are duplicated as well
      */
     suspend fun duplicateCategory(categoryData: CategoryData) {
         categoryData.category.name += "_" + (appContext.get()?.getString(R.string.general_copy)
-            ?: "_copy")
+            ?: "_Copy")
         categoryData.category.order = getHighestCategoryOrder(categoryData.category.raceId) + 1
 
         //Adjust the IDs
@@ -177,6 +180,9 @@ class DataProcessor private constructor(context: Context) {
         }
 
         createOrUpdateCategory(categoryData.category, categoryData.controlPoints)
+    }
+
+    suspend fun createStandardCategories(type: StandardCategoryType, raceId: UUID) {
     }
 
     suspend fun deleteCategory(id: UUID, raceId: UUID) {
@@ -233,7 +239,7 @@ class DataProcessor private constructor(context: Context) {
         ardfRepository.getCompetitorsByCategory(categoryId)
 
     suspend fun getStatisticsByRace(raceId: UUID): StatisticsWrapper {
-        val competitors = ardfRepository.getCompetitorDataByRace(raceId)
+        val competitors = ardfRepository.getCompetitorDataFlowByRace(raceId).first()
         val statistics = StatisticsWrapper(competitors.size, 0, 0, 0)
 
         for (cd in competitors) {
@@ -303,6 +309,18 @@ class DataProcessor private constructor(context: Context) {
 
     suspend fun deleteAllCompetitorsByRace(raceId: UUID) {
         ardfRepository.deleteAllCompetitorsByRace(raceId)
+    }
+
+    suspend fun addCategoriesAutomatically(raceId: UUID) {
+        val competitors = ardfRepository.getCompetitorsByRace(raceId)
+        val categories = getCategoriesForRace(raceId)
+
+        for (comp in competitors) {
+            if (comp.categoryId == null && comp.birthYear != null) {
+
+                createOrUpdateCompetitor(comp)
+            }
+        }
     }
 
     //RESULTS
@@ -426,7 +444,7 @@ class DataProcessor private constructor(context: Context) {
     fun raceTypeStringToEnum(string: String): RaceType {
         val raceTypeStrings =
             appContext.get()?.resources?.getStringArray(R.array.race_types_array)!!
-        return RaceType.getByValue(raceTypeStrings.indexOf(string))!!
+        return RaceType.getByValue(raceTypeStrings.indexOf(string))
     }
 
     fun raceLevelToString(raceLevel: RaceLevel): String {
@@ -438,7 +456,7 @@ class DataProcessor private constructor(context: Context) {
     fun raceLevelStringToEnum(string: String): RaceLevel {
         val raceLevelStrings =
             appContext.get()?.resources?.getStringArray(R.array.race_levels_array)!!
-        return RaceLevel.getByValue(raceLevelStrings.indexOf(string))!!
+        return RaceLevel.getByValue(raceLevelStrings.indexOf(string))
     }
 
     fun raceBandToString(raceBand: RaceBand): String {
@@ -450,7 +468,7 @@ class DataProcessor private constructor(context: Context) {
     fun raceBandStringToEnum(string: String): RaceBand {
         val raceBandStrings =
             appContext.get()?.resources?.getStringArray(R.array.race_bands_array)!!
-        return RaceBand.getByValue(raceBandStrings.indexOf(string))!!
+        return RaceBand.getByValue(raceBandStrings.indexOf(string))
     }
 
     fun raceStatusToString(raceStatus: RaceStatus): String {
@@ -462,7 +480,7 @@ class DataProcessor private constructor(context: Context) {
     fun raceStatusStringToEnum(string: String): RaceStatus {
         val raceStatusStrings =
             appContext.get()?.resources?.getStringArray(R.array.race_status_array)!!
-        return RaceStatus.getByValue(raceStatusStrings.indexOf(string))!!
+        return RaceStatus.getByValue(raceStatusStrings.indexOf(string))
     }
 
     fun raceStatusToShortString(raceStatus: RaceStatus): String {
@@ -480,7 +498,7 @@ class DataProcessor private constructor(context: Context) {
     fun startTimeSourceStringToEnum(string: String): StartTimeSource {
         val startTimeSourceStrings =
             appContext.get()?.resources?.getStringArray(R.array.start_time_sources)!!
-        return StartTimeSource.getByValue(startTimeSourceStrings.indexOf(string))!!
+        return StartTimeSource.getByValue(startTimeSourceStrings.indexOf(string))
     }
 
     fun finishTimeSourceToString(finishTimeSource: FinishTimeSource): String {
@@ -492,7 +510,7 @@ class DataProcessor private constructor(context: Context) {
     fun finishTimeSourceStringToEnum(string: String): FinishTimeSource {
         val finishTimeSourceStrings =
             appContext.get()?.resources?.getStringArray(R.array.finish_time_sources)!!
-        return FinishTimeSource.getByValue(finishTimeSourceStrings.indexOf(string))!!
+        return FinishTimeSource.getByValue(finishTimeSourceStrings.indexOf(string))
     }
 
     fun genderToString(isMan: Boolean?): String {

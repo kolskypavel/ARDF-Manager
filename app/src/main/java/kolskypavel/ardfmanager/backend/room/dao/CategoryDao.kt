@@ -3,8 +3,8 @@ package kolskypavel.ardfmanager.backend.room.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
+import kolskypavel.ardfmanager.backend.room.entity.Category
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 

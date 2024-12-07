@@ -8,7 +8,7 @@ import android.widget.TextView
 import de.codecrafters.tableview.TableDataAdapter
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.CompetitorTableDisplayType
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import kotlinx.coroutines.CoroutineScope

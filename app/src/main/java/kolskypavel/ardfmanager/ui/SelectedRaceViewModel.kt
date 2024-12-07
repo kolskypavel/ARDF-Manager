@@ -8,17 +8,18 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
-import kolskypavel.ardfmanager.backend.room.entitity.Alias
-import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kolskypavel.ardfmanager.backend.room.entitity.Result
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData
+import kolskypavel.ardfmanager.backend.room.entity.Alias
+import kolskypavel.ardfmanager.backend.room.entity.Category
+import kolskypavel.ardfmanager.backend.room.entity.Competitor
+import kolskypavel.ardfmanager.backend.room.entity.ControlPoint
+import kolskypavel.ardfmanager.backend.room.entity.Punch
+import kolskypavel.ardfmanager.backend.room.entity.Race
+import kolskypavel.ardfmanager.backend.room.entity.Result
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
+import kolskypavel.ardfmanager.backend.room.enums.StandardCategoryType
 import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
 import kotlinx.coroutines.CoroutineScope
@@ -137,6 +138,12 @@ class SelectedRaceViewModel : ViewModel() {
         }
     }
 
+    fun createStandardCategories(type: StandardCategoryType) {
+        CoroutineScope(Dispatchers.IO).launch {
+
+        }
+    }
+
     fun deleteCategory(categoryId: UUID, raceId: UUID) =
         CoroutineScope(Dispatchers.IO).launch {
             dataProcessor.deleteCategory(
@@ -190,6 +197,12 @@ class SelectedRaceViewModel : ViewModel() {
                 )
             }
         }
+
+    fun addCategoriesAutomatically() {
+        CoroutineScope(Dispatchers.IO).launch {
+            dataProcessor.addCategoriesAutomatically(getCurrentRace().id)
+        }
+    }
 
     suspend fun getStatistics(raceId: UUID): StatisticsWrapper =
         dataProcessor.getStatisticsByRace(raceId)

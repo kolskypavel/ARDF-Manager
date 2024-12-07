@@ -26,9 +26,9 @@ import de.codecrafters.tableview.toolkit.TableDataRowBackgroundProviders
 import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.entity.Competitor
+import kolskypavel.ardfmanager.backend.room.entity.Race
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.CompetitorTableDisplayType
 import kolskypavel.ardfmanager.databinding.FragmentCompetitorsBinding
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
@@ -112,6 +112,16 @@ class CompetitorFragment : Fragment() {
                 return true
             }
 
+            R.id.competitor_menu_add_categories_automatically -> {
+                confirmAutomaticCategories()
+                return true
+            }
+
+            R.id.competitor_menu_delete_all_competitors -> {
+                confirmAllCompetitorsDeletion()
+                return true
+            }
+
             R.id.competitor_menu_edit_race -> {
                 findNavController().navigate(
                     BottomNavDirections.modifyRaceProperties(
@@ -121,10 +131,6 @@ class CompetitorFragment : Fragment() {
                     )
                 )
                 return true
-            }
-
-            R.id.competitor_menu_delete_all_competitors -> {
-                confirmAllCompetitorsDeletion()
             }
 
             R.id.competitor_menu_global_settings -> {
@@ -250,6 +256,7 @@ class CompetitorFragment : Fragment() {
                 data.filter { cd ->
                     cd.resultData == null
                 }
+                data.sortedWith(CompetitorStartTimeComparator())
             }
         }
     }
@@ -308,6 +315,22 @@ class CompetitorFragment : Fragment() {
         //TODO: Fix the readout removal
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
             selectedRaceViewModel.deleteCompetitor(competitor.id, false)
+            dialog.dismiss()
+        }
+
+        builder.setNegativeButton(R.string.cancel) { dialog, _ ->
+            dialog.cancel()
+        }
+        builder.show()
+    }
+
+    private fun confirmAutomaticCategories() {
+        val builder = AlertDialog.Builder(context)
+        builder.setTitle(getString(R.string.competitor_add_categories_automatically))
+        builder.setMessage(R.string.competitor_add_categories_automatically_confirmation)
+
+        builder.setPositiveButton(R.string.ok) { dialog, _ ->
+            selectedRaceViewModel.addCategoriesAutomatically()
             dialog.dismiss()
         }
 

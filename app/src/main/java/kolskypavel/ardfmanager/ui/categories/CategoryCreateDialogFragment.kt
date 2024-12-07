@@ -21,7 +21,7 @@ import com.google.android.material.textfield.TextInputLayout
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper
-import kolskypavel.ardfmanager.backend.room.entitity.Category
+import kolskypavel.ardfmanager.backend.room.entity.Category
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import java.time.Duration
@@ -38,10 +38,12 @@ class CategoryCreateDialogFragment : DialogFragment() {
     private lateinit var nameEditText: TextInputEditText
     private lateinit var samePropertiesCheckBox: CheckBox
     private lateinit var raceTypeLayout: TextInputLayout
+    private lateinit var raceTypePicker: MaterialAutoCompleteTextView
     private lateinit var limitEditText: TextInputEditText
     private lateinit var limitLayout: TextInputLayout
     private lateinit var genderPicker: MaterialAutoCompleteTextView
-    private lateinit var raceTypePicker: MaterialAutoCompleteTextView
+    private lateinit var bandLayout: TextInputLayout
+    private lateinit var bandPicker: MaterialAutoCompleteTextView
     private lateinit var startTimeSourceLayout: TextInputLayout
     private lateinit var startTimeSourcePicker: MaterialAutoCompleteTextView
     private lateinit var finishTimeSourceLayout: TextInputLayout
@@ -86,6 +88,8 @@ class CategoryCreateDialogFragment : DialogFragment() {
         limitEditText = view.findViewById(R.id.category_dialog_limit)
         limitLayout = view.findViewById(R.id.category_dialog_limit_layout)
         raceTypePicker = view.findViewById(R.id.category_dialog_type)
+        bandLayout = view.findViewById(R.id.category_dialog_band_layout)
+        bandPicker = view.findViewById(R.id.category_dialog_band)
         genderPicker = view.findViewById(R.id.category_gender)
         startTimeSourceLayout = view.findViewById(R.id.category_dialog_start_time_source_layout)
         startTimeSourcePicker = view.findViewById(R.id.category_dialog_start_time_source)
@@ -126,6 +130,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 order,
                 false,
                 race.raceType,
+                race.raceBand,
                 race.timeLimit,
                 race.startTimeSource,
                 race.finishTimeSource,
@@ -135,6 +140,10 @@ class CategoryCreateDialogFragment : DialogFragment() {
             //Preset the data from the race
             raceTypePicker.setText(
                 dataProcessor.raceTypeToString(race.raceType),
+                false
+            )
+            bandPicker.setText(
+                dataProcessor.raceBandToString(race.raceBand),
                 false
             )
             limitEditText.setText(race.timeLimit.toMinutes().toString())
@@ -148,6 +157,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
             )
 
             raceTypeLayout.isEnabled = false
+            bandLayout.isEnabled = false
             limitLayout.isEnabled = false
             startTimeSourceLayout.isEnabled = false
             finishTimeSourceLayout.isEnabled = false
@@ -160,17 +170,36 @@ class CategoryCreateDialogFragment : DialogFragment() {
             category = args.category!!
             nameEditText.setText(category.name)
 
+            if (category.maxAge != null) {
+                maxAgeEditText.setText(category.maxAge.toString())
+            }
+
+            if (category.length != 0F) {
+                lengthEditText.setText(category.length.toString())
+            }
+
+            if (category.climb != 0F) {
+                climbEditText.setText(category.climb.toString())
+            }
+
+
+            // Custom properties
             if (category.differentProperties) {
                 samePropertiesCheckBox.isChecked = false
             } else {
                 raceTypeLayout.isEnabled = false
                 limitLayout.isEnabled = false
+                bandLayout.isEnabled = false
                 startTimeSourceLayout.isEnabled = false
                 finishTimeSourceLayout.isEnabled = false
             }
 
             raceTypePicker.setText(
                 dataProcessor.raceTypeToString(category.raceType ?: race.raceType),
+                false
+            )
+            bandPicker.setText(
+                dataProcessor.raceBandToString(category.categoryBand ?: race.raceBand),
                 false
             )
             limitEditText.setText(
@@ -192,26 +221,10 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 ),
                 false
             )
-
-            if (category.maxAge != null) {
-                maxAgeEditText.setText(category.maxAge.toString())
-            }
-
-            if (category.length != 0F) {
-                lengthEditText.setText(category.length.toString())
-            }
-
-            if (category.climb != 0F) {
-                climbEditText.setText(category.climb.toString())
-            }
         }
 
         //Set gender
-        when (category.isMan) {
-            true -> genderPicker.setText(getString(R.string.general_gender_woman), false)
-            false -> genderPicker.setText(getString(R.string.general_gender_man), false)
-        }
-
+        genderPicker.setText(dataProcessor.genderToString(category.isMan), false)
         controlPointsEditText.setText(category.controlPointsString)
 
         //TODO: Process the saving - this is just to preserve the filtering after screen rotation
@@ -222,7 +235,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
 
 
     private fun raceTypeWatcher(position: Int) {
-        category.raceType = RaceType.getByValue(position)!!
+        category.raceType = RaceType.getByValue(position)
     }
 
     private fun checkFields(): Boolean {
@@ -305,6 +318,10 @@ class CategoryCreateDialogFragment : DialogFragment() {
                     false
                 )
                 raceTypeWatcher(race.raceType.value)
+                bandPicker.setText(
+                    dataProcessor.raceBandToString(race.raceBand),
+                    false
+                )
                 limitEditText.setText(race.timeLimit.toMinutes().toString())
                 startTimeSourcePicker.setText(
                     dataProcessor.startTimeSourceToString(race.startTimeSource),
@@ -316,6 +333,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 )
 
                 raceTypeLayout.isEnabled = false
+                bandLayout.isEnabled = false
                 limitLayout.isEnabled = false
                 startTimeSourceLayout.isEnabled = false
                 finishTimeSourceLayout.isEnabled = false
@@ -325,6 +343,7 @@ class CategoryCreateDialogFragment : DialogFragment() {
             else {
                 raceTypeLayout.isEnabled = true
                 limitLayout.isEnabled = true
+                bandLayout.isEnabled = true
                 startTimeSourceLayout.isEnabled = true
                 finishTimeSourceLayout.isEnabled = true
                 raceTypePicker.setOnItemClickListener { _, _, position, _ ->
@@ -357,6 +376,8 @@ class CategoryCreateDialogFragment : DialogFragment() {
                 if (category.differentProperties) {
                     category.raceType =
                         dataProcessor.raceTypeStringToEnum(raceTypePicker.text.toString())
+                    category.categoryBand =
+                        dataProcessor.raceBandStringToEnum(bandPicker.text.toString())
                     category.timeLimit = Duration.ofMinutes(limitEditText.text.toString().toLong())
                     category.startTimeSource =
                         dataProcessor.startTimeSourceStringToEnum(startTimeSourcePicker.text.toString())

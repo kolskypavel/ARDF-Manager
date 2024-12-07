@@ -6,6 +6,7 @@ enum class ControlPointType(val value: Int) {
     SEPARATOR(2);
 
     companion object {
-        fun getByValue(value: Int) = ControlPointType.entries.firstOrNull { it.value == value }
+        fun getByValue(value: Int) =
+            ControlPointType.entries.firstOrNull { it.value == value } ?: CONTROL
     }
 }

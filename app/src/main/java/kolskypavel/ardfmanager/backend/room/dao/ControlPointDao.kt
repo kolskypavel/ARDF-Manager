@@ -3,7 +3,7 @@ package kolskypavel.ardfmanager.backend.room.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
+import kolskypavel.ardfmanager.backend.room.entity.ControlPoint
 import java.util.UUID
 
 @Dao

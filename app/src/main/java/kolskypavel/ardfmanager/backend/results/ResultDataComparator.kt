@@ -1,6 +1,6 @@
 package kolskypavel.ardfmanager.backend.results
 
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 
 class ResultDataComparator : Comparator<CompetitorData> {
     override fun compare(o1: CompetitorData, o2: CompetitorData): Int {

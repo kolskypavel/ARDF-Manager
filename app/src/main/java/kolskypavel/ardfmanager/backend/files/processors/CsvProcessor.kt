@@ -8,13 +8,13 @@ import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.files.constants.FileConstants
 import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
-import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorCategory
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.ResultData
+import kolskypavel.ardfmanager.backend.room.entity.Category
+import kolskypavel.ardfmanager.backend.room.entity.Competitor
+import kolskypavel.ardfmanager.backend.room.entity.Race
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorCategory
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData
 import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -93,7 +93,7 @@ object CsvProcessor : FormatProcessor {
                     dataProcessor.getResultWrapperFlowByRace(raceId).first()
                 )
 
-                DataType.READOUT_DATA ->{}
+                DataType.READOUT_DATA -> {}
 //                exportReadoutData( outStream,
 //                    dataProcessor.getResultDataFlowByRace(raceId).first()
 //                )
@@ -198,8 +198,12 @@ object CsvProcessor : FormatProcessor {
                                     0F,
                                     0,
                                     false,
-                                    race.raceType, race.timeLimit,
-                                    race.startTimeSource, race.finishTimeSource, ""
+                                    race.raceType,
+                                    race.raceBand,
+                                    race.timeLimit,
+                                    race.startTimeSource,
+                                    race.finishTimeSource,
+                                    ""
                                 ), emptyList(), emptyList()
                             )
                             categories.add(category)

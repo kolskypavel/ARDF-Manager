@@ -1,7 +1,7 @@
 package kolskypavel.ardfmanager.backend.wrappers
 
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.AliasPunch
+import kolskypavel.ardfmanager.backend.room.entity.Punch
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.AliasPunch
 
 data class PunchEditItemWrapper(
     var punch: Punch,

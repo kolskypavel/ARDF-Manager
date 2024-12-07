@@ -1,7 +1,7 @@
 @import android.content.Context
 @import java.util.List
 @import kolskypavel.ardfmanager.R
-@import kolskypavel.ardfmanager.backend.room.entitity.Race
+@import kolskypavel.ardfmanager.backend.room.entity.Race
 @import kolskypavel.ardfmanager.backend.wrappers.ResultDisplayWrapper
 @import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 

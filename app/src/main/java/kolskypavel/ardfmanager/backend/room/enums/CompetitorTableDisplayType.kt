@@ -7,6 +7,6 @@ enum class CompetitorTableDisplayType(var value: Int) {
     ON_THE_WAY(3);
 
     companion object {
-        fun getByValue(value: Int) = entries.firstOrNull { it.value == value }
+        fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: OVERVIEW
     }
 }

@@ -9,7 +9,7 @@ import android.widget.ImageButton
 import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
-import kolskypavel.ardfmanager.backend.room.entitity.Alias
+import kolskypavel.ardfmanager.backend.room.entity.Alias
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.isSICodeValid
 import kolskypavel.ardfmanager.backend.wrappers.AliasEditItemWrapper
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel

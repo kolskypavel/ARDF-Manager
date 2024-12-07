@@ -10,13 +10,13 @@ import kolskypavel.ardfmanager.backend.room.dao.ControlPointDao
 import kolskypavel.ardfmanager.backend.room.dao.PunchDao
 import kolskypavel.ardfmanager.backend.room.dao.RaceDao
 import kolskypavel.ardfmanager.backend.room.dao.ResultDao
-import kolskypavel.ardfmanager.backend.room.entitity.Alias
-import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kolskypavel.ardfmanager.backend.room.entitity.Result
+import kolskypavel.ardfmanager.backend.room.entity.Alias
+import kolskypavel.ardfmanager.backend.room.entity.Category
+import kolskypavel.ardfmanager.backend.room.entity.Competitor
+import kolskypavel.ardfmanager.backend.room.entity.ControlPoint
+import kolskypavel.ardfmanager.backend.room.entity.Punch
+import kolskypavel.ardfmanager.backend.room.entity.Race
+import kolskypavel.ardfmanager.backend.room.entity.Result
 
 @Database(
     entities = [Race::class,

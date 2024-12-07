@@ -1,9 +1,9 @@
-package kolskypavel.ardfmanager.backend.room.entitity.embeddeds
+package kolskypavel.ardfmanager.backend.room.entity.embeddeds
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.Competitor
+import kolskypavel.ardfmanager.backend.room.entity.Category
+import kolskypavel.ardfmanager.backend.room.entity.Competitor
 import java.io.Serializable
 
 data class CompetitorCategory(

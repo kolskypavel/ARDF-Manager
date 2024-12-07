@@ -8,6 +8,6 @@ enum class FinishTimeSource(val value: Int) {
     LAST_CONTROL(1);    // Last control punched by the competitor
 
     companion object {
-        fun getByValue(value: Int) = entries.firstOrNull { it.value == value }
+        fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: FINISH_CONTROL
     }
 }

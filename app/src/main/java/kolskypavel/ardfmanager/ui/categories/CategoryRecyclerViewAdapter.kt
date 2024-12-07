@@ -10,7 +10,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CategoryData
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 
 class CategoryRecyclerViewAdapter(
@@ -43,8 +43,12 @@ class CategoryRecyclerViewAdapter(
         holder.type.text = dataProcessor.raceTypeToString(
             item.category.raceType ?: dataProcessor.getCurrentRace().raceType
         )
+
+        holder.band.text = dataProcessor.raceBandToString(
+            item.category.categoryBand ?: dataProcessor.getCurrentRace().raceBand
+        )
         holder.gender.text = dataProcessor.genderToString(item.category.isMan)
-        holder.siCodes.text =item.category.controlPointsString
+        holder.siCodes.text = item.category.controlPointsString
 
         if (item.category.maxAge != null) {
             holder.maxAge.text = item.category.maxAge.toString()
@@ -121,6 +125,7 @@ class CategoryRecyclerViewAdapter(
     inner class CategoryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var title: TextView = view.findViewById(R.id.category_item_title)
         var type: TextView = view.findViewById(R.id.category_item_type)
+        var band: TextView = view.findViewById(R.id.category_item_band)
         var numCompeititors: TextView = view.findViewById(R.id.category_item_competitor_number)
         var gender: TextView = view.findViewById(R.id.category_item_gender)
         var maxAge: TextView = view.findViewById(R.id.category_item_max_age)

@@ -4,14 +4,14 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.withTransaction
 import kolskypavel.ardfmanager.backend.room.database.EventDatabase
-import kolskypavel.ardfmanager.backend.room.entitity.Alias
-import kolskypavel.ardfmanager.backend.room.entitity.Category
-import kolskypavel.ardfmanager.backend.room.entitity.Competitor
-import kolskypavel.ardfmanager.backend.room.entitity.ControlPoint
-import kolskypavel.ardfmanager.backend.room.entitity.Punch
-import kolskypavel.ardfmanager.backend.room.entitity.Race
-import kolskypavel.ardfmanager.backend.room.entitity.Result
-import kolskypavel.ardfmanager.backend.room.entitity.embeddeds.CompetitorData
+import kolskypavel.ardfmanager.backend.room.entity.Alias
+import kolskypavel.ardfmanager.backend.room.entity.Category
+import kolskypavel.ardfmanager.backend.room.entity.Competitor
+import kolskypavel.ardfmanager.backend.room.entity.ControlPoint
+import kolskypavel.ardfmanager.backend.room.entity.Punch
+import kolskypavel.ardfmanager.backend.room.entity.Race
+import kolskypavel.ardfmanager.backend.room.entity.Result
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kotlinx.coroutines.flow.Flow
 import java.util.UUID
 
@@ -31,13 +31,6 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun createRace(race: Race) = eventDatabase.raceDao().createRace(race)
     suspend fun updateRace(race: Race) = eventDatabase.raceDao().updateRace(race)
     suspend fun deleteRace(id: UUID) = eventDatabase.raceDao().deleteRace(id)
-
-
-    //Aliases
-    suspend fun createAlias(alias: Alias) = eventDatabase.aliasDao().createOrUpdateAlias(alias)
-
-    suspend fun getAliasesByRace(raceId: UUID) =
-        eventDatabase.aliasDao().getAliasesByRace(raceId)
 
     //Categories
     fun getCategoryDataFlowForRace(raceId: UUID) =
@@ -100,6 +93,9 @@ class ARDFRepository private constructor(context: Context) {
         eventDatabase.controlPointDao().deleteControlPointsByCategory(categoryId)
 
     //Aliases
+    suspend fun getAliasesByRace(raceId: UUID) =
+        eventDatabase.aliasDao().getAliasesByRace(raceId)
+
     suspend fun createOrUpdateAlias(alias: Alias) =
         eventDatabase.aliasDao().createOrUpdateAlias(alias)
 
@@ -119,11 +115,11 @@ class ARDFRepository private constructor(context: Context) {
     fun getCompetitorDataFlowByRace(raceId: UUID): Flow<List<CompetitorData>> =
         eventDatabase.competitorDao().getCompetitorDataFlow(raceId)
 
-    suspend fun getCompetitorDataByRace(raceId: UUID): List<CompetitorData> =
-        eventDatabase.competitorDao().getCompetitorData(raceId)
-
     suspend fun getCompetitorsByCategory(categoryId: UUID) =
         eventDatabase.competitorDao().getCompetitorsByCategory(categoryId)
+
+    suspend fun getCompetitorsByRace(raceId: UUID) =
+        eventDatabase.competitorDao().getCompetitorsByRace(raceId)
 
     suspend fun createCompetitor(competitor: Competitor) =
         eventDatabase.competitorDao().createCompetitor(competitor)
@@ -169,7 +165,7 @@ class ARDFRepository private constructor(context: Context) {
         eventDatabase.withTransaction {
             eventDatabase.punchDao().deletePunchesByResult(result.id)
             eventDatabase.resultDao().createOrUpdateResult(result)
-            punches.forEach { punch -> eventDatabase.punchDao().createOrUpdatePunch(punch)}
+            punches.forEach { punch -> eventDatabase.punchDao().createOrUpdatePunch(punch) }
         }
     }
 
