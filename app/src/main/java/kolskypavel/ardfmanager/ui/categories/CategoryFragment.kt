@@ -181,7 +181,7 @@ class CategoryFragment : Fragment() {
         builder.setMessage(message)
 
         builder.setPositiveButton(R.string.ok) { dialog, _ ->
-            selectedRaceViewModel.deleteCategory(category.id, category.raceId)
+            selectedRaceViewModel.deleteCategory(category.id)
             dialog.dismiss()
         }
 

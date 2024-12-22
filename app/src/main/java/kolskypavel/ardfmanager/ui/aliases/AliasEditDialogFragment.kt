@@ -63,7 +63,7 @@ class AliasEditDialogFragment : DialogFragment() {
 
     private fun setAdapter() {
         val aliases =
-            selectedRaceViewModel.getAliasesByRace(selectedRaceViewModel.getCurrentRace().id)
+            selectedRaceViewModel.getAliasesByRace()
         aliasRecyclerView.adapter =
             AliasRecyclerViewAdapter(
                 AliasEditItemWrapper.getWrappers(

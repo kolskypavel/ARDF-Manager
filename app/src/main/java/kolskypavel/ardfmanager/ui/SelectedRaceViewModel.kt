@@ -140,15 +140,15 @@ class SelectedRaceViewModel : ViewModel() {
 
     fun createStandardCategories(type: StandardCategoryType) {
         CoroutineScope(Dispatchers.IO).launch {
-
+            dataProcessor.createStandardCategories(type, getCurrentRace().id)
         }
     }
 
-    fun deleteCategory(categoryId: UUID, raceId: UUID) =
+    fun deleteCategory(categoryId: UUID) =
         CoroutineScope(Dispatchers.IO).launch {
             dataProcessor.deleteCategory(
                 categoryId,
-                raceId
+                getCurrentRace().id
             )
         }
 
@@ -160,7 +160,7 @@ class SelectedRaceViewModel : ViewModel() {
     }
 
     //Alias
-    fun getAliasesByRace(raceId: UUID) = runBlocking { dataProcessor.getAliasesByRace(raceId) }
+    fun getAliasesByRace() = runBlocking { dataProcessor.getAliasesByRace(getCurrentRace().id) }
 
     fun createOrUpdateAliases(aliases: List<Alias>) {
         CoroutineScope(Dispatchers.IO).launch {
@@ -204,8 +204,8 @@ class SelectedRaceViewModel : ViewModel() {
         }
     }
 
-    suspend fun getStatistics(raceId: UUID): StatisticsWrapper =
-        dataProcessor.getStatisticsByRace(raceId)
+    suspend fun getStatistics(): StatisticsWrapper =
+        dataProcessor.getStatisticsByRace(getCurrentRace().id)
 
     /**
      * Checks if the SI number is unique
@@ -240,9 +240,9 @@ class SelectedRaceViewModel : ViewModel() {
         }
     }
 
-    fun getResultBySINumber(siNumber: Int, raceId: UUID) =
+    fun getResultBySINumber(siNumber: Int) =
         runBlocking {
-            return@runBlocking dataProcessor.getResultBySINumber(siNumber, raceId)
+            return@runBlocking dataProcessor.getResultBySINumber(siNumber, getCurrentRace().id)
         }
 
     fun getResultByCompetitor(competitorId: UUID) = runBlocking {

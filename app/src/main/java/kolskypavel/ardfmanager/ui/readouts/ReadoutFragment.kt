@@ -202,7 +202,7 @@ class ReadoutFragment : Fragment() {
         return CoroutineScope(Dispatchers.Main).launch {
             while (true) {
                 val statistics =
-                    selectedRaceViewModel.getStatistics(selectedRaceViewModel.getCurrentRace().id)
+                    selectedRaceViewModel.getStatistics()
 
                 startedTextView.text = "${statistics.startedCompetitors}/${statistics.competitors}"
                 startedProgressBar.progress = if (statistics.startedCompetitors != 0) {

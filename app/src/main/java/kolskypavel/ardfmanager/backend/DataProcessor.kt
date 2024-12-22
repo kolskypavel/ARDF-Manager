@@ -134,7 +134,7 @@ class DataProcessor private constructor(context: Context) {
         ardfRepository.getCategoryDataForRace(raceId)
 
 
-    suspend fun getCategoryByName(string: String, raceId: UUID) =
+    suspend fun getCategoryByName(string: String, raceId: UUID): Category? =
         ardfRepository.getCategoryByName(string, raceId)
 
     suspend fun getCategoryByBirthYear(birthYear: Int, isWoman: Boolean, raceId: UUID): Category? {
@@ -183,6 +183,12 @@ class DataProcessor private constructor(context: Context) {
     }
 
     suspend fun createStandardCategories(type: StandardCategoryType, raceId: UUID) {
+        val categories = fileProcessor?.importStandardCategories(type, getRace(raceId))
+        if (categories != null) {
+            for (cat in categories) {
+                ardfRepository.createCategory(cat)
+            }
+        }
     }
 
     suspend fun deleteCategory(id: UUID, raceId: UUID) {

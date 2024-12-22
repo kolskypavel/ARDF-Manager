@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="categories_international">
+    <string-array name="standard_categories_international">
         <item>W19;0;19</item>
         <item>W21;0;34</item>
         <item>W35;0;44</item>
@@ -15,7 +15,7 @@
         <item>M70;1;200</item>
     </string-array>
 
-    <string-array name="categories_czech">
+    <string-array name="standard_categories_czech">
         <item>D7;0;7</item>
         <item>D9;0;9</item>
         <item>D12;0;12</item>

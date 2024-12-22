@@ -300,8 +300,8 @@ class ReadoutEditDialogFragment : DialogFragment() {
 
                 //Check for duplicate readouts with same SI number
                 if (selectedRaceViewModel.getResultBySINumber(
-                        result.siNumber!!,
-                        selectedRaceViewModel.getCurrentRace().id
+                        result.siNumber!!
+
                     ) != null
                 ) {
                     siNumberInputLayout.error = getString(R.string.readout_si_exists)

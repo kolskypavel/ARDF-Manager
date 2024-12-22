@@ -60,6 +60,9 @@ class ARDFRepository private constructor(context: Context) {
     suspend fun getCategoryByBirthYear(birthYear: Int, woman: Boolean, raceId: UUID): Category? =
         eventDatabase.categoryDao().getCategoryByAge(birthYear, woman, raceId)
 
+    suspend fun createCategory(category: Category) =
+        eventDatabase.categoryDao().createOrUpdateCategory(category)
+
     suspend fun createOrUpdateCategory(category: Category, controlPoints: List<ControlPoint>?) {
         eventDatabase.withTransaction {
             eventDatabase.categoryDao().createOrUpdateCategory(category)

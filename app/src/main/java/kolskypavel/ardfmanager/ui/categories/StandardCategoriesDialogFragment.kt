@@ -52,13 +52,16 @@ class StandardCategoriesDialogFragment : DialogFragment() {
     }
 
     private fun setButtons() {
-        presetGroup.check(0)
+        presetGroup.check(R.id.standard_cat_dialog_btn_international)
         okButton.setOnClickListener {
 
+            val currentCheck = when (presetGroup.checkedRadioButtonId) {
+                R.id.standard_cat_dialog_btn_czech -> StandardCategoryType.CZECH
+                else -> StandardCategoryType.INTERNATIONAL
+            }
+
             selectedRaceViewModel.createStandardCategories(
-                StandardCategoryType.getByValue(
-                    presetGroup.checkedRadioButtonId
-                )
+                currentCheck
             )
             dialog?.dismiss()
         }

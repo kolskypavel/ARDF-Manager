@@ -3,6 +3,7 @@ package kolskypavel.ardfmanager.backend.files.processors
 import android.util.Log
 import com.github.doyaaaaaken.kotlincsv.client.CsvReader
 import com.github.doyaaaaaken.kotlincsv.dsl.context.CsvReaderContext
+import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
@@ -15,6 +16,7 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorCategory
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData
+import kolskypavel.ardfmanager.backend.room.enums.StandardCategoryType
 import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -135,6 +137,51 @@ object CsvProcessor : FormatProcessor {
             }
         }
         return data
+    }
+
+    suspend fun importStandardCategories(
+        type: StandardCategoryType,
+        race: Race,
+        dataProcessor: DataProcessor
+    ): List<Category> {
+        val categoryString = when (type) {
+            StandardCategoryType.INTERNATIONAL -> dataProcessor.getContext().resources.getStringArray(
+                R.array.standard_categories_international
+            )
+
+            StandardCategoryType.CZECH -> dataProcessor.getContext().resources.getStringArray(
+                R.array.standard_categories_czech
+            )
+        }
+        val categories = ArrayList<Category>()
+
+        for (line in categoryString.withIndex()) {
+            val split = line.value.split(";")
+            if (split.size == 3 &&
+                dataProcessor.getCategoryByName(split[0], race.id) == null
+            ) {
+                val cat = Category(
+                    UUID.randomUUID(),
+                    race.id,
+                    split[0],
+                    split[1] == "1",
+                    split[2].toInt(),
+                    0F,
+                    0F,
+                    line.index,
+                    false,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    ""
+                )
+                categories.add(cat)
+            }
+        }
+
+        return categories.toList()
     }
 
     @Throws(IOException::class)
