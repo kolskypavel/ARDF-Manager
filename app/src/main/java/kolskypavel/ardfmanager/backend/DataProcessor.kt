@@ -26,10 +26,8 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.enums.RaceBand
 import kolskypavel.ardfmanager.backend.room.enums.RaceLevel
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
-import kolskypavel.ardfmanager.backend.room.enums.FinishTimeSource
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.room.enums.StandardCategoryType
-import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SIReaderService
 import kolskypavel.ardfmanager.backend.sportident.SIReaderState
@@ -377,7 +375,12 @@ class DataProcessor private constructor(context: Context) {
         result: Result,
         punches: ArrayList<Punch>,
         manualStatus: RaceStatus?
-    ) = resultsProcessor?.processManualPunchData(result, punches, manualStatus)
+    ) = resultsProcessor?.processManualPunchData(
+        result,
+        punches,
+        getRace(result.raceId),
+        manualStatus
+    )
 
 
     private suspend fun updateResultsForCategory(categoryId: UUID, delete: Boolean) =
@@ -385,8 +388,7 @@ class DataProcessor private constructor(context: Context) {
 
     private suspend fun updateResultsForCompetitor(competitorId: UUID) =
         resultsProcessor?.updateResultsForCompetitor(
-            competitorId,
-            currentState.value?.currentRace!!.id
+            competitorId
         )
 
     //DATA IMPORT/EXPORT
@@ -493,30 +495,6 @@ class DataProcessor private constructor(context: Context) {
         val raceStatusStrings =
             appContext.get()?.resources?.getStringArray(R.array.race_status_array_short)!!
         return raceStatusStrings[raceStatus.value]
-    }
-
-    fun startTimeSourceToString(startTimeSource: StartTimeSource): String {
-        val startTimeSourceStrings =
-            appContext.get()?.resources?.getStringArray(R.array.start_time_sources)!!
-        return startTimeSourceStrings[startTimeSource.value]
-    }
-
-    fun startTimeSourceStringToEnum(string: String): StartTimeSource {
-        val startTimeSourceStrings =
-            appContext.get()?.resources?.getStringArray(R.array.start_time_sources)!!
-        return StartTimeSource.getByValue(startTimeSourceStrings.indexOf(string))
-    }
-
-    fun finishTimeSourceToString(finishTimeSource: FinishTimeSource): String {
-        val finishTimeSourceStrings =
-            appContext.get()?.resources?.getStringArray(R.array.finish_time_sources)!!
-        return finishTimeSourceStrings[finishTimeSource.value]
-    }
-
-    fun finishTimeSourceStringToEnum(string: String): FinishTimeSource {
-        val finishTimeSourceStrings =
-            appContext.get()?.resources?.getStringArray(R.array.finish_time_sources)!!
-        return FinishTimeSource.getByValue(finishTimeSourceStrings.indexOf(string))
     }
 
     fun genderToString(isMan: Boolean?): String {

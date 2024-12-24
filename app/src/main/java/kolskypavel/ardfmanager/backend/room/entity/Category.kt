@@ -7,10 +7,8 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import kolskypavel.ardfmanager.backend.room.database.DateTimeTypeConverter
-import kolskypavel.ardfmanager.backend.room.enums.FinishTimeSource
 import kolskypavel.ardfmanager.backend.room.enums.RaceBand
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
-import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import java.io.Serializable
 import java.time.Duration
 import java.util.UUID
@@ -37,17 +35,15 @@ data class Category(
     @ColumnInfo(name = "length") var length: Float,
     @ColumnInfo(name = "climb") var climb: Float,
     @ColumnInfo(name = "order") var order: Int,
-    @ColumnInfo(name = "different") var differentProperties: Boolean = false,
+    @ColumnInfo(name = "different_properties") var differentProperties: Boolean = false,
     @ColumnInfo(name = "race_type") var raceType: RaceType? = null,
     @ColumnInfo(name = "category_band") var categoryBand: RaceBand? = null,
     @ColumnInfo(name = "limit") var timeLimit: Duration? = null,
-    @ColumnInfo(name = "start_source") var startTimeSource: StartTimeSource? = null,
-    @ColumnInfo(name = "finish_source") var finishTimeSource: FinishTimeSource? = null,
     @ColumnInfo(name = "control_points_string") var controlPointsString: String
 ) : Serializable {
 
     fun toCSVString(): String {
-        return "$name;${isMan.compareTo(false)};${maxAge ?: 0};${length};${climb};${order};${raceType?.value ?: ""};${timeLimit?.toMinutes() ?: ""};${startTimeSource?.value ?: ""};${finishTimeSource?.value ?: ""}"
+        return "$name;${isMan.compareTo(false)};${maxAge ?: 0};${length};${climb};${order};${raceType?.value ?: ""};${timeLimit?.toMinutes() ?: ""}}"
     }
 
     companion object {
@@ -62,8 +58,6 @@ data class Category(
                 0F,
                 0,
                 false,
-                null,
-                null,
                 null,
                 null,
                 null,

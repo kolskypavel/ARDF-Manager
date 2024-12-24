@@ -5,11 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import kolskypavel.ardfmanager.backend.room.database.DateTimeTypeConverter
-import kolskypavel.ardfmanager.backend.room.enums.FinishTimeSource
 import kolskypavel.ardfmanager.backend.room.enums.RaceBand
 import kolskypavel.ardfmanager.backend.room.enums.RaceLevel
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
-import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import java.io.Serializable
 import java.time.Duration
 import java.time.LocalDateTime
@@ -27,7 +25,5 @@ data class Race(
     @ColumnInfo(name = "race_type") var raceType: RaceType,
     @ColumnInfo(name = "race_level") var raceLevel: RaceLevel,
     @ColumnInfo(name = "race_band") var raceBand: RaceBand,
-    @ColumnInfo(name = "time_limit") var timeLimit: Duration,
-    @ColumnInfo(name = "start_source") var startTimeSource: StartTimeSource,
-    @ColumnInfo(name = "finish_source") var finishTimeSource: FinishTimeSource
+    @ColumnInfo(name = "time_limit") var timeLimit: Duration
 ) : Serializable

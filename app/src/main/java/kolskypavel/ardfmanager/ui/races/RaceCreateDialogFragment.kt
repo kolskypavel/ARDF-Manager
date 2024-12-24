@@ -17,11 +17,9 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entity.Race
-import kolskypavel.ardfmanager.backend.room.enums.FinishTimeSource
 import kolskypavel.ardfmanager.backend.room.enums.RaceBand
 import kolskypavel.ardfmanager.backend.room.enums.RaceLevel
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
-import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import kolskypavel.ardfmanager.ui.pickers.DatePickerFragment
 import kolskypavel.ardfmanager.ui.pickers.TimePickerFragment
 import java.time.Duration
@@ -42,8 +40,6 @@ class RaceCreateDialogFragment : DialogFragment() {
     private lateinit var raceTypePicker: MaterialAutoCompleteTextView
     private lateinit var raceLevelPicker: MaterialAutoCompleteTextView
     private lateinit var raceBandPicker: MaterialAutoCompleteTextView
-    private lateinit var startTimeSourcePicker: MaterialAutoCompleteTextView
-    private lateinit var finishTimeSourcePicker: MaterialAutoCompleteTextView
 
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
@@ -70,18 +66,14 @@ class RaceCreateDialogFragment : DialogFragment() {
         raceTypePicker = view.findViewById(R.id.category_dialog_type)
         raceLevelPicker = view.findViewById(R.id.race_dialog_level)
         raceBandPicker = view.findViewById(R.id.race_dialog_band)
-        startTimeSourcePicker = view.findViewById(R.id.race_dialog_start_time_source)
-        finishTimeSourcePicker = view.findViewById(R.id.race_dialog_finish_time_source)
         cancelButton = view.findViewById(R.id.race_dialog_cancel)
         okButton = view.findViewById(R.id.race_dialog_ok)
 
 
-        //TODO: Process the saving - this is just to prrace the filtering after screen rotation
+        //TODO: Process the saving - this is just to disable the filtering after screen rotation
         raceTypePicker.isSaveEnabled = false
         raceLevelPicker.isSaveEnabled = false
         raceBandPicker.isSaveEnabled = false
-        startTimeSourcePicker.isSaveEnabled = false
-        finishTimeSourcePicker.isSaveEnabled = false
 
         populateFields()
         setButtons()
@@ -131,9 +123,7 @@ class RaceCreateDialogFragment : DialogFragment() {
                 RaceType.CLASSICS,
                 RaceLevel.TRAINING,
                 RaceBand.M80,
-                Duration.ofMinutes(120),
-                StartTimeSource.DRAWN_TIME,
-                FinishTimeSource.FINISH_CONTROL
+                Duration.ofMinutes(120)
             )
         } else {
             race = args.race!!
@@ -151,14 +141,6 @@ class RaceCreateDialogFragment : DialogFragment() {
         raceTypePicker.setText(dataProcessor.raceTypeToString(race.raceType), false)
         raceLevelPicker.setText(dataProcessor.raceLevelToString(race.raceLevel), false)
         raceBandPicker.setText(dataProcessor.raceBandToString(race.raceBand), false)
-        startTimeSourcePicker.setText(
-            dataProcessor.startTimeSourceToString(race.startTimeSource),
-            false
-        )
-        finishTimeSourcePicker.setText(
-            dataProcessor.finishTimeSourceToString(race.finishTimeSource),
-            false
-        )
 
     }
 
@@ -181,10 +163,6 @@ class RaceCreateDialogFragment : DialogFragment() {
                 race.raceBand =
                     dataProcessor.raceBandStringToEnum(raceBandPicker.text.toString())
                 race.timeLimit = Duration.ofMinutes(limitEditText.text.toString().trim().toLong())
-                race.startTimeSource =
-                    dataProcessor.startTimeSourceStringToEnum(startTimeSourcePicker.text.toString())
-                race.finishTimeSource =
-                    dataProcessor.finishTimeSourceStringToEnum(finishTimeSourcePicker.text.toString())
 
                 setFragmentResult(
                     REQUEST_RACE_MODIFICATION, bundleOf(

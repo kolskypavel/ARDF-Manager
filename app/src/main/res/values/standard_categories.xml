@@ -6,7 +6,7 @@
         <item>W35;0;44</item>
         <item>W45;0;54</item>
         <item>W55;0;64</item>
-        <item>W65;0;200;</item>
+        <item>W65;0;200</item>
         <item>M19;1;19</item>
         <item>M21;1;39</item>
         <item>M40;1;49</item>
@@ -26,7 +26,7 @@
         <item>D35;0;44</item>
         <item>D45;0;54</item>
         <item>D55;0;64</item>
-        <item>D65;0;200;</item>
+        <item>D65;0;200</item>
         <item>M7;1;7</item>
         <item>M9;1;9</item>
         <item>M12;1;12</item>

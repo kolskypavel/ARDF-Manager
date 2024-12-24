@@ -173,8 +173,6 @@ object CsvProcessor : FormatProcessor {
                     null,
                     null,
                     null,
-                    null,
-                    null,
                     ""
                 )
                 categories.add(cat)
@@ -248,8 +246,6 @@ object CsvProcessor : FormatProcessor {
                                     race.raceType,
                                     race.raceBand,
                                     race.timeLimit,
-                                    race.startTimeSource,
-                                    race.finishTimeSource,
                                     ""
                                 ), emptyList(), emptyList()
                             )

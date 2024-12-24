@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
-import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData
 import kolskypavel.ardfmanager.backend.room.enums.RaceStatus
 import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
@@ -56,7 +55,6 @@ class ResultsFragmentRecyclerViewAdapter(
     override fun getItemCount(): Int = values.size
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
         val dataList = values[position]
         if (dataList.isChild == 0) {
             holder as CategoryViewHolder
@@ -142,6 +140,9 @@ class ResultsFragmentRecyclerViewAdapter(
                         openDetail(singleResult.resultData!!)
                     }
                 }
+
+                if (dataList.childPosition % 2 == 1)
+                    holder.itemView.setBackgroundResource(R.color.light_grey)
             }
         }
     }
@@ -161,12 +162,9 @@ class ResultsFragmentRecyclerViewAdapter(
         var nextPosition = position
         if (currentBoardingRow.isChild == 0) {
 
-            competitors.forEach { service ->
-                val parentModel = ResultWrapper()
-                parentModel.isChild = 1
-                val subList: ArrayList<CompetitorData> = ArrayList()
-                subList.add(service)
-                parentModel.subList = subList
+            competitors.forEachIndexed { index, service ->
+                val parentModel = ResultWrapper(null, 1, ArrayList(), false, index)
+                parentModel.subList.add(service)
                 values.add(++nextPosition, parentModel)
             }
             notifyDataSetChanged()

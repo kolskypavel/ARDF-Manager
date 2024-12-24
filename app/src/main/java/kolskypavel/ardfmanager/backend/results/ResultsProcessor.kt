@@ -107,8 +107,7 @@ class ResultsProcessor(
         cardData: CardData,
         raceId: UUID,
         result: Result,
-        zeroTimeBase: LocalTime,
-        competitorId: UUID?
+        zeroTimeBase: LocalTime
     ): ArrayList<Punch> {
         val punches = ArrayList<Punch>()
 
@@ -198,8 +197,7 @@ class ResultsProcessor(
                 cardData,
                 race.id,
                 result,
-                dataProcessor.getCurrentRace().startDateTime.toLocalTime(),
-                competitor?.id
+                race.startDateTime.toLocalTime()
             )
 
             calculateResult(
@@ -229,6 +227,7 @@ class ResultsProcessor(
     suspend fun processManualPunchData(
         result: Result,
         punches: ArrayList<Punch>,
+        race: Race,
         manualStatus: RaceStatus?
     ) {
         val competitor = if (result.competitorID != null) {
@@ -252,11 +251,11 @@ class ResultsProcessor(
         //Modify the start and finish times
         if (punches.first().punchType == SIRecordType.START) {
             result.startTime = punches.first().siTime
-            punches.removeFirst()
+            punches.removeAt(0)
         }
         if (punches.last().punchType == SIRecordType.FINISH) {
             result.finishTime = punches.last().siTime
-            punches.removeLast()
+            punches.removeAt(punches.lastIndex)
         }
 
         calculateResult(
@@ -267,15 +266,13 @@ class ResultsProcessor(
         )
     }
 
+
     private suspend fun calculateResult(
         result: Result,
         category: Category?,
         punches: ArrayList<Punch>,
         manualStatus: RaceStatus?
     ) {
-        if (result.startTime != null && result.finishTime != null) {
-            result.runTime = SITime.split(result.startTime!!, result.finishTime!!)
-        }
 
         if (category != null) {
             evaluatePunches(punches, category, result)
@@ -330,6 +327,11 @@ class ResultsProcessor(
         }
 
         calculateSplits(punches)
+
+        // Result time calculation - based on race/category preferences
+        if (result.startTime != null && result.finishTime != null) {
+            result.runTime = SITime.split(result.startTime!!, result.finishTime!!)
+        }
 
         // Set the result status based on user preference
         if (manualStatus != null) {
@@ -404,8 +406,8 @@ class ResultsProcessor(
         }
     }
 
-    suspend fun updateResultsForCompetitor(competitorId: UUID, raceId: UUID) {
-        var result = dataProcessor.getResultByCompetitor(competitorId)
+    suspend fun updateResultsForCompetitor(competitorId: UUID) {
+        val result = dataProcessor.getResultByCompetitor(competitorId)
         val competitor = dataProcessor.getCompetitor(competitorId)
 
         //Try to get result by SI instead and update competitor ID

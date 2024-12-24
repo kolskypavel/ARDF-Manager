@@ -181,49 +181,6 @@
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/category_dialog_start_time_source_layout"
-                style="@style/dialog_dropdown"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-
-                android:hint="@string/start_time_source">
-
-                <AutoCompleteTextView
-                    android:id="@+id/category_dialog_start_time_source"
-                    style="@style/dialog_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    app:simpleItems="@array/start_time_sources" />
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/category_dialog_finish_time_source_layout"
-                style="@style/dialog_dropdown"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="5dp"
-                android:layout_weight="1"
-                android:hint="@string/finish_time_source">
-
-                <AutoCompleteTextView
-                    android:id="@+id/category_dialog_finish_time_source"
-                    style="@style/dialog_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="none"
-                    app:simpleItems="@array/finish_time_sources" />
-            </com.google.android.material.textfield.TextInputLayout>
-        </LinearLayout>
-
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

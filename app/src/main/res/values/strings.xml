@@ -53,13 +53,6 @@
     <string name="start_time_hint">Start time (hh:mm)</string>
     <string name="relative_start_time_hint">Relative start time (mm:ss)</string>
     <string name="external_id">External ID</string>
-    <string name="start_time_source">Start time source</string>
-    <string name="finish_time_source">Finish time source</string>
-    <string name="start_time_source_drawn">Drawn</string>
-    <string name="start_time_source_start_control">Start control</string>
-    <string name="start_time_source_first_control">First control</string>
-    <string name="finish_time_source_finish_control">Finish control</string>
-    <string name="finish_time_source_last_control">Last control</string>
 
     <string name="race_create">Create race</string>
     <string name="race_edit">Edit race</string>
@@ -381,16 +374,6 @@
         <item>@string/general_gender_man</item>
     </string-array>
 
-    <string-array name="start_time_sources">
-        <item>@string/start_time_source_drawn</item>
-        <item>@string/start_time_source_start_control</item>
-        <item>@string/start_time_source_first_control</item>
-    </string-array>
-
-    <string-array name="finish_time_sources">
-        <item>@string/finish_time_source_finish_control</item>
-        <item>@string/finish_time_source_last_control</item>
-    </string-array>
 
     <string-array name="competitor_display_options">
         <item>@string/competitor_display_overview</item>
