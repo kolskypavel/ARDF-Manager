@@ -1,4 +1,4 @@
-package kolskypavel.ardfmanager.ui.readouts
+package kolskypavel.ardfmanager.ui.results
 
 import android.app.AlertDialog
 import android.os.Build
@@ -25,7 +25,6 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData
 import kolskypavel.ardfmanager.databinding.FragmentResultsBinding
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import kolskypavel.ardfmanager.ui.races.RaceCreateDialogFragment
-import kolskypavel.ardfmanager.ui.results.ResultsFragmentRecyclerViewAdapter
 import kotlinx.coroutines.launch
 
 class ResultsFragment : Fragment() {

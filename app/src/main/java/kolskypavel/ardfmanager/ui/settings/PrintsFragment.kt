@@ -7,7 +7,9 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
+import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.preference.ListPreference
@@ -28,6 +30,14 @@ class PrintsFragment : PreferenceFragmentCompat() {
         val printsEnabled =
             prefs.getBoolean(requireContext().getString(R.string.key_prints_enabled), false)
         enableOrDisablePreferences(printsEnabled)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        view.findViewById<Toolbar>(R.id.settings_toolbar)?.let { toolbar ->
+            toolbar.title = getString(R.string.global_settings)
+            toolbar.subtitle =getString(R.string.general_print)
+        }
     }
 
     private fun setPreferences() {

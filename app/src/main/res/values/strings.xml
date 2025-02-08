@@ -4,7 +4,6 @@
 
     <!--General strings -->
     <string name="general_race">Race</string>
-
     <string name="general_competitors">Competitors</string>
     <string name="general_categories">Categories</string>
     <string name="general_readouts">Readouts</string>
@@ -27,6 +26,7 @@
     <string name="general_automatic">Automatic</string>
     <string name="general_print">Print</string>
     <string name="general_preset">Preset</string>
+    <string name="general_main">Main</string>
 
     <!--    Sportident-->
     <string name="no_si_card">No SI card!</string>

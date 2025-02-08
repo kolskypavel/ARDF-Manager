@@ -2,6 +2,8 @@ package kolskypavel.ardfmanager.ui.settings
 
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.view.View
+import androidx.appcompat.widget.Toolbar
 import androidx.navigation.fragment.findNavController
 import androidx.preference.CheckBoxPreference
 import androidx.preference.ListPreference
@@ -12,6 +14,15 @@ import kolskypavel.ardfmanager.R
 
 class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var prefs: SharedPreferences
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        view.findViewById<Toolbar>(R.id.settings_toolbar)?.let { toolbar ->
+            toolbar.title = getString(R.string.global_settings)
+            toolbar.subtitle =getString(R.string.general_main)
+        }
+    }
+
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)

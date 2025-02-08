@@ -130,7 +130,7 @@
         </fragment>
         <fragment
             android:id="@+id/navigation_results"
-            android:name="kolskypavel.ardfmanager.ui.readouts.ResultsFragment"
+            android:name="kolskypavel.ardfmanager.ui.results.ResultsFragment"
             android:label="fragment_results"
             tools:layout="@layout/fragment_results">
             <action

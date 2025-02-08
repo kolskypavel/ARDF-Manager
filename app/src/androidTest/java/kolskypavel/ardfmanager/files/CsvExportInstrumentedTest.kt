@@ -54,9 +54,9 @@ class CsvExportInstrumentedTest {
             0,
             true,
             RaceType.CLASSICS,
-            Duration.ofMinutes(120),
             null,
-            null,""
+            Duration.ofMinutes(120),
+            ""
         )
 
 
