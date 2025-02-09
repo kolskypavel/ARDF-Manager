@@ -123,8 +123,9 @@ class MainActivity : AppCompatActivity() {
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.navigation_categories, R.id.navigation_competitors, R.id.navigation_readouts,
-                R.id.navigation_results, R.id.categoryEditDialogFragment, R.id.competitorEditDialogFragment, R.id.readoutEditDialogFragment
-                -> {
+                R.id.navigation_results, R.id.categoryEditDialogFragment, R.id.competitorEditDialogFragment,
+                R.id.readoutEditDialogFragment, R.id.resultsShareDialogFragment
+                    -> {
                     navView.visibility = View.VISIBLE
                     siStatusTextView.visibility = View.VISIBLE
                 }

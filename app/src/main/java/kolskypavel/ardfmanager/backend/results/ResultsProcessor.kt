@@ -266,7 +266,6 @@ class ResultsProcessor(
         )
     }
 
-
     private suspend fun calculateResult(
         result: Result,
         category: Category?,
@@ -328,7 +327,7 @@ class ResultsProcessor(
 
         calculateSplits(punches)
 
-        // Result time calculation - based on race/category preferences
+        // Result time calculation
         if (result.startTime != null && result.finishTime != null) {
             result.runTime = SITime.split(result.startTime!!, result.finishTime!!)
         }

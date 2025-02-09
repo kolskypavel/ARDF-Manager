@@ -48,7 +48,7 @@
                 app:argType="integer" />
         </dialog>
         <dialog
-            android:id="@+id/ResultsShareDialogFragment"
+            android:id="@+id/resultsShareDialogFragment"
             android:name="kolskypavel.ardfmanager.ui.results.ResultsExportDialogFragment"
             android:label="ResultsExportDialogFragment" />
         <dialog
@@ -138,7 +138,7 @@
                 app:destination="@id/RaceCreateDialogFragment" />
             <action
                 android:id="@+id/exportResults"
-                app:destination="@id/ResultsShareDialogFragment" />
+                app:destination="@id/resultsShareDialogFragment" />
             <action
                 android:id="@+id/openReadoutDetail"
                 app:destination="@id/readoutDetailFragment" />

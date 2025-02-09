@@ -19,6 +19,7 @@
     <string name="general_band">Band</string>
     <string name="general_display">Display</string>
     <string name="general_preview">Preview</string>
+    <string name="general_share">Share</string>
     <string name="general_duplicate">Duplicate</string>
     <string name="general_copy">Copy</string>
     <string name="general_start_time">Start time</string>
