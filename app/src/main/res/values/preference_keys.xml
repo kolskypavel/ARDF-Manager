@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_keep_screen_open" translatable="false">keep_screen_open</string>
+    <string name="key_app_language" translatable="false">app_language</string>
+
+    <!--CATEGORIES-->
+
+    <!--READOUTS-->
+    <string name="key_readout_duplicate" translatable="false">readout_duplicate</string>
+    <string name="key_readout_sounds" translatable="false">readout_sounds</string>
+
+    <!--RESULTS-->
+    <string name="key_results_time_format" translatable="false">results_time_format</string>
+    <string name="key_results_use_aliases" translatable="false">results_use_aliases</string>
+
+    <!--FILES-->
+    <string name="key_files_invalid_stops_import" translatable="false">invalid_stops_import</string>
+    <string name="key_files_prefer_app_start_time" translatable="false">prefer_app_start_time</string>
+
+    <!--SOUNDS-->
+    <string name="key_sounds_enabled" translatable="false">sounds_enabled</string>
+    <string name="key_sounds_ok" translatable="false">sounds_ok</string>
+    <string name="key_sounds_unknown_competitor" translatable="false">unknown_competitor</string>
+    <string name="key_sounds_unknown_category" translatable="false">unknown_category</string>
+
+    <!--PRINTING-->
+    <string name="key_prints" translatable="false">prints</string>
+    <string name="key_prints_enabled" translatable="false">prints_enabled</string>
+    <string name="key_prints_select_printer" translatable="false">select_printer</string>
+    <string name="key_prints_automatic_printout" translatable="false">automatic_printout</string>
+</resources>

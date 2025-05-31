@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/category_menu_import_file"
+        android:icon="@drawable/ic_import_file"
+        android:title="@string/data_import_data"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/category_menu_manage_aliases"
+        android:title="@string/category_manage_aliases" />
+
+
+    <item
+        android:id="@+id/category_menu_create_standard_categories"
+        android:title="@string/category_create_standard_categories" />
+
+    <item
+        android:id="@+id/category_menu_edit_race"
+        android:title="@string/race_edit" />
+    <item
+        android:id="@+id/category_menu_global_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/global_settings"
+
+        />
+
+</menu>

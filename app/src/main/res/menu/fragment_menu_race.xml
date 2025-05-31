@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+        android:id="@+id/race_menu_import_file"
+        android:icon="@drawable/ic_import_file"
+        android:title="@string/race_import_text"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/race_menu_global_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/global_settings"
+
+        />
+
+</menu>

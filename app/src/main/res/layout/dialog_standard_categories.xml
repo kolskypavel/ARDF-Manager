@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <RadioGroup
+        android:id="@+id/standard_cat_dialog_radio_group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/standard_cat_dialog_btn_international"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/dialog_radio_btn"
+            android:text="@string/category_preset_international" />
+
+        <RadioButton
+            android:id="@+id/standard_cat_dialog_btn_czech"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/dialog_radio_btn"
+            android:text="@string/category_preset_czech" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/standard_cat_dialog_cancel"
+            style="@style/dialog_ok_cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:layout_weight="1"
+            android:text="@string/cancel" />
+
+        <Button
+            android:id="@+id/standard_cat_dialog_ok"
+            style="@style/dialog_ok_cancel_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/ok" />
+    </LinearLayout>
+</LinearLayout>

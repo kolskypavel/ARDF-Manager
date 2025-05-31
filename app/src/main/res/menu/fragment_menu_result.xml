@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/result_menu_share_results"
+        android:icon="@drawable/ic_share"
+        android:title="@string/results_share"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/result_menu_print_results"
+        android:icon="@drawable/ic_print"
+        android:title="@string/general_print"
+        app:showAsAction="always" />
+    
+    <item
+        android:id="@+id/result_menu_edit_race"
+        android:title="@string/race_edit" />
+    <item
+        android:id="@+id/result_menu_global_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="@string/global_settings" />
+
+</menu>

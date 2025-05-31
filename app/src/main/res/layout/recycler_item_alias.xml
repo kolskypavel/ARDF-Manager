@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <EditText
+        android:id="@+id/alias_item_code"
+        android:layout_width="100dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="20dp"
+        android:ems="10"
+        android:hint="@string/readout_detail_code"
+        android:inputType="number"
+        android:maxLength="3"
+        android:textColor="@color/black"
+        android:textColorHint="@color/grey" />
+
+    <EditText
+        android:id="@+id/alias_item_name"
+        android:layout_width="80dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="20dp"
+        android:ems="10"
+        android:hint="@string/general_name"
+        android:inputType="text"
+        android:maxLength="3"
+        android:digits="abcdefghijklmnopqrstuvwxyz1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        android:textColor="@color/black"
+        android:textColorHint="@color/grey" />
+
+    <ImageButton
+        android:id="@+id/alias_item_add_btn"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:src="@drawable/ic_add" />
+
+    <ImageButton
+        android:id="@+id/alias_item_delete_btn"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:src="@drawable/ic_delete" />
+
+</LinearLayout>

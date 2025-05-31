@@ -1,0 +1,455 @@
+<resources>
+    <string name="app_name">ARDFManager</string>
+    <string name="unknown" translatable="false">\?</string>
+
+    <!--General strings -->
+    <string name="general_race">Race</string>
+
+    <string name="general_competitors">Competitors</string>
+    <string name="general_categories">Categories</string>
+    <string name="general_readouts">Readouts</string>
+    <string name="general_results">Results</string>
+    <string name="general_name">Name</string>
+    <string name="general_date">Date</string>
+    <string name="general_gender">Gender</string>
+    <string name="general_gender_man">Man</string>
+    <string name="general_gender_woman">Woman</string>
+    <string name="general_max_age">Maximal age</string>
+    <string name="general_year_of_birth">Year of birth</string>
+    <string name="general_band">Band</string>
+    <string name="general_display">Display</string>
+    <string name="general_preview">Preview</string>
+    <string name="general_share">Share</string>
+    <string name="general_duplicate">Duplicate</string>
+    <string name="general_copy">Copy</string>
+    <string name="general_start_time">Start time</string>
+    <string name="general_minutes">minutes</string>
+    <string name="general_limit">Limit</string>
+    <string name="general_automatic">Automatic</string>
+    <string name="general_print">Print</string>
+    <string name="general_preset">Preset</string>
+
+    <!--    Sportident-->
+    <string name="no_si_card">No SI card!</string>
+    <string name="duplicate_si_number">Duplicate SI number!</string>
+    <string name="si_number_invalid_range">Invalid SI number range!</string>
+    <string name="si_number">SI number</string>
+
+    <!--Imports-->
+    <string name="files_data">Files and data</string>
+    <string name="data_type">Data type</string>
+    <string name="data_format">Data format</string>
+    <string name="data_import">Import</string>
+    <string name="data_export">Export</string>
+    <string name="data_import_data">Import data</string>
+    <string name="data_import_error">Error when importing data!</string>
+
+    <!--Race-->
+    <string name="race_title">Races</string>
+    <string name="race_import_text">Import race from a file</string>
+    <string name="race_toolbar_title">Races overview</string>
+    <string name="race_level">Level</string>
+    <string name="race_type">Race type</string>
+    <string name="race_limit_hint">Limit (min)</string>
+    <string name="start_time_hint">Start time (hh:mm)</string>
+    <string name="relative_start_time_hint">Relative start time (mm:ss)</string>
+    <string name="external_id">External ID</string>
+
+    <string name="race_create">Create race</string>
+    <string name="race_edit">Edit race</string>
+    <string name="race_delete">Delete race</string>
+    <string name="race_export">Export race</string>
+    <string name="race_end">Close race</string>
+    <string name="race_end_confirmation">Do you really want to close the current race?</string>
+
+    <string name="ok" translatable="false">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="finish_time">Finish time</string>
+    <string name="run_time">Run time</string>
+    <string name="required">Required</string>
+    <string name="invalid">Invalid</string>
+    <string name="race_delete_confirmation">Do you really want to delete this race?</string>
+    <string name="same_category_type">Same type as race</string>
+
+    <!--Categories-->
+    <string name="category">Category</string>
+    <string name="categories_age_based">Age based</string>
+    <string name="si_codes">SI codes</string>
+    <string name="category_create_standard_categories">Create standard categories</string>
+    <string name="category_manage_aliases">Manage aliases</string>
+    <string name="no_category">No category</string>
+    <string name="category_create">Create category</string>
+    <string name="category_edit">Edit category</string>
+    <string name="category_duplicate">Duplicate category</string>
+    <string name="category_delete">Delete category</string>
+    <string name="category_delete_confirmation">Do you really want to delete this category?</string>
+    <string name="last_name">Last name</string>
+    <string name="length">Length (km)</string>
+    <string name="climb">Climb (m)</string>
+    <string name="category_exists">Category already exists!</string>
+    <string name="control_points">Control points</string>
+    <string name="nonexistent_year">Invalid year</string>
+    <string name="invalid_codes">Invalid SI codes</string>
+    <string name="invalid_max_age">Max age is already taken for category %1$s!</string>
+
+    <string name="separator">Separator</string>
+    <string name="beacon">Beacon</string>
+
+    <!--Control points-->
+    <string name="control_point_unknown_specifier"> Unknown special control specifier: %1$s</string>
+    <string name="control_point_invalid_range"> Invalid SI range: %1$s. The code must be greater than 30 and less than 256 </string>
+    <string name="control_point_wrong_si_code_parsing"> Could not parse SI code from string: %1$s</string>
+    <string name="control_point_illegal_si_code">" SI Code [%1$s] out of range."</string>
+    <string name="control_point_two_in_row">" Two identical control points can't be in a row."</string>
+    <string name="control_point_orienteering_special"> Orienteering can\'t contain special control points.</string>
+    <string name="control_point_classics_duplicate"> Duplicate control points are not allowed in a classics race.</string>
+    <string name="control_point_non_last_beacon"> Beacon must be the last control point.</string>
+    <string name="control_point_classics_spectator_not_allowed"> Spectator control points are not allowed on a classic race.</string>
+    <string name="control_point_sprint_duplicate"> Duplicate controls are not allowed in a single lap of a sprint race.</string>
+    <string name="control_point_sprint_two_usages">" Control point with SI code [%1$d] used as a separator / beacon and as a control."</string>
+
+    <!--Category presets-->
+    <string name="category_preset_international">International</string>
+    <string name="category_preset_czech">Czech</string>
+
+    <!--Competitors-->
+    <string name="competitor">Competitor</string>
+    <string name="competitor_first_name">First name</string>
+    <string name="competitor_last_name">First name</string>
+    <string name="competitor_start_number">Start number</string>
+    <string name="competitor_start_time">Start time</string>
+    <string name="competitor_start_number_header" translatable="false">Start #</string>
+    <string name="competitor_to_limit">To limit</string>
+    <string name="club">Club</string>
+    <string name="competitor_create">Create competitor</string>
+    <string name="competitor_edit">Edit competitor</string>
+    <string name="competitor_duplicate">Duplicate competitor</string>
+    <string name="competitor_delete">Delete competitor</string>
+    <string name="competitor_delete_all">Delete all competitors</string>
+    <string name="competitor_add_categories_automatically">Add categories automatically</string>
+    <string name="competitor_add_categories_automatically_confirmation">Do you really want to add categories to competitors automatically (based on age)? Only the competitors without category and will be modified.</string>
+    <string name="competitor_delete_confirmation">Do you really want to delete this competitor?</string>
+    <string name="competitor_delete_all_confirmation">Do you really want to delete all competitors? This action CAN\'T be undone!</string>
+    <string name="index_callsign">Index/Callsign</string>
+    <string name="competitor_rent_chip">Rent chip</string>
+    <string name="competitor_edit_punches">Edit punches</string>
+
+    <string name="competitor_hint_code">Code</string>
+    <string name="competitor_hint_time_format" translatable="false">HH:MM:SS</string>
+    <string name="competitor_hint_day" translatable="false">D</string>
+    <string name="competitor_hint_week" translatable="false">W</string>
+
+    <string name="competitor_display_overview">Overview</string>
+    <string name="competitor_display_start_list">Start list</string>
+    <string name="competitor_display_finish_reached">Finish reached</string>
+    <string name="competitor_display_on_the_way">On the way</string>
+
+    <!--SI station display-->
+    <string name="si_ready">SI service started</string>
+    <string name="si_connected">SI station %1$d connected</string>
+    <string name="si_connected_but_no_race">SI station %1$d connected, but no race set!</string>
+    <string name="si_disconnected">SI station disconnected</string>
+    <string name="si_reading">SI station %1$d reading card %2$d </string>
+    <string name="si_card_error">SI station %1$d, error reading card %2$d </string>
+    <string name="si_card_read">SI station %1$d, read card %2$d </string>
+    <string name="si_last_card">Last read card: %1$s </string>
+    <string name="no_cards_yet">No cards yet </string>
+
+    <!--Readout-->
+    <string name="readout_started">Started</string>
+    <string name="readout_finished">Finished</string>
+    <string name="readout_in_limit">In limit</string>
+    <string name="readout_detail_title">Readout detail</string>
+    <string name="readout_detail_order">Order</string>
+    <string name="readout_detail_code">Code</string>
+    <string name="readout_detail_real_time">Real time</string>
+    <string name="readout_detail_split">Split</string>
+    <string name="readout_detail_status">Status</string>
+    <string name="readout_si_exists">Readout with this SI number already exists!</string>
+    <string name="readout_competitor_exists">Readout for this competitor already exists!</string>
+    <string name="unknown_competitor">Unknown competitor</string>
+    <string name="points">Points</string>
+    <string name="placement">Place</string>
+    <string name="readout_time">Readout time</string>
+    <string name="readout_create_readout">Create readout</string>
+    <string name="readout_edit_readout">Edit readout</string>
+    <string name="readout_print_ticket">Print ticket</string>
+    <string name="readout_delete_readout">Delete readout</string>
+    <string name="readout_delete_all">Delete all readouts</string>
+    <string name="readout_delete_all_confirmation">Do you really want to delete all readouts? This action CAN\'T be undone!</string>
+    <string name="readout_create_category_from_readout">Create a category from this readout</string>
+    <string name="readout_delete_readout_confirmation">Do you really want to delete readout for SI card %1$d?</string>
+
+    <string name="punch_status_valid" translatable="false">✓</string>
+    <string name="punch_status_invalid" translatable="false">✖</string>
+    <string name="punch_status_duplicate" translatable="false">+</string>
+    <string name="punch_status_unknown" translatable="false">\?</string>
+
+    <string name="punch_type_start" translatable="false">S</string>
+    <string name="punch_type_finish" translatable="false">F</string>
+
+    <string name="race_status_valid">Valid</string>
+    <string name="race_status_mispunched">Mispunched</string>
+    <string name="race_status_no_ranking">No ranking</string>
+    <string name="race_status_disqualified">Disqualified</string>
+    <string name="race_status_did_not_start">Did not start</string>
+    <string name="race_status_did_not_finish">Did not finish</string>
+    <string name="race_status_over_limit">Over time limit</string>
+    <string name="race_status_unofficial">Unofficial</string>
+    <string name="race_status_error">Error</string>
+
+    <string name="race_status_valid_short" translatable="false">OK</string>
+    <string name="race_status_mispunched_short" translatable="false">MP</string>
+    <string name="race_status_no_ranking_short" translatable="false">NRA</string>
+    <string name="race_status_disqualified_short" translatable="false">DSQ</string>
+    <string name="race_status_did_not_start_short" translatable="false">DNS</string>
+    <string name="race_status_did_not_finish_short" translatable="false">DNF</string>
+    <string name="race_status_over_limit_short" translatable="false">OVT</string>
+    <string name="race_status_unofficial_short" translatable="false">UNF</string>
+    <string name="race_status_error_short" translatable="false">ERR</string>
+
+    <!--Results-->
+    <string name="results_share">Share results</string>
+    <string name="results_service">Results service</string>
+    <string name="results_export_error">Error when exporting data!</string>
+
+    <string name="data_format_txt" translatable="false">TXT</string>
+    <string name="data_format_csv" translatable="false">CSV</string>
+    <string name="data_format_json" translatable="false">JSON</string>
+    <string name="data_format_xml" translatable="false">XML</string>
+    <string name="data_format_pdf" translatable="false">PDF</string>
+    <string name="data_format_html" translatable="false">HTML</string>
+
+    <!--    Preferences    -->
+    <string name="global_settings">Global settings</string>
+    <string name="about_the_app">About the app</string>
+
+    <string name="preferences_general">General</string>
+    <string name="preferences_prints">Prints</string>
+    <string name="preferences_help">Help</string>
+    <string name="preferences_replace">Replace</string>
+    <string name="preferences_keep_original">Keep original</string>
+    <string name="preferences_ignore">Ignore</string>
+
+    <!--Preferences:general-->
+    <string name="preferences_general_keep_screen_open">Prevent system from locking screen</string>
+    <string name="preferences_general_keep_screen_open_hint">When selected, the screen won\'t automatically turn off.</string>
+    <string name="preferences_general_show_log">Show log</string>
+    <string name="preferences_general_language">Language</string>
+    <string name="preferences_general_language_hint">Manually select a language of the app. The app needs to be restarted after.\n[%1$s]</string>
+
+    <!--Preferences:categories-->
+
+
+    <!--Preferences:readouts-->
+    <string name="preferences_readout_duplicate">Action for duplicate readouts</string>
+    <string name="preferences_readout_duplicate_hint">Select an action for duplicate readout of the same card.\n[%1$s]</string>
+
+    <string-array name="preferences_readout_duplicate_options">
+        <item>@string/preferences_keep_original</item>
+        <item>@string/preferences_replace</item>
+    </string-array>
+
+    <!--Preferences:sounds-->
+    <string name="preferences_readout_sounds">Sounds</string>
+    <string name="preferences_readout_sounds_hint">Select sound that should be used when a card is read out.</string>
+
+    <string name="preferences_sounds_enable_sounds">Enable sounds</string>
+    <string name="preferences_sounds_enable_sounds_hint">Enable if you want sounds after card was read</string>
+    <string name="preferences_sounds_ok">Category and competitor matched</string>
+    <string name="preferences_sounds_ok_hint">Competitor was found by SI number and had a category\n[%1$s]</string>
+    <string name="preferences_sounds_unknown_category">Unknown category</string>
+    <string name="preferences_sounds_unknown_category_hint">Competitor was matched by SI number but was not placed in a category\n[%1$s]</string>
+    <string name="preferences_sounds_unknown_competitor">Unknown competitor</string>
+    <string name="preferences_sounds_unknown_competitor_hint">Competitor wasn\'t natched by SI number\n[%1$s]</string>
+
+    <!--Preferences:results-->
+    <string name="preferences_results_time_format">Time format</string>
+    <string name="preferences_results_time_format_hint">Time format used in results display. Either mm:ss or hh:mm:ss\n[%1$s]</string>
+    <string name="preferences_results_time_format_minutes">mm:ss</string>
+    <string name="preferences_results_time_format_hours">hh:mm:ss</string>
+    <string name="preferences_results_use_aliases">Use aliases</string>
+    <string name="preferences_results_use_aliases_hint">Use defined aliases for control points instead of SI codes</string>
+
+    <string-array name="preferences_results_time_format_options">
+        <item>@string/preferences_results_time_format_minutes</item>
+        <item>@string/preferences_results_time_format_hours</item>
+    </string-array>
+
+    <!--Preferences:files-->
+    <string name="preferences_files_invalid_stops_import">Stop import on invalid record</string>
+    <string name="preferences_file_import_skip_hint">If selected, an invalid line or record stops the import.</string>
+    <string name="preferences_files_prefer_app_start_time">Don\'t overwrite start time</string>
+    <string name="preferences_file_prefer_app_start_time_hint"> When importing start times, a preset start time in the app won\'t be overwritten by the one in a file.</string>
+
+    <!--Preferences:print-->
+    <string name="preferences_prints_hint">Printer selection, automatic printing etc.</string>
+    <string name="preferences_prints_enable">Enable printing</string>
+    <string name="preferences_prints_select_printer">Select printer</string>
+    <string name="preferences_prints_select_printer_hint">Select the device you want to print with. Make sure Bluetooth is on and the device is paired.\n[%1$s]</string>
+    <string name="preferences_prints_automatic_hint">Automatic ticket printout </string>
+    <string name="preferences_prints_automatic">Select when to print the tickets automatically.\n[%1$s] </string>
+
+    <!--Preferences: about the app-->
+    <string name="preferences_changelog">Changelog</string>
+
+    <!--Preference values -->
+
+    <string name="lang_en" translatable="false">English</string>
+    <string name="lang_cz" translatable="false">Čeština</string>
+
+    <array name="language_names">
+        <item>@string/lang_en</item>
+        <item>@string/lang_cz</item>
+    </array>
+
+    <array name="language_codes">
+        <item>en</item>
+        <item>cs</item>
+    </array>
+
+    <string name="print_automatic_manually">Print manually</string>
+    <string name="print_automatic_category_matched">Print when competitor and his category are matched to the readout</string>
+    <string name="print_automatic_competitor_matched">Print when competitor is matched to the readout</string>
+    <string name="print_automatic_always">Always print automatic</string>
+    <string name="print_bluetooth_not_supported">Unfortunately, your device does not support Bluetooth.</string>
+
+    <array name="automatic_prints">
+        <item>@string/print_automatic_manually</item>
+        <item>@string/print_automatic_category_matched</item>
+        <item>@string/print_automatic_competitor_matched</item>
+        <item>@string/print_automatic_always</item>
+    </array>
+
+    <!--    DATA ARRAYS-->
+
+    <string name="race_type_classics">Classics</string>
+    <string name="race_type_sprint" translatable="false">Sprint</string>
+    <string name="race_type_foxoring" translatable="false">Foxoring</string>
+    <string name="race_type_orienteering">Orienteering</string>
+
+    <string name="race_level_international">International</string>
+    <string name="race_level_national">National</string>
+    <string name="race_level_regional">Regional</string>
+    <string name="race_level_district">District</string>
+    <string name="race_level_training">Training</string>
+
+    <string name="band_80m" translatable="false">80m</string>
+    <string name="band_2m" translatable="false">2m</string>
+    <string name="band_combined">Combined</string>
+    <string name="band_none">None</string>
+
+    <string name="data_type_categories">Categories</string>
+    <string name="data_type_competitors">Competitors</string>
+    <string name="data_type_competitor_starts_time">Competitor starts</string>
+    <string name="data_type_competitor_starts_categories">Competitor starts by categories</string>
+    <string name="data_type_competitor_starts_clubs">Competitor starts by clubs</string>
+    <string name="data_type_results">Results</string>
+    <string name="data_type_results_splits">Results with splits</string>
+    <string name="data_type_readout_data">SI Readout data</string>
+
+    <string-array name="race_types_array">
+        <item>@string/race_type_classics</item>
+        <item>@string/race_type_sprint</item>
+        <item>@string/race_type_foxoring</item>
+        <item>@string/race_type_orienteering</item>
+    </string-array>
+
+    <string-array name="race_levels_array">
+        <item>@string/race_level_international</item>
+        <item>@string/race_level_national</item>
+        <item>@string/race_level_regional</item>
+        <item>@string/race_level_district</item>
+        <item>@string/race_level_training</item>
+    </string-array>
+
+    <string-array name="race_bands_array">
+        <item>@string/band_80m</item>
+        <item>@string/band_2m</item>
+        <item>@string/band_combined</item>
+        <item>@string/band_none</item>
+    </string-array>
+
+    <string-array name="genders">
+        <item>@string/general_gender_woman</item>
+        <item>@string/general_gender_man</item>
+    </string-array>
+
+
+    <string-array name="competitor_display_options">
+        <item>@string/competitor_display_overview</item>
+        <item>@string/competitor_display_start_list</item>
+        <item>@string/competitor_display_finish_reached</item>
+        <item>@string/competitor_display_on_the_way</item>
+    </string-array>
+
+    <string-array name="race_status_array">
+        <item>@string/race_status_valid</item>
+        <item>@string/race_status_mispunched</item>
+        <item>@string/race_status_no_ranking</item>
+        <item>@string/race_status_disqualified</item>
+        <item>@string/race_status_did_not_start</item>
+        <item>@string/race_status_did_not_finish</item>
+        <item>@string/race_status_over_limit</item>
+        <item>@string/race_status_unofficial</item>
+        <item>@string/race_status_error</item>
+    </string-array>
+
+    <string-array name="race_status_array_short">
+        <item>@string/race_status_valid_short</item>
+        <item>@string/race_status_mispunched_short</item>
+        <item>@string/race_status_no_ranking_short</item>
+        <item>@string/race_status_disqualified_short</item>
+        <item>@string/race_status_did_not_start_short</item>
+        <item>@string/race_status_did_not_finish_short</item>
+        <item>@string/race_status_over_limit_short</item>
+        <item>@string/race_status_unofficial_short</item>
+        <item>@string/race_status_error_short</item>
+    </string-array>
+
+    <string-array name="data_formats">
+        <item>@string/data_format_txt</item>
+        <item>@string/data_format_csv</item>
+        <item>@string/data_format_json</item>
+        <item>@string/data_format_xml</item>
+        <item>@string/data_format_pdf</item>
+        <item>@string/data_format_html</item>
+    </string-array>
+
+    <string-array name="category_data_formats">
+        <item>@string/data_format_csv</item>
+        <item>@string/data_format_json</item>
+        <item>@string/data_format_xml</item>
+    </string-array>
+
+    <string-array name="competitor_data_formats">
+        <item>@string/data_format_csv</item>
+        <item>@string/data_format_json</item>
+        <item>@string/data_format_xml</item>
+    </string-array>
+
+    <string-array name="results_data_formats">
+        <item>@string/data_format_txt</item>
+        <item>@string/data_format_csv</item>
+        <item>@string/data_format_json</item>
+        <item>@string/data_format_pdf</item>
+        <item>@string/data_format_html</item>
+    </string-array>
+
+    <string-array name="data_types">
+        <item>@string/data_type_categories</item>
+        <item>@string/data_type_competitors</item>
+        <item>@string/data_type_competitor_starts_time</item>
+        <item>@string/data_type_competitor_starts_categories</item>
+        <item>@string/data_type_competitor_starts_clubs</item>
+        <item>@string/data_type_results</item>
+        <item>@string/data_type_results_splits</item>
+        <item>@string/data_type_readout_data</item>
+    </string-array>
+
+    <string-array name="competitor_data_types">
+        <item>@string/data_type_categories</item>
+        <item>@string/data_type_competitors</item>
+        <item>@string/data_type_competitor_starts_time</item>
+    </string-array>
+</resources>

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/raceSelectionFragment">
+    <fragment
+        android:id="@+id/raceSelectionFragment"
+        android:name="kolskypavel.ardfmanager.ui.races.RaceSelectionFragment"
+        android:label="fragment_race_selection_list"
+        tools:layout="@layout/fragment_race_selection">
+        <action
+            android:id="@+id/openRace"
+            app:destination="@id/bottomNav" />
+        <action
+            android:id="@+id/raceCreateOfModify"
+            app:destination="@id/RaceCreateDialogFragment" />
+        <action
+            android:id="@+id/openSettings"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+
+    <navigation
+        android:id="@+id/bottomNav"
+        app:startDestination="@id/navigation_categories">
+
+        <dialog
+            android:id="@+id/standardCategoriesDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.categories.StandardCategoriesDialogFragment"
+            android:label="StandardCategoriesDialogFragment" />
+        <dialog
+            android:id="@+id/aliasEditDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.aliases.AliasEditDialogFragment"
+            android:label="AliasEditDialogFragment" />
+        <dialog
+            android:id="@+id/readoutEditDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutEditDialogFragment"
+            android:label="ReadoutEditDialogFragment">
+            <argument
+                android:name="create"
+                app:argType="boolean" />
+            <argument
+                android:name="resultData"
+                app:argType="kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData"
+                app:nullable="true" />
+            <argument
+                android:name="position"
+                app:argType="integer" />
+        </dialog>
+        <dialog
+            android:id="@+id/resultsShareDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.results.ResultsExportDialogFragment"
+            android:label="ResultsExportDialogFragment" />
+        <dialog
+            android:id="@+id/competitorEditDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.competitors.CompetitorCreateDialogFragment"
+            android:label="CompetitorCreateDialogFragment">
+            <argument
+                android:name="create"
+                app:argType="boolean" />
+
+            <argument
+                android:name="competitor"
+                app:argType="kolskypavel.ardfmanager.backend.room.entity.Competitor"
+                app:nullable="true" />
+            <argument
+                android:name="position"
+                app:argType="integer" />
+            <action
+                android:id="@+id/pickStartTime"
+                app:destination="@id/timePickerFragment" />
+
+        </dialog>
+        <fragment
+            android:id="@+id/navigation_competitors"
+            android:name="kolskypavel.ardfmanager.ui.competitors.CompetitorFragment"
+            android:label="@string/general_competitors"
+            tools:layout="@layout/fragment_competitors">
+            <action
+                android:id="@+id/modifyCompetitor"
+                app:destination="@id/competitorEditDialogFragment" />
+            <action
+                android:id="@+id/editRace"
+                app:destination="@id/RaceCreateDialogFragment" />
+            <action
+                android:id="@+id/importExportDataCompetitors"
+                app:destination="@id/DataImportExportDialogFragment" />
+        </fragment>
+
+        <fragment
+            android:id="@+id/navigation_categories"
+            android:name="kolskypavel.ardfmanager.ui.categories.CategoryFragment"
+            android:label="@string/general_categories"
+            tools:layout="@layout/fragment_categories">
+            <action
+                android:id="@+id/editRace"
+                app:destination="@id/RaceCreateDialogFragment" />
+            <action
+                android:id="@+id/modifyCategory"
+                app:destination="@id/categoryEditDialogFragment" />
+            <action
+                android:id="@+id/importExportData"
+                app:destination="@id/DataImportExportDialogFragment" />
+            <action
+                android:id="@+id/manageAliases"
+                app:destination="@id/aliasEditDialogFragment" />
+            <action
+                android:id="@+id/createStandardCategories"
+                app:destination="@id/standardCategoriesDialogFragment" />
+        </fragment>
+        <dialog
+            android:id="@+id/DataImportExportDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.data.DataImportDialogFragment"
+            android:label="DataExportImportDialogFragment" />
+
+        <fragment
+            android:id="@+id/navigation_readouts"
+            android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutFragment"
+            android:label="@string/general_readouts"
+            tools:layout="@layout/fragment_readouts">
+            <action
+                android:id="@+id/openReadoutDetail"
+                app:destination="@id/readoutDetailFragment" />
+            <action
+                android:id="@+id/editRace"
+                app:destination="@id/RaceCreateDialogFragment" />
+            <action
+                android:id="@+id/editOrCreateReadout"
+                app:destination="@id/readoutEditDialogFragment" />
+        </fragment>
+        <fragment
+            android:id="@+id/navigation_results"
+            android:name="kolskypavel.ardfmanager.ui.readouts.ResultsFragment"
+            android:label="fragment_results"
+            tools:layout="@layout/fragment_results">
+            <action
+                android:id="@+id/editRace"
+                app:destination="@id/RaceCreateDialogFragment" />
+            <action
+                android:id="@+id/exportResults"
+                app:destination="@id/resultsShareDialogFragment" />
+            <action
+                android:id="@+id/openReadoutDetail"
+                app:destination="@id/readoutDetailFragment" />
+        </fragment>
+
+        <dialog
+            android:id="@+id/categoryEditDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.categories.CategoryCreateDialogFragment"
+            android:label="CategoryCreateDialogFragment">
+            <argument
+                android:name="create"
+                app:argType="boolean" />
+            <argument
+                android:name="position"
+                app:argType="integer" />
+            <argument
+                android:name="category"
+                app:argType="kolskypavel.ardfmanager.backend.room.entity.Category"
+                app:nullable="true" />
+            <argument
+                android:name="controlPoints"
+                app:argType="string" />
+
+        </dialog>
+        <action
+            android:id="@+id/closeRace"
+            app:destination="@id/raceSelectionFragment" />
+        <fragment
+            android:id="@+id/readoutDetailFragment"
+            android:name="kolskypavel.ardfmanager.ui.readouts.ReadoutDetailFragment"
+            android:label="ReadoutDetailFragment">
+            <argument
+                android:name="resultData"
+                app:argType="kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData" />
+            <action
+                android:id="@+id/editReadout"
+                app:destination="@id/readoutEditDialogFragment" />
+            <action
+                android:id="@+id/createCategoryFromReadout"
+                app:destination="@id/categoryEditDialogFragment" />
+        </fragment>
+
+        <action
+            android:id="@+id/modifyRaceProperties"
+            app:destination="@id/RaceCreateDialogFragment" />
+        <action
+            android:id="@+id/openSettingsFromRace"
+            app:destination="@id/settingsFragment" />
+    </navigation>
+
+    <dialog
+        android:id="@+id/RaceCreateDialogFragment"
+        android:name="kolskypavel.ardfmanager.ui.races.RaceCreateDialogFragment"
+        android:label="RaceCreateDialogFragment">
+        <argument
+            android:name="create"
+            app:argType="boolean" />
+        <argument
+            android:name="position"
+            app:argType="integer" />
+        <argument
+            android:name="race"
+            app:argType="kolskypavel.ardfmanager.backend.room.entity.Race"
+            app:nullable="true" />
+        <action
+            android:id="@+id/action_raceCreateDialogFragment_to_raceSelectionFragment"
+            app:destination="@id/raceSelectionFragment" />
+        <action
+            android:id="@+id/select_date"
+            app:destination="@id/datePickerFragment" />
+        <action
+            android:id="@+id/select_time"
+            app:destination="@id/timePickerFragment" />
+
+
+    </dialog>
+    <dialog
+        android:id="@+id/datePickerFragment"
+        android:name="kolskypavel.ardfmanager.ui.pickers.DatePickerFragment"
+        android:label="DatePickerFragment">
+        <argument
+            android:name="curDate"
+            app:argType="java.time.LocalDate" />
+    </dialog>
+    <dialog
+        android:id="@+id/timePickerFragment"
+        android:name="kolskypavel.ardfmanager.ui.pickers.TimePickerFragment"
+        android:label="TimePickerFragment">
+        <argument
+            android:name="curTime"
+            app:argType="java.time.LocalTime" />
+    </dialog>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="kolskypavel.ardfmanager.ui.settings.SettingsFragment"
+        android:label="SettingsFragment" >
+        <action
+            android:id="@+id/configurePrints"
+            app:destination="@id/printsFragment" />
+        <action
+            android:id="@+id/openAppInfo"
+            app:destination="@id/aboutAppDialogFragment" />
+        <action
+            android:id="@+id/configureSounds"
+            app:destination="@id/soundsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/printsFragment"
+        android:name="kolskypavel.ardfmanager.ui.settings.PrintsFragment"
+        android:label="PrintsFragment" />
+    <fragment
+        android:id="@+id/soundsFragment"
+        android:name="kolskypavel.ardfmanager.ui.settings.SoundsFragment"
+        android:label="SoundsFragment" />
+    <dialog
+        android:id="@+id/aboutAppDialogFragment"
+        android:name="kolskypavel.ardfmanager.ui.settings.AboutAppDialogFragment"
+        android:label="AboutAppDialogFragment" />
+
+</navigation>

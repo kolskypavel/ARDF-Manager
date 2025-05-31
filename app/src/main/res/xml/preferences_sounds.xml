@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/key_sounds_enabled"
+        android:summary="@string/preferences_sounds_enable_sounds_hint"
+        android:title="@string/preferences_sounds_enable_sounds"
+        app:iconSpaceReserved="false" />
+    <Preference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:key="@string/key_sounds_ok"
+        android:summary="@string/preferences_sounds_ok_hint"
+        android:title="@string/preferences_sounds_ok"
+        app:iconSpaceReserved="false" />
+
+    <Preference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:key="@string/key_sounds_unknown_category"
+        android:summary="@string/preferences_sounds_unknown_category_hint"
+        android:title="@string/preferences_sounds_unknown_category"
+        app:iconSpaceReserved="false" />
+    <Preference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:key="@string/key_sounds_unknown_competitor"
+        android:summary="@string/preferences_sounds_unknown_competitor_hint"
+        android:title="@string/preferences_sounds_unknown_competitor"
+        app:iconSpaceReserved="false" />
+</PreferenceScreen>
