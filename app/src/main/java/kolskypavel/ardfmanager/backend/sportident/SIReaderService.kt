@@ -39,6 +39,7 @@ class SIReaderService :
         val usbDevice: UsbDevice? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             intent?.getParcelableExtra(USB_DEVICE, UsbDevice::class.java)
         } else {
+            @Suppress("DEPRECATION")
             intent?.getParcelableExtra(USB_DEVICE)
         }
 
@@ -56,14 +57,18 @@ class SIReaderService :
             device = newDevice
             startSIDevice()
 
+            // Ensure notification channel exists (required on O+)
+            createNotificationChannel(context)
+
             val notification =
                 NotificationCompat.Builder(context, SIConstants.NOTIFICATION_CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_sportident)
                     .setContentTitle(getString(R.string.si_ready))
                     .setOngoing(true)
+                    .setOnlyAlertOnce(true)
                     .build()
 
-            startForeground(1, notification)
+            startForeground(NOTIFICATION_ID, notification)
             setNotificationObserver()
         }
     }
@@ -72,9 +77,10 @@ class SIReaderService :
         if (removedDevice.vendorId == SI_VENDOR_ID && removedDevice.productId == SI_PRODUCT_ID) {
             siJob?.cancel()
 
-            //Remove the observer
+            // Remove the observer if registered
             if (observer != null) {
                 dataProcessor.currentState.removeObserver(observer!!)
+                observer = null
             }
 
             if (serialDevice != null) {
@@ -106,6 +112,17 @@ class SIReaderService :
         siJob!!.start()
     }
 
+    private fun createNotificationChannel(context: Context) {
+        val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        // Use a readable name for the channel; reuse existing string resource
+        val channel = NotificationChannel(
+            SIConstants.NOTIFICATION_CHANNEL_ID,
+            getString(R.string.si_ready),
+            NotificationManager.IMPORTANCE_LOW
+        )
+        nm.createNotificationChannel(channel)
+    }
+
     private fun setNotificationObserver() {
 
         observer = Observer { newState ->
@@ -121,16 +138,15 @@ class SIReaderService :
                 .setContentTitle(getString(R.string.si_ready))
                 .setContentText(getString(R.string.si_last_card, lastCardString))
                 .setOngoing(true)
+                .setOnlyAlertOnce(true)
                 .build()
 
-            val notificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.notify(1, notification)
+            // Update the existing foreground notification instead of posting a new one
+            startForeground(NOTIFICATION_ID, notification)
         }
 
         dataProcessor.currentState.observeForever(observer!!)
     }
-
 
     enum class ReaderServiceActions {
         START,
@@ -139,5 +155,6 @@ class SIReaderService :
 
     companion object {
         const val USB_DEVICE = "USB_DEVICE"
+        private const val NOTIFICATION_ID = 1
     }
 }
