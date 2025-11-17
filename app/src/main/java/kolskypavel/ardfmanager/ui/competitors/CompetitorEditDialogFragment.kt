@@ -245,6 +245,8 @@ class CompetitorEditDialogFragment : DialogFragment() {
                     competitor.categoryId = null
                 }
 
+                competitor.siRent = siRentCheckBox.isChecked
+
                 selectedRaceViewModel.createOrUpdateCompetitor(competitor)
                 //Send back the result to update the recycler view
                 setFragmentResult(
