@@ -85,7 +85,7 @@ class CompetitorFragment : Fragment() {
         }
 
         competitorDisplayTypePicker.setOnItemClickListener { _, _, _, pos ->
-            toggleCompetitorDisplay(CompetitorTableDisplayType.getByValue(pos.toInt())!!)
+            toggleCompetitorDisplay(CompetitorTableDisplayType.getByValue(pos.toInt()))
         }
 
         competitorAddFab.setOnClickListener {
@@ -215,6 +215,22 @@ class CompetitorFragment : Fragment() {
                     competitorTableView.setColumnComparator(i, null)
                 }
             }
+
+            CompetitorTableDisplayType.SI_RENT -> {
+                headers = intArrayOf(
+                    R.string.general_si_number,
+                    R.string.general_name,
+                    R.string.general_category,
+                    R.string.general_start_time,
+                    R.string.general_finish_time,
+                )
+
+                competitorTableView.setColumnComparator(0, CompetitorSINumberComparator())
+                competitorTableView.setColumnComparator(1, CompetitorNameComparator(collator))
+                competitorTableView.setColumnComparator(2, CompetitorCategoryComparator(collator))
+                competitorTableView.setColumnComparator(3, CompetitorStartTimeComparator())
+                competitorTableView.setColumnComparator(4, CompetitorFinishTimeComparator())
+            }
         }
 
         val adapter = SimpleTableHeaderAdapter(
@@ -262,6 +278,13 @@ class CompetitorFragment : Fragment() {
                     cd.readoutData == null
                 }
                 return filtered.sortedWith(CompetitorDrawnStartTimeComparator())
+            }
+
+            CompetitorTableDisplayType.SI_RENT -> {
+                val filtered = data.filter { cd ->
+                    cd.competitorCategory.competitor.siRent
+                }
+                return filtered.sortedWith(CompetitorSINumberComparator())
             }
         }
     }
@@ -414,13 +437,3 @@ class CompetitorFragment : Fragment() {
     }
 }
 
-enum class CompetitorTableDisplayType(var value: Int) {
-    OVERVIEW(0),
-    START_LIST(1),
-    FINISH_REACHED(2),
-    ON_THE_WAY(3);
-
-    companion object {
-        fun getByValue(value: Int) = entries.firstOrNull { it.value == value } ?: OVERVIEW
-    }
-}

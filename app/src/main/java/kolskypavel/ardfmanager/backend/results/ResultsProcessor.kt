@@ -1,9 +1,13 @@
 package kolskypavel.ardfmanager.backend.results
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.preference.PreferenceManager
+import com.google.android.material.snackbar.Snackbar
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
@@ -19,6 +23,8 @@ import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
+import kolskypavel.ardfmanager.backend.sounds.SoundProcessor
+import kolskypavel.ardfmanager.backend.sounds.SoundType
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
 import kolskypavel.ardfmanager.backend.sportident.SITime
@@ -205,16 +211,18 @@ object ResultsProcessor {
         // Select action if the readout already exists
         if (exist) {
             when (preference) {
+
+                // Create new readout
                 context.getString(R.string.preferences_readout_duplicate_new_value) -> {
                     createNewReadout = true
                 }
 
-                // Duplicate exists and it should be replaced
+                // Replace duplicate
                 context.getString(R.string.preferences_readout_duplicate_replace_value) -> {
                     dataProcessor.deleteResult(existingResult.id)
                 }
 
-                // create a new readout
+                // Warn about existing readout
                 else -> {
                     //Run on the main UI thread
                     CoroutineScope(Dispatchers.Main).launch {
@@ -225,6 +233,7 @@ object ResultsProcessor {
                         )
                             .show()
                     }
+                    isToMakeSound(context, SoundType.DUPLICATE)
                     return false
                 }
             }
@@ -291,6 +300,22 @@ object ResultsProcessor {
                 }
             }
         }
+
+        // Prevent double sounds
+        var sound = false
+
+        // Warn about error / unknown with a sound
+        if (result.resultStatus == ResultStatus.ERROR || result.competitorId == null
+        ) {
+            isToMakeSound(dataProcessor.getContext(), SoundType.ERROR_UNKNOWN)
+            sound = true
+        }
+
+        // Inform about rented card
+        if (competitor?.siRent == true && !sound) {
+            isToMakeSound(context, SoundType.RENT)
+        }
+
         return true
     }
 
@@ -320,6 +345,22 @@ object ResultsProcessor {
             else -> {}
         }
         return false
+    }
+
+    private fun isToMakeSound(
+        context: Context,
+        soundType: SoundType
+    ) {
+        val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
+        val enabled =
+            sharedPref.getBoolean(
+                context.getString(R.string.key_readout_error_sounds),
+                true
+            )
+
+        if (enabled) {
+            SoundProcessor.makeSound(context, soundType)
+        }
     }
 
     suspend fun processManualPunchData(
@@ -458,6 +499,7 @@ object ResultsProcessor {
         } else {
             result.automaticStatus = true
         }
+
         dataProcessor.saveResultPunches(result, punches)
     }
 

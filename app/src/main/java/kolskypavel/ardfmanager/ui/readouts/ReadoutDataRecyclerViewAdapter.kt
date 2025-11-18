@@ -88,9 +88,10 @@ class ReadoutDataRecyclerViewAdapter(
         //Set color based on status
         if (item.result.resultStatus == ResultStatus.ERROR) {
             holder.itemView.setBackgroundResource(R.color.red_result_err)
-        }
-        else if (item.result.competitorId==null){
+        } else if (item.result.competitorId == null) {
             holder.itemView.setBackgroundResource(R.color.orange_reading)
+        } else if (item.competitorCategory?.competitor?.siRent == true) {
+            holder.itemView.setBackgroundResource(R.color.yellow_warning)
         }
 
         //Set context menu

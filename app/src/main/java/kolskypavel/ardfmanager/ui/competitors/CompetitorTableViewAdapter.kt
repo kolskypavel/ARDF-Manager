@@ -183,6 +183,26 @@ class CompetitorTableViewAdapter(
                     }
                 }
             }
+
+            CompetitorTableDisplayType.SI_RENT -> {
+                when (columnIndex) {
+                    0 -> cell.text =
+                        item.competitorCategory.competitor.siNumber?.toString()
+                            ?: "-"
+
+                    1 -> cell.text = item.competitorCategory.competitor.getFullName()
+                    2 -> cell.text = item.competitorCategory.category?.name
+                        ?: context.getString(R.string.no_category)
+
+                    3 -> {
+                        cell.text = item.readoutData?.result?.startTime?.localTimeFormatter() ?: ""
+                    }
+
+                    4 -> {
+                        cell.text = item.readoutData?.result?.finishTime?.localTimeFormatter() ?: ""
+                    }
+                }
+            }
         }
 
         //Set context menu

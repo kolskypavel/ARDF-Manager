@@ -55,17 +55,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             true
         }
 
-        //Sound preferences
-        findPreference<androidx.preference.Preference>(
-            requireContext().getString(
-                R.string.key_readout_sounds
-            )
-        )
-            ?.setOnPreferenceClickListener {
-                findNavController().navigate(SettingsFragmentDirections.configureSounds())
-                true
-            }
-
         //Time format
         val timeFormatPref =
             findPreference<ListPreference>(requireContext().getString(R.string.key_results_time_format))
@@ -94,6 +83,22 @@ class SettingsFragment : PreferenceFragmentCompat() {
             )
             true
         }
+
+        //Enable sounds
+        findPreference<CheckBoxPreference>(
+            requireContext().getString(
+                R.string.key_readout_error_sounds
+            )
+        )
+            ?.setOnPreferenceChangeListener { _, enableErrorSounds ->
+
+                editor.putBoolean(
+                    requireContext().getString(R.string.key_readout_error_sounds),
+                    enableErrorSounds as Boolean
+                )
+                editor.apply()
+                true
+            }
 
         //Aliases
         findPreference<CheckBoxPreference>(requireContext().getString(R.string.key_results_use_aliases))

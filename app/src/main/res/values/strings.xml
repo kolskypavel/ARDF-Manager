@@ -161,6 +161,7 @@
     <string name="competitor_display_start_list">Start list</string>
     <string name="competitor_display_finish_reached">Finish reached</string>
     <string name="competitor_display_on_the_way">On the way</string>
+    <string name="competitor_display_si_rent">SI rent</string>
 
     <!--SI station display-->
     <string name="si_service">SI service</string>
@@ -290,21 +291,9 @@
         <item>cs</item>
     </array>
 
-
-    <!--Preferences:sounds-->
-    <string name="preferences_readout_sounds">Sounds</string>
-    <string name="preferences_readout_sounds_hint">Select sound that should be used when a card is read out.</string>
-
-    <string name="preferences_sounds_enable_sounds">Enable sounds</string>
-    <string name="preferences_sounds_enable_sounds_hint">Enable if you want sounds after card was read</string>
-    <string name="preferences_sounds_ok">Category and competitor matched</string>
-    <string name="preferences_sounds_ok_hint">Competitor was found by SI number and had a category\n[%1$s]</string>
-    <string name="preferences_sounds_unknown_category">Unknown category</string>
-    <string name="preferences_sounds_unknown_category_hint">Competitor was matched by SI number but was not placed in a category\n[%1$s]</string>
-    <string name="preferences_sounds_unknown_competitor">Unknown competitor</string>
-    <string name="preferences_sounds_unknown_competitor_hint">Competitor wasn\'t natched by SI number\n[%1$s]</string>
-
     <!--Preferences:readouts-->
+    <string name="preferences_sounds_enable_error_sounds">Enable error sounds</string>
+    <string name="preferences_sounds_enable_sounds_hint">Enable if you want error sounds after card was read</string>
     <string name="preferences_readout_duplicate_actions">Duplicate SI card actions</string>
     <string name="preferences_readout_duplicate_actions_hint">Select what should be performed when a card is read twice.</string>
     <string name="preferences_readout_duplicate_ignore">Ignore</string>
@@ -480,6 +469,7 @@
         <item>@string/competitor_display_start_list</item>
         <item>@string/competitor_display_finish_reached</item>
         <item>@string/competitor_display_on_the_way</item>
+        <item>@string/competitor_display_si_rent</item>
     </string-array>
 
     <string-array name="result_status_array">

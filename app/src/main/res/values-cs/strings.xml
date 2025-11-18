@@ -156,6 +156,8 @@
     <string name="competitor_display_start_list">Startovka</string>
     <string name="competitor_display_finish_reached">V cíli</string>
     <string name="competitor_display_on_the_way">Na trati</string>
+    <string name="competitor_display_si_rent">Půjčovna čipů</string>
+
     <string name="readout_started">Odstartovali</string>
     <string name="readout_finished">Doběhli</string>
     <string name="readout_in_limit">V limitu</string>
@@ -230,15 +232,8 @@
     <string name="preferences_prints_double_print_hint">Použijte tuto možnost, pokud chcete každý lístek tisknout dvakrát.</string>
     <string name="preferences_prints_double_print_delay">Zpoždění mezi dvojtým tiskem lístků (sekundy)</string>
 
-    <string name="preferences_readout_sounds_hint">Zvolte zvuk po vyčtení čipu.</string>
-    <string name="preferences_sounds_enable_sounds">Povolit zvuky</string>
-    <string name="preferences_sounds_enable_sounds_hint">Povolte, pokud chcete zvuky po vyčtení čipu</string>
-    <string name="preferences_sounds_ok">Kategorie a závodník nalezeni</string>
-    <string name="preferences_sounds_ok_hint">Závodník byl nalezen podle SI čísla a měl přiřazenou kategorii\n[%1$s]</string>
-    <string name="preferences_sounds_unknown_category">Neznámá kategorie</string>
-    <string name="preferences_sounds_unknown_category_hint">Závodník byl nalezen podle SI čísla, ale nebyl zařazen do kategorie\n[%1$s]</string>
-    <string name="preferences_sounds_unknown_competitor">Neznámý závodník</string>
-    <string name="preferences_sounds_unknown_competitor_hint">Závodník nebyl nalezen podle SI čísla\n[%1$s]</string>
+    <string name="preferences_sounds_enable_error_sounds">Povolit chybové zvuky zvuky</string>
+    <string name="preferences_sounds_enable_sounds_hint">Povolte, pokud chcete chybové zvuky po vyčtení čipu</string>
 
     <string name="result_service_status_disabled">Vypnuta</string>
     <string name="result_service_status_running">Běží</string>

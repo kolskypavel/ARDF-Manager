@@ -6,7 +6,7 @@
     <!--CATEGORIES-->
 
     <!--READOUTS-->
-    <string name="key_readout_sounds" translatable="false">readout_sounds</string>
+    <string name="key_readout_error_sounds" translatable="false">readout_sounds</string>
     <string name="key_readout_duplicate" translatable="false">readout_duplicate</string>
 
     <!--RESULTS-->
@@ -17,12 +17,6 @@
     <!--FILES-->
     <string name="key_files_invalid_stops_import" translatable="false">invalid_stops_import</string>
     <string name="key_files_prefer_app_start_time" translatable="false">prefer_app_start_time</string>
-
-    <!--SOUNDS-->
-    <string name="key_sounds_enabled" translatable="false">sounds_enabled</string>
-    <string name="key_sounds_ok" translatable="false">sounds_ok</string>
-    <string name="key_sounds_unknown_competitor" translatable="false">unknown_competitor</string>
-    <string name="key_sounds_unknown_category" translatable="false">unknown_category</string>
 
     <!--PRINTING-->
     <string name="key_prints" translatable="false">prints</string>

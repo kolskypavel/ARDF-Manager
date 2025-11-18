@@ -46,6 +46,13 @@
         android:title="@string/general_readouts"
         app:iconSpaceReserved="false">
 
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/key_readout_error_sounds"
+            android:summary="@string/preferences_sounds_enable_sounds_hint"
+            android:title="@string/preferences_sounds_enable_error_sounds"
+            app:iconSpaceReserved="false" />
+
         <ListPreference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,15 +62,6 @@
             android:key="@string/key_readout_duplicate"
             android:summary="@string/preferences_readout_duplicate_actions_hint"
             android:title="@string/preferences_readout_duplicate_actions"
-            app:iconSpaceReserved="false" />
-
-        <Preference
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:enabled="false"
-            android:key="@string/key_readout_sounds"
-            android:summary="@string/preferences_readout_sounds_hint"
-            android:title="@string/preferences_readout_sounds"
             app:iconSpaceReserved="false" />
 
     </PreferenceCategory>
