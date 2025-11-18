@@ -40,14 +40,12 @@ object CsvProcessor : FormatProcessor {
         inStream: InputStream,
         dataType: DataType,
         race: Race,
-        dataProcessor: DataProcessor,
-        stopOnInvalid: Boolean
+        dataProcessor: DataProcessor
     ): DataImportWrapper {
         return when (dataType) {
             DataType.CATEGORIES -> return importCategories(
                 inStream,
                 race,
-                stopOnInvalid,
                 dataProcessor,
                 dataProcessor.getContext()
             )
@@ -56,7 +54,6 @@ object CsvProcessor : FormatProcessor {
                 inStream,
                 race,
                 dataProcessor.getCategoryDataFlowForRace(race.id).first().toHashSet(),
-                stopOnInvalid,
                 dataProcessor,
                 dataProcessor.getContext()
             )
@@ -64,7 +61,6 @@ object CsvProcessor : FormatProcessor {
             DataType.COMPETITOR_STARTS -> return importCompetitorStarts(
                 inStream,
                 dataProcessor.getCompetitorDataFlowByRace(race.id).first().toHashSet(),
-                stopOnInvalid,
                 dataProcessor.getContext()
             )
 
@@ -124,7 +120,6 @@ object CsvProcessor : FormatProcessor {
     private fun importCategories(
         inStream: InputStream,
         race: Race,
-        stopOnInvalid: Boolean,
         dataProcessor: DataProcessor,
         context: Context
     ): DataImportWrapper {
@@ -205,16 +200,6 @@ object CsvProcessor : FormatProcessor {
                             "CSV import",
                             "Failed to import category: ${row.joinToString(", ")}\n" + e.stackTraceToString()
                         )
-
-                        if (stopOnInvalid) {
-                            throw IllegalArgumentException(
-                                context.getString(
-                                    R.string.data_import_invalid_line,
-                                    csvRow.index,
-                                    e.message
-                                )
-                            )
-                        }
                         invalidLines.add(Pair(csvRow.index, e.message ?: ""))
                     }
                 }
@@ -270,7 +255,7 @@ object CsvProcessor : FormatProcessor {
         inStream: InputStream,
         race: Race,
         categories: HashSet<CategoryData>,
-        stopOnInvalid: Boolean,
+
         dataProcessor: DataProcessor,
         context: Context
     ): DataImportWrapper {
@@ -385,16 +370,6 @@ object CsvProcessor : FormatProcessor {
                     "Failed to import competitor \n\" " + e.stackTraceToString()
                 )
 
-                //TODO: Add detailed information to exception
-                if (stopOnInvalid) {
-                    throw IllegalArgumentException(
-                        context.getString(
-                            R.string.data_import_invalid_line,
-                            csvRow.index,
-                            e.message
-                        )
-                    )
-                }
                 invalidLines.add(Pair(csvRow.index, e.message ?: ""))
             }
         }
@@ -404,7 +379,7 @@ object CsvProcessor : FormatProcessor {
     private fun importCompetitorStarts(
         inStream: InputStream,
         competitors: HashSet<CompetitorData>,
-        stopOnInvalid: Boolean,
+
         context: Context
     ): DataImportWrapper {
         val csvReader = getReader().readAll(inStream)
@@ -450,16 +425,6 @@ object CsvProcessor : FormatProcessor {
                         "CSV import",
                         "Failed to import competitor start: \n" + e.stackTraceToString()
                     )
-                    //TODO: Add detailed information to exception
-                    if (stopOnInvalid) {
-                        throw IllegalArgumentException(
-                            context.getString(
-                                R.string.data_import_invalid_line,
-                                csvRow.index,
-                                e.message
-                            )
-                        )
-                    }
                     invalidLines.add(Pair(csvRow.index, e.message ?: ""))
                 }
             }

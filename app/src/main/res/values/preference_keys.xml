@@ -15,7 +15,6 @@
     <string name="key_result_service" translatable="false">result_service</string>
 
     <!--FILES-->
-    <string name="key_files_invalid_stops_import" translatable="false">invalid_stops_import</string>
     <string name="key_files_prefer_app_start_time" translatable="false">prefer_app_start_time</string>
 
     <!--PRINTING-->

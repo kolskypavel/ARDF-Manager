@@ -176,7 +176,6 @@
     <string name="preferences_general_show_log">Zobrazit log</string>
     <string name="preferences_general_language">Jazyk</string>
     <string name="preferences_general_language_hint">Manuálně vybrat jazyk. Aplikace musí být restartována pro projevení změn.\n[%1$s]</string>
-    <string name="preferences_readout_sounds">Zvuky</string>
     <string name="preferences_readout_duplicate_actions">Akce pro duplikátní čip</string>
     <string name="preferences_readout_duplicate_actions_hint">Zvol, co se má stát pokud je čip vyčten dvakrát.</string>
     <string name="preferences_readout_duplicate_ignore">Ignorovat</string>
@@ -217,8 +216,6 @@
     <string name="preferences_results_service_hint">Vyberte, kdy odesílat výsledky pomocí výsledkové služby\n[%1$s]</string>
     <string name="preferences_result_service_matched">Při nalezení závodníka</string>
     <string name="preferences_result_service_always">Vždy</string>
-    <string name="preferences_files_invalid_stops_import">Zastavit import při nevalidním záznamu</string>
-    <string name="preferences_file_import_skip_hint">Pokud je zvoleno, neplatný řádek nebo záznam zastaví import.</string>
     <string name="preferences_file_prefer_app_start_time_hint">Při importu startovních časů nebude čas v aplikaci přepsán tím ze souboru.</string>
     <string name="preferences_prints_hint">Výběr tiskárny, automatický tisk atd.</string>
     <string name="preferences_prints_enable">Povolit tisk</string>

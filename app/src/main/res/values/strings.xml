@@ -348,8 +348,6 @@
     </string-array>
 
     <!--Preferences:files-->
-    <string name="preferences_files_invalid_stops_import">Stop import on invalid record</string>
-    <string name="preferences_file_import_skip_hint">If selected, an invalid line or record stops the import.</string>
     <string name="preferences_files_prefer_app_start_time">Don\'t overwrite start time</string>
     <string name="preferences_file_prefer_app_start_time_hint"> When importing start times, a preset start time in the app won\'t be overwritten by the one in a file.</string>
 

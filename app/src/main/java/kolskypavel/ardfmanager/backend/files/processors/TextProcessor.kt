@@ -31,8 +31,7 @@ object TextProcessor : FormatProcessor {
         inStream: InputStream,
         dataType: DataType,
         race: Race,
-        dataProcessor: DataProcessor,
-        stopOnInvalid: Boolean
+        dataProcessor: DataProcessor
     ): DataImportWrapper {
         throw NotImplementedError("Text processor not intended for data import")
     }

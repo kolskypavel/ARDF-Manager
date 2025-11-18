@@ -22,8 +22,7 @@ object IofXmlProcessor : FormatProcessor {
         inStream: InputStream,
         dataType: DataType,
         race: Race,
-        dataProcessor: DataProcessor,
-        stopOnInvalid: Boolean
+        dataProcessor: DataProcessor
     ): DataImportWrapper {
         return when (dataType) {
             DataType.CATEGORIES -> importCategories(
