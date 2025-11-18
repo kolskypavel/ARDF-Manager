@@ -11,6 +11,7 @@ import android.widget.ImageButton
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.wrappers.AliasEditItemWrapper
@@ -21,6 +22,7 @@ class AliasEditDialogFragment : DialogFragment() {
     private val args: AliasEditDialogFragmentArgs by navArgs()
 
     private lateinit var addButton: ImageButton
+    private lateinit var createButton: Button
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
     private lateinit var aliasRecyclerView: RecyclerView
@@ -50,16 +52,29 @@ class AliasEditDialogFragment : DialogFragment() {
         selectedRaceViewModel = sl
 
         addButton = view.findViewById(R.id.alias_dialog_add_btn)
+        createButton = view.findViewById(R.id.alias_dialog_create_btn)
         cancelButton = view.findViewById(R.id.alias_dialog_cancel)
         okButton = view.findViewById(R.id.alias_dialog_ok)
         aliasRecyclerView = view.findViewById(R.id.alias_recycler_view)
 
-        dialog?.setTitle(getString(R.string.category_manage_aliases))
+        dialog?.setTitle(getString(R.string.category_alias_manage))
         setAdapter()
         setButtons()
 
         addButton.setOnClickListener {
             (aliasRecyclerView.adapter as AliasRecyclerViewAdapter).addAlias(-1)
+        }
+
+        createButton.setOnClickListener {
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(requireContext())
+            val preference =
+                sharedPref.getString(
+                    requireContext().getString(R.string.key_app_language),
+                    requireContext().getString(R.string.lang_en)
+                )
+            val international = (preference == requireContext().getString(R.string.lang_en))
+
+            (aliasRecyclerView.adapter as AliasRecyclerViewAdapter).addStandardAliases(international)
         }
     }
 

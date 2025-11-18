@@ -34,7 +34,16 @@ class AliasRecyclerViewAdapter(
         holder.siCode.setText(item.alias.siCode.toString())
         holder.name.setText(item.alias.name)
 
-        holder.name.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
+        // Add a warning to newly created wrapper via + button
+        if (!item.isNameValid) {
+            holder.name.error = holder.itemView.context.getString(R.string.general_required)
+        }
+
+        if (!item.isCodeValid) {
+            holder.siCode.error = holder.itemView.context.getString(R.string.general_required)
+        }
+
+        holder.name.doOnTextChanged { cs: CharSequence?, _, _, _ ->
             try {
                 nameWatcher(holder.adapterPosition, cs.toString(), holder.name.context)
             } catch (e: IllegalArgumentException) {
@@ -42,7 +51,7 @@ class AliasRecyclerViewAdapter(
             }
         }
 
-        holder.siCode.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
+        holder.siCode.doOnTextChanged { cs: CharSequence?, _, _, _ ->
             try {
                 codeWatcher(holder.adapterPosition, cs.toString(), holder.name.context)
             } catch (e: IllegalArgumentException) {
@@ -64,18 +73,19 @@ class AliasRecyclerViewAdapter(
 
     private fun codeWatcher(position: Int, code: String, context: Context) {
         if (code.isEmpty()) {
-            values[position].isCodeValid = true
+            values[position].isCodeValid = false
             throw IllegalArgumentException(context.getString(R.string.general_required))
         }
 
-        val codeValue = code.toInt();
+        val codeValue = code.toInt()
 
         if (!isSICodeValid(codeValue)) {
             values[position].isCodeValid = false
             throw IllegalArgumentException(context.getString(R.string.general_invalid))
         }
 
-        if (!isCodeAvailable(codeValue)) {
+        // Use position-aware availability so the item itself isn't treated as duplicate
+        if (!isCodeAvailable(codeValue, position)) {
             values[position].isCodeValid = false
             throw IllegalArgumentException(context.getString(R.string.general_duplicate))
         }
@@ -90,7 +100,8 @@ class AliasRecyclerViewAdapter(
             throw IllegalArgumentException(context.getString(R.string.general_required))
         }
 
-        if (!isNameAvailable(name)) {
+        // Use position-aware availability so the item itself isn't treated as duplicate
+        if (!isNameAvailable(name, position)) {
             values[position].isNameValid = false
             throw IllegalArgumentException(context.getString(R.string.general_duplicate))
         }
@@ -99,9 +110,11 @@ class AliasRecyclerViewAdapter(
         values[position].alias.name = name
     }
 
-    private fun isCodeAvailable(code: Int): Boolean = values.all { a -> code != a.alias.siCode }
+    private fun isCodeAvailable(code: Int, position: Int): Boolean =
+        values.withIndex().all { (i, a) -> if (i == position) true else code != a.alias.siCode }
 
-    private fun isNameAvailable(name: String): Boolean = values.all { a -> name != a.alias.name }
+    private fun isNameAvailable(name: String, position: Int): Boolean =
+        values.withIndex().all { (i, a) -> if (i == position) true else name != a.alias.name }
 
     fun checkFields(): Boolean = values.all { a -> a.isNameValid && a.isCodeValid }
 
@@ -124,14 +137,79 @@ class AliasRecyclerViewAdapter(
         notifyItemInserted(position + 1)
     }
 
+
     private fun deleteAlias(position: Int) {
-        if (position in 0..<values.size) {
+        if (position in 0 until values.size) {
             values.removeAt(position)
             notifyItemRemoved(position)
         }
     }
 
-    inner class AliasViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    fun addStandardAliases(international: Boolean) {
+        val standard = ArrayList<AliasEditItemWrapper>()
+
+        standard.add(AliasEditItemWrapper(Alias(UUID.randomUUID(), raceId, 31, "1"), true, true))
+        standard.add(AliasEditItemWrapper(Alias(UUID.randomUUID(), raceId, 32, "2"), true, true))
+        standard.add(AliasEditItemWrapper(Alias(UUID.randomUUID(), raceId, 33, "3"), true, true))
+        standard.add(AliasEditItemWrapper(Alias(UUID.randomUUID(), raceId, 34, "4"), true, true))
+        standard.add(AliasEditItemWrapper(Alias(UUID.randomUUID(), raceId, 35, "5"), true, true))
+        standard.add(AliasEditItemWrapper(Alias(UUID.randomUUID(), raceId, 36, "S"), true, true))
+        standard.add(
+            AliasEditItemWrapper(
+                Alias(
+                    UUID.randomUUID(),
+                    raceId,
+                    41,
+                    if (international) "F1" else "R1"
+                ), true, true
+            )
+        )
+        standard.add(
+            AliasEditItemWrapper(
+                Alias(
+                    UUID.randomUUID(),
+                    raceId,
+                    42,
+                    if (international) "F2" else "R2"
+                ), true, true
+            )
+        )
+        standard.add(
+            AliasEditItemWrapper(
+                Alias(
+                    UUID.randomUUID(),
+                    raceId,
+                    43,
+                    if (international) "F3" else "R3"
+                ), true, true
+            )
+        )
+        standard.add(
+            AliasEditItemWrapper(
+                Alias(
+                    UUID.randomUUID(),
+                    raceId,
+                    44,
+                    if (international) "F4" else "R4"
+                ), true, true
+            )
+        )
+        standard.add(
+            AliasEditItemWrapper(
+                Alias(
+                    UUID.randomUUID(),
+                    raceId,
+                    45,
+                    if (international) "F5" else "R5"
+                ), true, true
+            )
+        )
+
+        values = standard
+        notifyDataSetChanged()
+    }
+
+    class AliasViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var siCode: EditText = view.findViewById(R.id.alias_item_code)
         var name: EditText = view.findViewById(R.id.alias_item_name)
         var addBtn: ImageButton = view.findViewById(R.id.alias_item_add_btn)

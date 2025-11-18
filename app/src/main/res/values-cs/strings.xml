@@ -58,7 +58,8 @@
     <string name="general_year_of_birth">Ročník</string>
     <string name="si_codes">SI kódy</string>
     <string name="category_create_standard_categories">Vytvořit standardní kategorie</string>
-    <string name="category_manage_aliases">Spravovat aliasy</string>
+    <string name="category_alias_manage">Spravovat aliasy</string>
+    <string name="category_alias_create">Vytvořit standardní aliasy</string>
     <string name="no_category">Bez kategorie</string>
     <string name="category_create">Vytvořit kategorii</string>
     <string name="category_edit">Upravit kategorii</string>

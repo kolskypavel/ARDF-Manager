@@ -11,7 +11,7 @@
 
     <item
         android:id="@+id/category_menu_manage_aliases"
-        android:title="@string/category_manage_aliases" />
+        android:title="@string/category_alias_manage" />
 
 
     <item
