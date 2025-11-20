@@ -35,11 +35,8 @@ data class Result(
     @ColumnInfo(name = "si_number") var siNumber: Int?,
     @ColumnInfo(name = "card_type") var cardType: Byte,
     @ColumnInfo(name = "check_time") var checkTime: SITime?,
-    @ColumnInfo(name = "orig_check_time") var origCheckTime: SITime?, // Immutable copy of original SI Time, used mainly for SI 5 cards
     @ColumnInfo(name = "start_time") var startTime: SITime?,
-    @ColumnInfo(name = "orig_start_time") var origStartTime: SITime?, // Immutable copy of original SI Time, used mainly for SI 5 cards
     @ColumnInfo(name = "finish_time") var finishTime: SITime?,
-    @ColumnInfo(name = "orig_finish_time") var origFinishTime: SITime?, // Immutable copy of original SI Time, used mainly for SI 5 cards
     @ColumnInfo(name = "readout_time") var readoutTime: LocalDateTime = LocalDateTime.now(),
     @ColumnInfo(name = "automatic_status") var automaticStatus: Boolean = true,
     @ColumnInfo(name = "result_status") var resultStatus: ResultStatus,
@@ -74,11 +71,8 @@ data class Result(
         siNumber = 0,
         cardType = SIConstants.SI_CARD5,
         checkTime = SITime(),
-        origCheckTime = SITime(),
         startTime = SITime(),
-        origStartTime = SITime(),
         finishTime = SITime(),
-        origFinishTime = SITime(),
         readoutTime = LocalDateTime.now(),
         automaticStatus = true,
         resultStatus = ResultStatus.OK,

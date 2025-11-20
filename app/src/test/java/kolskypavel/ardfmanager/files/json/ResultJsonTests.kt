@@ -36,6 +36,7 @@ class ResultJsonTests {
     fun testToJson() {
         val dataProcessor = mock(DataProcessor::class.java)
         val race = Race()
+        race.startDateTime = LocalDateTime.of(2025,11,23,13,0,0)
 
         `when`(dataProcessor.resultStatusToShortString(org.mockito.kotlin.any()))
             .thenReturn("OK")
@@ -44,11 +45,12 @@ class ResultJsonTests {
             .thenReturn("OK")
 
         val result = Result()
+        result.checkTime = SITime(LocalTime.of(12, 49, 3))
         result.startTime = SITime(LocalTime.of(13, 0, 0))
         result.finishTime = SITime(LocalTime.of(14, 15, 0))
         result.resultStatus = ResultStatus.OK
         result.runTime = Duration.ofMinutes(75)
-        result.readoutTime = LocalDateTime.of(2025, 9, 25, 14, 18, 24)
+        result.readoutTime = LocalDateTime.of(2025, 11, 23, 14, 18, 24)
 
         val punches = arrayListOf(
             Punch(13, SITime(LocalTime.of(13, 0, 0)), SIRecordType.START, 1),

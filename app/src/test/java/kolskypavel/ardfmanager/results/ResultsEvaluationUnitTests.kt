@@ -24,23 +24,7 @@ class ResultsEvaluationUnitTests {
 
     @Test
     fun testClassicsCorrectData() {
-        val result = Result(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            siNumber = null,
-            cardType = SIConstants.SI_CARD5,
-            checkTime = SITime(),
-            origCheckTime = SITime(),
-            startTime = SITime(),
-            origStartTime = SITime(),
-            finishTime = SITime(),
-            origFinishTime = SITime(),
-            automaticStatus = true,
-            resultStatus = ResultStatus.NO_RANKING,
-            runTime = Duration.ZERO,
-            modified = false,
-            sent = false
-        )
+        val result = Result()
         val punches = ArrayList<Punch>()
         val controlPoints = ArrayList<ControlPoint>()
 
@@ -81,21 +65,7 @@ class ResultsEvaluationUnitTests {
     fun testClassicsRandomData() {
         for (t in 0..50) {
             val result = Result(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                siNumber = null,
-                cardType = SIConstants.SI_CARD5,
-                checkTime = SITime(),
-                origCheckTime = SITime(),
-                startTime = SITime(),
-                origStartTime = SITime(),
-                finishTime = SITime(),
-                origFinishTime = SITime(),
-                automaticStatus = true,
-                resultStatus = ResultStatus.NO_RANKING,
-                runTime = Duration.ZERO,
-                modified = false,
-                sent = false
+
             )
             val punches = ArrayList<Punch>()
             val controlPoints = ArrayList<ControlPoint>()
@@ -139,23 +109,7 @@ class ResultsEvaluationUnitTests {
 
     @Test
     fun testClassicsDuplicateBeaconEvaluation() {
-        val result = Result(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            siNumber = null,
-            cardType = SIConstants.SI_CARD5,
-            checkTime = SITime(),
-            origCheckTime = SITime(),
-            startTime = SITime(),
-            origStartTime = SITime(),
-            finishTime = SITime(),
-            origFinishTime = SITime(),
-            automaticStatus = true,
-            resultStatus = ResultStatus.NO_RANKING,
-            runTime = Duration.ZERO,
-            modified = false,
-            sent = false
-        )
+        val result = Result()
         val punches = ArrayList<Punch>()
         val controlPoints = ArrayList<ControlPoint>()
 
@@ -207,23 +161,7 @@ class ResultsEvaluationUnitTests {
 
     @Test
     fun testClassicsPunchesAfterBeaconEvaluation() {
-        val result = Result(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            siNumber = null,
-            cardType = SIConstants.SI_CARD5,
-            checkTime = SITime(),
-            origCheckTime = SITime(),
-            startTime = SITime(),
-            origStartTime = SITime(),
-            finishTime = SITime(),
-            origFinishTime = SITime(),
-            automaticStatus = true,
-            resultStatus = ResultStatus.NO_RANKING,
-            runTime = Duration.ZERO,
-            modified = false,
-            sent = false
-        )
+        val result = Result()
         val punches = ArrayList<Punch>()
         val controlPoints = ArrayList<ControlPoint>()
 
@@ -280,23 +218,7 @@ class ResultsEvaluationUnitTests {
 
     @Test
     fun testClassicsRankingOrNoRanking() {
-        val result = Result(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            siNumber = null,
-            cardType = SIConstants.SI_CARD5,
-            checkTime = SITime(),
-            origCheckTime = SITime(),
-            startTime = SITime(),
-            origStartTime = SITime(),
-            finishTime = SITime(),
-            origFinishTime = SITime(),
-            automaticStatus = true,
-            resultStatus = ResultStatus.NO_RANKING,
-            runTime = Duration.ZERO,
-            modified = false,
-            sent = false
-        )
+        val result = Result()
         val punches = ArrayList<Punch>()
         val controlPoints = ArrayList<ControlPoint>()
         ResultsProcessor.evaluateClassics(punches, controlPoints, result)
@@ -352,23 +274,7 @@ class ResultsEvaluationUnitTests {
 
     @Test
     fun testOrienteeringCorrectData() {
-        val result = Result(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            siNumber = null,
-            cardType = SIConstants.SI_CARD5,
-            checkTime = SITime(),
-            origCheckTime = SITime(),
-            startTime = SITime(),
-            origStartTime = SITime(),
-            finishTime = SITime(),
-            origFinishTime = SITime(),
-            automaticStatus = true,
-            resultStatus = ResultStatus.NO_RANKING,
-            runTime = Duration.ZERO,
-            modified = false,
-            sent = false
-        )
+        val result = Result()
         val punches = ArrayList<Punch>()
         val controlPoints = ArrayList<ControlPoint>()
 
@@ -402,23 +308,7 @@ class ResultsEvaluationUnitTests {
 
     @Test
     fun testOrienteeringDataWithMistake() {
-        val result = Result(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            siNumber = null,
-            cardType = SIConstants.SI_CARD5,
-            checkTime = SITime(),
-            origCheckTime = SITime(),
-            startTime = SITime(),
-            origStartTime = SITime(),
-            finishTime = SITime(),
-            origFinishTime = SITime(),
-            automaticStatus = true,
-            resultStatus = ResultStatus.NO_RANKING,
-            runTime = Duration.ZERO,
-            modified = false,
-            sent = false
-        )
+        val result = Result()
         val punches = ArrayList<Punch>()
         val controlPoints = ArrayList<ControlPoint>()
 
@@ -479,23 +369,7 @@ class ResultsEvaluationUnitTests {
 
     @Test
     fun testOrienteeringWithEmptyControls() {
-        val result = Result(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            siNumber = null,
-            cardType = SIConstants.SI_CARD5,
-            checkTime = SITime(),
-            origCheckTime = SITime(),
-            startTime = SITime(),
-            origStartTime = SITime(),
-            finishTime = SITime(),
-            origFinishTime = SITime(),
-            automaticStatus = true,
-            resultStatus = ResultStatus.NO_RANKING,
-            runTime = Duration.ZERO,
-            modified = false,
-            sent = false
-        )
+        val result = Result()
         val punches = ArrayList<Punch>()
         val controlPoints = ArrayList<ControlPoint>()
 
@@ -519,23 +393,7 @@ class ResultsEvaluationUnitTests {
 
     @Test
     fun testOrienteeringIncorrectData() {
-        val result = Result(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            siNumber = null,
-            cardType = SIConstants.SI_CARD5,
-            checkTime = SITime(),
-            origCheckTime = SITime(),
-            startTime = SITime(),
-            origStartTime = SITime(),
-            finishTime = SITime(),
-            origFinishTime = SITime(),
-            automaticStatus = true,
-            resultStatus = ResultStatus.NO_RANKING,
-            runTime = Duration.ZERO,
-            modified = false,
-            sent = false
-        )
+        val result = Result()
         val punches = ArrayList<Punch>()
         val controlPoints = ArrayList<ControlPoint>()
 
@@ -569,23 +427,7 @@ class ResultsEvaluationUnitTests {
 
     @Test
     fun testSprintCorrectData() {
-        val result = Result(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            siNumber = null,
-            cardType = SIConstants.SI_CARD5,
-            checkTime = SITime(),
-            origCheckTime = SITime(),
-            startTime = SITime(),
-            origStartTime = SITime(),
-            finishTime = SITime(),
-            origFinishTime = SITime(),
-            automaticStatus = true,
-            resultStatus = ResultStatus.NO_RANKING,
-            runTime = Duration.ZERO,
-            modified = false,
-            sent = false
-        )
+        val result = Result()
         val punches = ArrayList<Punch>()
         val controlPoints = ArrayList<ControlPoint>()
         ResultsProcessor.evaluateSprint(punches, controlPoints, result)
@@ -661,23 +503,7 @@ class ResultsEvaluationUnitTests {
     @Test
     fun testSprintDatWithMistakes() {
         // Double punched separator
-        val result = Result(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            siNumber = null,
-            cardType = SIConstants.SI_CARD5,
-            checkTime = SITime(),
-            origCheckTime = SITime(),
-            startTime = SITime(),
-            origStartTime = SITime(),
-            finishTime = SITime(),
-            origFinishTime = SITime(),
-            automaticStatus = true,
-            resultStatus = ResultStatus.NO_RANKING,
-            runTime = Duration.ZERO,
-            modified = false,
-            sent = false
-        )
+        val result = Result()
         val punches = ArrayList<Punch>()
         val controlPoints = ArrayList<ControlPoint>()
         ResultsProcessor.evaluateSprint(punches, controlPoints, result)
@@ -749,23 +575,7 @@ class ResultsEvaluationUnitTests {
 
     @Test
     fun testSprintAllSeparators() {
-        val result = Result(
-            UUID.randomUUID(),
-            UUID.randomUUID(),
-            siNumber = null,
-            cardType = SIConstants.SI_CARD5,
-            checkTime = SITime(),
-            origCheckTime = SITime(),
-            startTime = SITime(),
-            origStartTime = SITime(),
-            finishTime = SITime(),
-            origFinishTime = SITime(),
-            automaticStatus = true,
-            resultStatus = ResultStatus.NO_RANKING,
-            runTime = Duration.ZERO,
-            modified = false,
-            sent = false
-        )
+        val result = Result()
         val punches = ArrayList<Punch>()
         val controlPoints = ArrayList<ControlPoint>()
 
@@ -805,21 +615,7 @@ class ResultsEvaluationUnitTests {
     fun testWithStartPunches() {
         for (t in 0..50) {
             val result = Result(
-                UUID.randomUUID(),
-                UUID.randomUUID(),
-                siNumber = null,
-                cardType = SIConstants.SI_CARD5,
-                checkTime = SITime(),
-                origCheckTime = SITime(),
-                startTime = SITime(),
-                origStartTime = SITime(),
-                finishTime = SITime(),
-                origFinishTime = SITime(),
-                automaticStatus = true,
-                resultStatus = ResultStatus.NO_RANKING,
-                runTime = Duration.ZERO,
-                modified = false,
-                sent = false
+
             )
             val punches = ArrayList<Punch>()
             val controlPoints = ArrayList<ControlPoint>()

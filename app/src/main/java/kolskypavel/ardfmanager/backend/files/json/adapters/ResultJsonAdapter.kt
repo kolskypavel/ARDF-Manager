@@ -60,12 +60,9 @@ class ResultJsonAdapter(
             siNumber = null, // Will be assigned in competitorJson
             cardType = 0, // Not in ResultJson
             checkTime = resultJson.check_time?.let { SITime(it, race.startDateTime) },
-            origCheckTime = resultJson.check_time?.let { SITime(it, race.startDateTime) },
             points = resultJson.punch_count,
             startTime = SITime(resultJson.start_time, race.startDateTime),
-            origStartTime = SITime(resultJson.start_time, race.startDateTime),
             finishTime = SITime(resultJson.finish_time, resultJson.start_time),
-            origFinishTime = SITime(resultJson.finish_time, resultJson.start_time),
             automaticStatus = resultJson.automatic_status ?: true,
             resultStatus = dataProcessor.resultStatusShortStringToEnum(resultJson.result_status),
             runTime = TimeProcessor.minuteStringToDuration(resultJson.run_time), // must match enum exactly
