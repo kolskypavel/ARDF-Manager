@@ -73,7 +73,7 @@ class ResultJsonAdapter(
 
         val punches = ArrayList<AliasPunch>()
         val punchJsonAdapter = PunchJsonAdapter(race.id, dataProcessor)
-        val prevTime = result.startTime!!
+        val prevTime = SITime(result.startTime!!)
 
         resultJson.punches.forEachIndexed { index, punchJson ->
 
@@ -82,7 +82,7 @@ class ResultJsonAdapter(
             punch.resultId = result.id
 
             prevTime.addTime(punch.split)
-            punch.siTime = prevTime
+            punch.siTime = SITime(prevTime)
 
             punches.add(
                 AliasPunch(punch, null)

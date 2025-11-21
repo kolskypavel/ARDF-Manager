@@ -19,8 +19,13 @@ class SITime(
     private var seconds: Long = 0
 
     constructor() : this(LocalTime.MIDNIGHT, 0, 0)
-    constructor(time: LocalTime) : this(time, 0, 0) {}
-    constructor(other: SITime) : this(other.time, other.dayOfWeek, other.week)
+    constructor(time: LocalTime) : this(time, 0, 0) {
+        calculateSeconds()
+    }
+
+    constructor(other: SITime) : this(other.time, other.dayOfWeek, other.week) {
+        this.seconds = other.seconds
+    }
 
     init {
         calculateSeconds()
@@ -42,12 +47,16 @@ class SITime(
     constructor(time: LocalDateTime, startZero: LocalDateTime) : this() {
         this.time = time.toLocalTime()
         this.dayOfWeek = dayOfWeekToSIIndex(time.dayOfWeek)
-        this.week = ((Duration.between(startZero, time)).seconds / SIConstants.SECONDS_WEEK).toInt()    //Assume that start 00 is at week 0
+        this.week = ((Duration.between(
+            startZero,
+            time
+        )).seconds / SIConstants.SECONDS_WEEK).toInt()    //Assume that start 00 is at week 0
+        calculateSeconds()
     }
 
     private fun calculateSeconds() {
         this.seconds =
-            week * SIConstants.SECONDS_WEEK + dayOfWeek * SIConstants.SECONDS_DAY + time.toSecondOfDay()
+            this.week * SIConstants.SECONDS_WEEK + this.dayOfWeek * SIConstants.SECONDS_DAY + this.time.toSecondOfDay()
     }
 
     override fun toString(): String {
