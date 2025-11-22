@@ -205,7 +205,7 @@ object XmlHelper {
 
         // Show result status only with results
         if (rootTag == "ResultList") {
-            serializer.attribute(null, "status", "complete")
+            serializer.attribute(null, "status", "Complete")
         }
         writeRaceTag(serializer, race)
     }
@@ -264,6 +264,8 @@ object XmlHelper {
 
         // Actual start
         serializer.startTag(null, "Start")
+        writeTextElement(serializer, "BibNumber", competitor.startNumber.toString())
+
         val start = startZero + (competitor.drawnRelativeStartTime ?: Duration.ZERO)
         writeTextElement(serializer, "StartTime", TimeProcessor.formatIsoLocalDateTime(start))
         competitor.siNumber?.let { si ->
@@ -273,9 +275,7 @@ object XmlHelper {
                 si.toString()
             )
         }
-        writeTextElement(serializer, "BibNumber", competitor.startNumber.toString())
         serializer.endTag(null, "Start")
-
         serializer.endTag(null, "PersonStart")
     }
 
@@ -348,8 +348,6 @@ object XmlHelper {
         if (readout != null) {
             val res = readout.result
             try {
-                val seconds = res.runTime.toMillis() / 1000
-                writeTextElement(serializer, "Time", seconds.toString())
                 res.startTime?.let {
                     writeTextElement(
                         serializer,
@@ -366,6 +364,9 @@ object XmlHelper {
                 }
             } catch (_: Exception) {
             }
+            val seconds = res.runTime.toMillis() / 1000
+            writeTextElement(serializer, "Time", seconds.toString())
+
             if (res.place > 0 && res.resultStatus == ResultStatus.OK) {
                 writeTextElement(serializer, "Position", res.place.toString())
             }

@@ -86,7 +86,8 @@ object IofXmlProcessor : FormatProcessor {
     suspend fun exportStartList(
         outStream: OutputStream,
         race: Race,
-        data: List<CategoryData>
+        data: List<CategoryData>,
+        dataProcessor: DataProcessor
     ) {
         var writer: OutputStreamWriter? = null
         try {
@@ -94,7 +95,7 @@ object IofXmlProcessor : FormatProcessor {
             writer = w
 
             // Use helper to write root and race
-            XmlHelper.writeRootTag(serializer, race, "StartList")
+            XmlHelper.writeRootTag(serializer, race, "StartList", dataProcessor)
 
             // Write each category result with helper
             for (res in data) {
@@ -121,7 +122,7 @@ object IofXmlProcessor : FormatProcessor {
             writer = w
 
             // Use helper to write root and race
-            XmlHelper.writeRootTag(serializer, race, "ResultList")
+            XmlHelper.writeRootTag(serializer, race, "ResultList", dataProcessor)
 
             // Write each category result with helper
             for (res in results) {

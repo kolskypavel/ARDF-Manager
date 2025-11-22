@@ -172,9 +172,15 @@ class ResultServiceDialogFragment : DialogFragment() {
     private fun validateFields(): Boolean {
         var valid = true
 
-//        val serviceType =
-//            dataProcessor.resultServiceTypeFromString(typePicker.text.toString())
-//        val url = urlInput.text.toString()
+        val serviceType =
+            dataProcessor.resultServiceTypeFromString(typePicker.text.toString())
+
+        if (serviceType == ResultServiceType.OFEED) {
+            if (urlInput.text.toString().isEmpty()) {
+                valid = false
+                urlInputLayout.error = getString(R.string.general_required)
+            }
+        }
 
         if (apiKeyInput.text.toString().isEmpty()) {
             valid = false
@@ -199,10 +205,21 @@ class ResultServiceDialogFragment : DialogFragment() {
 
     private fun enableSendAgainButton() {
         val currType = getResultServiceType()
-        if (currType == ResultServiceType.ORESULTS) {
-            resendResultsButton.visibility = View.GONE
-        } else {
-            resendResultsButton.visibility = View.VISIBLE
+        when (currType) {
+            ResultServiceType.ORESULTS -> {
+                resendResultsButton.visibility = View.GONE
+                urlInputLayout.visibility = View.GONE
+            }
+
+            ResultServiceType.OFEED -> {
+                resendResultsButton.visibility = View.GONE
+                urlInputLayout.visibility = View.VISIBLE
+            }
+
+            else -> {
+                resendResultsButton.visibility = View.VISIBLE
+                urlInputLayout.visibility = View.GONE
+            }
         }
     }
 
@@ -237,7 +254,13 @@ class ResultServiceDialogFragment : DialogFragment() {
         // Copy the fields
         resultService.enabled = true
         resultService.serviceType = getResultServiceType()
-        resultService.url = urlInput.text.toString()
+
+        val serviceType =
+            dataProcessor.resultServiceTypeFromString(typePicker.text.toString())
+
+        if (serviceType == ResultServiceType.OFEED) {
+            resultService.url = urlInput.text.toString()
+        }
         resultService.apiKey = apiKeyInput.text.toString()
         resultService.interval = Duration.ofSeconds(intervalInput.text.toString().toLong())
 

@@ -417,6 +417,7 @@ class DataProcessor private constructor(context: Context) {
         val service = getResultServiceByRaceId(raceId)
         if (service != null) {
             service.enabled = false
+            service.init = false
             service.status = ResultServiceStatus.DISABLED
             service.errorText = ""
             ardfRepository.createOrUpdateResultService(service)

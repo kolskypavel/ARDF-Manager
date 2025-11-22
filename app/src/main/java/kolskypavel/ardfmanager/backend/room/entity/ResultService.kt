@@ -28,6 +28,7 @@ data class ResultService(
     @ColumnInfo(name = "api_key") var apiKey: String,
     @ColumnInfo(name = "interval") var interval: Duration,
     @ColumnInfo(name = "enabled") var enabled: Boolean,
+    @ColumnInfo(name = "init") var init: Boolean,
     @ColumnInfo(name = "status") var status: ResultServiceStatus,
     @ColumnInfo(name = "error_text") var errorText: String,
     @ColumnInfo(name = "sent") var sent: Int = 0,
@@ -39,11 +40,11 @@ data class ResultService(
         raceId,
         "",
         "",
-        Duration.ofSeconds(2),
+        Duration.ofSeconds(10),
+        false,
         false,
         ResultServiceStatus.RUNNING,
         "",
-        0,
-        LocalTime.now()
+        sentAt = LocalTime.now()
     )
 }

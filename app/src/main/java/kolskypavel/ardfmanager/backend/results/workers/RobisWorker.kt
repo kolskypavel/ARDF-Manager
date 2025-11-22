@@ -33,7 +33,7 @@ object RobisWorker : ResultServiceWorker {
         httpClient: OkHttpClient,
         dataProcessor: DataProcessor
     ) {
-        resultService.status = ResultServiceStatus.RUNNING
+        resultService.init = true
     }
 
     override suspend fun exportResults(
@@ -103,7 +103,8 @@ object RobisWorker : ResultServiceWorker {
                     401 -> {
                         // Handle unauthorized response
                         resultService.status = ResultServiceStatus.UNAUTHORIZED
-                        resultService.errorText = response.message
+                        resultService.errorText = dataProcessor.getContext()
+                            .getString(R.string.result_service_invalid_api_key)
 
                         Log.e(
                             LOG_TAG,

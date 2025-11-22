@@ -25,14 +25,15 @@ object OResultsWorker : ResultServiceWorker {
         httpClient: OkHttpClient,
         dataProcessor: DataProcessor
     ) {
+        resultService.status = ResultServiceStatus.RUNNING
         try {
             val stream = ByteArrayOutputStream()
             val data = dataProcessor.getCategoryDataFlowForRace(race.id).first()
-            IofXmlProcessor.exportStartList(stream, race, data)
+            IofXmlProcessor.exportStartList(stream, race, data, dataProcessor)
 
             val xml = stream.toString()
             if (sendFile(xml, resultService, httpClient, "/start-lists")) {
-                resultService.status = ResultServiceStatus.RUNNING
+                resultService.init = true
             }
         } catch (e: Exception) {
             Log.e(LOG_TAG, "Exception when init: ${e.message}")

@@ -8,11 +8,13 @@ object ResultsConstants {
     const val ROBIS_API_URL = "https://rob-is.cz/api/results/?name=json"
     const val ROBIS_PLAYGROUND_API_URL = "https://playground.rob-is.cz/api/results/?name=json"
     const val ORESULTS_API_URL =  "https://api.oresults.eu"
-    const val OFEED_API_URL =  "https://api.orienteerfeed.com/"
+    const val OFEED_API_URL =  "https://api.orienteerfeed.com/rest/v1/upload/iof"
 
     // API HEADERS
     const val ROBIS_API_HEADER = "Race-Api-Key"
     const val ORESULTS_API_HEADER = "apiKey"
+    const val OFEED_API_AUTH_HEADER = "Authorization"
+    const val OFEED_EVENT_ID = "eventId"
 
     val CONTENT_TYPE_JSON = "application/json; charset=utf-8".toMediaType()
     val CONTENT_TYPE_XML = "application/xml; charset=utf-8".toMediaType()

@@ -46,7 +46,7 @@
     <string name="general_start_time">Start time</string>
     <string name="general_status">Status</string>
     <string name="general_type">Type</string>
-    <string name="general_url" translatable="false">URL</string>
+    <string name="general_url" translatable="false">URL/Event Id</string>
     <string name="general_year_of_birth">Year of birth</string>
 
     <!--    Sportident-->
@@ -210,26 +210,6 @@
     <string name="punch_type_start" translatable="false">S</string>
     <string name="punch_type_finish" translatable="false">F</string>
 
-    <string name="result_status_ok">OK</string>
-    <string name="result_status_mispunched">Mispunched</string>
-    <string name="result_status_no_ranking">No ranking</string>
-    <string name="result_status_disqualified">Disqualified</string>
-    <string name="result_status_did_not_start">Did not start</string>
-    <string name="result_status_did_not_finish">Did not finish</string>
-    <string name="result_status_over_limit">Over time limit</string>
-    <string name="result_status_unofficial">Unofficial</string>
-    <string name="result_status_error">Error</string>
-
-    <string name="result_status_valid_short" translatable="false">OK</string>
-    <string name="result_status_mispunched_short" translatable="false">MP</string>
-    <string name="result_status_no_ranking_short" translatable="false">NR</string>
-    <string name="result_status_disqualified_short" translatable="false">DSQ</string>
-    <string name="result_status_did_not_start_short" translatable="false">DNS</string>
-    <string name="result_status_did_not_finish_short" translatable="false">DNF</string>
-    <string name="result_status_over_limit_short" translatable="false">OVT</string>
-    <string name="result_status_unofficial_short" translatable="false">UNF</string>
-    <string name="result_status_error_short" translatable="false">ERR</string>
-
     <!--Results-->
     <string name="results_share">Share results</string>
     <string name="results_service">Results service</string>
@@ -237,18 +217,6 @@
     <string name="results_generated_with">Results generated at %1$s with</string>
     <string name="results_splits">Results with splits</string>
     <string name="results_recalculate">Recalculate all results</string>
-
-    <string name="data_format_txt" translatable="false">TXT</string>
-    <string name="data_format_csv" translatable="false">CSV</string>
-    <string name="data_format_json" translatable="false">JSON</string>
-    <string name="data_format_xml" translatable="false">XML</string>
-    <string name="data_format_html" translatable="false">HTML</string>
-
-    <!-- Punch status -->
-    <string name="punch_status_valid_short" translatable="false">OK</string>
-    <string name="punch_status_invalid_short" translatable="false">MP</string>
-    <string name="punch_status_duplicate_short" translatable="false">DP</string>
-    <string name="punch_status_unknown_short" translatable="false">AP</string>
 
     <!-- Result service -->
     <string name="result_service_enable">Enable results service</string>
@@ -258,6 +226,11 @@
     <string name="result_service_status_text">%1$s, sent at %2$s</string>
     <string name="result_service_status_text_counter">, results %1$d/%2$d</string>
     <string name="result_service_invalid_result">Invalid result: %1$s, SI: %2$d, Index: %3$s, Cause: %4$s</string>
+
+    <string name="result_service_validation_error">Validation error</string>
+    <string name="result_service_server_error">Internal server error</string>
+    <string name="result_service_invalid_api_key">Invalid API key</string>
+    <string name="result_service_unknown_response">Unknown response</string>
 
     <!-- Prints -->
     <string name="prints_result_ticket">Print ticket</string>
@@ -422,6 +395,26 @@
     <string name="data_type_results">Results</string>
     <string name="data_type_readout_data">SI Readout data</string>
 
+    <string name="result_status_ok">OK</string>
+    <string name="result_status_mispunched">Mispunched</string>
+    <string name="result_status_no_ranking">No ranking</string>
+    <string name="result_status_disqualified">Disqualified</string>
+    <string name="result_status_did_not_start">Did not start</string>
+    <string name="result_status_did_not_finish">Did not finish</string>
+    <string name="result_status_over_limit">Over time limit</string>
+    <string name="result_status_unofficial">Unofficial</string>
+    <string name="result_status_error">Error</string>
+
+    <string name="result_status_valid_short" translatable="false">OK</string>
+    <string name="result_status_mispunched_short" translatable="false">MP</string>
+    <string name="result_status_no_ranking_short" translatable="false">NR</string>
+    <string name="result_status_disqualified_short" translatable="false">DSQ</string>
+    <string name="result_status_did_not_start_short" translatable="false">DNS</string>
+    <string name="result_status_did_not_finish_short" translatable="false">DNF</string>
+    <string name="result_status_over_limit_short" translatable="false">OVT</string>
+    <string name="result_status_unofficial_short" translatable="false">UNF</string>
+    <string name="result_status_error_short" translatable="false">ERR</string>
+
     <string name="result_service_type_robis" translatable="false">ROBis</string>
     <string name="result_service_type_robis_test" translatable="false">ROBis test</string>
     <string name="result_service_type_oresults" translatable="false">OResults</string>
@@ -432,6 +425,18 @@
     <string name="result_service_status_no_network">No network</string>
     <string name="result_service_status_unauthorized">Unauthorized</string>
     <string name="result_service_status_error">Error</string>
+
+    <string name="data_format_txt" translatable="false">TXT</string>
+    <string name="data_format_csv" translatable="false">CSV</string>
+    <string name="data_format_json" translatable="false">JSON</string>
+    <string name="data_format_xml" translatable="false">XML</string>
+    <string name="data_format_html" translatable="false">HTML</string>
+
+    <!-- Punch status -->
+    <string name="punch_status_valid_short" translatable="false">OK</string>
+    <string name="punch_status_invalid_short" translatable="false">MP</string>
+    <string name="punch_status_duplicate_short" translatable="false">DP</string>
+    <string name="punch_status_unknown_short" translatable="false">AP</string>
 
     <string-array name="race_types_array">
         <item>@string/race_type_classic</item>

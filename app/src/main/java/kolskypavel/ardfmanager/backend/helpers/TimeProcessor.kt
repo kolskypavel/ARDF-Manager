@@ -19,7 +19,7 @@ object TimeProcessor {
 
     //  Formats the given LocalDateTime to ISO format
     fun formatIsoLocalDateTime(time: LocalDateTime): String {
-        return DateTimeFormatter.ISO_DATE_TIME.format(time).toString()
+        return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(time).toString()
     }
 
     fun formatLocalDate(time: LocalDate): String {

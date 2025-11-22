@@ -15,6 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import java.util.UUID
 
 /**
@@ -28,7 +29,10 @@ object ResultServiceProcessor {
         context: Context
     ): Job {
         return CoroutineScope(Dispatchers.IO).launch {
-            val httpClient = OkHttpClient.Builder().build()
+
+            val inter = HttpLoggingInterceptor()
+            inter.setLevel(HttpLoggingInterceptor.Level.BODY)
+            val httpClient = OkHttpClient.Builder().addInterceptor(inter).build()
             var resultService: ResultService?
 
             while (true) {
@@ -46,7 +50,7 @@ object ResultServiceProcessor {
                         val worker = ResultWorkerFactory.getResultWorker(resultService.serviceType)
 
                         // Init the service
-                        if (resultService.status == ResultServiceStatus.DISABLED) {
+                        if (!resultService.init) {
                             worker.init(
                                 resultService,
                                 race,
@@ -56,7 +60,7 @@ object ResultServiceProcessor {
                         }
 
                         // Redo the check to prevent additional waiting
-                        if (resultService.status != ResultServiceStatus.DISABLED) {
+                        if (resultService.init) {
                             // Main result sending
                             worker.exportResults(
                                 resultService,
