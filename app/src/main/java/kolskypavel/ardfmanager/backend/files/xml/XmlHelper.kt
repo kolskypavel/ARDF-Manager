@@ -2,6 +2,7 @@ package kolskypavel.ardfmanager.backend.files.xml
 
 import android.content.Context
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.room.entity.Competitor
@@ -197,11 +198,13 @@ object XmlHelper {
     fun writeRootTag(
         serializer: XmlSerializer,
         race: Race,
-        rootTag: String
+        rootTag: String,
+        dataProcessor: DataProcessor
     ) {
         serializer.startTag(null, rootTag)
         serializer.attribute(null, "xmlns", "http://www.orienteering.org/datastandard/3.0")
         serializer.attribute(null, "iofVersion", "3.0")
+        serializer.attribute(null, "creator", "Radio-O Manager ${dataProcessor.getAppVersion()}")
 
         // Show result status only with results
         if (rootTag == "ResultList") {

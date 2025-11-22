@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">ARDFManager</string>
+    <string name="app_name" translatable="false">Radio-O Manager</string>
     <string name="unknown" translatable="false">\?</string>
 
     <!--General strings -->
@@ -556,6 +556,7 @@
         <item>@string/result_service_type_robis</item>
         <item>@string/result_service_type_robis_test</item>
         <item>@string/result_service_type_oresults</item>
+        <item>@string/result_service_type_ofeed</item>
     </string-array>
 
     <string-array name="result_service_status">

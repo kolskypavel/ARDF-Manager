@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">ARDFManager</string>
     <string name="general_competitors">Závodníci</string>
     <string name="general_categories">Kategorie</string>
     <string name="general_readouts">Vyčítání</string>
@@ -76,6 +75,7 @@
     <string name="control_point_sprint_duplicate">Stejná kontrola nemůže být v jednom kole sprintu dvakrát.</string>
     <string name="control_point_sprint_two_usages">" Kontrola s kódem [%1$d] je použita jako divácká / maják a kontrola zároveň."</string>
     <string name="category_preset_czech">České</string>
+    <string name="category_preset_international">Mezinárodní</string>
     <string name="general_competitor">Závodník</string>
     <string name="competitor_first_name">Jméno</string>
     <string name="competitor_last_name">Příjmení</string>
@@ -238,10 +238,13 @@
     <string name="result_service_status_no_network">Bez sítě</string>
     <string name="result_service_status_unauthorized">Neautorizováno</string>
     <string name="result_service_status_error">Chyba</string>
-    <string name="category_preset_international">Mezinárodní</string>
+
+    <string name="result_service_validation_error">Chyba validace</string>
+    <string name="result_service_server_error">Chyba serveru</string>
+    <string name="result_service_invalid_api_key">Neplatný API klíč</string>
+
     <string name="data_import_format_not_supported">Zadaný datový typ není podporován pro import</string>
     <string name="data_import_invalid_line">Neplatná data na řádku %1$d: %2$s</string>
-
     <string name="data_import_category_duplicate">Duplikátní jména kategorií: %1$s</string>
     <string name="data_import_category_name_missing">Chybějící jméno kategorie na řádku: %1$d</string>
 
@@ -265,6 +268,7 @@
     <string name="result_service_enable">Zapnout výsledkovou službu</string>
     <string name="result_service_interval">Interval exportu (s)</string>
     <string name="result_service_invalid_result">Nevalidní výsledek: %1$s, SI: %2$d, Index: %3$s, Důvod: %4$s</string>
+    <string name="result_service_unknown_response">Neznámá odpověď</string>
     <string name="result_service_send_again">Odeslat výsledky znovu</string>
     <string name="result_service_api_key_missing">API klíč musí být nastaven.</string>
     <string name="prints_bluetooth_disabled">Bluetooth musí být zapnutý pro tisk!</string>
