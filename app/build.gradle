@@ -16,7 +16,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 4
-        versionName = "0.0.4b"
+        versionName = "0.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -44,6 +44,17 @@ android {
     }
     buildFeatures {
         viewBinding = true
+    }
+
+    packaging {
+        resources {
+            // Exclude duplicate OSGI MANIFEST entries from dependencies (okhttp logging-interceptor, jspecify etc.)
+            // Keep these exclusions narrow to avoid removing useful metadata from other libs.
+            excludes += [
+                "META-INF/versions/**/OSGI-INF/MANIFEST.MF",
+                "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+            ]
+        }
     }
 }
 
@@ -91,5 +102,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
     testImplementation 'org.robolectric:robolectric:4.16'
     testImplementation "org.xmlunit:xmlunit-core:2.11.0"
+
+    implementation("com.squareup.okhttp3:logging-interceptor:5.3.0")
 
 }

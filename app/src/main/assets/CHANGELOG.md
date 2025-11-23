@@ -1,3 +1,25 @@
+## [0.1.0] - 2025-23-11
+### Added
+- Changed name to Radio-O Manager
+- Added SHORT and OTHER to race options 
+- Added edit dialog to race data import
+- Added duplicate SI card read options (ignore/overwrite/create new)
+- Added delay between printing two finish tickets
+- Added XML import of categories and export of results
+- Added OResults and OFeed to result export services, delay can now be configured
+- Added sounds after readout for error and rented SI cards
+- Added SI rent overview to competitor table
+
+### Removed
+- Removed automatic category assignment
+- Removed stop on invalid from data import options
+
+### Fixed
+- Fixed freezing when printing
+- Fixed readout notification
+- Moved result recalculation to menu to prevent freezing
+- Adjusted export to new version of ARDF JSON
+
 ## [0.0.3] - 2025-09-29
 ### Added
 - Added JSON export to results
