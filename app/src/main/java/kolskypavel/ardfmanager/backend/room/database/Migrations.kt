@@ -97,5 +97,8 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
         // Replace old table with the new one
         db.execSQL("DROP TABLE result")
         db.execSQL("ALTER TABLE result_new RENAME TO result")
+
+        // 6) add `init` column to result_service (boolean flag stored as INTEGER). Default 0 for existing rows.
+        db.execSQL("ALTER TABLE result_service ADD COLUMN `init` INTEGER NOT NULL DEFAULT 0")
     }
 }
