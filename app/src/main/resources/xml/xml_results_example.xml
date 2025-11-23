@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-<ResultList xmlns="http://www.orienteering.org/datastandard/3.0" iofVersion="3.0" status="complete">
+<ResultList xmlns="http://www.orienteering.org/datastandard/3.0" iofVersion="3.0" creator="Radio-O Manager 0.0.1" status="Complete">
     <Event>
         <Name>TEST</Name>
         <StartTime>
@@ -23,9 +23,9 @@
                 <Name>AC Test</Name>
             </Organisation>
             <Result>
-                <Time>4500</Time>
                 <StartTime>2025-01-05T13:00:00</StartTime>
                 <FinishTime>2025-01-05T14:15:00</FinishTime>
+                <Time>4500</Time>
                 <Position>1</Position>
                 <Status>OK</Status>
                 <SplitTime>

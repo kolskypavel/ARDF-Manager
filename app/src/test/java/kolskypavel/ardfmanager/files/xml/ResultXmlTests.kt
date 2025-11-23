@@ -37,6 +37,7 @@ class ResultXmlTests {
     @Test
     fun testResultExport() = runTest {
         val dataProcessor = mock(DataProcessor::class.java)
+        `when`(dataProcessor.getAppVersion()).thenReturn("0.0.1")
 
         val race = Race()
         race.name = "TEST"

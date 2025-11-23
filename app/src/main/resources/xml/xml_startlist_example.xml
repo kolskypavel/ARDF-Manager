@@ -1,6 +1,8 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
-<StartList iofVersion="3.0"
-    xmlns="http://www.orienteering.org/datastandard/3.0">
+<StartList
+    iofVersion="3.0"
+    xmlns="http://www.orienteering.org/datastandard/3.0"
+    creator="Radio-O Manager 0.0.1">
     <Event>
         <Name>Test Race</Name>
         <StartTime>
