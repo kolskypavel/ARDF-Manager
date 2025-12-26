@@ -101,7 +101,7 @@
     <string name="general_si_number">Číslo SI</string>
     <string name="general_automatic">Automaticky</string>
     <string name="competitor_rent_chip">Půjčit čip</string>
-    <string name="category_length_title">Délka (km)</string>
+    <string name="category_length_title">Délka (m)</string>
     <string name="category_exists">Kategorie už existuje!</string>
     <string name="control_points">Kontroly</string>
     <string name="nonexistent_year">Nevalidní rok</string>
