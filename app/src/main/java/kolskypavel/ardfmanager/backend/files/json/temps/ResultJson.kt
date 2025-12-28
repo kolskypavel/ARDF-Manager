@@ -1,7 +1,5 @@
 package kolskypavel.ardfmanager.backend.files.json.temps
 
-import com.squareup.moshi.Json
-import java.time.Duration
 import java.time.LocalDateTime
 
 
@@ -10,7 +8,7 @@ data class ResultCompetitorJson(
     val si_number: Int?,
     val last_name: String,
     val first_name: String,
-    val category_name: String,
+    val competitor_category: String,
     val result: ResultJson
 )
 

@@ -127,7 +127,7 @@ object JsonProcessor : FormatProcessor {
                     si_number = competitor.siNumber ?: 0,
                     last_name = competitor.lastName,
                     first_name = competitor.firstName,
-                    category_name = category.name,
+                    competitor_category = category.name,
                     result = ResultJsonAdapter(race, dataProcessor).toJson(rd)
                 )
             }
