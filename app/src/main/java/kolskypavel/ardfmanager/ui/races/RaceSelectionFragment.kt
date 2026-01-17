@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -96,6 +97,7 @@ class RaceSelectionFragment : Fragment() {
         setMenuListener()
         setRecyclerAdapter()
         setFragmentListener()
+        setBackButton()
     }
 
     private fun setMenuListener() {
@@ -119,6 +121,24 @@ class RaceSelectionFragment : Fragment() {
 
                 else -> false
             }
+        }
+    }
+
+    private fun setBackButton() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            val builder = AlertDialog.Builder(context)
+            builder.setTitle(getString(R.string.general_exit_title))
+            val message = getString(R.string.general_exit_confirmation)
+            builder.setMessage(message)
+
+            builder.setPositiveButton(R.string.general_ok) { _, _ ->
+                requireActivity().finishAffinity();
+            }
+
+            builder.setNegativeButton(R.string.general_cancel) { dialog, _ ->
+                dialog.cancel()
+            }
+            builder.show()
         }
     }
 

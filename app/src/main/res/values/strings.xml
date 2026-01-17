@@ -48,6 +48,8 @@
     <string name="general_type">Type</string>
     <string name="general_url" translatable="false">URL/Event Id</string>
     <string name="general_year_of_birth">Year of birth</string>
+    <string name="general_exit_title">Exit app</string>
+    <string name="general_exit_confirmation">Do you really want to exit the app?</string>
 
     <!--    Sportident-->
     <string name="duplicate_si_number">Duplicate SI number!</string>

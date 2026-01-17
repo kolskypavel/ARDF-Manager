@@ -55,6 +55,8 @@
     <string name="general_category">Kategorie</string>
     <string name="general_max_age">Maximalní věk</string>
     <string name="general_year_of_birth">Ročník</string>
+    <string name="general_exit_title">Ukončit aplikaci</string>
+    <string name="general_exit_confirmation">Opravdu chcete ukončit aplikaci?</string>
     <string name="si_codes">SI kódy</string>
     <string name="category_create_standard_categories">Vytvořit standardní kategorie</string>
     <string name="category_alias_manage">Spravovat aliasy</string>
