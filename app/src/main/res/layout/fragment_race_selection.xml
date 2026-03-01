@@ -25,17 +25,47 @@
         tools:layout_editor_absoluteX="0dp"
         tools:listitem="@layout/recycler_item_race" />
 
+    <com.nambimobile.widgets.efab.ExpandableFabLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/race_btn_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="32dp"
-        android:src="@drawable/ic_add"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <com.nambimobile.widgets.efab.ExpandableFab
+            android:id="@+id/race_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="32dp"
+            app:efab_color="?attr/colorPrimary"
+            app:efab_orientation="portrait" />
 
+        <com.nambimobile.widgets.efab.FabOption
+            android:id="@+id/race_fab_create"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_orientation="portrait"
+            app:fab_icon="@drawable/ic_add"
+            app:fab_color="?attr/colorPrimary"
+            app:label_text="@string/race_create" />
+
+        <com.nambimobile.widgets.efab.FabOption
+            android:id="@+id/race_fab_robis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_icon="@drawable/ic_robis"
+            app:fab_orientation="portrait"
+            app:fab_color="?attr/colorPrimary"
+            app:label_text="@string/race_import_internet" />
+
+        <com.nambimobile.widgets.efab.FabOption
+            android:id="@+id/race_fab_file"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_icon="@drawable/ic_import_file"
+            app:fab_orientation="portrait"
+            app:fab_color="?attr/colorPrimary"
+            app:label_text="@string/race_import_file" />
+
+    </com.nambimobile.widgets.efab.ExpandableFabLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

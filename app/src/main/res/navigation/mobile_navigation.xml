@@ -18,6 +18,9 @@
         <action
             android:id="@+id/openSettings"
             app:destination="@id/settingsFragment" />
+        <action
+            android:id="@+id/importRobis"
+            app:destination="@id/InternetImportDialogFragment" />
     </fragment>
 
     <navigation
@@ -230,7 +233,7 @@
         android:label="RaceCreateDialogFragment">
         <argument
             android:name="action"
-            app:argType="kolskypavel.ardfmanager.ui.races.RaceEditDialogFragment$RaceEditAcctions" />
+            app:argType="kolskypavel.ardfmanager.ui.races.RaceEditDialogFragment$RaceEditActions" />
         <argument
             android:name="position"
             app:argType="integer" />
@@ -299,5 +302,13 @@
         android:id="@+id/changelogDialogFragment"
         android:name="kolskypavel.ardfmanager.ui.settings.ChangelogDialogFragment"
         android:label="ChangelogDialogFragment" />
+    <dialog
+        android:id="@+id/InternetImportDialogFragment"
+        android:name="kolskypavel.ardfmanager.ui.races.InternetImportDialogFragment"
+        android:label="internetImportDialogFragment" >
+        <action
+            android:id="@+id/importInternetRace"
+            app:destination="@id/RaceCreateDialogFragment" />
+    </dialog>
 
 </navigation>

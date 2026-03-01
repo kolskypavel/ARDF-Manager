@@ -115,7 +115,7 @@ class RaceEditDialogFragment : DialogFragment() {
 
         //Create new race
         when (args.action) {
-            RaceEditAcctions.CREATE -> {
+            RaceEditActions.CREATE -> {
                 dialog?.setTitle(R.string.race_create)
                 race = Race(
                     UUID.randomUUID(),
@@ -127,7 +127,7 @@ class RaceEditDialogFragment : DialogFragment() {
                     Duration.ofMinutes(120)
                 )
             }
-            RaceEditAcctions.EDIT -> {
+            RaceEditActions.EDIT -> {
                 race = args.race!!
                 dialog?.setTitle(R.string.race_edit)
                 nameEditText.setText(race.name)
@@ -235,7 +235,7 @@ class RaceEditDialogFragment : DialogFragment() {
         const val BUNDLE_KEY_POSITION = "BUNDLE_KEY_POSITION"
     }
 
-    enum class RaceEditAcctions {
+    enum class RaceEditActions {
         CREATE,
         EDIT,
         IMPORT

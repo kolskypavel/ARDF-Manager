@@ -79,7 +79,10 @@ object JsonProcessor : FormatProcessor {
 
     fun importRaceData(inStream: InputStream, dataProcessor: DataProcessor): RaceData {
         val jsonString = inStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
+        return importRaceData(jsonString, dataProcessor)
+    }
 
+    fun importRaceData(jsonString: String, dataProcessor: DataProcessor): RaceData {
         val moshi: Moshi = Moshi.Builder()
             .add(RaceDataJsonAdapter(dataProcessor))
             .add(LocalDateTimeAdapter())
