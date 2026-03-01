@@ -1,4 +1,4 @@
-package kolskypavel.ardfmanager.backend.results.workers
+package kolskypavel.ardfmanager.backend.network.workers
 
 import android.content.Context
 import android.util.Log
@@ -6,17 +6,17 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.json.temps.RobisResultJson
 import kolskypavel.ardfmanager.backend.files.processors.JsonProcessor
-import kolskypavel.ardfmanager.backend.results.ResultServiceProcessor
-import kolskypavel.ardfmanager.backend.results.ResultServiceProcessor.updateSentResults
-import kolskypavel.ardfmanager.backend.results.ResultsConstants
-import kolskypavel.ardfmanager.backend.results.ResultsConstants.CONTENT_TYPE_JSON
-import kolskypavel.ardfmanager.backend.results.ResultsConstants.ROBIS_API_HEADER
+import kolskypavel.ardfmanager.backend.network.ResultServiceProcessor
+import kolskypavel.ardfmanager.backend.network.ResultServiceProcessor.updateSentResults
+import kolskypavel.ardfmanager.backend.network.NetworkConstants
+import kolskypavel.ardfmanager.backend.network.NetworkConstants.CONTENT_TYPE_JSON
+import kolskypavel.ardfmanager.backend.network.NetworkConstants.ROBIS_API_HEADER
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.backend.room.entity.ResultService
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.ResultServiceStatus
-import kolskypavel.ardfmanager.backend.room.enums.ResultServiceType
+import kolskypavel.ardfmanager.backend.room.enums.ProviderType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -67,10 +67,10 @@ object RobisWorker : ResultServiceWorker {
         // Send the results to the ROBIS API
         val request: Request = Request.Builder()
             .url(
-                if (resultService.serviceType == ResultServiceType.ROBIS_TEST) {
-                    ResultsConstants.ROBIS_PLAYGROUND_API_URL
+                if (resultService.serviceType == ProviderType.ROBIS_TEST) {
+                    NetworkConstants.ROBIS_PLAYGROUND_RESULTS_API_URL
                 } else {
-                    ResultsConstants.ROBIS_API_URL
+                    NetworkConstants.ROBIS_RESULTS_API_URL
                 }
             )
             .addHeader(ROBIS_API_HEADER, resultService.apiKey)

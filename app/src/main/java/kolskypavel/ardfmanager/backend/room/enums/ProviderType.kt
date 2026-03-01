@@ -1,6 +1,6 @@
 package kolskypavel.ardfmanager.backend.room.enums
 
-enum class ResultServiceType(val value: Int) {
+enum class ProviderType(val value: Int) {
     ROBIS(0),
     ROBIS_TEST(1),
     ORESULTS(2),
@@ -8,6 +8,6 @@ enum class ResultServiceType(val value: Int) {
 
     companion object {
         fun getByValue(value: Int) =
-            ResultServiceType.entries.firstOrNull { it.value == value } ?: ROBIS
+            ProviderType.entries.firstOrNull { it.value == value } ?: ROBIS
     }
 }

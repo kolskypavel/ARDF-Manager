@@ -1,4 +1,4 @@
-package kolskypavel.ardfmanager.backend.results.workers
+package kolskypavel.ardfmanager.backend.network.workers
 
 import android.content.Context
 import android.util.Base64
@@ -6,7 +6,7 @@ import android.util.Log
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.processors.IofXmlProcessor
-import kolskypavel.ardfmanager.backend.results.ResultsConstants
+import kolskypavel.ardfmanager.backend.network.NetworkConstants
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.backend.room.entity.ResultService
@@ -82,11 +82,11 @@ object OFeedWorker : ResultServiceWorker {
 
         val multipartBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart(ResultsConstants.OFEED_EVENT_ID, resultService.url)
+            .addFormDataPart(NetworkConstants.OFEED_EVENT_ID, resultService.url)
             .addFormDataPart(
                 "Content-Encoding",
                 "uploaded_file.xml",
-                compressed.toRequestBody(ResultsConstants.CONTENT_TYPE_GZIP)
+                compressed.toRequestBody(NetworkConstants.CONTENT_TYPE_GZIP)
             )
             .build()
 
@@ -96,8 +96,8 @@ object OFeedWorker : ResultServiceWorker {
         )
 
         val request = Request.Builder()
-            .header(ResultsConstants.OFEED_API_AUTH_HEADER, "Basic $auth")
-            .url(ResultsConstants.OFEED_API_URL)
+            .header(NetworkConstants.OFEED_API_AUTH_HEADER, "Basic $auth")
+            .url(NetworkConstants.OFEED_RESULTS_API_URL)
             .post(multipartBody)
             .build()
 

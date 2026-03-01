@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import kolskypavel.ardfmanager.backend.room.enums.ResultServiceStatus
-import kolskypavel.ardfmanager.backend.room.enums.ResultServiceType
+import kolskypavel.ardfmanager.backend.room.enums.ProviderType
 import java.io.Serializable
 import java.time.Duration
 import java.time.LocalTime
@@ -22,7 +22,7 @@ import java.util.UUID
 )
 data class ResultService(
     @PrimaryKey var id: UUID,
-    @ColumnInfo(name = "service_type") var serviceType: ResultServiceType,
+    @ColumnInfo(name = "service_type") var serviceType: ProviderType,
     @ColumnInfo(name = "race_id") var raceId: UUID,
     @ColumnInfo(name = "url") var url: String,
     @ColumnInfo(name = "api_key") var apiKey: String,
@@ -36,7 +36,7 @@ data class ResultService(
 ) : Serializable {
     constructor(raceId: UUID) : this(
         UUID.randomUUID(),
-        ResultServiceType.ROBIS,
+        ProviderType.ROBIS,
         raceId,
         "",
         "",

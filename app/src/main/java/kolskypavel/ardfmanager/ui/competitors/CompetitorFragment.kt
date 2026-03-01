@@ -11,7 +11,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -129,7 +128,7 @@ class CompetitorFragment : Fragment() {
             R.id.competitor_menu_edit_race -> {
                 findNavController().navigate(
                     BottomNavDirections.modifyRaceProperties(
-                        RaceEditDialogFragment.RaceEditAcctions.EDIT,
+                        RaceEditDialogFragment.RaceEditActions.EDIT,
                         0,
                         selectedRaceViewModel.race.value
                     )
@@ -436,4 +435,3 @@ class CompetitorFragment : Fragment() {
         _binding = null
     }
 }
-

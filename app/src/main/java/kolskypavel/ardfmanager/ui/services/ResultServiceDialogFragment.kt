@@ -19,10 +19,10 @@ import com.google.android.material.textfield.TextInputLayout
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
-import kolskypavel.ardfmanager.backend.results.ResultServiceProcessor
+import kolskypavel.ardfmanager.backend.network.ResultServiceProcessor
 import kolskypavel.ardfmanager.backend.room.entity.ResultService
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultServiceData
-import kolskypavel.ardfmanager.backend.room.enums.ResultServiceType
+import kolskypavel.ardfmanager.backend.room.enums.ProviderType
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -102,7 +102,7 @@ class ResultServiceDialogFragment : DialogFragment() {
         }
         enableSwitch.isChecked = resultService.enabled
         typePicker.setText(
-            dataProcessor.resultServiceTypeToString(resultService.serviceType),
+            dataProcessor.providerTypeToString(resultService.serviceType),
             false
         )
 
@@ -173,9 +173,9 @@ class ResultServiceDialogFragment : DialogFragment() {
         var valid = true
 
         val serviceType =
-            dataProcessor.resultServiceTypeFromString(typePicker.text.toString())
+            dataProcessor.providerTypeFromString(typePicker.text.toString())
 
-        if (serviceType == ResultServiceType.OFEED) {
+        if (serviceType == ProviderType.OFEED) {
             if (urlInput.text.toString().isEmpty()) {
                 valid = false
                 urlInputLayout.error = getString(R.string.general_required)
@@ -198,20 +198,20 @@ class ResultServiceDialogFragment : DialogFragment() {
         return valid
     }
 
-    private fun getResultServiceType(): ResultServiceType {
+    private fun getResultServiceType(): ProviderType {
         val text = typePicker.text.toString()
-        return dataProcessor.resultServiceTypeFromString(text)
+        return dataProcessor.providerTypeFromString(text)
     }
 
     private fun enableSendAgainButton() {
         val currType = getResultServiceType()
         when (currType) {
-            ResultServiceType.ORESULTS -> {
+            ProviderType.ORESULTS -> {
                 resendResultsButton.visibility = View.GONE
                 urlInputLayout.visibility = View.GONE
             }
 
-            ResultServiceType.OFEED -> {
+            ProviderType.OFEED -> {
                 resendResultsButton.visibility = View.GONE
                 urlInputLayout.visibility = View.VISIBLE
             }
@@ -233,8 +233,8 @@ class ResultServiceDialogFragment : DialogFragment() {
                 dataProcessor.resultServiceStatusToString(data.resultService.status),
                 TimeProcessor.formatLocalTime(data.resultService.sentAt)
             )
-            if (data.resultService.serviceType == ResultServiceType.ROBIS_TEST ||
-                data.resultService.serviceType == ResultServiceType.ROBIS
+            if (data.resultService.serviceType == ProviderType.ROBIS_TEST ||
+                data.resultService.serviceType == ProviderType.ROBIS
             ) {
                 text += " ${
                     getString(
@@ -256,9 +256,9 @@ class ResultServiceDialogFragment : DialogFragment() {
         resultService.serviceType = getResultServiceType()
 
         val serviceType =
-            dataProcessor.resultServiceTypeFromString(typePicker.text.toString())
+            dataProcessor.providerTypeFromString(typePicker.text.toString())
 
-        if (serviceType == ResultServiceType.OFEED) {
+        if (serviceType == ProviderType.OFEED) {
             resultService.url = urlInput.text.toString()
         }
         resultService.apiKey = apiKeyInput.text.toString()

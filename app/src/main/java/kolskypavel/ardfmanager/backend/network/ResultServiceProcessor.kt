@@ -1,10 +1,10 @@
-package kolskypavel.ardfmanager.backend.results
+package kolskypavel.ardfmanager.backend.network
 
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import kolskypavel.ardfmanager.backend.DataProcessor
-import kolskypavel.ardfmanager.backend.results.workers.ResultWorkerFactory
+import kolskypavel.ardfmanager.backend.network.workers.ResultWorkerFactory
 import kolskypavel.ardfmanager.backend.room.entity.ResultService
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.ResultServiceStatus
@@ -18,9 +18,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.util.UUID
 
-/**
- * Main result service worker - executes
- */
+// Used for result service communication - distributes work
 object ResultServiceProcessor {
 
     fun resultServiceJob(

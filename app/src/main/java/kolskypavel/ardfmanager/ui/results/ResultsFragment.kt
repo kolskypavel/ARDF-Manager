@@ -18,7 +18,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
@@ -138,7 +137,7 @@ class ResultsFragment : Fragment() {
             R.id.result_menu_edit_race -> {
                 findNavController().navigate(
                     BottomNavDirections.modifyRaceProperties(
-                        RaceEditDialogFragment.RaceEditAcctions.EDIT,
+                        RaceEditDialogFragment.RaceEditActions.EDIT,
                         0,
                         selectedRaceViewModel.race.value
                     )

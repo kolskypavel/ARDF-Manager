@@ -21,7 +21,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kolskypavel.ardfmanager.BottomNavDirections
 import kolskypavel.ardfmanager.R
@@ -143,7 +142,7 @@ class ReadoutFragment : Fragment() {
             R.id.readout_menu_edit_race -> {
                 findNavController().navigate(
                     BottomNavDirections.modifyRaceProperties(
-                        RaceEditDialogFragment.RaceEditAcctions.EDIT,
+                        RaceEditDialogFragment.RaceEditActions.EDIT,
                         0,
                         selectedRaceViewModel.race.value
                     )
