@@ -14,14 +14,13 @@ data class ResultCompetitorJson(
 
 data class ResultJson(
     val check_time: LocalDateTime?,
-    val start_time: LocalDateTime,
-    val finish_time: LocalDateTime,
-    val run_time: String,
-    val place: Int,
+    val start_time: LocalDateTime?,
+    val finish_time: LocalDateTime?,
+    val run_time: String?,
+    val place: Int?,
     val readoutTime: LocalDateTime?,
-    val modified: Boolean,
-    // New preferred field for JSON output/input
-    val punch_count: Int,
+    val modified: Boolean?,
+    val punch_count: Int?,
     val result_status: String,
     val automatic_status: Boolean?,
     val punches: List<PunchJson>
