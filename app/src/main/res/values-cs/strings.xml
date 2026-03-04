@@ -8,7 +8,7 @@
     <string name="global_settings">Globální nastavení</string>
     <string name="data_import_preview_info">Počet záznamů: %1$d</string>
     <string name="data_import_file_error">Chyba při otevírání souboru</string>
-    <string name="race_import_text">Importovat závod ze souboru</string>
+    <string name="race_import_file">Importovat závod ze souboru</string>
     <string name="race_toolbar_title">Přehled závodů</string>
     <string name="preferences_about_app">O aplikaci</string>
     <string name="race_level_international">Mezinárodní</string>
@@ -55,6 +55,10 @@
     <string name="general_category">Kategorie</string>
     <string name="general_max_age">Maximalní věk</string>
     <string name="general_year_of_birth">Ročník</string>
+    <string name="general_exit_title">Ukončit aplikaci</string>
+    <string name="general_exit_confirmation">Opravdu chcete ukončit aplikaci?</string>
+    <string name="general_unknown_error">Neznámá chyba</string>
+
     <string name="si_codes">SI kódy</string>
     <string name="category_create_standard_categories">Vytvořit standardní kategorie</string>
     <string name="category_alias_manage">Spravovat aliasy</string>
@@ -101,7 +105,7 @@
     <string name="general_si_number">Číslo SI</string>
     <string name="general_automatic">Automaticky</string>
     <string name="competitor_rent_chip">Půjčit čip</string>
-    <string name="category_length_title">Délka (km)</string>
+    <string name="category_length_title">Délka (m)</string>
     <string name="category_exists">Kategorie už existuje!</string>
     <string name="control_points">Kontroly</string>
     <string name="nonexistent_year">Nevalidní rok</string>

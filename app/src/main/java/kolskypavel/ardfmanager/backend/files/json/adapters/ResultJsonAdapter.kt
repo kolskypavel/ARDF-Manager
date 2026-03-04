@@ -11,6 +11,7 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SITime
+import java.time.Duration
 import java.time.LocalDateTime
 import java.util.UUID
 
@@ -60,20 +61,28 @@ class ResultJsonAdapter(
             siNumber = null, // Will be assigned in competitorJson
             cardType = 0, // Not in ResultJson
             checkTime = resultJson.check_time?.let { SITime(it, race.startDateTime) },
-            points = resultJson.punch_count,
-            startTime = SITime(resultJson.start_time, race.startDateTime),
-            finishTime = SITime(resultJson.finish_time, resultJson.start_time),
+            points = resultJson.punch_count ?: 0,
+            startTime = resultJson.start_time?.let { SITime(it, race.startDateTime) },
+            finishTime = resultJson.finish_time?.let {
+                resultJson.start_time?.let { startZero ->
+                    SITime(
+                        it,
+                        startZero
+                    )
+                }
+            },
             automaticStatus = resultJson.automatic_status ?: true,
             resultStatus = dataProcessor.resultStatusShortStringToEnum(resultJson.result_status),
-            runTime = TimeProcessor.minuteStringToDuration(resultJson.run_time), // must match enum exactly
-            modified = resultJson.modified,
+            runTime = resultJson.run_time?.let { TimeProcessor.minuteStringToDuration(resultJson.run_time) }
+                ?: Duration.ZERO,
+            modified = resultJson.modified ?: false,
             sent = false,
             readoutTime = resultJson.readoutTime ?: LocalDateTime.now()
         )
 
         val punches = ArrayList<AliasPunch>()
         val punchJsonAdapter = PunchJsonAdapter(race.id, dataProcessor)
-        val prevTime = SITime(result.startTime!!)
+        val prevTime = SITime(result.startTime ?: SITime(race.startDateTime.toLocalTime()))
 
         resultJson.punches.forEachIndexed { index, punchJson ->
 

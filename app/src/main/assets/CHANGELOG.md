@@ -1,3 +1,13 @@
+## [0.1.1] - 2026-03-04
+### Added
+- Added import from online providers (only ROBIS now)
+- Simplified race creation by moving all options under one expandable button
+
+### Fixed
+- Fixed input of category length and climb - in meters
+- Fixed back button on main screen
+- Fixed multiple JSON schema related issues
+
 ## [0.1.0] - 2025-23-11
 ### Added
 - Changed name to Radio-O Manager

@@ -15,6 +15,7 @@ import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
 import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
+import kolskypavel.ardfmanager.backend.network.ProviderClient
 import kolskypavel.ardfmanager.backend.prints.PrintProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor.updateResultsForCategory
@@ -37,7 +38,7 @@ import kolskypavel.ardfmanager.backend.room.enums.RaceBand
 import kolskypavel.ardfmanager.backend.room.enums.RaceLevel
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.ResultServiceStatus
-import kolskypavel.ardfmanager.backend.room.enums.ResultServiceType
+import kolskypavel.ardfmanager.backend.room.enums.ProviderType
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.room.enums.StandardCategoryType
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
@@ -526,6 +527,13 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
+    suspend fun fetchProviderRaceData(
+        providerType: ProviderType,
+        apiKey: String,
+        context: Context
+    ): RaceData =
+        ProviderClient.fetchRaceData(apiKey, providerType, this, context)
+
     //SportIdent manipulation
     fun connectDevice(usbDevice: UsbDevice) {
         Intent(appContext.get(), SIReaderService::class.java).also {
@@ -630,17 +638,17 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
-    fun resultServiceTypeFromString(string: String): ResultServiceType {
-        val raceStatusStrings =
+    fun providerTypeFromString(string: String): ProviderType {
+        val providerStrings =
             appContext.get()?.resources?.getStringArray(R.array.result_service_types)
-        val idx = raceStatusStrings?.indexOf(string) ?: -1
-        return if (idx >= 0) ResultServiceType.getByValue(idx) else ResultServiceType.entries.first()
+        val idx = providerStrings?.indexOf(string) ?: -1
+        return if (idx >= 0) ProviderType.getByValue(idx) else ProviderType.entries.first()
     }
 
-    fun resultServiceTypeToString(resultServiceType: ResultServiceType): String {
-        val resultServiceTypes =
+    fun providerTypeToString(providerType: ProviderType): String {
+        val providerTypes =
             appContext.get()?.resources?.getStringArray(R.array.result_service_types)
-        return resultServiceTypes?.getOrNull(resultServiceType.value) ?: ""
+        return providerTypes?.getOrNull(providerType.value) ?: ""
     }
 
     fun resultServiceStatusToString(status: ResultServiceStatus): CharSequence {

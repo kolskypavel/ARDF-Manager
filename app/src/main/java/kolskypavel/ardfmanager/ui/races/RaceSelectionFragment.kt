@@ -6,11 +6,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
@@ -21,7 +21,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.nambimobile.widgets.efab.FabOption
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.RaceData
@@ -36,9 +36,10 @@ import java.util.UUID
 class RaceSelectionFragment : Fragment() {
 
     private lateinit var toolbar: Toolbar
-    private lateinit var raceAddFAB: FloatingActionButton
+    private lateinit var raceCreateOption: FabOption
+    private lateinit var robisImportOption: FabOption
+    private lateinit var fileImportOption: FabOption
     private lateinit var recyclerView: RecyclerView
-    private var mLastClickTime: Long = 0
     private var selectedRaceId: UUID? = null
     private var exportData: Boolean = true
 
@@ -73,52 +74,70 @@ class RaceSelectionFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         toolbar = view.findViewById(R.id.race_toolbar)
-        raceAddFAB = view.findViewById(R.id.race_btn_add)
-
         toolbar.setTitle(R.string.race_toolbar_title)
         toolbar.inflateMenu(R.menu.fragment_menu_race)
 
-        raceAddFAB.setOnClickListener {
+        //FAB options
+        raceCreateOption = view.findViewById(R.id.race_fab_create)
+        robisImportOption = view.findViewById(R.id.race_fab_robis)
+        fileImportOption = view.findViewById(R.id.race_fab_file)
 
-            //Prevent accidental double click
-            if (SystemClock.elapsedRealtime() - mLastClickTime > 1500) {
-                findNavController().navigate(
-                    RaceSelectionFragmentDirections.raceCreateOfModify(
-                        RaceEditDialogFragment.RaceEditAcctions.CREATE,
-                        -1,
-                        null
-                    )
+        raceCreateOption.setOnClickListener {
+            findNavController().navigate(
+                RaceSelectionFragmentDirections.raceCreateOfModify(
+                    RaceEditDialogFragment.RaceEditActions.CREATE,
+                    -1,
+                    null
                 )
-            }
-            mLastClickTime = SystemClock.elapsedRealtime()
+            )
+        }
+
+        fileImportOption.setOnClickListener {
+            exportData = false
+            val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.type = "*/*"
+            getResult.launch(intent)
+        }
+        robisImportOption.setOnClickListener {
+            findNavController().navigate(RaceSelectionFragmentDirections.importRobis())
         }
 
         setMenuListener()
         setRecyclerAdapter()
         setFragmentListener()
+        setBackButton()
     }
 
     private fun setMenuListener() {
         toolbar.setOnMenuItemClickListener {
             when (it.itemId) {
-                R.id.race_menu_import_file -> {
-                    exportData = false
-                    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
-                    intent.addCategory(Intent.CATEGORY_OPENABLE)
-                    intent.type = "*/*"
-                    getResult.launch(intent)
-                    true
-                }
-
                 R.id.race_menu_global_settings -> {
                     // Navigate to settings screen.
                     findNavController().navigate(RaceSelectionFragmentDirections.openSettings())
                     true
                 }
 
-
                 else -> false
             }
+        }
+    }
+
+    private fun setBackButton() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            val builder = AlertDialog.Builder(context)
+            builder.setTitle(getString(R.string.general_exit_title))
+            val message = getString(R.string.general_exit_confirmation)
+            builder.setMessage(message)
+
+            builder.setPositiveButton(R.string.general_ok) { _, _ ->
+                requireActivity().finishAffinity();
+            }
+
+            builder.setNegativeButton(R.string.general_cancel) { dialog, _ ->
+                dialog.cancel()
+            }
+            builder.show()
         }
     }
 
@@ -127,10 +146,11 @@ class RaceSelectionFragment : Fragment() {
             val action =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) bundle.getSerializable(
                     RaceEditDialogFragment.BUNDLE_KEY_ACTIONS,
-                    RaceEditDialogFragment.RaceEditAcctions::class.java
+                    RaceEditDialogFragment.RaceEditActions::class.java
                 )
                 else {
-                    bundle.getSerializable(RaceEditDialogFragment.BUNDLE_KEY_ACTIONS) as RaceEditDialogFragment.RaceEditAcctions
+                    bundle.getSerializable(RaceEditDialogFragment.BUNDLE_KEY_ACTIONS) as Race
+
                 }
 
             val position = bundle.getInt(RaceEditDialogFragment.BUNDLE_KEY_POSITION)
@@ -146,11 +166,11 @@ class RaceSelectionFragment : Fragment() {
 
             //create new race
             when (action) {
-                RaceEditDialogFragment.RaceEditAcctions.CREATE -> {
+                RaceEditDialogFragment.RaceEditActions.CREATE -> {
                     raceViewModel.createRace(race)
                 }
                 //Edit an existing race
-                RaceEditDialogFragment.RaceEditAcctions.EDIT -> {
+                RaceEditDialogFragment.RaceEditActions.EDIT -> {
                     raceViewModel.updateRace(race)
                     recyclerView.adapter?.notifyItemChanged(position)
                 }
@@ -169,7 +189,7 @@ class RaceSelectionFragment : Fragment() {
         when (action) {
             0 -> findNavController().navigate(
                 RaceSelectionFragmentDirections.raceCreateOfModify(
-                    RaceEditDialogFragment.RaceEditAcctions.EDIT, position, race
+                    RaceEditDialogFragment.RaceEditActions.EDIT, position, race
                 )
             )
 
@@ -204,7 +224,7 @@ class RaceSelectionFragment : Fragment() {
                 raceData = raceViewModel.importRaceData(uri)
                 findNavController().navigate(
                     RaceSelectionFragmentDirections.raceCreateOfModify(
-                        RaceEditDialogFragment.RaceEditAcctions.IMPORT, -1, raceData!!.race
+                        RaceEditDialogFragment.RaceEditActions.IMPORT, -1, raceData!!.race
                     )
                 )
 

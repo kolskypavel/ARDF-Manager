@@ -92,7 +92,7 @@
                     style="@style/dialog_text"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="numberDecimal"
+                    android:inputType="number"
                     android:maxLength="6" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -210,6 +210,12 @@
             android:layout_height="wrap_content"
             style="@style/dialog_hint"
             android:text="@string/control_point_edit_hint"/>
+
+        <TextView
+            style="@style/dialog_hint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/control_point_edit_hint" />
 
 
         <LinearLayout

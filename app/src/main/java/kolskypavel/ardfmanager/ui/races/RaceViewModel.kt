@@ -1,11 +1,13 @@
 package kolskypavel.ardfmanager.ui.races
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.RaceData
+import kolskypavel.ardfmanager.backend.room.enums.ProviderType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,6 +46,11 @@ class RaceViewModel : ViewModel() {
     ) = runBlocking {
         dataProcessor.importRaceData(uri)
     }
+
+    fun fetchProviderRaceData(providerType: ProviderType, apiKey: String, context: Context) =
+        runBlocking {
+            dataProcessor.fetchProviderRaceData(providerType, apiKey, context)
+        }
 
     fun exportRaceData(
         uri: Uri, raceId: UUID

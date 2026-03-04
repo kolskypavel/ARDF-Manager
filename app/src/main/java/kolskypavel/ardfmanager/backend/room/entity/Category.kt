@@ -33,8 +33,8 @@ data class Category(
     @ColumnInfo(name = "name") var name: String,
     @ColumnInfo(name = "is_man") var isMan: Boolean,
     @ColumnInfo(name = "max_age") var maxAge: Int?,
-    @ColumnInfo(name = "length") var length: Int,
-    @ColumnInfo(name = "climb") var climb: Int,
+    @ColumnInfo(name = "length") var length: Int,   // Length of the track in m
+    @ColumnInfo(name = "climb") var climb: Int,     // Climb of the track in m
     @ColumnInfo(name = "order") var order: Int,
     @ColumnInfo(name = "different_properties") var differentProperties: Boolean = false,
     @ColumnInfo(name = "race_type") var raceType: RaceType? = null,

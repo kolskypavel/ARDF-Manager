@@ -52,8 +52,7 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
         db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_category_name_race_id` ON `category` (`name`, `race_id`)")
 
         // 5) add `interval` column to result_service (Duration stored as text). Use default 'PT10S' for existing rows.
-        db.execSQL("ALTER TABLE result_service ADD COLUMN `interval` TEXT NOT NULL DEFAULT PT10S")
-        db.execSQL("ALTER TABLE result_service ADD COLUMN `sent_at` TEXT NOT NULL DEFAULT ''")
+        db.execSQL("ALTER TABLE result_service ADD COLUMN `interval` TEXT NOT NULL DEFAULT 'PT10S'")
     }
 }
 
@@ -99,7 +98,7 @@ val MIGRATION_2_3 = object : Migration(2, 3) {
         db.execSQL("DROP TABLE result")
         db.execSQL("ALTER TABLE result_new RENAME TO result")
 
-        // 6) add `init` column to result_service (boolean flag stored as INTEGER).
+        // 6) add `init` column to result_service (boolean flag stored as INTEGER). Default 0 for existing rows.
         db.execSQL("ALTER TABLE result_service ADD COLUMN `init` INTEGER NOT NULL DEFAULT 0")
     }
 }

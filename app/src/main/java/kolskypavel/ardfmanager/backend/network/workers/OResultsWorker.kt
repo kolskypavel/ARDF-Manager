@@ -1,9 +1,9 @@
-package kolskypavel.ardfmanager.backend.results.workers
+package kolskypavel.ardfmanager.backend.network.workers
 
 import android.util.Log
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.processors.IofXmlProcessor
-import kolskypavel.ardfmanager.backend.results.ResultsConstants
+import kolskypavel.ardfmanager.backend.network.NetworkConstants
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.backend.room.entity.ResultService
@@ -34,6 +34,8 @@ object OResultsWorker : ResultServiceWorker {
             val xml = stream.toString()
             if (sendFile(xml, resultService, httpClient, "/start-lists")) {
                 resultService.init = true
+            } else {
+                resultService.status = ResultServiceStatus.ERROR
             }
         } catch (e: Exception) {
             Log.e(LOG_TAG, "Exception when init: ${e.message}")
@@ -84,16 +86,16 @@ object OResultsWorker : ResultServiceWorker {
 
         val multipartBody = MultipartBody.Builder()
             .setType(MultipartBody.FORM)
-            .addFormDataPart(ResultsConstants.ORESULTS_API_HEADER, resultService.apiKey)
+            .addFormDataPart(NetworkConstants.ORESULTS_API_HEADER, resultService.apiKey)
             .addFormDataPart("Content-Encoding", "application/gzip")
             .addFormDataPart(
                 "file",
                 null,
-                compressed.toRequestBody(ResultsConstants.CONTENT_TYPE_GZIP)
+                compressed.toRequestBody(NetworkConstants.CONTENT_TYPE_GZIP)
             ).build()
 
         val request = Request.Builder()
-            .url(ResultsConstants.ORESULTS_API_URL + path)
+            .url(NetworkConstants.ORESULTS_RESULTS_API_URL + path)
             .post(multipartBody)
             .build()
 

@@ -48,6 +48,9 @@
     <string name="general_type">Type</string>
     <string name="general_url" translatable="false">URL/Event Id</string>
     <string name="general_year_of_birth">Year of birth</string>
+    <string name="general_exit_title">Exit app</string>
+    <string name="general_exit_confirmation">Do you really want to exit the app?</string>
+    <string name="general_unknown_error">Unknown error</string>
 
     <!--    Sportident-->
     <string name="duplicate_si_number">Duplicate SI number!</string>
@@ -82,7 +85,8 @@
     <string name="data_import_readout_multiple_finish">Multiple finish punches present at readout: %1$s</string>
 
     <!--Race-->
-    <string name="race_import_text">Import race from a file</string>
+    <string name="race_import_file">Import race from a file</string>
+    <string name="race_import_internet">Import race from internet</string>
     <string name="race_export_success">Race exported successfully</string>
     <string name="race_import_success">Race imported successfully</string>
     <string name="race_import_failure">Failed to import race</string>
@@ -115,7 +119,7 @@
     <string name="category_delete">Delete category</string>
     <string name="category_delete_confirmation">Do you really want to delete this category?\n%1$s</string>
     <string name="category_delete_competitors">Also delete competitors in this category</string>
-    <string name="category_length_title">Length (km)</string>
+    <string name="category_length_title">Length (m)</string>
     <string name="category_climb_title">Climb (m)</string>
     <string name="category_exists">Category already exists!</string>
     <string name="control_points">Control points</string>
@@ -395,6 +399,12 @@
     <string name="data_type_results">Results</string>
     <string name="data_type_readout_data">SI Readout data</string>
 
+    <!-- Providers-->
+    <string name="provider_type_robis" translatable="false">ROBis</string>
+    <string name="provider_type_robis_test" translatable="false">ROBis test</string>
+    <string name="provider_type_oresults" translatable="false">OResults</string>
+    <string name="provider_type_ofeed" translatable="false">OFeed</string>
+
     <string name="result_status_ok">OK</string>
     <string name="result_status_mispunched">Mispunched</string>
     <string name="result_status_no_ranking">No ranking</string>
@@ -414,11 +424,6 @@
     <string name="result_status_over_limit_short" translatable="false">OVT</string>
     <string name="result_status_unofficial_short" translatable="false">UNF</string>
     <string name="result_status_error_short" translatable="false">ERR</string>
-
-    <string name="result_service_type_robis" translatable="false">ROBis</string>
-    <string name="result_service_type_robis_test" translatable="false">ROBis test</string>
-    <string name="result_service_type_oresults" translatable="false">OResults</string>
-    <string name="result_service_type_ofeed" translatable="false">OFeed</string>
 
     <string name="result_service_status_disabled">Disabled</string>
     <string name="result_service_status_running">Running</string>
@@ -547,16 +552,21 @@
         <item>@string/data_type_competitor_starts</item>
     </string-array>
 
+    <string-array name="internet_import_types">
+        <item>@string/provider_type_robis</item>
+        <item>@string/provider_type_robis_test</item>
+    </string-array>
+
     <string-array name="results_data_types">
         <item>@string/data_type_results</item>
         <item>@string/data_type_readout_data</item>
     </string-array>
 
     <string-array name="result_service_types">
-        <item>@string/result_service_type_robis</item>
-        <item>@string/result_service_type_robis_test</item>
-        <item>@string/result_service_type_oresults</item>
-        <item>@string/result_service_type_ofeed</item>
+        <item>@string/provider_type_robis</item>
+        <item>@string/provider_type_robis_test</item>
+        <item>@string/provider_type_oresults</item>
+        <item>@string/provider_type_ofeed</item>
     </string-array>
 
     <string-array name="result_service_status">

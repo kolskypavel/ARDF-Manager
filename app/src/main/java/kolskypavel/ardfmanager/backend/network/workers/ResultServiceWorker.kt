@@ -1,4 +1,4 @@
-package kolskypavel.ardfmanager.backend.results.workers
+package kolskypavel.ardfmanager.backend.network.workers
 
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entity.Race
