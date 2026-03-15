@@ -16,7 +16,7 @@ interface ResultDao {
     @Query("SELECT * FROM result WHERE id=(:id)")
     suspend fun getResultData(id: UUID): ResultData
 
-    @Query("SELECT * FROM result WHERE race_id=(:raceId)")
+    @Query("SELECT * FROM result WHERE race_id=(:raceId) ORDER BY readout_time ASC")
     fun getResultDataFlowByRace(raceId: UUID): Flow<List<ResultData>>
 
     @Query("SELECT * FROM result WHERE competitor_id=(:competitorId) LIMIT 1")
