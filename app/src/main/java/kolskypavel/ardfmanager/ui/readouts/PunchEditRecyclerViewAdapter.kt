@@ -82,8 +82,11 @@ class PunchEditRecyclerViewAdapter(
 
         //Set watchers
         holder.code.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
-            if (!codeWatcher(holder.adapterPosition, cs.toString())) {
-                holder.code.error = holder.code.context.getString(R.string.general_invalid)
+            // Omit the check for start and finish
+            if (item.punch.punchType != SIRecordType.START && item.punch.punchType != SIRecordType.FINISH) {
+                if (!codeWatcher(holder.adapterPosition, cs.toString())) {
+                    holder.code.error = holder.code.context.getString(R.string.general_invalid)
+                }
             }
         }
 
