@@ -24,17 +24,22 @@ object IofXmlProcessor : FormatProcessor {
         race: Race,
         dataProcessor: DataProcessor
     ): DataImportWrapper {
-        return when (dataType) {
-            DataType.CATEGORIES -> importCategories(
-                inStream,
-                race,
-                dataProcessor.getContext()
-            )
+        val context = dataProcessor.getContext()
 
-            else -> {
-                TODO()
+        if (context != null) {
+            return when (dataType) {
+                DataType.CATEGORIES -> importCategories(
+                    inStream,
+                    race,
+                    context
+                )
+
+                else -> {
+                    TODO()
+                }
             }
         }
+        return DataImportWrapper(emptyList(), emptyList(), ArrayList())
     }
 
     override suspend fun exportData(

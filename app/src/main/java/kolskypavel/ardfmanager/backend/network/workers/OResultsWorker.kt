@@ -1,5 +1,6 @@
 package kolskypavel.ardfmanager.backend.network.workers
 
+import android.content.Context
 import android.util.Log
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.processors.IofXmlProcessor
@@ -23,7 +24,8 @@ object OResultsWorker : ResultServiceWorker {
         resultService: ResultService,
         race: Race,
         httpClient: OkHttpClient,
-        dataProcessor: DataProcessor
+        dataProcessor: DataProcessor,
+        context: Context
     ) {
         resultService.status = ResultServiceStatus.RUNNING
         try {
@@ -46,7 +48,8 @@ object OResultsWorker : ResultServiceWorker {
         resultService: ResultService,
         race: Race,
         httpClient: OkHttpClient,
-        dataProcessor: DataProcessor
+        dataProcessor: DataProcessor,
+        context: Context
     ) {
 
         val results =

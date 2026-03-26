@@ -32,48 +32,54 @@ object ResultServiceProcessor {
             inter.setLevel(HttpLoggingInterceptor.Level.BODY)
             val httpClient = OkHttpClient.Builder().addInterceptor(inter).build()
             var resultService: ResultService?
+            val context = dataProcessor.getContext()
 
-            while (true) {
+            if (context != null) {
+                while (true) {
 
-                // Get the result service from db
-                resultService = dataProcessor.getResultServiceByRaceId(raceId)
-                if (resultService != null) {
-                    //Test connection before sending - TODO: fix
-                    if (!isNetworkConnected(context)) {
-                        resultService.status = ResultServiceStatus.NO_NETWORK
+                    // Get the result service from db
+                    resultService = dataProcessor.getResultServiceByRaceId(raceId)
+                    if (resultService != null) {
+                        //Test connection before sending - TODO: fix
+                        if (!isNetworkConnected(context)) {
+                            resultService.status = ResultServiceStatus.NO_NETWORK
+                            updateResultService(dataProcessor, resultService)
+                            continue
+                        }
+                        dataProcessor.getRace(raceId)?.let { race ->
+                            val worker =
+                                ResultWorkerFactory.getResultWorker(resultService.serviceType)
+
+                            // Init the service
+                            if (!resultService.init) {
+                                worker.init(
+                                    resultService,
+                                    race,
+                                    httpClient,
+                                    dataProcessor,
+                                    context
+                                )
+                            }
+
+                            // Redo the check to prevent additional waiting
+                            if (resultService.init) {
+                                // Main result sending
+                                worker.exportResults(
+                                    resultService,
+                                    race,
+                                    httpClient,
+                                    dataProcessor,
+                                    context
+                                )
+                            }
+                        }
                         updateResultService(dataProcessor, resultService)
-                        continue
+                        delay(resultService.interval)
+                    } else {
+                        delay(1000)     // Failsafe - should never occur
                     }
-                    dataProcessor.getRace(raceId)?.let { race ->
-                        val worker = ResultWorkerFactory.getResultWorker(resultService.serviceType)
 
-                        // Init the service
-                        if (!resultService.init) {
-                            worker.init(
-                                resultService,
-                                race,
-                                httpClient,
-                                dataProcessor
-                            )
-                        }
-
-                        // Redo the check to prevent additional waiting
-                        if (resultService.init) {
-                            // Main result sending
-                            worker.exportResults(
-                                resultService,
-                                race,
-                                httpClient,
-                                dataProcessor
-                            )
-                        }
-                    }
-                    updateResultService(dataProcessor, resultService)
-                    delay(resultService.interval)
-                } else {
-                    delay(1000)     // Failsafe - should never occur
                 }
-
             }
         }
     }

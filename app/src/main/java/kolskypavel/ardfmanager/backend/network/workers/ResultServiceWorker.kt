@@ -1,5 +1,6 @@
 package kolskypavel.ardfmanager.backend.network.workers
 
+import android.content.Context
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.backend.room.entity.ResultService
@@ -17,7 +18,8 @@ interface ResultServiceWorker {
         resultService: ResultService,
         race: Race,
         httpClient: OkHttpClient,
-        dataProcessor: DataProcessor
+        dataProcessor: DataProcessor,
+        context: Context
     )
 
     /**;
@@ -28,6 +30,7 @@ interface ResultServiceWorker {
         resultService: ResultService,
         race: Race,
         httpClient: OkHttpClient,
-        dataProcessor: DataProcessor
+        dataProcessor: DataProcessor,
+        context: Context
     )
 }

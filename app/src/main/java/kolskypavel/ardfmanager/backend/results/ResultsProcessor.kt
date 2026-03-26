@@ -304,7 +304,7 @@ object ResultsProcessor {
         // Warn about error / unknown with a sound
         if (result.resultStatus == ResultStatus.ERROR || result.competitorId == null
         ) {
-            isToMakeSound(dataProcessor.getContext(), SoundType.ERROR_UNKNOWN)
+            dataProcessor.getContext()?.let { isToMakeSound(it, SoundType.ERROR_UNKNOWN) }
             sound = true
         }
 
