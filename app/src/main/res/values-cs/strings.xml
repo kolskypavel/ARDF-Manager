@@ -44,6 +44,7 @@
     <string name="race_type_short">Krátká trať</string>
     <string name="race_type_orienteering">Orientační běh</string>
     <string name="general_finish">Cíl</string>
+    <string name="general_check_time">Čas checku</string>
     <string name="general_finish_time">Čas cíle</string>
     <string name="general_run_time">Čas běhu</string>
     <string name="general_required">Požadováno</string>

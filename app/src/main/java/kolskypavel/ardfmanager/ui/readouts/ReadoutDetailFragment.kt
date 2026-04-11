@@ -43,6 +43,7 @@ class ReadoutDetailFragment : Fragment() {
     private lateinit var siNumberView: TextView
     private lateinit var clubView: TextView
     private lateinit var indexView: TextView
+    private lateinit var checkTimeView: TextView
     private lateinit var runTimeView: TextView
     private lateinit var raceStatusView: TextView
     private lateinit var categoryView: TextView
@@ -67,6 +68,7 @@ class ReadoutDetailFragment : Fragment() {
         siNumberView = view.findViewById(R.id.readout_detail_si_number)
         clubView = view.findViewById(R.id.readout_detail_club)
         indexView = view.findViewById(R.id.readout_detail_index_callsign)
+        checkTimeView = view.findViewById(R.id.readout_detail_check_time)
         runTimeView = view.findViewById(R.id.readout_detail_run_time)
         raceStatusView = view.findViewById(R.id.readout_detail_status)
         categoryView = view.findViewById(R.id.readout_detail_category)
@@ -113,6 +115,8 @@ class ReadoutDetailFragment : Fragment() {
         } else {
             "-"
         }
+        checkTimeView.text = resultData.result.checkTime?.getTimeString() ?: "-"
+
         runTimeView.text =
             TimeProcessor.durationToFormattedString(
                 resultData.result.runTime,

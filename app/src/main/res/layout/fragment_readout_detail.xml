@@ -121,45 +121,56 @@
             android:padding="8dp">
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/readout_detail_check_time_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="190dp"
-                android:text="@string/general_category"
+                android:text="@string/general_check_time"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView13"
+                android:id="@+id/readout_detail_check_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/general_run_time"
+                android:layout_marginStart="8dp"
+                android:text="@string/general_check_time"
+                app:layout_constraintStart_toEndOf="@id/readout_detail_check_time_title"
+                app:layout_constraintTop_toTopOf="parent" />
+            ;
+            <TextView
+                android:id="@+id/readout_detail_category_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="190dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/general_category"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/readout_detail_run_time" />
 
             <TextView
                 android:id="@+id/readout_detail_category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:text="TextView"
-                app:layout_constraintStart_toEndOf="@+id/textView3"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/readout_detail_category_title"
+                app:layout_constraintTop_toBottomOf="@id/readout_detail_run_time_title" />
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/readout_detail_points_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/general_points"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView3" />
+                app:layout_constraintTop_toBottomOf="@+id/readout_detail_status_title" />
 
             <TextView
-                android:id="@+id/textView8"
+                android:id="@+id/readout_detail_place_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="190dp"
@@ -167,7 +178,7 @@
                 android:text="@string/general_place"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView3" />
+                app:layout_constraintTop_toBottomOf="@+id/readout_detail_status_title" />
 
             <TextView
                 android:id="@+id/readout_detail_points"
@@ -176,8 +187,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="TextView"
-                app:layout_constraintStart_toEndOf="@+id/textView4"
-                app:layout_constraintTop_toBottomOf="@+id/readout_detail_category" />
+                app:layout_constraintStart_toEndOf="@+id/readout_detail_points_title"
+                app:layout_constraintTop_toBottomOf="@+id/readout_detail_status_title" />
 
             <TextView
                 android:id="@+id/readout_detail_place"
@@ -186,8 +197,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="TextView"
-                app:layout_constraintStart_toEndOf="@+id/textView8"
-                app:layout_constraintTop_toBottomOf="@+id/readout_detail_category" />
+                app:layout_constraintStart_toEndOf="@+id/readout_detail_place_title"
+                app:layout_constraintTop_toBottomOf="@+id/readout_detail_category_title" />
 
             <TextView
                 android:id="@+id/readout_detail_run_time"
@@ -195,18 +206,28 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:text="TextView"
-                app:layout_constraintStart_toEndOf="@+id/textView13"
+                app:layout_constraintStart_toEndOf="@+id/readout_detail_run_time_title"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/textView10"
+                android:id="@+id/readout_detail_run_time_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="190dp"
+                android:text="@string/general_run_time"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/readout_detail_status_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/readout_detail_status"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                app:layout_constraintTop_toBottomOf="@+id/readout_detail_check_time_title" />
 
             <TextView
                 android:id="@+id/readout_detail_status"
@@ -215,8 +236,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="TextView"
-                app:layout_constraintStart_toEndOf="@+id/textView10"
-                app:layout_constraintTop_toBottomOf="@+id/readout_detail_points" />
+                app:layout_constraintStart_toEndOf="@id/readout_detail_status_title"
+                app:layout_constraintTop_toBottomOf="@+id/readout_detail_check_time_title" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
