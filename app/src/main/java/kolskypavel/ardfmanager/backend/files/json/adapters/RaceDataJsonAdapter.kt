@@ -18,6 +18,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class RaceDataJsonAdapter(val dataProcessor: DataProcessor) {
+
     @ToJson
     fun toJson(raceData: RaceData): RaceJson {
         val categoryAdapter = CategoryJsonAdapter(raceData.race.id)

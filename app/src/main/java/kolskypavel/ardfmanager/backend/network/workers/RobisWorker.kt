@@ -61,7 +61,7 @@ object RobisWorker : ResultServiceWorker {
         }
 
         val outStream = ByteArrayOutputStream()
-        JsonProcessor.exportResults(outStream, filteredResults, race, dataProcessor)
+        JsonProcessor.exportLiveResults(outStream, race, dataProcessor)
         val resultString = outStream.toString("UTF-8")
         Log.i(LOG_TAG, "Export JSON payload:\n$resultString")
         val body: RequestBody = resultString.toRequestBody(CONTENT_TYPE_JSON)
@@ -106,7 +106,7 @@ object RobisWorker : ResultServiceWorker {
                         // Handle unauthorized response
                         resultService.status = ResultServiceStatus.UNAUTHORIZED
                         resultService.errorText = dataProcessor.getContext()
-                            ?.getString(R.string.result_service_invalid_api_key) ?:"Error"
+                            ?.getString(R.string.result_service_invalid_api_key) ?: "Error"
 
                         Log.e(
                             LOG_TAG,

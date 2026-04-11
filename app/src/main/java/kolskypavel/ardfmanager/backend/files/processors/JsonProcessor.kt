@@ -8,6 +8,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.constants.DataFormat
 import kolskypavel.ardfmanager.backend.files.constants.DataType
+import kolskypavel.ardfmanager.backend.files.json.adapters.FinalResultJsonAdapter
 import kolskypavel.ardfmanager.backend.files.json.adapters.LocalDateTimeAdapter
 import kolskypavel.ardfmanager.backend.files.json.adapters.RaceDataJsonAdapter
 import kolskypavel.ardfmanager.backend.files.json.temps.ResultCompetitorJson
@@ -50,9 +51,14 @@ object JsonProcessor : FormatProcessor {
         when (dataType) {
             DataType.CATEGORIES -> TODO()
             DataType.COMPETITORS -> TODO()
-            DataType.RESULTS -> exportResults(
+            DataType.RESULTS_LIVE -> exportLiveResults(
                 outStream,
-                ResultsProcessor.getCompetitorDataByRace(race.id, dataProcessor),
+                race,
+                dataProcessor
+            )
+
+            DataType.RESULTS_FINAL -> exportFinalResults(
+                outStream,
                 race,
                 dataProcessor
             )
@@ -101,9 +107,30 @@ object JsonProcessor : FormatProcessor {
         return adapter.fromJson(response)
     }
 
-    suspend fun exportResults(
+    suspend fun exportFinalResults(
         outStream: OutputStream,
-        results: List<CompetitorData>,
+        race: Race,
+        dataProcessor: DataProcessor
+    ) {
+        withContext(Dispatchers.IO) {
+            val moshi: Moshi = Moshi.Builder()
+                .add(ResultJsonAdapter(race, dataProcessor))
+                .add(FinalResultJsonAdapter(dataProcessor))
+                .add(LocalDateTimeAdapter())
+                .add(KotlinJsonAdapterFactory())
+                .build()
+
+            val adapter = moshi.adapter<RaceData>()
+            val raceData: RaceData = dataProcessor.getRaceData(race.id);
+
+            val json = adapter.toJson(raceData)
+            outStream.write(json.toByteArray(Charsets.UTF_8))
+            outStream.flush()
+        }
+    }
+
+    suspend fun exportLiveResults(
+        outStream: OutputStream,
         race: Race,
         dataProcessor: DataProcessor
     ) {
@@ -118,6 +145,7 @@ object JsonProcessor : FormatProcessor {
                 Types.newParameterizedType(List::class.java, ResultCompetitorJson::class.java)
             val adapter = moshi.adapter<List<ResultCompetitorJson>>(type)
 
+            val results = ResultsProcessor.getCompetitorDataByRace(race.id, dataProcessor)
             val exportList = results.mapNotNull { rd ->
                 val result = rd.readoutData ?: return@mapNotNull null
 

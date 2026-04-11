@@ -46,4 +46,12 @@ data class ControlPoint(
         ControlPointType.CONTROL,
         0
     )
+
+    constructor(siCode: Int) : this(
+        UUID.randomUUID(),
+        UUID.randomUUID(),
+        siCode,
+        ControlPointType.CONTROL,
+        0
+    )
 }

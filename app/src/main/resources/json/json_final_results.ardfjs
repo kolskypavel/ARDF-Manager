@@ -1,0 +1,105 @@
+{
+  "categories": [
+    {
+      "category_name": "A",
+      "category_gender": true,
+      "category_length": 0,
+      "category_climb": 0,
+      "category_control_points": [
+        {
+          "si_code": 31,
+          "control_type": "CONTROL"
+        },
+        {
+          "si_code": 32,
+          "control_type": "CONTROL"
+        },
+        {
+          "si_code": 33,
+          "control_type": "CONTROL"
+        },
+        {
+          "si_code": 34,
+          "control_type": "CONTROL"
+        }
+      ],
+      "category_different_properties": false,
+      "category_time_limit": ""
+    }
+  ],
+  "aliases": [
+    {
+      "alias_si_code": 31,
+      "alias_name": "1"
+    },
+    {
+      "alias_si_code": 32,
+      "alias_name": "2"
+    },
+    {
+      "alias_si_code": 33,
+      "alias_name": "3"
+    },
+    {
+      "alias_si_code": 34,
+      "alias_name": "4"
+    }
+  ],
+  "competitors": [
+    {
+      "first_name": "Test",
+      "last_name": "Tester",
+      "competitor_club": "AC-Test",
+      "competitor_category": "A",
+      "competitor_index": "ACT0001",
+      "competitor_gender": true,
+      "birth_year": 2000,
+      "si_number": 123456789,
+      "si_rent": false,
+      "start_number": 0,
+      "competitor_start_time": "",
+      "result": {
+        "check_time": "2025-11-23T12:49:03",
+        "start_time": "2025-11-23T13:00:00",
+        "finish_time": "2025-11-23T14:15:00",
+        "run_time": "75:00",
+        "place": 0,
+        "readoutTime": "2025-11-23T14:18:24",
+        "modified": false,
+        "punch_count": 0,
+        "result_status": "OK",
+        "automatic_status": true,
+        "punches": [
+          {
+            "code": "1",
+            "si_code": 31,
+            "control_type": "CONTROL",
+            "punch_status": "OK",
+            "split_time": "35:00"
+          },
+          {
+            "code": "2",
+            "si_code": 32,
+            "control_type": "CONTROL",
+            "punch_status": "OK",
+            "split_time": "08:11"
+          },
+          {
+            "code": "3",
+            "si_code": 33,
+            "control_type": "CONTROL",
+            "punch_status": "OK",
+            "split_time": "22:39"
+          },
+          {
+            "code": "4",
+            "si_code": 34,
+            "control_type": "CONTROL",
+            "punch_status": "OK",
+            "split_time": "04:32"
+          }
+        ]
+      }
+    }
+  ]
+}

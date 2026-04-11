@@ -99,7 +99,7 @@ object CsvProcessor : FormatProcessor {
                     race
                 )
 
-            DataType.RESULTS -> exportResults(
+            DataType.RESULTS_FINAL, DataType.RESULTS_LIVE -> exportResults(
                 outStream,
                 ResultsProcessor.getResultWrapperFlowByRace(race.id, dataProcessor).first()
             )

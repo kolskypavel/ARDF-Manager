@@ -74,7 +74,7 @@ class ResultsExportDialogFragment : DialogFragment() {
         dataTypePicker.setOnItemClickListener { _, _, _, _ ->
             val selectedType = getCurrentType()
             when (selectedType) {
-                DataType.RESULTS -> {
+                DataType.RESULTS_LIVE -> {
                     dataFormatPicker.setSimpleItems(R.array.results_data_formats)
                     dataFormatPicker.setText(getString(R.string.data_format_txt), false)
                 }
@@ -130,7 +130,6 @@ class ResultsExportDialogFragment : DialogFragment() {
                 intent.type = "text/html"
                 intent.putExtra(Intent.EXTRA_TITLE, "results.html")
             }
-
         }
     }
 
@@ -168,19 +167,6 @@ class ResultsExportDialogFragment : DialogFragment() {
                 R.string.results_export_error,
                 err.take(100)
             )
-        }
-    }
-
-    private fun previewData() {
-        val currType = getCurrentType()
-        val format = getCurrentFormat()
-
-        when (currType) {
-            DataType.CATEGORIES -> TODO()
-            DataType.COMPETITORS -> TODO()
-            DataType.COMPETITOR_STARTS -> TODO()
-            DataType.RESULTS -> TODO()
-            DataType.READOUT_DATA -> TODO()
         }
     }
 }

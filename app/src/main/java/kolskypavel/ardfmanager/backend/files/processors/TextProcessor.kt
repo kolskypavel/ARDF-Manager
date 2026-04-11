@@ -44,7 +44,7 @@ object TextProcessor : FormatProcessor {
         race: Race
     ) {
         when (dataType) {
-            DataType.RESULTS -> exportResults(format, outStream, race.id, dataProcessor)
+            DataType.RESULTS_LIVE -> exportResults(format, outStream, race.id, dataProcessor)
             else -> {
                 TODO()
             }

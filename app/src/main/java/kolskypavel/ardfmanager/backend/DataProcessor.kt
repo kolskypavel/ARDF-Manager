@@ -334,7 +334,7 @@ class DataProcessor private constructor(context: Context) {
         ardfRepository.deleteAllCompetitorsByRace(raceId)
     }
 
-    //RESULTS
+    //RESULTS_LIVE
     suspend fun getResult(id: UUID) = ardfRepository.getResult(id)
 
     suspend fun getResultData(resultId: UUID) = ardfRepository.getResultData(resultId)

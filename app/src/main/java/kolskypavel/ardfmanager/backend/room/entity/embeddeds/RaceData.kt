@@ -10,4 +10,4 @@ data class RaceData(
     val aliases: List<Alias>,
     val competitorData: List<CompetitorData>,
     val unmatchedReadoutData: List<ReadoutData>
-) {}
+)

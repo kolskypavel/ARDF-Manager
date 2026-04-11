@@ -2,6 +2,12 @@ package kolskypavel.ardfmanager.backend.files.json.temps
 
 import java.time.LocalDateTime
 
+// Used to export final results with control points
+data class FinalResultsJson(
+    val categories: List<CategoryJson>,
+    val aliases: List<AliasJson>,
+    val competitors: List<CompetitorJson>,
+)
 
 data class ResultCompetitorJson(
     val competitor_index: String?,
@@ -41,10 +47,4 @@ data class UnmatchedResultJson(
     val finish_time: LocalDateTime,
     val run_time: String,
     val punches: List<PunchJson>
-)
-
-data class SITimeJson(
-    val real_time: String,
-    val week: Int,
-    val day_of_week: Int
 )
