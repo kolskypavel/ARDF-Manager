@@ -544,18 +544,24 @@ class DataProcessor private constructor(context: Context) {
 
     //SportIdent manipulation
     fun connectDevice(usbDevice: UsbDevice) {
-        Intent(appContext.get(), SIReaderService::class.java).also {
-            it.action = SIReaderService.ReaderServiceActions.START.toString()
-            it.putExtra(SIReaderService.USB_DEVICE, usbDevice)
-            appContext.get()?.startService(it)
+        val context = getContext();
+        context?.let { context ->
+            Intent(context, SIReaderService::class.java).also {
+                it.action = SIReaderService.ReaderServiceActions.START.toString()
+                it.putExtra(SIReaderService.USB_DEVICE, usbDevice)
+                appContext.get()?.startService(it)
+            }
         }
     }
 
     fun detachDevice(usbDevice: UsbDevice) {
-        Intent(appContext.get(), SIReaderService::class.java).also {
-            it.action = SIReaderService.ReaderServiceActions.STOP.toString()
-            it.putExtra(SIReaderService.USB_DEVICE, usbDevice)
-            appContext.get()?.startService(it)
+        val context = getContext();
+        context?.let { context ->
+            Intent(context, SIReaderService::class.java).also {
+                it.action = SIReaderService.ReaderServiceActions.STOP.toString()
+                it.putExtra(SIReaderService.USB_DEVICE, usbDevice)
+                context.startService(it)
+            }
         }
     }
 
