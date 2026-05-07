@@ -11,15 +11,16 @@ import kolskypavel.ardfmanager.backend.room.enums.ResultServiceStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import java.time.Duration
 import java.util.UUID
 
 // Used for result service communication - distributes work
 object ResultServiceProcessor {
+    private val MIN_SERVICE_DELAY: Duration = Duration.ofSeconds(1)
 
     fun resultServiceJob(
         raceId: UUID,
@@ -38,10 +39,13 @@ object ResultServiceProcessor {
                 // Get the result service from db
                 resultService = dataProcessor.getResultServiceByRaceId(raceId)
                 if (resultService != null) {
-                    //Test connection before sending - TODO: fix
+                    val serviceDelay = getServiceDelay(resultService)
+
+                    // Test connection before sending.
                     if (!isNetworkConnected(context)) {
                         resultService.status = ResultServiceStatus.NO_NETWORK
                         updateResultService(dataProcessor, resultService)
+                        delay(serviceDelay)
                         continue
                     }
                     dataProcessor.getRace(raceId)?.let { race ->
@@ -69,12 +73,20 @@ object ResultServiceProcessor {
                         }
                     }
                     updateResultService(dataProcessor, resultService)
-                    delay(resultService.interval)
+                    delay(serviceDelay)
                 } else {
-                    delay(1000)     // Failsafe - should never occur
+                    delay(MIN_SERVICE_DELAY)     // Failsafe - should never occur
                 }
 
             }
+        }
+    }
+
+    private fun getServiceDelay(resultService: ResultService): Duration {
+        return if (resultService.interval.isZero || resultService.interval.isNegative) {
+            MIN_SERVICE_DELAY
+        } else {
+            resultService.interval
         }
     }
 
