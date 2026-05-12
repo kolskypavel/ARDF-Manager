@@ -1,5 +1,5 @@
-# ARDF-Manager
-Mobile app for managing radioorienteering (ARDF) and orienteering events, written in Kotlin.
+# Radio-O-Manager
+Android app for managing radioorienteering (ARDF) and orienteering events, written in Kotlin.
 
 ## Basic app information
 Currently availabe functions:

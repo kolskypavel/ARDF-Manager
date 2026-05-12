@@ -11,15 +11,16 @@ import kolskypavel.ardfmanager.backend.room.enums.ResultServiceStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import java.time.Duration
 import java.util.UUID
 
 // Used for result service communication - distributes work
 object ResultServiceProcessor {
+    private val MIN_SERVICE_DELAY: Duration = Duration.ofSeconds(1)
 
     fun resultServiceJob(
         raceId: UUID,
@@ -32,19 +33,32 @@ object ResultServiceProcessor {
             inter.setLevel(HttpLoggingInterceptor.Level.BODY)
             val httpClient = OkHttpClient.Builder().addInterceptor(inter).build()
             var resultService: ResultService?
-            val context = dataProcessor.getContext()
 
-            if (context != null) {
-                while (true) {
+            while (true) {
 
-                    // Get the result service from db
-                    resultService = dataProcessor.getResultServiceByRaceId(raceId)
-                    if (resultService != null) {
-                        //Test connection before sending - TODO: fix
-                        if (!isNetworkConnected(context)) {
-                            resultService.status = ResultServiceStatus.NO_NETWORK
-                            updateResultService(dataProcessor, resultService)
-                            continue
+                // Get the result service from db
+                resultService = dataProcessor.getResultServiceByRaceId(raceId)
+                if (resultService != null) {
+                    val serviceDelay = getServiceDelay(resultService)
+
+                    // Test connection before sending.
+                    if (!isNetworkConnected(context)) {
+                        resultService.status = ResultServiceStatus.NO_NETWORK
+                        updateResultService(dataProcessor, resultService)
+                        delay(serviceDelay)
+                        continue
+                    }
+                    dataProcessor.getRace(raceId)?.let { race ->
+                        val worker = ResultWorkerFactory.getResultWorker(resultService.serviceType)
+
+                        // Init the service
+                        if (!resultService.init) {
+                            worker.init(
+                                resultService,
+                                race,
+                                httpClient,
+                                dataProcessor
+                            )
                         }
                         dataProcessor.getRace(raceId)?.let { race ->
                             val worker =
@@ -78,9 +92,22 @@ object ResultServiceProcessor {
                     } else {
                         delay(1000)     // Failsafe - should never occur
                     }
+                    updateResultService(dataProcessor, resultService)
+                    delay(serviceDelay)
+                } else {
+                    delay(MIN_SERVICE_DELAY)     // Failsafe - should never occur
+                }
 
                 }
             }
+        }
+    }
+
+    private fun getServiceDelay(resultService: ResultService): Duration {
+        return if (resultService.interval.isZero || resultService.interval.isNegative) {
+            MIN_SERVICE_DELAY
+        } else {
+            resultService.interval
         }
     }
 

@@ -1,3 +1,4 @@
+
 package kolskypavel.ardfmanager.backend.network.workers
 
 import android.content.Context
@@ -6,6 +7,7 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.json.temps.RobisResultJson
 import kolskypavel.ardfmanager.backend.files.processors.JsonProcessor
+
 import kolskypavel.ardfmanager.backend.network.ResultServiceProcessor
 import kolskypavel.ardfmanager.backend.network.ResultServiceProcessor.updateSentResults
 import kolskypavel.ardfmanager.backend.network.NetworkConstants
@@ -71,7 +73,7 @@ object RobisWorker : ResultServiceWorker {
             .url(
                 if (resultService.serviceType == ProviderType.ROBIS_TEST) {
                     NetworkConstants.ROBIS_PLAYGROUND_RESULTS_API_URL
-                } else {
+               } else {
                     NetworkConstants.ROBIS_RESULTS_API_URL
                 }
             )
