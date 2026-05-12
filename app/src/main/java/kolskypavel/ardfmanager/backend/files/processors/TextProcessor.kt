@@ -44,7 +44,7 @@ object TextProcessor : FormatProcessor {
         race: Race
     ) {
         when (dataType) {
-            DataType.RESULTS -> exportResults(format, outStream, race.id, dataProcessor)
+            DataType.RESULTS_LIVE -> exportResults(format, outStream, race.id, dataProcessor)
             else -> {
                 TODO()
             }
@@ -60,37 +60,40 @@ object TextProcessor : FormatProcessor {
     ) {
         val results = ResultsProcessor.getResultWrapperFlowByRace(raceId, dataProcessor).first()
         val params = HashMap<String, String>()
+        val context = dataProcessor.getContext()
 
-        dataProcessor.getRace(raceId)?.let { race ->
-            // Init all the parameters for the template
-            initParams(
-                dataProcessor,
-                dataProcessor.getContext(),
-                params,
-                results,
-                race,
-                format
-            )
-        }
-
-        val templateType =
-            if (format == DataFormat.TXT) {
-                FileConstants.TEMPLATE_TEXT_RESULTS
-            } else {
-                FileConstants.TEMPLATE_HTML_RESULTS
+        if (context != null) {
+            dataProcessor.getRace(raceId)?.let { race ->
+                // Init all the parameters for the template
+                initParams(
+                    dataProcessor,
+                    context,
+                    params,
+                    results,
+                    race,
+                    format
+                )
             }
 
-        val template = TemplateProcessor.loadTemplate(
-            templateType,
-            dataProcessor.getContext()
-        )
-        val out = TemplateProcessor.processTemplate(
-            template,
-            params
-        )
+            val templateType =
+                if (format == DataFormat.TXT) {
+                    FileConstants.TEMPLATE_TEXT_RESULTS
+                } else {
+                    FileConstants.TEMPLATE_HTML_RESULTS
+                }
 
-        outStream.write(out.toByteArray())
-        outStream.flush()
+            val template = TemplateProcessor.loadTemplate(
+                templateType,
+                context
+            )
+            val out = TemplateProcessor.processTemplate(
+                template,
+                params
+            )
+
+            outStream.write(out.toByteArray())
+            outStream.flush()
+        }
     }
 
     private suspend fun initParams(

@@ -25,7 +25,8 @@ object OFeedWorker : ResultServiceWorker {
         resultService: ResultService,
         race: Race,
         httpClient: OkHttpClient,
-        dataProcessor: DataProcessor
+        dataProcessor: DataProcessor,
+        context: Context
     ) {
         try {
             val stream = ByteArrayOutputStream()
@@ -33,13 +34,13 @@ object OFeedWorker : ResultServiceWorker {
             IofXmlProcessor.exportStartList(stream, race, data, dataProcessor)
 
             val xml = stream.toString()
-            if (!sendFile(xml, resultService, httpClient, dataProcessor.getContext())) {
+            if (!sendFile(xml, resultService, httpClient, context)) {
                 resultService.init = true
             }
         } catch (e: Exception) {
             Log.e(OResultsWorker.LOG_TAG, "Exception when init: ${e.message}")
             resultService.errorText =
-                dataProcessor.getContext().getString(R.string.result_service_status_error)
+               context.getString(R.string.result_service_status_error)
         }
     }
 
@@ -47,7 +48,8 @@ object OFeedWorker : ResultServiceWorker {
         resultService: ResultService,
         race: Race,
         httpClient: OkHttpClient,
-        dataProcessor: DataProcessor
+        dataProcessor: DataProcessor,
+        context: Context
     ) {
         val results =
             ResultsProcessor.getResultWrapperFlowByRace(resultService.raceId, dataProcessor)
@@ -59,7 +61,7 @@ object OFeedWorker : ResultServiceWorker {
         val xml = stream.toString()
 
         try {
-            sendFile(xml, resultService, httpClient, dataProcessor.getContext())
+            sendFile(xml, resultService, httpClient, context)
 
         } catch (exception: Exception) {
             // Handle exceptions during the request

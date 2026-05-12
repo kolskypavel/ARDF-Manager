@@ -85,7 +85,7 @@ class FileProcessor(appContext: WeakReference<Context>) {
             )
 
         } else {
-            throw IOException(dataProcessor.getContext().getString(R.string.data_import_file_error))
+            throw IOException(dataProcessor.getContext()?.getString(R.string.data_import_file_error))
         }
     }
 

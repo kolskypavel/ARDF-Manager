@@ -60,17 +60,37 @@ object ResultServiceProcessor {
                                 dataProcessor
                             )
                         }
+                        dataProcessor.getRace(raceId)?.let { race ->
+                            val worker =
+                                ResultWorkerFactory.getResultWorker(resultService.serviceType)
 
-                        // Redo the check to prevent additional waiting
-                        if (resultService.init) {
-                            // Main result sending
-                            worker.exportResults(
-                                resultService,
-                                race,
-                                httpClient,
-                                dataProcessor
-                            )
+                            // Init the service
+                            if (!resultService.init) {
+                                worker.init(
+                                    resultService,
+                                    race,
+                                    httpClient,
+                                    dataProcessor,
+                                    context
+                                )
+                            }
+
+                            // Redo the check to prevent additional waiting
+                            if (resultService.init) {
+                                // Main result sending
+                                worker.exportResults(
+                                    resultService,
+                                    race,
+                                    httpClient,
+                                    dataProcessor,
+                                    context
+                                )
+                            }
                         }
+                        updateResultService(dataProcessor, resultService)
+                        delay(resultService.interval)
+                    } else {
+                        delay(1000)     // Failsafe - should never occur
                     }
                     updateResultService(dataProcessor, resultService)
                     delay(serviceDelay)
@@ -78,6 +98,7 @@ object ResultServiceProcessor {
                     delay(MIN_SERVICE_DELAY)     // Failsafe - should never occur
                 }
 
+                }
             }
         }
     }

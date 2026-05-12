@@ -33,7 +33,8 @@ object RobisWorker : ResultServiceWorker {
         resultService: ResultService,
         race: Race,
         httpClient: OkHttpClient,
-        dataProcessor: DataProcessor
+        dataProcessor: DataProcessor,
+        context: Context
     ) {
         resultService.init = true
     }
@@ -42,7 +43,8 @@ object RobisWorker : ResultServiceWorker {
         resultService: ResultService,
         race: Race,
         httpClient: OkHttpClient,
-        dataProcessor: DataProcessor
+        dataProcessor: DataProcessor,
+        context: Context
     ) {
         Log.i(LOG_TAG, "Starting to export results")
 
@@ -61,7 +63,7 @@ object RobisWorker : ResultServiceWorker {
         }
 
         val outStream = ByteArrayOutputStream()
-        JsonProcessor.exportResults(outStream, filteredResults, race, dataProcessor)
+        JsonProcessor.exportLiveResults(outStream, race, dataProcessor)
         val resultString = outStream.toString("UTF-8")
         Log.i(LOG_TAG, "Export JSON payload:\n$resultString")
         val body: RequestBody = resultString.toRequestBody(CONTENT_TYPE_JSON)
@@ -106,7 +108,7 @@ object RobisWorker : ResultServiceWorker {
                         // Handle unauthorized response
                         resultService.status = ResultServiceStatus.UNAUTHORIZED
                         resultService.errorText = dataProcessor.getContext()
-                            .getString(R.string.result_service_invalid_api_key)
+                            ?.getString(R.string.result_service_invalid_api_key) ?: "Error"
 
                         Log.e(
                             LOG_TAG,
@@ -138,7 +140,7 @@ object RobisWorker : ResultServiceWorker {
         results: ArrayList<CompetitorData>,
         robisResponse: String,
         resultService: ResultService,
-        context: Context
+        context: Context?
     ) {
         val response = JsonProcessor.parseRobisResponse(robisResponse)
 
@@ -148,7 +150,7 @@ object RobisWorker : ResultServiceWorker {
             for (invalid in response.invalid_data) {
                 findAndRemoveMatchingResult(results, invalid)
                 val fullName = "${invalid.last_name.uppercase()} ${invalid.first_name}"
-                invalidString += context.getString(
+                invalidString += context?.getString(
                     R.string.result_service_invalid_result,
                     fullName,
                     invalid.si_number,

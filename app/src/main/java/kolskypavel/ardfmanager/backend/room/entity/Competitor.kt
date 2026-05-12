@@ -78,7 +78,7 @@ data class Competitor(
         null,
         "Test",
         "Tester",
-        "AC Test",
+        "AC-Test",
         "ACT0001",
         true,
         2000,

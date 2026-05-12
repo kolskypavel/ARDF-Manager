@@ -149,7 +149,7 @@ class RaceSelectionFragment : Fragment() {
                     RaceEditDialogFragment.RaceEditActions::class.java
                 )
                 else {
-                    bundle.getSerializable(RaceEditDialogFragment.BUNDLE_KEY_ACTIONS) as Race
+                    bundle.getSerializable(RaceEditDialogFragment.BUNDLE_KEY_ACTIONS) as RaceEditDialogFragment.RaceEditActions
 
                 }
 

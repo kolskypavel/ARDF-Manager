@@ -88,7 +88,7 @@ class DataProcessor private constructor(context: Context) {
         )
     }
 
-    fun getContext(): Context = appContext.get()!!
+    fun getContext(): Context? = appContext.get()
 
     fun getAppVersion(): String {
         val packageInfo =
@@ -334,7 +334,7 @@ class DataProcessor private constructor(context: Context) {
         ardfRepository.deleteAllCompetitorsByRace(raceId)
     }
 
-    //RESULTS
+    //RESULTS_LIVE
     suspend fun getResult(id: UUID) = ardfRepository.getResult(id)
 
     suspend fun getResultData(resultId: UUID) = ardfRepository.getResultData(resultId)
@@ -379,13 +379,16 @@ class DataProcessor private constructor(context: Context) {
     // Return wherever the "mm:ss" format should be used
     fun useMinuteTimeFormat(): Boolean {
         val context = getContext()
-        val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-        val preference =
-            sharedPref.getString(
-                context.getString(R.string.key_results_time_format),
-                context.getString(R.string.preferences_results_time_format_minutes)
-            )
-        return (preference == context.getString(R.string.preferences_results_time_format_minutes))
+        if (context != null) {
+            val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
+            val preference =
+                sharedPref.getString(
+                    context.getString(R.string.key_results_time_format),
+                    context.getString(R.string.preferences_results_time_format_minutes)
+                )
+            return (preference == context.getString(R.string.preferences_results_time_format_minutes))
+        }
+        return true
     }
 
     //PUNCHES
@@ -455,13 +458,16 @@ class DataProcessor private constructor(context: Context) {
         raceId: UUID
     ): DataImportWrapper {
         val race = getRace(raceId)
+        val context = getContext()
 
-        race?.let { race ->
-            val data =
-                fileProcessor?.importData(uri, dataType, dataFormat, race, getContext())
+        if (context != null && race != null) {
+            race.let { race ->
+                val data =
+                    fileProcessor?.importData(uri, dataType, dataFormat, race, context)
 
-            DataImportValidator.validateDataImport(data!!, raceId, dataType, this, getContext())
-            return data
+                DataImportValidator.validateDataImport(data!!, raceId, dataType, this, context)
+                return data
+            }
         }
         return DataImportWrapper(emptyList(), emptyList(), arrayListOf())
     }
@@ -498,11 +504,13 @@ class DataProcessor private constructor(context: Context) {
 
     @Throws(Exception::class)
     suspend fun importRaceData(uri: Uri): RaceData? {
-        fileProcessor?.importRaceData(uri, getContext())?.let { raceData ->
-            DataImportValidator.validateRaceDataImport(raceData, getContext())
-            return raceData
-        }
-        return null
+        val context = getContext()
+        return if (context != null) {
+            fileProcessor?.importRaceData(uri, context)?.let { raceData ->
+                DataImportValidator.validateRaceDataImport(raceData, context)
+                return raceData
+            }
+        } else null
     }
 
     suspend fun exportRaceData(uri: Uri, raceId: UUID) =
@@ -536,18 +544,24 @@ class DataProcessor private constructor(context: Context) {
 
     //SportIdent manipulation
     fun connectDevice(usbDevice: UsbDevice) {
-        Intent(appContext.get(), SIReaderService::class.java).also {
-            it.action = SIReaderService.ReaderServiceActions.START.toString()
-            it.putExtra(SIReaderService.USB_DEVICE, usbDevice)
-            appContext.get()?.startService(it)
+        val context = getContext();
+        context?.let { context ->
+            Intent(context, SIReaderService::class.java).also {
+                it.action = SIReaderService.ReaderServiceActions.START.toString()
+                it.putExtra(SIReaderService.USB_DEVICE, usbDevice)
+                appContext.get()?.startService(it)
+            }
         }
     }
 
     fun detachDevice(usbDevice: UsbDevice) {
-        Intent(appContext.get(), SIReaderService::class.java).also {
-            it.action = SIReaderService.ReaderServiceActions.STOP.toString()
-            it.putExtra(SIReaderService.USB_DEVICE, usbDevice)
-            appContext.get()?.startService(it)
+        val context = getContext();
+        context?.let { context ->
+            Intent(context, SIReaderService::class.java).also {
+                it.action = SIReaderService.ReaderServiceActions.STOP.toString()
+                it.putExtra(SIReaderService.USB_DEVICE, usbDevice)
+                context.startService(it)
+            }
         }
     }
 
@@ -658,7 +672,7 @@ class DataProcessor private constructor(context: Context) {
     }
 
     fun punchStatusToShortString(punchStatus: PunchStatus): String {
-        val arr = getContext().resources?.getStringArray(R.array.punch_status_array_short)
+        val arr = appContext.get()?.resources?.getStringArray(R.array.punch_status_array_short)
         return arr?.getOrNull(punchStatus.ordinal) ?: ""
     }
 

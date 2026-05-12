@@ -41,10 +41,8 @@ class RaceJsonTests {
             .thenReturn(PunchStatus.VALID)
     }
 
-
     @Test
     fun testValidFromJson() {
-
 
         val stream = this::class.java.classLoader.getResourceAsStream("json/json_valid_race_import.ardfjs")
         val raceData = JsonProcessor.importRaceData(stream, dataProcessor)
@@ -55,15 +53,15 @@ class RaceJsonTests {
         assertEquals(RaceBand.M80, raceData.race.raceBand)
         assertEquals(RaceLevel.DISTRICT, raceData.race.raceLevel)
 
-        val categories = raceData.categories.map { it -> it.category.name }.sorted()
+        val categories = raceData.categories.map { it.category.name }.sorted()
         assertEquals(listOf("D19", "D20", "M19", "M20", "Ostatní", "RT"), categories)
 
-        val competitors = raceData.competitorData.map { it -> it.competitorCategory.competitor }
-        val startNumbers = competitors.map { it -> it.startNumber }.sorted()
+        val competitors = raceData.competitorData.map { it.competitorCategory.competitor }
+        val startNumbers = competitors.map { it.startNumber }.sorted()
         assertEquals(listOf(40, 41, 42, 43, 44, 45, 46), startNumbers)
 
         val comp1 =
-            raceData.competitorData.find { it -> it.competitorCategory.competitor.siNumber == 10000 }
+            raceData.competitorData.find { it.competitorCategory.competitor.siNumber == 10000 }
         assertEquals("KOLSKÝ Pavel", comp1?.competitorCategory?.competitor?.getFullName())
         assertEquals(ResultStatus.MISPUNCHED, comp1?.readoutData?.result?.resultStatus)
 
@@ -79,6 +77,5 @@ class RaceJsonTests {
                 dataProcessor
             )
         }
-
     }
 }

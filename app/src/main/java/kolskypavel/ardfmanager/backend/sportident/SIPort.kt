@@ -323,10 +323,10 @@ class SIPort(
             Log.d("SI", "Unit responded, reading device info")
             msg = byteArrayOf(ZERO, 0x75)
             writeMsg(GET_SYSTEM_INFO, msg, true)
-            reply = readMsg(6000, GET_SYSTEM_INFO)!!
+            reply = readMsg(6000, GET_SYSTEM_INFO)
 
             //Long info response
-            if (reply.size >= 124) {
+            if (reply != null && reply.size >= 124) {
                 Log.d("SI", "Got device info response")
 
                 extendedMode =

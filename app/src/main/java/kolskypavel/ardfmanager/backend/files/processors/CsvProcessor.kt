@@ -42,30 +42,35 @@ object CsvProcessor : FormatProcessor {
         race: Race,
         dataProcessor: DataProcessor
     ): DataImportWrapper {
-        return when (dataType) {
-            DataType.CATEGORIES -> return importCategories(
-                inStream,
-                race,
-                dataProcessor,
-                dataProcessor.getContext()
-            )
+        val context = dataProcessor.getContext()
 
-            DataType.COMPETITORS -> return importCompetitorData(
-                inStream,
-                race,
-                dataProcessor.getCategoryDataFlowForRace(race.id).first().toHashSet(),
-                dataProcessor,
-                dataProcessor.getContext()
-            )
+        if (context != null) {
+            return when (dataType) {
+                DataType.CATEGORIES -> return importCategories(
+                    inStream,
+                    race,
+                    dataProcessor,
+                    context
+                )
 
-            DataType.COMPETITOR_STARTS -> return importCompetitorStarts(
-                inStream,
-                dataProcessor.getCompetitorDataFlowByRace(race.id).first().toHashSet(),
-                dataProcessor.getContext()
-            )
+                DataType.COMPETITORS -> return importCompetitorData(
+                    inStream,
+                    race,
+                    dataProcessor.getCategoryDataFlowForRace(race.id).first().toHashSet(),
+                    dataProcessor,
+                    context
+                )
 
-            else -> DataImportWrapper(emptyList(), emptyList(), ArrayList())
+                DataType.COMPETITOR_STARTS -> return importCompetitorStarts(
+                    inStream,
+                    dataProcessor.getCompetitorDataFlowByRace(race.id).first().toHashSet(),
+                    context
+                )
+
+                else -> DataImportWrapper(emptyList(), emptyList(), ArrayList())
+            }
         }
+        return DataImportWrapper(emptyList(), emptyList(), ArrayList())
     }
 
     override suspend fun exportData(
@@ -94,7 +99,7 @@ object CsvProcessor : FormatProcessor {
                     race
                 )
 
-            DataType.RESULTS -> exportResults(
+            DataType.RESULTS_FINAL, DataType.RESULTS_LIVE -> exportResults(
                 outStream,
                 ResultsProcessor.getResultWrapperFlowByRace(race.id, dataProcessor).first()
             )
@@ -180,12 +185,14 @@ object CsvProcessor : FormatProcessor {
                         }
 
                         val controlPointString = row[9].trim()
-                        val controlPoints = ControlPointsHelper.getControlPointsFromString(
-                            controlPointString,
-                            category.id,
-                            category.raceType ?: race.raceType,
-                            dataProcessor.getContext()
-                        )
+                        val controlPoints = dataProcessor.getContext()?.let {
+                            ControlPointsHelper.getControlPointsFromString(
+                                controlPointString,
+                                category.id,
+                                category.raceType ?: race.raceType,
+                                it
+                            )
+                        } ?: emptyList()
                         category.controlPointsString = controlPointString
 
                         categories.add(
@@ -213,18 +220,21 @@ object CsvProcessor : FormatProcessor {
         race: Race,
         dataProcessor: DataProcessor
     ): List<Category> {
-        val categoryString = when (type) {
-            StandardCategoryType.INTERNATIONAL -> dataProcessor.getContext().resources.getStringArray(
-                R.array.standard_categories_international
-            )
+        val context = dataProcessor.getContext()
+        val categoryArr = context?.let {
+            when (type) {
+                StandardCategoryType.INTERNATIONAL -> context.resources.getStringArray(
+                    R.array.standard_categories_international
+                )
 
-            StandardCategoryType.CZECH -> dataProcessor.getContext().resources.getStringArray(
-                R.array.standard_categories_czech
-            )
-        }
+                StandardCategoryType.CZECH -> context.resources.getStringArray(
+                    R.array.standard_categories_czech
+                )
+            }
+        } ?: emptyArray<String>()
         val categories = ArrayList<Category>()
 
-        for (line in categoryString.withIndex()) {
+        for (line in categoryArr.withIndex()) {
             val split = line.value.split(";")
             if (split.size == 3 &&
                 dataProcessor.getCategoryByName(split[0].trim(), race.id) == null
