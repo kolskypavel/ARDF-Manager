@@ -1,3 +1,12 @@
+## [0.2.0] - 2026-05-17
+### Added
+- Added check time to readout detail
+
+### Fixed
+- Fixed readout sorting
+- Fixed ROBis live and final results
+- Bugfixes + library updates
+
 ## [0.1.1] - 2026-03-04
 ### Added
 - Added import from online providers (only ROBIS now)
