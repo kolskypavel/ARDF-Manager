@@ -57,7 +57,8 @@ object ResultServiceProcessor {
                                 resultService,
                                 race,
                                 httpClient,
-                                dataProcessor
+                                dataProcessor,
+                                context
                             )
                         }
                         dataProcessor.getRace(raceId)?.let { race ->
@@ -89,8 +90,6 @@ object ResultServiceProcessor {
                         }
                         updateResultService(dataProcessor, resultService)
                         delay(resultService.interval)
-                    } else {
-                        delay(1000)     // Failsafe - should never occur
                     }
                     updateResultService(dataProcessor, resultService)
                     delay(serviceDelay)
@@ -98,7 +97,6 @@ object ResultServiceProcessor {
                     delay(MIN_SERVICE_DELAY)     // Failsafe - should never occur
                 }
 
-                }
             }
         }
     }

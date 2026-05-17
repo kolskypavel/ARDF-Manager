@@ -264,6 +264,7 @@
     <string name="data_import_alias_code_duplicate">Duplicitní kódy aliasů: %1$s</string>
     <string name="data_import_readout_multiple_start">Více startovních ražení ve vyčítání: %1$s</string>
     <string name="data_import_readout_multiple_finish">Více cílových ražení ve vyčítání: %1$s</string>
+    <string name="race_import_internet">Importovat závod z internetu</string>
     <string name="race_export_success">Závod úspěšně exportován</string>
     <string name="race_import_success">Závod úspěšně importován</string>
     <string name="race_import_failure">Chyba při importu závodu</string>
