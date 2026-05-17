@@ -372,8 +372,8 @@
     <string name="preferences_changelog">Changelog</string>
     <string name="preferences_about_app">About the app</string>
     <string name="about_app_version">Version %1$s</string>
-    <string name="about_app_description">ARDF Manager is an open-source tool for organizing Amateur Radio Direction Finding (ARDF) and orienteering competitions. </string>
-    <string name="about_app_link" translatable="false">GitHub: https://github.com/kolskypavel/ARDF-Manager </string>
+    <string name="about_app_description">Radio-O Manager is an open-source tool for organizing radioorienteering and orienteering competitions. </string>
+    <string name="about_app_link" translatable="false">GitHub: https://github.com/kolskypavel/Radio-O-Manager </string>
 
     <!-- =============================================== DATA ARRAYS ===============================================-->
     <string name="race_type_classic">Classic</string>
