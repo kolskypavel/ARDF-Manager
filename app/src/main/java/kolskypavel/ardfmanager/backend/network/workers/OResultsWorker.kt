@@ -18,8 +18,10 @@ import java.io.ByteArrayOutputStream
 import java.time.LocalTime
 import java.util.zip.GZIPOutputStream
 
+/** Live-result worker for the OResults IOF XML upload API. */
 object OResultsWorker : ResultServiceWorker {
 
+    /** Uploads the start list before result uploads begin. */
     override suspend fun init(
         resultService: ResultService,
         race: Race,
@@ -44,6 +46,7 @@ object OResultsWorker : ResultServiceWorker {
         }
     }
 
+    /** Uploads current categorized results as compressed IOF XML. */
     override suspend fun exportResults(
         resultService: ResultService,
         race: Race,
@@ -70,13 +73,14 @@ object OResultsWorker : ResultServiceWorker {
             }
 
         } catch (exception: Exception) {
-            // Handle exceptions during the request
+            // Convert request failures into provider status so the UI can show the error.
             resultService.status = ResultServiceStatus.ERROR
             resultService.errorText = exception.message ?: "Unknown error"
             Log.e(LOG_TAG, "Exception sending : ${exception.message}")
         }
     }
 
+    /** Sends one gzipped IOF XML payload to the OResults endpoint path. */
     @Throws(Exception::class)
     fun sendFile(
         data: String,
@@ -84,7 +88,6 @@ object OResultsWorker : ResultServiceWorker {
         httpClient: OkHttpClient,
         path: String
     ): Boolean {
-        // Compress data with gzip
         val compressed = gzipStringToByteArray(data)
 
         val multipartBody = MultipartBody.Builder()
@@ -116,7 +119,7 @@ object OResultsWorker : ResultServiceWorker {
         }
     }
 
-    // Helper to gzip a String to ByteArray using UTF-8
+    /** Compresses XML text as UTF-8 gzip bytes for provider upload. */
     fun gzipStringToByteArray(input: String): ByteArray {
         val bos = ByteArrayOutputStream()
         GZIPOutputStream(bos).use { gzip ->

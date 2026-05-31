@@ -14,10 +14,10 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-// Used for communicating with online data providers
+/** Client for downloading race data from online event providers. */
 object ProviderClient {
 
-    // TODO: if more providers are supported in future, modify
+    /** Fetches a full race payload from the selected provider and parses it into race data. */
     suspend fun fetchRaceData(
         apiKey: String,
         providerType: ProviderType,
@@ -30,14 +30,14 @@ object ProviderClient {
             ROBIS_RACE_API_URL
         else ROBIS_PLAYGROUND_RACE_API_URL
 
-        // Send the results to the ROBIS API
+        // Current provider downloads use the ROBIS API-key header.
         val request: Request = Request.Builder()
             .url(url)
             .addHeader(ROBIS_API_HEADER, apiKey)
             .build()
 
 
-        // Execute the blocking network call and parsing on Dispatchers.IO
+        // Execute the blocking network call and JSON parsing on Dispatchers.IO.
         val raceData = withContext(Dispatchers.IO) {
             httpClient.newCall(request).execute().use { response ->
                 val bodyString = response.body.string()

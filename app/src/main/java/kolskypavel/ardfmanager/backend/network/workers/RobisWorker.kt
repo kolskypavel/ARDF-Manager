@@ -26,9 +26,10 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.ByteArrayOutputStream
 import java.time.LocalTime
 
+/** Live-result worker for the ROBIS JSON result API. */
 object RobisWorker : ResultServiceWorker {
 
-    // No init actions needed
+    /** Marks ROBIS as initialized because it does not require a separate startup request. */
     override suspend fun init(
         resultService: ResultService,
         race: Race,
@@ -39,6 +40,7 @@ object RobisWorker : ResultServiceWorker {
         resultService.init = true
     }
 
+    /** Exports unsent live results to ROBIS and updates local sent/error state. */
     override suspend fun exportResults(
         resultService: ResultService,
         race: Race,
@@ -48,7 +50,7 @@ object RobisWorker : ResultServiceWorker {
     ) {
         Log.i(LOG_TAG, "Starting to export results")
 
-        // Fetch results and convert them to JSON
+        // Only unsent results should be counted as accepted after a successful ROBIS response.
         val filteredResults = ResultServiceProcessor.filterCompetitorDataBySent(
             ResultsProcessor.getCompetitorDataByRace(
                 resultService.raceId,
@@ -56,7 +58,6 @@ object RobisWorker : ResultServiceWorker {
             )
         )
 
-        // If there are no results to send, return early
         if (filteredResults.isEmpty()) {
             Log.i(LOG_TAG, "  nothing to send, exiting")
             return
@@ -68,7 +69,6 @@ object RobisWorker : ResultServiceWorker {
         Log.i(LOG_TAG, "Export JSON payload:\n$resultString")
         val body: RequestBody = resultString.toRequestBody(CONTENT_TYPE_JSON)
 
-        // Send the results to the ROBIS API
         val request: Request = Request.Builder()
             .url(
                 if (resultService.serviceType == ProviderType.ROBIS_TEST) {
@@ -83,7 +83,7 @@ object RobisWorker : ResultServiceWorker {
 
 
         try {
-            //TODO: Handle loging
+            // TODO: Replace verbose payload logging with a structured debug-level policy.
             httpClient.newCall(request).execute().use { response ->
                 val bodyString = response.body.string()
 
@@ -105,7 +105,6 @@ object RobisWorker : ResultServiceWorker {
                     }
 
                     401 -> {
-                        // Handle unauthorized response
                         resultService.status = ResultServiceStatus.UNAUTHORIZED
                         resultService.errorText = dataProcessor.getContext()
                             ?.getString(R.string.result_service_invalid_api_key) ?: "Error"
@@ -117,7 +116,6 @@ object RobisWorker : ResultServiceWorker {
                     }
 
                     else -> {
-                        // Handle error response and log it
                         resultService.status = ResultServiceStatus.ERROR
                         resultService.errorText = bodyString
                         Log.e(
@@ -128,14 +126,13 @@ object RobisWorker : ResultServiceWorker {
                 }
             }
         } catch (exception: Exception) {
-            // Handle exceptions during the request
             resultService.status = ResultServiceStatus.ERROR
             resultService.errorText = exception.message ?: "Unknown error"
             Log.e(LOG_TAG, "Exception sending results to ROBis: ${exception.message}")
         }
     }
 
-    // Filter the invalid results that were sent to ROBIS and inform about the errors
+    /** Removes ROBIS-rejected results from the accepted set and builds a localized error summary. */
     private fun filterInvalidResults(
         results: ArrayList<CompetitorData>,
         robisResponse: String,
@@ -163,8 +160,10 @@ object RobisWorker : ResultServiceWorker {
         }
     }
 
-    /** Find the invalid result and remove it from the array list
-     * First try to match via index, then with SI number and then matching last and first name
+    /**
+     * Finds the invalid result and removes it from the array list.
+     *
+     * Matching tries competitor index first, then SI number, then first and last name.
      */
     fun findAndRemoveMatchingResult(
         results: ArrayList<CompetitorData>,
