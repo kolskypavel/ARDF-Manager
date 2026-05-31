@@ -10,6 +10,7 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ControlPointAlias
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import org.openardf.radioomanager.shared.course.ControlPointDefinition
+import org.openardf.radioomanager.shared.course.ControlPointDisplayToken
 import org.openardf.radioomanager.shared.course.ControlPointRules
 import org.openardf.radioomanager.shared.course.ControlPointValidationError
 import org.openardf.radioomanager.shared.course.ControlPointValidationException
@@ -92,23 +93,19 @@ object ControlPointsHelper {
         controlPoints: List<ControlPointAlias>,
         context: Context
     ): String {
-        var codes = ""
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
         val useAlias =
             sharedPref.getBoolean(context.getString(R.string.key_results_use_aliases), true)
 
-        for (cp in controlPoints.withIndex()) {
-            codes += if (useAlias && cp.value.alias != null) {
-                cp.value.alias!!.name
-            } else {
-                cp.value.controlPoint.siCode.toString()
-            }
-
-            if (cp.index < controlPoints.size - 1) {
-                codes += " "
-            }
-        }
-        return codes
+        return ControlPointRules.formatDisplayTokens(
+            controlPoints.map { controlPointAlias ->
+                ControlPointDisplayToken(
+                    siCode = controlPointAlias.controlPoint.siCode,
+                    aliasName = controlPointAlias.alias?.name
+                )
+            },
+            useAlias
+        )
     }
 
     fun getStringFromPunches(punches: List<Punch>): String {
@@ -122,26 +119,20 @@ object ControlPointsHelper {
     }
 
     fun getStringFromAliasPunches(punches: List<AliasPunch>, context: Context): String {
-        var string = ""
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
         val useAlias =
             sharedPref.getBoolean(context.getString(R.string.key_results_use_aliases), true)
 
-        for ((index, aliasPunch) in punches.withIndex()) {
-            if (aliasPunch.punch.punchType == SIRecordType.CONTROL) {
-
-                //Use alias if available and enabled
-                string += if (useAlias && aliasPunch.alias != null) {
-                    aliasPunch.alias!!.name
-                } else {
-                    aliasPunch.punch.siCode
-                }
-            }
-            if (index < punches.size - 1) {
-                string += " "
-            }
-        }
-        return string
+        return ControlPointRules.formatDisplayTokens(
+            punches.map { aliasPunch ->
+                ControlPointDisplayToken(
+                    siCode = aliasPunch.punch.siCode,
+                    aliasName = aliasPunch.alias?.name,
+                    include = aliasPunch.punch.punchType == SIRecordType.CONTROL
+                )
+            },
+            useAlias
+        )
     }
 
     const val SPECTATOR_CONTROL_MARKER = ControlPointRules.SPECTATOR_CONTROL_MARKER

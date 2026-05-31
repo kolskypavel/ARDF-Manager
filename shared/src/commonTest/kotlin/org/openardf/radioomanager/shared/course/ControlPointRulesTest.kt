@@ -88,4 +88,16 @@ class ControlPointRulesTest {
             }.error
         )
     }
+
+    @Test
+    fun formatsDisplayTokensWithOptionalAliases() {
+        val tokens = listOf(
+            ControlPointDisplayToken(siCode = 31, aliasName = "F1"),
+            ControlPointDisplayToken(siCode = 32, aliasName = null),
+            ControlPointDisplayToken(siCode = 33, aliasName = "F3", include = false)
+        )
+
+        assertEquals("F1 32 ", ControlPointRules.formatDisplayTokens(tokens, useAlias = true))
+        assertEquals("31 32 ", ControlPointRules.formatDisplayTokens(tokens, useAlias = false))
+    }
 }
