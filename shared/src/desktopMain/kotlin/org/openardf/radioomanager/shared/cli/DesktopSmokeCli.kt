@@ -6,6 +6,8 @@ import org.openardf.radioomanager.shared.domain.RaceLevel
 import org.openardf.radioomanager.shared.domain.RaceType
 import org.openardf.radioomanager.shared.domain.ResultStatus
 import org.openardf.radioomanager.shared.domain.SIRecordType
+import org.openardf.radioomanager.shared.course.ControlPointDisplayToken
+import org.openardf.radioomanager.shared.course.ControlPointRules
 import org.openardf.radioomanager.shared.event.EventAlias
 import org.openardf.radioomanager.shared.event.EventCategory
 import org.openardf.radioomanager.shared.event.EventCategoryData
@@ -61,6 +63,19 @@ fun main() {
             finishTimeText = "10:45:00",
             controlPunches = listOf(TimedPunchCsvField(31, "10:15:00"))
         ) == "123456;;10:00:00;10:45:00;1;31;10:15:00"
+    )
+    check(
+        EventCsvRows.competitorStartRow(
+            competitor = raceData.competitorData.single().competitorCategory.competitor,
+            categoryName = "M21",
+            startTimeText = "10:00"
+        ) == "1;Runner;Test;M21;;10:00;;;;123456"
+    )
+    check(
+        ControlPointRules.formatDisplayTokens(
+            listOf(ControlPointDisplayToken(siCode = 31, aliasName = "F1")),
+            useAlias = true
+        ) == "F1"
     )
     check(
         TemplateRenderer.render(
