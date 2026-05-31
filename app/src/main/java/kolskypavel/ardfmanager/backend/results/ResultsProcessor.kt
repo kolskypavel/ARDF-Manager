@@ -18,7 +18,6 @@ import kolskypavel.ardfmanager.backend.room.entity.Punch
 import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.backend.room.entity.Result
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
-import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
@@ -35,9 +34,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.openardf.radioomanager.shared.results.CourseEvaluator
+import org.openardf.radioomanager.shared.results.EvaluationControlPoint
+import org.openardf.radioomanager.shared.results.EvaluationPunch
 import java.time.Duration
 import java.time.LocalTime
-import java.util.TreeSet
 import java.util.UUID
 
 
@@ -692,54 +693,6 @@ object ResultsProcessor {
     }
 
     /**
-     * Process one loop of classics race
-     * @return Number of points
-     */
-    private fun evaluateLoop(
-        punches: List<Punch>,
-        controlPoints: List<ControlPoint>
-    ): Int {
-        val codes = controlPoints.map { p -> p.siCode }.toSet()
-        val taken = TreeSet<Int>()  //Already taken CPs
-        var points = 0
-
-        val beacon: Int =
-            if (controlPoints.isNotEmpty() && controlPoints.last().type == ControlPointType.BEACON) {
-                controlPoints.last().siCode
-            } else -1
-
-        punches.forEach { punch ->
-            if (punch.punchType == SIRecordType.CONTROL && codes.contains(punch.siCode)) {
-
-                //Valid punch
-                if (!taken.contains(punch.siCode) && punch.siCode != beacon) {
-                    punch.punchStatus = PunchStatus.VALID
-                    points++
-                    taken.add(punch.siCode)
-                }
-                //Check if beacon is the last punch
-                else if (punch.siCode == beacon) {
-                    if (punches.indexOf(punch) == punches.lastIndex) {
-                        points++
-                        punch.punchStatus = PunchStatus.VALID
-                    } else {
-                        punch.punchStatus = PunchStatus.INVALID
-                    }
-                }
-                //Duplicate punch
-                else {
-                    punch.punchStatus = PunchStatus.DUPLICATE
-                }
-            }
-            //Unknown punch
-            else {
-                punch.punchStatus = PunchStatus.UNKNOWN
-            }
-        }
-        return points
-    }
-
-    /**
      * Process the classics race
      */
     fun evaluateClassics(
@@ -747,14 +700,7 @@ object ResultsProcessor {
         controlPoints: List<ControlPoint>,
         result: Result
     ) {
-        result.points = evaluateLoop(punches, controlPoints)
-
-        //Set the status accordingly
-        if (result.points > 1) {
-            result.resultStatus = ResultStatus.OK
-        } else {
-            result.resultStatus = ResultStatus.NO_RANKING
-        }
+        applyCourseEvaluation(RaceType.CLASSIC, punches, controlPoints, result)
     }
 
     /**
@@ -765,64 +711,7 @@ object ResultsProcessor {
         controlPoints: List<ControlPoint>,
         result: Result
     ) {
-        //First is code, second is index
-        val separators = ArrayList<Pair<Int, Int>>()
-        var points = 0
-
-        //Find separators in the control points
-        for (cp in controlPoints.withIndex()) {
-            if (cp.value.type == ControlPointType.SEPARATOR) {
-                separators.add(Pair(cp.value.siCode, cp.index))
-            }
-        }
-
-        if (separators.isNotEmpty()) {
-            var prevPunchSep = 0
-            var prevControlSep = 0
-            var separIndex = 0
-
-            //Find separators in punches and evaluate loops
-            for (pun in punches.withIndex()) {
-                if ((separIndex < separators.size &&
-                            pun.value.siCode == separators[separIndex].first)
-                ) {
-                    points += evaluateLoop(
-                        ArrayList(punches.subList(prevPunchSep, pun.index)),
-                        controlPoints.subList(
-                            prevControlSep,
-                            separators[separIndex].second
-                        )
-                    )
-                    prevPunchSep = pun.index
-                    prevControlSep = separators[separIndex].second
-                    separIndex++
-                }
-            }
-            //Get last loop
-            points += evaluateLoop(
-                punches.subList(prevPunchSep, punches.size),
-                controlPoints.subList(
-                    prevControlSep,
-                    controlPoints.size
-                )
-            )
-        }
-
-        //No separator taken
-        else {
-            points = evaluateLoop(
-                punches,
-                controlPoints
-            )    //TODO: Fix the last beacon to not be required
-        }
-
-        //Set the status accordingly
-        result.points = points
-        if (result.points > 1) {
-            result.resultStatus = ResultStatus.OK
-        } else {
-            result.resultStatus = ResultStatus.NO_RANKING
-        }
+        applyCourseEvaluation(RaceType.SPRINT, punches, controlPoints, result)
     }
 
     /**
@@ -833,31 +722,24 @@ object ResultsProcessor {
         controlPoints: List<ControlPoint>,
         result: Result
     ) {
-        var cpIndex = 0
+        applyCourseEvaluation(RaceType.ORIENTEERING, punches, controlPoints, result)
+    }
 
-        //TODO: Inform about missing punches
-        for (punch in punches) {
-            //Check bounds
-            if (cpIndex >= controlPoints.size) {
-                break
-            }
-
-            if (punch.siCode == controlPoints[cpIndex].siCode) {
-                cpIndex++
-                punch.punchStatus = PunchStatus.VALID
-                result.points++
-            }
-            //Break in a loop
-            else {
-                punch.punchStatus = PunchStatus.INVALID
-            }
-        }
-
-        if (result.points == controlPoints.size) {
-            result.resultStatus = ResultStatus.OK
-        } else {
-            result.resultStatus = ResultStatus.MISPUNCHED
+    private fun applyCourseEvaluation(
+        raceType: RaceType,
+        punches: ArrayList<Punch>,
+        controlPoints: List<ControlPoint>,
+        result: Result
+    ) {
+        val evaluation = CourseEvaluator.evaluate(
+            raceType,
+            punches.map { EvaluationPunch(it.siCode, it.punchType) },
+            controlPoints.map { EvaluationControlPoint(it.siCode, it.type) }
+        )
+        result.points = evaluation.points
+        result.resultStatus = evaluation.resultStatus
+        evaluation.punchStatuses.forEachIndexed { index, status ->
+            punches[index].punchStatus = status
         }
     }
 }
-
