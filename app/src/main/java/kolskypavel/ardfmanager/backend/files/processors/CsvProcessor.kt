@@ -28,6 +28,7 @@ import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import org.openardf.radioomanager.shared.event.StandardCategoryRules
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -235,16 +236,16 @@ object CsvProcessor : FormatProcessor {
         val categories = ArrayList<Category>()
 
         for (line in categoryArr.withIndex()) {
-            val split = line.value.split(";")
-            if (split.size == 3 &&
-                dataProcessor.getCategoryByName(split[0].trim(), race.id) == null
+            val definition = StandardCategoryRules.parseDefinition(line.value)
+            if (definition != null &&
+                dataProcessor.getCategoryByName(definition.name, race.id) == null
             ) {
                 val cat = Category(
                     UUID.randomUUID(),
                     race.id,
-                    split[0].trim(),
-                    split[1].trim() == "1",
-                    split[2].trim().toInt(),
+                    definition.name,
+                    definition.isMan,
+                    definition.maxAge,
                     0,
                     0,
                     line.index,
