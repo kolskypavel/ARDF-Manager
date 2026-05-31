@@ -1,5 +1,6 @@
 package kolskypavel.ardfmanager.backend.sportident
 
+import org.openardf.radioomanager.shared.sportident.SportIdentTime
 import java.io.Serializable
 import java.time.DayOfWeek
 import java.time.Duration
@@ -32,16 +33,15 @@ class SITime(
     }
 
     constructor(origSeconds: Long) : this() {
-        this.seconds = origSeconds
+        val sportIdentTime = SportIdentTime(origSeconds)
+        this.seconds = sportIdentTime.getSeconds()
         this.time = LocalTime.of(
-            ((origSeconds / 3600) % 24).toInt(),   // max 24 hours in a day
-            ((origSeconds / 60) % 60).toInt(),     // max 60 minutes in an hour
-            (origSeconds % 60).toInt()             // max 60 seconds in a minute
+            sportIdentTime.getHour(),
+            sportIdentTime.getMinute(),
+            sportIdentTime.getSecond()
         )
-        this.week =
-            (origSeconds / SIConstants.SECONDS_WEEK).toInt()    //Weeks from SI synchronization
-        this.dayOfWeek =
-            ((origSeconds / SIConstants.SECONDS_DAY) % 7).toInt()  //Days from SI synchronization
+        this.week = sportIdentTime.getWeek()
+        this.dayOfWeek = sportIdentTime.getDayOfWeek()
     }
 
     constructor(time: LocalDateTime, startZero: LocalDateTime) : this() {
@@ -94,16 +94,16 @@ class SITime(
     }
 
     fun addTime(duration: Duration) {
-        this.seconds += duration.seconds
+        val sportIdentTime = SportIdentTime(seconds)
+        sportIdentTime.addSeconds(duration.seconds)
+        this.seconds = sportIdentTime.getSeconds()
         this.time = LocalTime.of(
-            ((seconds / 3600) % 24).toInt(),   // max 24 hours in a day
-            ((seconds / 60) % 60).toInt(),     // max 60 minutes in an hour
-            (seconds % 60).toInt()             // max 60 seconds in a minute
+            sportIdentTime.getHour(),
+            sportIdentTime.getMinute(),
+            sportIdentTime.getSecond()
         )
-        this.week =
-            (seconds / SIConstants.SECONDS_WEEK).toInt()    //Weeks from SI synchronization
-        this.dayOfWeek =
-            ((seconds / SIConstants.SECONDS_DAY) % 7).toInt()  //Days from SI synchronization
+        this.week = sportIdentTime.getWeek()
+        this.dayOfWeek = sportIdentTime.getDayOfWeek()
     }
 
     //Getters and setters
@@ -173,14 +173,17 @@ class SITime(
         @Throws(IllegalArgumentException::class)
         fun from(string: String): SITime {
             try {
-                val split = string.split(",")
-                val time = LocalTime.parse(split[0])
-                val dayOfWeek = split[1].toInt()
-                val week = split[2].toInt()
+                val sportIdentTime = SportIdentTime.from(string)
 
-                val siTime = SITime(time, dayOfWeek, week)
-                siTime.calculateSeconds()
-                return siTime
+                return SITime(
+                    LocalTime.of(
+                        sportIdentTime.getHour(),
+                        sportIdentTime.getMinute(),
+                        sportIdentTime.getSecond()
+                    ),
+                    sportIdentTime.getDayOfWeek(),
+                    sportIdentTime.getWeek()
+                )
 
             } catch (e: Exception) {
                 throw java.lang.IllegalArgumentException("Error when parsing SI time", e)
@@ -188,11 +191,11 @@ class SITime(
         }
 
         fun split(start: SITime, end: SITime): Duration {
-            return Duration.ofSeconds(end.seconds - start.seconds)
+            return Duration.ofSeconds(SportIdentTime.split(start.toShared(), end.toShared()))
         }
 
         fun difference(start: SITime, end: SITime): Duration {
-            return Duration.ofSeconds(kotlin.math.abs(end.seconds - start.seconds))
+            return Duration.ofSeconds(SportIdentTime.difference(start.toShared(), end.toShared()))
         }
 
         // Convert DayOfWeek (1 - Monday, 7 - Sunday) to SI index (0 - Sunday, 6 - Saturday)
@@ -206,6 +209,16 @@ class SITime(
                 DayOfWeek.SATURDAY -> 6
                 DayOfWeek.SUNDAY -> 0
             }
+        }
+
+        private fun SITime.toShared(): SportIdentTime {
+            return SportIdentTime(
+                hour = time.hour,
+                minute = time.minute,
+                second = time.second,
+                dayOfWeek = dayOfWeek,
+                week = week
+            )
         }
     }
 }

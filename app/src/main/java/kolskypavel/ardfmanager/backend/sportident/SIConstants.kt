@@ -25,8 +25,8 @@ object SIConstants {
     const val BAUDRATE_HIGH = 38400
     const val POLYNOM = 0x8005      //USED FOR CRC
 
-    const val SECONDS_DAY = 86400L      //Seconds in a day
-    const val SECONDS_WEEK = 604800L    //Seconds in a week
+    const val SECONDS_DAY = SportIdentCodes.SECONDS_DAY
+    const val SECONDS_WEEK = SportIdentCodes.SECONDS_WEEK
 
     const val SI_CARD5: Byte = 0xE5.toByte()
     const val GET_SI_CARD5: Byte = 0xB1.toByte()
