@@ -22,6 +22,7 @@ import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
+import kolskypavel.ardfmanager.backend.shared.toEventCompetitorData
 import kolskypavel.ardfmanager.backend.sounds.SoundProcessor
 import kolskypavel.ardfmanager.backend.sounds.SoundType
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
@@ -35,6 +36,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.openardf.radioomanager.shared.results.CourseEvaluator
+import org.openardf.radioomanager.shared.results.EventResultPlacement
 import org.openardf.radioomanager.shared.results.EvaluationControlPoint
 import org.openardf.radioomanager.shared.results.EvaluationPunch
 import java.time.Duration
@@ -614,31 +616,15 @@ object ResultsProcessor {
     }
 
     fun List<CompetitorData>.sortByPlace(): List<CompetitorData> {
-        val sorted = this.sortedWith(ResultDataComparator())
-
-        var place = 0
-        for (cd in sorted.withIndex()) {
-            val curr = cd.value.readoutData
-
-            //Check for first element
-            if (cd.index != 0) {
-                val prev = sorted[cd.index - 1].readoutData
-
-                if (curr != null && prev != null
-                    && curr.result.runTime == prev.result.runTime
-                    && curr.result.points == prev.result.points
-                ) {
-                    curr.result.place = place
-                } else if (curr != null) {
-                    place++
-                    curr.result.place = place
+        val originalByCompetitorId = associateBy { it.competitorCategory.competitor.id.toString() }
+        return EventResultPlacement.sortByPlace(map { it.toEventCompetitorData() })
+            .mapNotNull { sharedCompetitorData ->
+                val original = originalByCompetitorId[sharedCompetitorData.competitorCategory.competitor.id]
+                sharedCompetitorData.readoutData?.let { sharedReadoutData ->
+                    original?.readoutData?.result?.place = sharedReadoutData.result.place
                 }
-            } else if (curr != null) {
-                place++
-                curr.result.place = place
+                original
             }
-        }
-        return sorted
     }
 
 
