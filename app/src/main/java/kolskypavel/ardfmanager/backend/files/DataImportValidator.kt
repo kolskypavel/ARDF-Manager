@@ -10,7 +10,8 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.RaceData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ReadoutData
-import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
+import org.openardf.radioomanager.shared.importing.ImportValidationRules
+import org.openardf.radioomanager.shared.importing.ReadoutPunchValidationError
 import java.util.UUID
 
 // Used to validate imported data / RaceData
@@ -35,8 +36,12 @@ object DataImportValidator {
             DataType.COMPETITORS -> {
 
                 //TODO: add check for duplicate names
-                val startNumbers = HashSet<Int>()
-                val siNumbers = HashSet<Int>()
+                val duplicateStartNumbers = ImportValidationRules.duplicateStartNumbers(
+                    data.competitorCategories.map { it.competitor.startNumber }
+                )
+                val duplicateSINumbers = ImportValidationRules.duplicateSINumbers(
+                    data.competitorCategories.map { it.competitor.siNumber }
+                )
                 for (comp in data.competitorCategories) {
                     val siNumber = comp.competitor.siNumber
                     val startNumber = comp.competitor.startNumber
@@ -48,8 +53,7 @@ object DataImportValidator {
 
                     // Check if SI is duplicated in the list or in the database
                     if (siNumber != null) {
-                        if (siNumbers.contains(siNumber)
-                        ) {
+                        if (duplicateSINumbers.contains(siNumber)) {
                             throw IllegalArgumentException(
                                 context.getString(
                                     R.string.data_import_competitor_duplicate_si_file,
@@ -68,8 +72,7 @@ object DataImportValidator {
                     }
 
                     // Start number checks
-                    if (startNumbers.contains(startNumber)
-                    ) {
+                    if (duplicateStartNumbers.contains(startNumber)) {
                         throw IllegalArgumentException(
                             context.getString(
                                 R.string.data_import_competitor_duplicate_start_number_file,
@@ -86,12 +89,6 @@ object DataImportValidator {
                             )
                         )
                     }
-
-                    // Add the numbers to the sets
-                    if (siNumber != null) {
-                        siNumbers.add(siNumber)
-                    }
-                    startNumbers.add(startNumber)
                 }
             }
 
@@ -129,7 +126,7 @@ object DataImportValidator {
     fun validateCategories(categories: List<CategoryData>, context: Context) {
         val names = categories.map { it.category.name }
 
-        val catNames = names.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
+        val catNames = ImportValidationRules.duplicateCategoryNames(names)
         if (catNames.isNotEmpty()) {
             throw IllegalArgumentException(
                 context.getString(
@@ -147,8 +144,12 @@ object DataImportValidator {
         context: Context
     ) {
 
-        val startNumbers = HashSet<Int>()
-        val siNumbers = HashSet<Int>()
+        val duplicateStartNumbers = ImportValidationRules.duplicateStartNumbers(
+            competitors.map { it.competitorCategory.competitor.startNumber }
+        )
+        val duplicateSINumbers = ImportValidationRules.duplicateSINumbers(
+            competitors.map { it.competitorCategory.competitor.siNumber }
+        )
 
         for (comp in competitors) {
             val siNumber = comp.competitorCategory.competitor.siNumber
@@ -161,8 +162,7 @@ object DataImportValidator {
 
             // Check if SI is duplicated in the list or in the database
             if (siNumber != null) {
-                if (siNumbers.contains(siNumber)
-                ) {
+                if (duplicateSINumbers.contains(siNumber)) {
                     throw IllegalArgumentException(
                         context.getString(
                             R.string.data_import_competitor_duplicate_si_file,
@@ -173,8 +173,7 @@ object DataImportValidator {
             }
 
             // Start number checks
-            if (startNumbers.contains(startNumber)
-            ) {
+            if (duplicateStartNumbers.contains(startNumber)) {
                 throw IllegalArgumentException(
                     context.getString(
                         R.string.data_import_competitor_duplicate_start_number_file,
@@ -203,10 +202,6 @@ object DataImportValidator {
             result.raceId = raceId
         }
 
-        // Check the punches for duplicate START/FINISH punches
-        var startPunchPresent = false
-        var finishPunchPresent = false
-
         for (punch in punches) {
             if (punch.raceId != raceId) {
                 punch.raceId = raceId
@@ -214,34 +209,25 @@ object DataImportValidator {
             if (punch.resultId != result.id) {
                 punch.resultId = result.id
             }
-
-            if (punch.punchType == SIRecordType.START) {
-                if (startPunchPresent) {
-                    throw IllegalArgumentException(
-                        context.getString(
-                            R.string.data_import_readout_multiple_start,
-                            result.siNumber ?: "?"
-                        )
-                    )
-                } else {
-                    startPunchPresent = true
-                }
-            }
-
-            if (punch.punchType == SIRecordType.FINISH) {
-                if (finishPunchPresent) {
-                    throw IllegalArgumentException(
-                        context.getString(
-                            R.string.data_import_readout_multiple_finish,
-                            result.siNumber ?: "?"
-                        )
-                    )
-                } else {
-                    finishPunchPresent = true
-                }
-            }
         }
 
+        val punchErrors = ImportValidationRules.validateReadoutPunchTypes(punches.map { it.punchType })
+        if (punchErrors.contains(ReadoutPunchValidationError.MULTIPLE_START)) {
+            throw IllegalArgumentException(
+                context.getString(
+                    R.string.data_import_readout_multiple_start,
+                    result.siNumber ?: "?"
+                )
+            )
+        }
+        if (punchErrors.contains(ReadoutPunchValidationError.MULTIPLE_FINISH)) {
+            throw IllegalArgumentException(
+                context.getString(
+                    R.string.data_import_readout_multiple_finish,
+                    result.siNumber ?: "?"
+                )
+            )
+        }
     }
 
     // Check if either name or code of alias is duplicate
@@ -252,8 +238,8 @@ object DataImportValidator {
         val codes = aliases.map { it.siCode }
 
         // Find duplicates
-        val duplicateNames = names.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
-        val duplicateCodes = codes.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
+        val duplicateNames = ImportValidationRules.duplicateAliasNames(names)
+        val duplicateCodes = ImportValidationRules.duplicateAliasCodes(codes)
 
         // Build error message(s)
         val errors = mutableListOf<String>()
