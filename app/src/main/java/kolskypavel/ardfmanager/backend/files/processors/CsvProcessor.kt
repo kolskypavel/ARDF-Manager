@@ -222,24 +222,15 @@ object CsvProcessor : FormatProcessor {
         dataProcessor: DataProcessor
     ): List<Category> {
         val context = dataProcessor.getContext()
-        val categoryArr = context?.let {
-            when (type) {
-                StandardCategoryType.INTERNATIONAL -> context.resources.getStringArray(
-                    R.array.standard_categories_international
-                )
+        if (context == null) {
+            return emptyList()
+        }
 
-                StandardCategoryType.CZECH -> context.resources.getStringArray(
-                    R.array.standard_categories_czech
-                )
-            }
-        } ?: emptyArray<String>()
+        val definitions = StandardCategoryRules.definitionsFor(type)
         val categories = ArrayList<Category>()
 
-        for (line in categoryArr.withIndex()) {
-            val definition = StandardCategoryRules.parseDefinition(line.value)
-            if (definition != null &&
-                dataProcessor.getCategoryByName(definition.name, race.id) == null
-            ) {
+        for ((index, definition) in definitions.withIndex()) {
+            if (dataProcessor.getCategoryByName(definition.name, race.id) == null) {
                 val cat = Category(
                     UUID.randomUUID(),
                     race.id,
@@ -248,7 +239,7 @@ object CsvProcessor : FormatProcessor {
                     definition.maxAge,
                     0,
                     0,
-                    line.index,
+                    index,
                     false,
                     null,
                     null,
