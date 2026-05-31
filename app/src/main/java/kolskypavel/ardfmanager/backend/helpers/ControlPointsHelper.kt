@@ -18,12 +18,13 @@ import java.util.UUID
 
 /**
  * @author Vojtech Kopal, Pavel Kolsky
- * General helper for control points - parsing, validation, export to string, etc.
+ * Android adapter around shared control-point parsing, validation, and display formatting.
  */
 object ControlPointsHelper {
     /**
-     * Parses an input string into list of controls
-     * If sequence is invalid throws Illegal Argument Exception with explanation in the message
+     * Parses a course-control string into Room control points.
+     *
+     * Invalid sequences are rethrown with a localized message for direct UI display.
      */
     fun getControlPointsFromString(
         input: String,
@@ -40,6 +41,7 @@ object ControlPointsHelper {
         }
     }
 
+    /** Formats Room control points back into the compact course-control string. */
     fun getStringFromControlPoints(controlPoints: List<ControlPoint>): String {
         return ControlPointRules.formatControlPoints(
             controlPoints.map { controlPoint ->
@@ -48,6 +50,7 @@ object ControlPointsHelper {
         )
     }
 
+    /** Converts a shared control-point definition into a Room entity for one category. */
     private fun ControlPointDefinition.toControlPoint(categoryId: UUID): ControlPoint {
         return ControlPoint(
             UUID.randomUUID(),
@@ -58,6 +61,7 @@ object ControlPointsHelper {
         )
     }
 
+    /** Maps shared validation errors to Android string resources. */
     private fun ControlPointValidationException.toLocalizedMessage(context: Context): String {
         return when (error) {
             ControlPointValidationError.UNKNOWN_SPECIFIER ->
@@ -89,6 +93,7 @@ object ControlPointsHelper {
         }
     }
 
+    /** Formats category control points for display, using aliases when the user setting enables them. */
     fun getStringFromControlPointAliases(
         controlPoints: List<ControlPointAlias>,
         context: Context
@@ -108,6 +113,7 @@ object ControlPointsHelper {
         )
     }
 
+    /** Formats raw readout punches without alias substitution. */
     fun getStringFromPunches(punches: List<Punch>): String {
         return ControlPointRules.formatIncludedDisplayTokensWithTrailingSpaces(
             punches.map { punch ->
@@ -120,6 +126,7 @@ object ControlPointsHelper {
         )
     }
 
+    /** Formats readout punches for display, using aliases when the user setting enables them. */
     fun getStringFromAliasPunches(punches: List<AliasPunch>, context: Context): String {
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
         val useAlias =
