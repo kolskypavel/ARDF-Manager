@@ -22,6 +22,7 @@ import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.shared.toEventRaceData
+import kolskypavel.ardfmanager.backend.shared.toRoomRaceData
 import kolskypavel.ardfmanager.backend.sportident.SITime
 import org.junit.Test
 import java.time.Duration
@@ -146,6 +147,14 @@ class EventModelMappersTest {
         assertEquals(900L, shared.competitorData.single().readoutData!!.punches.single().punch.splitSeconds)
         assertEquals("F1", shared.competitorData.single().readoutData!!.punches.single().alias!!.name)
         assertEquals(1, shared.competitorData.single().readoutData!!.result.place)
+
+        val room = shared.toRoomRaceData()
+        assertEquals(raceId, room.race.id)
+        assertEquals(Duration.ofHours(2), room.race.timeLimit)
+        assertEquals(Duration.ofMinutes(45), room.categories.single().category.timeLimit)
+        assertEquals(Duration.ofMinutes(10), room.competitorData.single().competitorCategory.competitor.drawnRelativeStartTime)
+        assertEquals(Duration.ofMinutes(15), room.competitorData.single().readoutData!!.punches.single().punch.split)
+        assertEquals(1, room.competitorData.single().readoutData!!.result.place)
     }
 
     @Test

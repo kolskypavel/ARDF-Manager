@@ -26,6 +26,9 @@ import org.openardf.radioomanager.shared.event.EventRace
 import org.openardf.radioomanager.shared.event.EventRaceData
 import org.openardf.radioomanager.shared.event.EventReadoutData
 import org.openardf.radioomanager.shared.event.EventResult
+import java.time.Duration
+import java.time.LocalDateTime
+import java.util.UUID
 
 fun Race.toEventRace(): EventRace =
     EventRace(
@@ -163,4 +166,141 @@ fun RaceData.toEventRaceData(): EventRaceData =
         aliases = aliases.map { it.toEventAlias() },
         competitorData = competitorData.map { it.toEventCompetitorData() },
         unmatchedReadoutData = unmatchedReadoutData.map { it.toEventReadoutData() }
+    )
+
+fun EventRace.toRoomRace(): Race =
+    Race(
+        id = UUID.fromString(id),
+        name = name,
+        apiKey = apiKey,
+        startDateTime = LocalDateTime.parse(startDateTimeIso),
+        raceType = raceType,
+        raceLevel = raceLevel,
+        raceBand = raceBand,
+        timeLimit = Duration.ofSeconds(timeLimitSeconds)
+    )
+
+fun EventCategory.toRoomCategory(): Category =
+    Category(
+        id = UUID.fromString(id),
+        raceId = UUID.fromString(raceId),
+        name = name,
+        isMan = isMan,
+        maxAge = maxAge,
+        length = lengthMeters,
+        climb = climbMeters,
+        order = order,
+        differentProperties = differentProperties,
+        raceType = raceType,
+        categoryBand = raceBand,
+        timeLimit = timeLimitSeconds?.let(Duration::ofSeconds),
+        controlPointsString = controlPointsString
+    )
+
+fun EventControlPoint.toRoomControlPoint(): ControlPoint =
+    ControlPoint(
+        id = UUID.fromString(id),
+        categoryId = UUID.fromString(categoryId),
+        siCode = siCode,
+        type = type,
+        order = order
+    )
+
+fun EventAlias.toRoomAlias(): Alias =
+    Alias(
+        id = UUID.fromString(id),
+        raceId = UUID.fromString(raceId),
+        siCode = siCode,
+        name = name
+    )
+
+fun EventCompetitor.toRoomCompetitor(): Competitor =
+    Competitor(
+        id = UUID.fromString(id),
+        raceId = UUID.fromString(raceId),
+        categoryId = categoryId?.let(UUID::fromString),
+        firstName = firstName,
+        lastName = lastName,
+        club = club,
+        index = index,
+        isMan = isMan,
+        birthYear = birthYear,
+        siNumber = siNumber,
+        siRent = siRent,
+        startNumber = startNumber,
+        drawnRelativeStartTime = drawnStartTimeSeconds?.let(Duration::ofSeconds)
+    )
+
+fun EventPunch.toRoomPunch(): Punch =
+    Punch(
+        id = UUID.fromString(id),
+        raceId = UUID.fromString(raceId),
+        resultId = resultId?.let(UUID::fromString),
+        cardNumber = cardNumber,
+        siCode = siCode,
+        siTime = kolskypavel.ardfmanager.backend.sportident.SITime(siTimeSeconds),
+        origSiTime = kolskypavel.ardfmanager.backend.sportident.SITime(originalSiTimeSeconds),
+        punchType = punchType,
+        order = order,
+        punchStatus = punchStatus,
+        split = Duration.ofSeconds(splitSeconds)
+    )
+
+fun EventResult.toRoomResult(): Result =
+    Result(
+        id = UUID.fromString(id),
+        raceId = UUID.fromString(raceId),
+        competitorId = competitorId?.let(UUID::fromString),
+        siNumber = siNumber,
+        cardType = cardType,
+        checkTime = checkTimeSeconds?.let { kolskypavel.ardfmanager.backend.sportident.SITime(it) },
+        startTime = startTimeSeconds?.let { kolskypavel.ardfmanager.backend.sportident.SITime(it) },
+        finishTime = finishTimeSeconds?.let { kolskypavel.ardfmanager.backend.sportident.SITime(it) },
+        readoutTime = LocalDateTime.parse(readoutDateTimeIso),
+        automaticStatus = automaticStatus,
+        resultStatus = resultStatus,
+        points = points,
+        runTime = Duration.ofSeconds(runTimeSeconds),
+        modified = modified,
+        sent = sent
+    ).also { it.place = place }
+
+fun EventAliasPunch.toRoomAliasPunch(): AliasPunch =
+    AliasPunch(
+        punch = punch.toRoomPunch(),
+        alias = alias?.toRoomAlias()
+    )
+
+fun EventReadoutData.toRoomReadoutData(): ReadoutData =
+    ReadoutData(
+        result = result.toRoomResult(),
+        punches = punches.map { it.toRoomAliasPunch() }
+    )
+
+fun EventCategoryData.toRoomCategoryData(): CategoryData =
+    CategoryData(
+        category = category.toRoomCategory(),
+        controlPoints = controlPoints.map { it.toRoomControlPoint() },
+        competitors = competitors.map { it.toRoomCompetitor() }
+    )
+
+fun EventCompetitorCategory.toRoomCompetitorCategory(): CompetitorCategory =
+    CompetitorCategory(
+        competitor = competitor.toRoomCompetitor(),
+        category = category?.toRoomCategory()
+    )
+
+fun EventCompetitorData.toRoomCompetitorData(): CompetitorData =
+    CompetitorData(
+        competitorCategory = competitorCategory.toRoomCompetitorCategory(),
+        readoutData = readoutData?.toRoomReadoutData()
+    )
+
+fun EventRaceData.toRoomRaceData(): RaceData =
+    RaceData(
+        race = race.toRoomRace(),
+        categories = categories.map { it.toRoomCategoryData() },
+        aliases = aliases.map { it.toRoomAlias() },
+        competitorData = competitorData.map { it.toRoomCompetitorData() },
+        unmatchedReadoutData = unmatchedReadoutData.map { it.toRoomReadoutData() }
     )
