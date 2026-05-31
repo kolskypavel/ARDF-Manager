@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.backend.sportident.SITime
+import org.openardf.radioomanager.shared.results.ResultRankingKey
 import java.io.Serializable
 import java.time.Duration
 import java.time.LocalDateTime
@@ -49,19 +50,9 @@ data class Result(
     @Ignore
     var place: Int = 0
     override operator fun compareTo(other: Result): Int {
-
-        //Compare race status
-        return if (resultStatus != other.resultStatus) {
-            resultStatus.compareTo(other.resultStatus)
-        }
-        //Compare points - more points are before less points
-        else if (points != other.points) {
-            points.compareTo(other.points) * -1
-        }
-        //Compare times
-        else {
-            runTime.compareTo(other.runTime)
-        }
+        return ResultRankingKey(resultStatus, points, runTime.toNanos()).compareTo(
+            ResultRankingKey(other.resultStatus, other.points, other.runTime.toNanos())
+        )
     }
 
     constructor() : this(
