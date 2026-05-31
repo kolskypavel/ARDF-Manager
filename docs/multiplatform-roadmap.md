@@ -13,7 +13,8 @@ formatting, file definitions, alias validation, control-point parsing, import
 validation, result ranking, course evaluation, IOF result-status mapping,
 platform-neutral event models, event validation, result placement, project-file
 envelope metadata, CSV row formatting, control/punch display formatting,
-template rendering, and standard-category row parsing and presets.
+template rendering, standard-category row parsing and presets, network endpoint
+definitions, and result-send filtering.
 
 Android remains the production app. The Android Room database, UI, USB
 SportIdent readout, printing, live result sending, Android resources, and

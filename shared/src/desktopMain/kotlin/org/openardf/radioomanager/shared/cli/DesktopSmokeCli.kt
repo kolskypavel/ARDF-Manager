@@ -25,8 +25,10 @@ import org.openardf.radioomanager.shared.files.EventCsvRows
 import org.openardf.radioomanager.shared.files.FileConstants
 import org.openardf.radioomanager.shared.files.TemplateRenderer
 import org.openardf.radioomanager.shared.files.TimedPunchCsvField
+import org.openardf.radioomanager.shared.network.NetworkEndpoints
 import org.openardf.radioomanager.shared.results.CourseEvaluator
 import org.openardf.radioomanager.shared.results.EventResultPlacement
+import org.openardf.radioomanager.shared.results.EventResultSending
 import org.openardf.radioomanager.shared.results.EvaluationControlPoint
 import org.openardf.radioomanager.shared.results.EvaluationPunch
 import org.openardf.radioomanager.shared.sportident.SportIdentCodes
@@ -89,6 +91,8 @@ fun main() {
     )
     check(StandardCategoryRules.parseDefinition("M21;1;39")?.maxAge == 39)
     check(StandardCategoryRules.definitionsFor(StandardCategoryType.INTERNATIONAL).size == 12)
+    check(NetworkEndpoints.ORESULTS_RESULTS_API_URL == "https://api.oresults.eu")
+    check(EventResultSending.unsentCompetitorIds(raceData.competitorData) == setOf("competitor"))
     println("Radio-O-Manager desktop shared smoke OK")
 }
 
