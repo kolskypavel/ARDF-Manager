@@ -8,6 +8,7 @@ import kolskypavel.ardfmanager.backend.network.workers.ResultWorkerFactory
 import kolskypavel.ardfmanager.backend.room.entity.ResultService
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.ResultServiceStatus
+import kolskypavel.ardfmanager.backend.shared.toEventCompetitorData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.openardf.radioomanager.shared.results.EventResultSending
 import java.time.Duration
 import java.util.UUID
 
@@ -123,13 +125,14 @@ object ResultServiceProcessor {
     fun filterCompetitorDataBySent(
         results: List<CompetitorData>
     ): ArrayList<CompetitorData> {
-        val filtered = ArrayList<CompetitorData>()
-        for (cd in results) {
-            if (cd.readoutData != null && !cd.readoutData!!.result.sent) {
-                filtered.add(cd)
+        val unsentCompetitorIds = EventResultSending.unsentCompetitorIds(
+            results.map { it.toEventCompetitorData() }
+        )
+        return results
+            .filter { competitorData ->
+                unsentCompetitorIds.contains(competitorData.competitorCategory.competitor.id.toString())
             }
-        }
-        return filtered
+            .toCollection(ArrayList())
     }
 
     // Mark the results as sent
