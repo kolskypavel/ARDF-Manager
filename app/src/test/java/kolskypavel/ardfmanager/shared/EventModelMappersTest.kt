@@ -14,6 +14,7 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorCategory
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.RaceData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ReadoutData
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData
 import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceBand
@@ -154,6 +155,15 @@ class EventModelMappersTest {
         assertEquals(Duration.ofMinutes(45), room.categories.single().category.timeLimit)
         assertEquals("M21;1;0;5000;100;1;2;45}", room.categories.single().category.toCSVString())
         assertEquals("31", room.categories.single().controlPoints.single().toCsvString())
+        assertEquals("123456;31;10:15:00,0,0", room.competitorData.single().readoutData!!.punches.single().punch.toCsvString())
+        assertEquals(
+            "123456;09:30:00;10:00:00;10:45:00;1;31;10:15:00",
+            ResultData(
+                result = room.competitorData.single().readoutData!!.result,
+                punches = room.competitorData.single().readoutData!!.punches,
+                competitorCategory = room.competitorData.single().competitorCategory
+            ).toReadoutCSVString()
+        )
         assertEquals(Duration.ofMinutes(10), room.competitorData.single().competitorCategory.competitor.drawnRelativeStartTime)
         assertEquals(Duration.ofMinutes(15), room.competitorData.single().readoutData!!.punches.single().punch.split)
         assertEquals(1, room.competitorData.single().readoutData!!.result.place)

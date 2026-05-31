@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SITime
+import org.openardf.radioomanager.shared.files.EventCsvRows
 import java.io.Serializable
 import java.time.Duration
 import java.util.UUID
@@ -33,7 +34,7 @@ data class Punch(
     @ColumnInfo(name = "split") var split: Duration
 ) : Serializable {
     fun toCsvString(): String {
-        return "${cardNumber ?: ""};${siCode};${siTime}"
+        return EventCsvRows.punchRow(cardNumber, siCode, siTime.toString())
     }
 
     // For debugging purposes

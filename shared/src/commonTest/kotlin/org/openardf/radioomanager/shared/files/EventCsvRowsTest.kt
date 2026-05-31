@@ -48,4 +48,43 @@ class EventCsvRowsTest {
 
         assertEquals("123456;Pavel;Kolsky;M21;1;1980;;OK;;42;OK001", EventCsvRows.competitorRow(competitor, "M21"))
     }
+
+    @Test
+    fun formatsPunchRows() {
+        assertEquals("123456;31;10:15:00", EventCsvRows.punchRow(123456, 31, "10:15:00"))
+        assertEquals(";31;10:15:00", EventCsvRows.punchRow(null, 31, "10:15:00"))
+    }
+
+    @Test
+    fun formatsReadoutRows() {
+        val controlPunches = listOf(
+            TimedPunchCsvField(siCode = 31, timeText = "10:15:00"),
+            TimedPunchCsvField(siCode = 32, timeText = "10:20:00")
+        )
+
+        assertEquals(
+            "123456;09:30:00;10:00:00;10:45:00;2;31;10:15:00;32;10:20:00",
+            EventCsvRows.readoutRow(
+                siNumber = 123456,
+                checkTimeText = "09:30:00",
+                startTimeText = "10:00:00",
+                finishTimeText = "10:45:00",
+                controlPunches = controlPunches
+            )
+        )
+    }
+
+    @Test
+    fun formatsReadoutRowsWithoutPunches() {
+        assertEquals(
+            ";09:30:00;;;0",
+            EventCsvRows.readoutRow(
+                siNumber = null,
+                checkTimeText = "09:30:00",
+                startTimeText = null,
+                finishTimeText = null,
+                controlPunches = emptyList()
+            )
+        )
+    }
 }

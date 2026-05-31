@@ -6,6 +6,8 @@ import kolskypavel.ardfmanager.backend.room.entity.Competitor
 import kolskypavel.ardfmanager.backend.room.entity.Punch
 import kolskypavel.ardfmanager.backend.room.entity.Result
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
+import org.openardf.radioomanager.shared.files.EventCsvRows
+import org.openardf.radioomanager.shared.files.TimedPunchCsvField
 import java.io.Serializable
 
 // Contains all information about SI readout - including competitor (if matched)
@@ -31,22 +33,21 @@ data class ResultData(
 
     // Convert to CSV for further processing
     fun toReadoutCSVString(): String {
-        val siNumber = result.siNumber ?: ""
-        val checkTime = result.checkTime?.getTimeString() ?: ""
-        val startTime = result.startTime?.getTimeString() ?: ""
-        val finishTime = result.finishTime?.getTimeString() ?: ""
-
-        var numControls = 0
-        val punchFields = StringBuilder()
-        for (punch in punches) {
-            if (punch.punch.punchType == SIRecordType.CONTROL) {
-                if (punchFields.isNotEmpty()) punchFields.append(";")
-                punchFields.append("${punch.punch.siCode};${punch.punch.siTime.getTimeString()}")
-                numControls++
+        val controlPunches = punches
+            .filter { punch -> punch.punch.punchType == SIRecordType.CONTROL }
+            .map { punch ->
+                TimedPunchCsvField(
+                    siCode = punch.punch.siCode,
+                    timeText = punch.punch.siTime.getTimeString()
+                )
             }
-        }
 
-        return listOf(siNumber, checkTime, startTime, finishTime, numControls)
-            .joinToString(";") + if (punchFields.isNotEmpty()) ";$punchFields" else ""
+        return EventCsvRows.readoutRow(
+            siNumber = result.siNumber,
+            checkTimeText = result.checkTime?.getTimeString(),
+            startTimeText = result.startTime?.getTimeString(),
+            finishTimeText = result.finishTime?.getTimeString(),
+            controlPunches = controlPunches
+        )
     }
 }
