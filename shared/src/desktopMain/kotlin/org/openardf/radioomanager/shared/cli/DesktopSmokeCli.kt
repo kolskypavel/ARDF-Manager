@@ -17,6 +17,10 @@ import org.openardf.radioomanager.shared.event.EventRaceData
 import org.openardf.radioomanager.shared.event.EventReadoutData
 import org.openardf.radioomanager.shared.event.EventResult
 import org.openardf.radioomanager.shared.event.EventValidationRules
+import org.openardf.radioomanager.shared.files.EventCsvRows
+import org.openardf.radioomanager.shared.files.FileConstants
+import org.openardf.radioomanager.shared.files.TemplateRenderer
+import org.openardf.radioomanager.shared.files.TimedPunchCsvField
 import org.openardf.radioomanager.shared.results.CourseEvaluator
 import org.openardf.radioomanager.shared.results.EventResultPlacement
 import org.openardf.radioomanager.shared.results.EvaluationControlPoint
@@ -47,6 +51,24 @@ fun main() {
             .readoutData
             ?.result
             ?.place == 1
+    )
+    check(
+        EventCsvRows.readoutRow(
+            siNumber = 123456,
+            checkTimeText = null,
+            startTimeText = "10:00:00",
+            finishTimeText = "10:45:00",
+            controlPunches = listOf(TimedPunchCsvField(31, "10:15:00"))
+        ) == "123456;;10:00:00;10:45:00;1;31;10:15:00"
+    )
+    check(
+        TemplateRenderer.render(
+            "{{race_name}}${FileConstants.KEY_TAB}{{title_results}}",
+            mapOf(
+                FileConstants.KEY_RACE_NAME to "Desktop smoke",
+                FileConstants.KEY_TITLE_RESULTS to "Results"
+            )
+        ) == "Desktop smoke\tResults"
     )
     println("Radio-O-Manager desktop shared smoke OK")
 }

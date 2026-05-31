@@ -12,7 +12,7 @@ covers portable domain enums, SportIdent code and time helpers, duration
 formatting, file definitions, alias validation, control-point parsing, import
 validation, result ranking, course evaluation, IOF result-status mapping,
 platform-neutral event models, event validation, result placement, project-file
-envelope metadata, and CSV row formatting.
+envelope metadata, CSV row formatting, and template rendering.
 
 Android remains the production app. The Android Room database, UI, USB
 SportIdent readout, printing, live result sending, Android resources, and
