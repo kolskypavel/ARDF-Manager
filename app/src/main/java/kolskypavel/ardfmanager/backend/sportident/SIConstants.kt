@@ -1,10 +1,12 @@
 package kolskypavel.ardfmanager.backend.sportident
 
+import org.openardf.radioomanager.shared.sportident.SportIdentCodes
+
 object SIConstants {
     const val SI_VENDOR_ID = 4292
     const val SI_PRODUCT_ID = 32778
-    const val SI_MIN_NUMBER = 1000
-    const val SI_MAX_NUMBER = 9999999
+    const val SI_MIN_NUMBER = SportIdentCodes.SI_MIN_NUMBER
+    const val SI_MAX_NUMBER = SportIdentCodes.SI_MAX_NUMBER
 
     const val STX: Byte = 0x02 //Transmission start
     const val ETX: Byte = 0x03 //Transmission end
@@ -50,8 +52,8 @@ object SIConstants {
     const val SI_CARD_PCARD_MAX_PUNCHES = 20
 
     //Code ranges
-    const val SI_MIN_CODE = 1
-    const val SI_MAX_CODE = 255
+    const val SI_MIN_CODE = SportIdentCodes.SI_MIN_CODE
+    const val SI_MAX_CODE = SportIdentCodes.SI_MAX_CODE
 
     // Notification ID
     const val NOTIFICATION_CHANNEL_ID = "si_reader_channel"
@@ -62,10 +64,10 @@ object SIConstants {
     const val INTENT_ACTION = "kolskypavel.ardfmanager.USB_PERMISSION"
 
     fun isSINumberValid(siNumber: Int): Boolean {
-        return (siNumber in SI_MIN_NUMBER..SI_MAX_NUMBER)
+        return SportIdentCodes.isSINumberValid(siNumber)
     }
 
     fun isSICodeValid(siCode: Int): Boolean {
-        return (siCode in SI_MIN_CODE..SI_MAX_CODE)
+        return SportIdentCodes.isSICodeValid(siCode)
     }
 }
