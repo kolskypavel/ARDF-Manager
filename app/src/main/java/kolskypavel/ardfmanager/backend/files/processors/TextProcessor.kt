@@ -25,8 +25,10 @@ import java.io.OutputStream
 import java.time.LocalDateTime
 import java.util.UUID
 
+/** Export-only processor for templated plain-text and HTML live results. */
 object TextProcessor : FormatProcessor {
 
+    /** Text and HTML formats are generated exports only; imports are intentionally unsupported. */
     override suspend fun importData(
         inStream: InputStream,
         dataType: DataType,
@@ -36,6 +38,7 @@ object TextProcessor : FormatProcessor {
         throw NotImplementedError("Text processor not intended for data import")
     }
 
+    /** Dispatches supported text-like export requests to the template renderer. */
     override suspend fun exportData(
         outStream: OutputStream,
         dataType: DataType,
@@ -51,6 +54,7 @@ object TextProcessor : FormatProcessor {
         }
     }
 
+    /** Loads the selected result template, fills template parameters, and writes the rendered output. */
     @Throws(IllegalArgumentException::class)
     private suspend fun exportResults(
         format: DataFormat,
@@ -64,7 +68,6 @@ object TextProcessor : FormatProcessor {
 
         if (context != null) {
             dataProcessor.getRace(raceId)?.let { race ->
-                // Init all the parameters for the template
                 initParams(
                     dataProcessor,
                     context,
@@ -96,6 +99,7 @@ object TextProcessor : FormatProcessor {
         }
     }
 
+    /** Populates shared template parameters and delegates result-body generation by output format. */
     private suspend fun initParams(
         dataProcessor: DataProcessor,
         context: Context,
@@ -126,7 +130,7 @@ object TextProcessor : FormatProcessor {
         params[FileConstants.KEY_TITLE_CONTROLS] = context.getString(R.string.general_controls)
         params[FileConstants.KEY_TITLE_RESULTS_SPLITS] = context.getString(R.string.results_splits)
 
-        // Init format specific parameters
+        // TXT exports have separate summary and split sections; HTML embeds splits in each row.
         if (format == DataFormat.TXT) {
             params[FileConstants.KEY_RACE_RESULTS] =
                 generateTxtResults(dataProcessor, context, results, race)
@@ -146,7 +150,7 @@ object TextProcessor : FormatProcessor {
     }
 
 
-    //Generates one line of competitor data
+    /** Generates one plain-text competitor row, optionally using the split-row template. */
     private fun generateTxtCompetitorData(
         dataProcessor: DataProcessor,
         context: Context,
@@ -183,7 +187,7 @@ object TextProcessor : FormatProcessor {
         params[FileConstants.KEY_COMP_POINTS] =
             result.points.toString()
 
-        // TODO: remove for orienteering
+        // TODO: Hide ARDF control strings for pure orienteering exports once event-type policy is defined.
         params[FileConstants.KEY_COMP_CONTROLS] = ControlPointsHelper.getStringFromAliasPunches(
             competitorData.readoutData!!.punches,
             context
@@ -196,6 +200,7 @@ object TextProcessor : FormatProcessor {
         return out
     }
 
+    /** Formats split durations from non-start punches for plain-text result output. */
     private fun getSplitsString(
         punches: List<AliasPunch>,
         dataProcessor: DataProcessor
@@ -218,6 +223,7 @@ object TextProcessor : FormatProcessor {
         return out
     }
 
+    /** Generates the category header/table opening from the selected text or HTML template. */
     private fun generateCategoryHeader(
         templateName: String,
         dataProcessor: DataProcessor,
@@ -263,7 +269,7 @@ object TextProcessor : FormatProcessor {
         return gen
     }
 
-    // Generates the whole result block
+    /** Generates the full plain-text result block for every category with readout data. */
     private suspend fun generateTxtResults(
         dataProcessor: DataProcessor,
         context: Context,
@@ -298,7 +304,7 @@ object TextProcessor : FormatProcessor {
         return output
     }
 
-    // HTML SECTION
+    /** Generates the full HTML result table output for every category with readout data. */
     private suspend fun generateHtmlResults(
         dataProcessor: DataProcessor,
         context: Context,
@@ -328,7 +334,7 @@ object TextProcessor : FormatProcessor {
                 }
                 output += FileConstants.HTML_TABLE_END
 
-                // Add a line break between categories
+                // Keep category tables visually separated in the generated HTML document.
                 if (result.index < results.size - 1) {
                     output += FileConstants.HTML_DOUBLE_BREAK
                 }
@@ -337,7 +343,7 @@ object TextProcessor : FormatProcessor {
         return output
     }
 
-    // Generates two rows of competitor splits
+    /** Generates the HTML split cells for one competitor result row. */
     private fun generateHtmlCompetitorSplits(
         splits: List<AliasPunch>,
         context: Context,
@@ -349,7 +355,7 @@ object TextProcessor : FormatProcessor {
         val useAlias =
             sharedPref.getBoolean(context.getString(R.string.key_results_use_aliases), true)
 
-        // TODO: Limit row length
+        // TODO: Limit row length for very long courses so generated tables remain printable.
         for (split in splits) {
             if (split.punch.punchType == SIRecordType.CONTROL) {
                 val aliasCode: String = if (useAlias && split.alias != null) {
@@ -375,6 +381,7 @@ object TextProcessor : FormatProcessor {
         return out
     }
 
+    /** Generates one HTML competitor row with place, identity, result, and split cells. */
     private fun generateHtmlCompetitorData(
         dataProcessor: DataProcessor,
         context: Context,
