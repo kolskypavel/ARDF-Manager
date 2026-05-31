@@ -32,6 +32,8 @@ Please refer to the wiki section [Developement](https://github.com/kolskypavel/A
 
 The in-repo [multiplatform roadmap](docs/multiplatform-roadmap.md) describes the
 shared Kotlin module, desktop beta direction, and current verification gates.
+Deferred dependency-management follow-ups are tracked in
+[docs/dependency-update-todo.md](docs/dependency-update-todo.md).
 
 ## Third party libraries and resources
  - **Logo** - using SportIdent by Gonzo from <a href="https://thenounproject.com/browse/icons/term/sportident/" target="_blank" title="SportIdent Icons">Noun Project</a> (CC BY 3.0)
