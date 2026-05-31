@@ -148,5 +148,27 @@ class EventModelMappersTest {
         assertEquals(1, shared.competitorData.single().readoutData!!.result.place)
     }
 
+    @Test
+    fun roomCompetitorNameHelpersUseSharedFormatting() {
+        val competitor = Competitor(
+            id = uuid("00000000-0000-0000-0000-000000000011"),
+            raceId = uuid("00000000-0000-0000-0000-000000000001"),
+            categoryId = null,
+            firstName = "Pavel",
+            lastName = "Kolsky",
+            club = "OK",
+            index = "OK001",
+            isMan = true,
+            birthYear = null,
+            siNumber = null,
+            siRent = false,
+            startNumber = 42,
+            drawnRelativeStartTime = null
+        )
+
+        assertEquals("KOLSKY Pavel", competitor.getFullName())
+        assertEquals("KOLSKY Pavel (42)", competitor.getNameWithStartNumber())
+    }
+
     private fun uuid(value: String): UUID = UUID.fromString(value)
 }

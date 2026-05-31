@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
+import kolskypavel.ardfmanager.backend.shared.toEventCompetitor
 import java.io.Serializable
 import java.time.Duration
 import java.time.LocalDateTime
@@ -47,11 +48,11 @@ data class Competitor(
     @ColumnInfo(name = "drawn_start_time") var drawnRelativeStartTime: Duration? = null,
 ) : Serializable {
     fun getFullName(): String {
-        return "${lastName.uppercase()} $firstName"
+        return toEventCompetitor().fullName()
     }
 
     fun getNameWithStartNumber(): String {
-        return "${lastName.uppercase()} $firstName (${startNumber})"
+        return toEventCompetitor().nameWithStartNumber()
     }
 
     fun toSimpleCsvString(categoryName: String): String {
