@@ -1,5 +1,6 @@
 package org.openardf.radioomanager.shared.files
 
+/** Import/export file formats supported by the app. */
 enum class DataFormat(var value: Int) {
     TXT(0),
     HTML(1),

@@ -1,5 +1,6 @@
 package org.openardf.radioomanager.shared.domain
 
+/** Supported event/course rule families. */
 enum class RaceType(val value: Int) {
     CLASSIC(0),
     SHORT(1),

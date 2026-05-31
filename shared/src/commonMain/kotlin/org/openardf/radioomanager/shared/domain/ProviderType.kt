@@ -1,5 +1,6 @@
 package org.openardf.radioomanager.shared.domain
 
+/** Supported online provider integrations. */
 enum class ProviderType(val value: Int) {
     ROBIS(0),
     ROBIS_TEST(1),

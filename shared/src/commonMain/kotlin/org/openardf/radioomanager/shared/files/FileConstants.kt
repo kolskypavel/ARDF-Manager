@@ -1,5 +1,6 @@
 package org.openardf.radioomanager.shared.files
 
+/** Shared file-format constants, template names, and template replacement keys. */
 object FileConstants {
     const val OCM_START_CSV_COLUMNS = 3
     const val CATEGORY_CSV_COLUMNS = 11

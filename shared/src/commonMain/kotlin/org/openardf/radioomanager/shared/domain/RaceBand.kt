@@ -1,5 +1,6 @@
 package org.openardf.radioomanager.shared.domain
 
+/** Radio band classification for ARDF categories and races. */
 enum class RaceBand(val value: Int) {
     M80(0),
     M2(1),

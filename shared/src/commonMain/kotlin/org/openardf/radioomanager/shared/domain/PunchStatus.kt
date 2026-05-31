@@ -1,5 +1,6 @@
 package org.openardf.radioomanager.shared.domain
 
+/** Evaluation status assigned to an individual punch. */
 enum class PunchStatus(val value: Int) {
     VALID(0),
     INVALID(1),

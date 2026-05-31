@@ -1,5 +1,6 @@
 package org.openardf.radioomanager.shared.domain
 
+/** Role of a control point within an ARDF/orienteering course. */
 enum class ControlPointType(val value: Int) {
     CONTROL(0),
     BEACON(1),

@@ -1,5 +1,6 @@
 package org.openardf.radioomanager.shared.domain
 
+/** Competitive level of an event. */
 enum class RaceLevel(val value: Int) {
     INTERNATIONAL(0),
     NATIONAL(1),

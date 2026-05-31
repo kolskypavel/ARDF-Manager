@@ -1,5 +1,6 @@
 package org.openardf.radioomanager.shared.domain
 
+/** Final status assigned to a competitor result. */
 enum class ResultStatus(val value: Int) : Comparable<ResultStatus> {
     OK(0),
     MISPUNCHED(1),
