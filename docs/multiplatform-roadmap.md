@@ -10,11 +10,15 @@ The `codex/multiplatform-foundation` branch introduces a `:shared` Kotlin
 Multiplatform module with Android and desktop JVM targets. Shared code currently
 covers portable domain enums, SportIdent code and time helpers, duration
 formatting, file definitions, alias validation, control-point parsing, import
-validation, result ranking, course evaluation, and IOF result-status mapping.
+validation, result ranking, course evaluation, IOF result-status mapping,
+platform-neutral event models, event validation, result placement, project-file
+envelope metadata, and CSV row formatting.
 
 Android remains the production app. The Android Room database, UI, USB
 SportIdent readout, printing, live result sending, Android resources, and
-platform permissions still live in the Android app.
+platform permissions still live in the Android app. Android now has tested
+mappers between Room aggregates and shared event models, but Room remains the
+Android persistence layer.
 
 ## Required gates
 
