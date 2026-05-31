@@ -1,7 +1,7 @@
 package kolskypavel.ardfmanager.backend.files.processors;
 
 import android.content.Context
-import kolskypavel.ardfmanager.backend.files.constants.FileConstants
+import org.openardf.radioomanager.shared.files.TemplateRenderer
 import java.io.IOException
 
 object TemplateProcessor {
@@ -13,14 +13,6 @@ object TemplateProcessor {
     }
 
     fun processTemplate(template: String, params: Map<String, String>): String {
-        var output = template
-
-        for (par in params) {
-            output = output.replace(par.key, par.value)
-        }
-        // Replace TAB as the last parameter
-        output = output.replace(FileConstants.KEY_TAB, "\t")
-
-        return output
+        return TemplateRenderer.render(template, params)
     }
 }
