@@ -15,6 +15,7 @@ import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
 import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
+import kolskypavel.ardfmanager.backend.logging.DebugLog
 import kolskypavel.ardfmanager.backend.network.ProviderClient
 import kolskypavel.ardfmanager.backend.prints.PrintProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
@@ -546,6 +547,7 @@ class DataProcessor private constructor(context: Context) {
     fun connectDevice(usbDevice: UsbDevice) {
         val context = getContext();
         context?.let { context ->
+            DebugLog.info("SI", "Starting reader service for USB ${usbDevice.vendorId}:${usbDevice.productId}")
             Intent(context, SIReaderService::class.java).also {
                 it.action = SIReaderService.ReaderServiceActions.START.toString()
                 it.putExtra(SIReaderService.USB_DEVICE, usbDevice)
@@ -557,6 +559,7 @@ class DataProcessor private constructor(context: Context) {
     fun detachDevice(usbDevice: UsbDevice) {
         val context = getContext();
         context?.let { context ->
+            DebugLog.info("SI", "Stopping reader service for USB ${usbDevice.vendorId}:${usbDevice.productId}")
             Intent(context, SIReaderService::class.java).also {
                 it.action = SIReaderService.ReaderServiceActions.STOP.toString()
                 it.putExtra(SIReaderService.USB_DEVICE, usbDevice)

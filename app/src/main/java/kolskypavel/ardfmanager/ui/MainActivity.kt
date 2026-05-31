@@ -24,6 +24,7 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.AppState
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.FileProcessor
+import kolskypavel.ardfmanager.backend.logging.DebugLog
 import kolskypavel.ardfmanager.backend.room.ARDFRepository
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.backend.sportident.SIReaderStatus
@@ -92,6 +93,8 @@ class MainActivity : AppCompatActivity() {
         //Initialize singletons
         ARDFRepository.initialize(this)
         DataProcessor.initialize(this)
+        DebugLog.initialize(applicationContext)
+        DebugLog.info("App", "MainActivity created")
         dataProcessor = DataProcessor.get()
         dataProcessor.fileProcessor = FileProcessor(WeakReference(this))
 
@@ -156,9 +159,13 @@ class MainActivity : AppCompatActivity() {
     private fun detectSIReader() {
         val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
         val deviceList = usbManager.deviceList
+        DebugLog.debug("USB", "Scanning ${deviceList.size} attached USB devices")
         for (device in deviceList.values) {
             if (usbManager.hasPermission(device)) {
+                DebugLog.info("USB", "Connecting already-permitted device ${device.vendorId}:${device.productId}")
                 dataProcessor.connectDevice(device)
+            } else {
+                DebugLog.debug("USB", "Attached device lacks permission ${device.vendorId}:${device.productId}")
             }
         }
     }
@@ -179,6 +186,7 @@ class MainActivity : AppCompatActivity() {
                     intent.getParcelableExtra(UsbManager.EXTRA_DEVICE)
                 }
             if (device != null) {
+                DebugLog.info("USB", "USB attach intent for device ${device.vendorId}:${device.productId}")
                 dataProcessor.connectDevice(device)
             }
         }
