@@ -4,7 +4,9 @@ import org.openardf.radioomanager.shared.event.EventCompetitorData
 import org.openardf.radioomanager.shared.event.EventReadoutData
 import org.openardf.radioomanager.shared.event.EventResult
 
+/** Shared result ordering and place-assignment service. */
 object EventResultPlacement {
+    /** Sorts competitors by result ranking and assigns places to readouts. */
     fun sortByPlace(competitors: List<EventCompetitorData>): List<EventCompetitorData> {
         val sorted = competitors.sortedWith(::compareCompetitorData)
         var place = 0
@@ -28,6 +30,7 @@ object EventResultPlacement {
         }
     }
 
+    /** Groups competitors by category id, then sorts and places each category independently. */
     fun groupByCategoryAndSortByPlace(
         competitors: List<EventCompetitorData>
     ): Map<String?, List<EventCompetitorData>> {

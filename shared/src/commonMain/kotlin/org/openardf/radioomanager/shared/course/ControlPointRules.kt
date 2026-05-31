@@ -4,10 +4,12 @@ import org.openardf.radioomanager.shared.domain.ControlPointType
 import org.openardf.radioomanager.shared.domain.RaceType
 import org.openardf.radioomanager.shared.sportident.SportIdentCodes
 
+/** Shared parser, formatter, and rule validator for category control-point sequences. */
 object ControlPointRules {
     const val SPECTATOR_CONTROL_MARKER = '!'
     const val BEACON_CONTROL_MARKER = 'B'
 
+    /** Parses a user-entered control string and validates it for the selected race type. */
     fun parseControlPoints(input: String, raceType: RaceType): List<ControlPointDefinition> {
         if (input.isEmpty()) {
             return emptyList()
@@ -21,6 +23,7 @@ object ControlPointRules {
         return controlPoints
     }
 
+    /** Formats parsed control definitions back into the compact user-facing course string. */
     fun formatControlPoints(controlPoints: List<ControlPointDefinition>): String {
         return controlPoints.joinToString(" ") { controlPoint ->
             val marker = when (controlPoint.type) {
@@ -32,6 +35,7 @@ object ControlPointRules {
         }
     }
 
+    /** Formats control display tokens, preserving positions for skipped tokens. */
     fun formatDisplayTokens(tokens: List<ControlPointDisplayToken>, useAlias: Boolean): String {
         val builder = StringBuilder()
 
@@ -54,6 +58,7 @@ object ControlPointRules {
         return builder.toString()
     }
 
+    /** Formats only included display tokens with a trailing space after each included token. */
     fun formatIncludedDisplayTokensWithTrailingSpaces(
         tokens: List<ControlPointDisplayToken>,
         useAlias: Boolean
@@ -204,18 +209,21 @@ object ControlPointRules {
     }
 }
 
+/** Display-ready control token that can use either a raw SI code or an alias name. */
 data class ControlPointDisplayToken(
     val siCode: Int,
     val aliasName: String? = null,
     val include: Boolean = true
 )
 
+/** Structured control-point validation failure for callers that provide localized text. */
 class ControlPointValidationException(
     val error: ControlPointValidationError,
     val token: String? = null,
     val siCode: Int? = null
 ) : IllegalArgumentException()
 
+/** Machine-readable reasons why a control-point sequence can be invalid. */
 enum class ControlPointValidationError {
     UNKNOWN_SPECIFIER,
     INVALID_RANGE,

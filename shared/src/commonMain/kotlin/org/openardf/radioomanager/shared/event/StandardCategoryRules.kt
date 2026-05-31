@@ -2,12 +2,14 @@ package org.openardf.radioomanager.shared.event
 
 import org.openardf.radioomanager.shared.domain.StandardCategoryType
 
+/** Parsed built-in category definition independent of Android resources. */
 data class StandardCategoryDefinition(
     val name: String,
     val isMan: Boolean,
     val maxAge: Int
 )
 
+/** Shared parser and provider for built-in standard category presets. */
 object StandardCategoryRules {
     private val internationalRows = listOf(
         "W19;0;19",
@@ -49,6 +51,7 @@ object StandardCategoryRules {
         "M70;1;200"
     )
 
+    /** Returns built-in category definitions for the requested preset set. */
     fun definitionsFor(type: StandardCategoryType): List<StandardCategoryDefinition> {
         val rows = when (type) {
             StandardCategoryType.INTERNATIONAL -> internationalRows
@@ -57,6 +60,7 @@ object StandardCategoryRules {
         return rows.mapNotNull(::parseDefinition)
     }
 
+    /** Parses a semicolon-delimited category preset row in the form name;isMan;maxAge. */
     fun parseDefinition(row: String): StandardCategoryDefinition? {
         val fields = row.split(";")
         if (fields.size != 3) {

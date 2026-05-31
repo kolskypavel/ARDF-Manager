@@ -3,7 +3,9 @@ package org.openardf.radioomanager.shared.event
 import org.openardf.radioomanager.shared.importing.ImportValidationRules
 import org.openardf.radioomanager.shared.importing.ReadoutPunchValidationError
 
+/** Shared validation service for complete event aggregates. */
 object EventValidationRules {
+    /** Returns all currently supported validation issues without localizing messages. */
     fun validateRaceData(raceData: EventRaceData): List<EventValidationIssue> {
         val issues = mutableListOf<EventValidationIssue>()
 
@@ -67,6 +69,7 @@ object EventValidationRules {
     }
 }
 
+/** Machine-readable event validation issue used by Android and future desktop UI layers. */
 sealed interface EventValidationIssue {
     data object BlankRaceName : EventValidationIssue
     data class DuplicateCategoryNames(val names: Set<String>) : EventValidationIssue
