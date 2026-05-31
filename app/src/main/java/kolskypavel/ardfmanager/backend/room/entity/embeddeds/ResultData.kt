@@ -10,7 +10,7 @@ import org.openardf.radioomanager.shared.files.EventCsvRows
 import org.openardf.radioomanager.shared.files.TimedPunchCsvField
 import java.io.Serializable
 
-// Contains all information about SI readout - including competitor (if matched)
+/** Room aggregate for a readout, its punches, and the matched competitor/category when available. */
 data class ResultData(
     @Embedded var result: Result,
 
@@ -27,11 +27,12 @@ data class ResultData(
     ) var competitorCategory: CompetitorCategory?
 
 ) : Serializable {
+    /** Returns only the punch entities from the alias-punch relation list. */
     fun getPunchList(): List<Punch> {
         return punches.map { p -> p.punch }
     }
 
-    // Convert to CSV for further processing
+    /** Formats this readout in the legacy readout CSV export shape. */
     fun toReadoutCSVString(): String {
         val controlPunches = punches
             .filter { punch -> punch.punch.punchType == SIRecordType.CONTROL }

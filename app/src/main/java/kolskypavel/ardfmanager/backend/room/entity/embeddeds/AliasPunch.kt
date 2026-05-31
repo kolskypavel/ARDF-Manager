@@ -6,7 +6,7 @@ import kolskypavel.ardfmanager.backend.room.entity.Alias
 import kolskypavel.ardfmanager.backend.room.entity.Punch
 import java.io.Serializable
 
-// Contains information about a punch and its alias (if exists)
+/** Room relation aggregate for a punch and its optional display alias. */
 data class AliasPunch(
     @Embedded var punch: Punch,
     @Relation(
@@ -16,12 +16,13 @@ data class AliasPunch(
     var alias: Alias?,
 ) : Serializable {
 
-    // For debugging
+    /** Default constructor used by debug views and tooling that require defaults. */
     constructor() : this(
         Punch(),
         null
     )
 
+    /** Convenience constructor for an unaliased punch. */
     constructor(punch: Punch) : this(
         punch = punch,
         alias = null

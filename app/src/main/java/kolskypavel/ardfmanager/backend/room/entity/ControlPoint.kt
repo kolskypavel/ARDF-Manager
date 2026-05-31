@@ -10,9 +10,7 @@ import org.openardf.radioomanager.shared.course.ControlPointRules
 import java.io.Serializable
 import java.util.UUID
 
-/**
- * Control point entity, used to define categories
- */
+/** Room entity for one ordered control point in a category course. */
 @Entity(
     tableName = "control_point",
     foreignKeys = [ForeignKey(
@@ -30,12 +28,14 @@ data class ControlPoint(
     @ColumnInfo(name = "order") var order: Int
 ) : Serializable {
 
+    /** Formats this single control point as the compact CSV token used by exports. */
     fun toCsvString(): String {
         return ControlPointRules.formatControlPoints(
             listOf(ControlPointDefinition(siCode, type, order))
         )
     }
 
+    /** Default constructor used by tests and Room/tooling support. */
     constructor() : this(
         UUID.randomUUID(),
         UUID.randomUUID(),
@@ -44,6 +44,7 @@ data class ControlPoint(
         0
     )
 
+    /** Convenience constructor for tests that only need a control SI code. */
     constructor(siCode: Int) : this(
         UUID.randomUUID(),
         UUID.randomUUID(),

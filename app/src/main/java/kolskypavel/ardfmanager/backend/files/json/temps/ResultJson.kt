@@ -2,13 +2,14 @@ package kolskypavel.ardfmanager.backend.files.json.temps
 
 import java.time.LocalDateTime
 
-// Used to export final results with control points
+/** JSON DTO for final result exports grouped with categories and aliases. */
 data class FinalResultsJson(
     val categories: List<CategoryJson>,
     val aliases: List<AliasJson>,
     val competitors: List<CompetitorJson>,
 )
 
+/** JSON DTO for one competitor result in live-result exports. */
 data class ResultCompetitorJson(
     val competitor_index: String?,
     val si_number: Int?,
@@ -18,6 +19,7 @@ data class ResultCompetitorJson(
     val result: ResultJson
 )
 
+/** JSON DTO for one result/readout payload. */
 data class ResultJson(
     val check_time: LocalDateTime?,
     val start_time: LocalDateTime?,
@@ -32,6 +34,7 @@ data class ResultJson(
     val punches: List<PunchJson>
 )
 
+/** JSON DTO for one punch in a result payload. */
 data class PunchJson(
     var code: String,
     var si_code: Int?,
@@ -40,6 +43,7 @@ data class PunchJson(
     val split_time: String
 )
 
+/** JSON DTO for a readout that is not matched to a competitor. */
 data class UnmatchedResultJson(
     val si_number: Int?,
     val check_time: LocalDateTime?,

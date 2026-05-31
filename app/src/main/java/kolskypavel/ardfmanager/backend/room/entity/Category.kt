@@ -15,6 +15,7 @@ import java.io.Serializable
 import java.time.Duration
 import java.util.UUID
 
+/** Room entity for a competition category and its category-specific course settings. */
 @Entity(
     tableName = "category", indices = [
         Index(
@@ -35,8 +36,8 @@ data class Category(
     @ColumnInfo(name = "name") var name: String,
     @ColumnInfo(name = "is_man") var isMan: Boolean,
     @ColumnInfo(name = "max_age") var maxAge: Int?,
-    @ColumnInfo(name = "length") var length: Int,   // Length of the track in m
-    @ColumnInfo(name = "climb") var climb: Int,     // Climb of the track in m
+    @ColumnInfo(name = "length") var length: Int,   // Course length in meters.
+    @ColumnInfo(name = "climb") var climb: Int,     // Course climb in meters.
     @ColumnInfo(name = "order") var order: Int,
     @ColumnInfo(name = "different_properties") var differentProperties: Boolean = false,
     @ColumnInfo(name = "race_type") var raceType: RaceType? = null,
@@ -45,10 +46,12 @@ data class Category(
     @ColumnInfo(name = "control_points_string") var controlPointsString: String
 ) : Serializable {
 
+    /** Formats this category in the legacy CSV export row shape. */
     fun toCSVString(): String {
         return EventCsvRows.categoryRow(toEventCategory())
     }
 
+    /** Convenience constructor for tests and lightweight UI placeholders. */
     constructor(name: String) : this(
         UUID.randomUUID(),
         UUID.randomUUID(),

@@ -1,8 +1,6 @@
 package kolskypavel.ardfmanager.backend.wrappers
 
-/*
-Numbers for statistic purposes
- */
+/** Summary counts shown in race statistics. */
 data class StatisticsWrapper(
     var competitors: Int,
     var startedCompetitors: Int,

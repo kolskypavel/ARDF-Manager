@@ -8,9 +8,7 @@ import androidx.room.PrimaryKey
 import java.io.Serializable
 import java.util.UUID
 
-/**
- * Used to store aliases for the control points
- */
+/** User-defined display name for a control-point SI code within one race. */
 @Entity(
     tableName = "alias", indices = [Index(
         value = ["name", "race_id", "si_code"],
@@ -29,7 +27,7 @@ data class Alias(
     @ColumnInfo(name = "name") var name: String
 ) : Serializable {
 
-    // For testing purposes
+    /** Convenience constructor used by tests and edit-list setup. */
     constructor(code: Int, name: String) : this(
         id = UUID.randomUUID(),
         raceId = UUID.randomUUID(),

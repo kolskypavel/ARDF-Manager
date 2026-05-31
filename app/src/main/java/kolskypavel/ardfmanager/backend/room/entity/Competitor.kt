@@ -13,6 +13,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.util.UUID
 
+/** Room entity for a registered competitor in a race. */
 @Entity(
     tableName = "competitor", indices = [Index(
         value = ["start_number", "race_id"],
@@ -48,18 +49,22 @@ data class Competitor(
     @ColumnInfo(name = "start_number") var startNumber: Int,
     @ColumnInfo(name = "drawn_start_time") var drawnRelativeStartTime: Duration? = null,
 ) : Serializable {
+    /** Returns the display name in the shared LASTNAME Firstname format. */
     fun getFullName(): String {
         return toEventCompetitor().fullName()
     }
 
+    /** Returns the display name with the competitor's start number appended. */
     fun getNameWithStartNumber(): String {
         return toEventCompetitor().nameWithStartNumber()
     }
 
+    /** Formats this competitor in the legacy competitor CSV export row shape. */
     fun toSimpleCsvString(categoryName: String): String {
         return EventCsvRows.competitorRow(toEventCompetitor(), categoryName)
     }
 
+    /** Formats this competitor in the start-list CSV export row shape. */
     fun toStartCsvString(
         categoryName: String,
         raceStart: LocalDateTime
@@ -73,7 +78,7 @@ data class Competitor(
         return EventCsvRows.competitorStartRow(toEventCompetitor(), categoryName, real)
     }
 
-    //Non-args constructor
+    /** No-argument constructor used by serialization and tooling that require defaults. */
     constructor() : this(
         UUID.randomUUID(),
         UUID.randomUUID(),
