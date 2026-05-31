@@ -22,10 +22,11 @@ while giving future desktop work a cleaner shared-code base.
 
 ## Library Robustness
 
-- Move `androidx.test.ext:junit-ktx` out of app runtime dependencies if
-  production code does not need it.
-- Verify whether `android.enableJetifier=true` is still required. Disable it if
-  the build and regression gates pass without it.
+- Done: moved `androidx.test.ext:junit-ktx` out of app runtime dependencies
+  and into the instrumentation-test dependency scope.
+- Checked: `android.enableJetifier=true` is still required while
+  `com.github.ISchwarz23:SortableTableView` brings in old support-library
+  coordinates. Revisit after replacing or isolating that table-view dependency.
 - Gate or remove production `HttpLoggingInterceptor.Level.BODY` logging so live
   result publishing does not expose sensitive payloads or depend on verbose
   logging behavior after OkHttp updates.
