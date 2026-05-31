@@ -109,13 +109,15 @@ object ControlPointsHelper {
     }
 
     fun getStringFromPunches(punches: List<Punch>): String {
-        var string = ""
-        for (punch in punches) {
-            if (punch.punchType == SIRecordType.CONTROL) {
-                string += "${punch.siCode} "
-            }
-        }
-        return string
+        return ControlPointRules.formatIncludedDisplayTokensWithTrailingSpaces(
+            punches.map { punch ->
+                ControlPointDisplayToken(
+                    siCode = punch.siCode,
+                    include = punch.punchType == SIRecordType.CONTROL
+                )
+            },
+            useAlias = false
+        )
     }
 
     fun getStringFromAliasPunches(punches: List<AliasPunch>, context: Context): String {

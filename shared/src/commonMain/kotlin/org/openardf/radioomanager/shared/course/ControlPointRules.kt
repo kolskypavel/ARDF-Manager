@@ -54,6 +54,28 @@ object ControlPointRules {
         return builder.toString()
     }
 
+    fun formatIncludedDisplayTokensWithTrailingSpaces(
+        tokens: List<ControlPointDisplayToken>,
+        useAlias: Boolean
+    ): String {
+        val builder = StringBuilder()
+
+        for (token in tokens) {
+            if (token.include) {
+                builder.append(
+                    if (useAlias && token.aliasName != null) {
+                        token.aliasName
+                    } else {
+                        token.siCode.toString()
+                    }
+                )
+                builder.append(" ")
+            }
+        }
+
+        return builder.toString()
+    }
+
     private fun parseControlPoint(order: Int, token: String): ControlPointDefinition {
         val controlPointType =
             when (val lastCharacter = token.last()) {

@@ -99,5 +99,9 @@ class ControlPointRulesTest {
 
         assertEquals("F1 32 ", ControlPointRules.formatDisplayTokens(tokens, useAlias = true))
         assertEquals("31 32 ", ControlPointRules.formatDisplayTokens(tokens, useAlias = false))
+        assertEquals(
+            "F1 32 ",
+            ControlPointRules.formatIncludedDisplayTokensWithTrailingSpaces(tokens, useAlias = true)
+        )
     }
 }
