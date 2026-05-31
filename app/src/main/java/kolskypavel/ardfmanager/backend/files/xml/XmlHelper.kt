@@ -17,6 +17,7 @@ import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
+import org.openardf.radioomanager.shared.results.IofResultStatus
 import org.xmlpull.v1.XmlPullParserFactory
 import org.xmlpull.v1.XmlSerializer
 import org.xmlpull.v1.XmlPullParser
@@ -401,17 +402,7 @@ object XmlHelper {
 
     // Converts result status to the IOF version
     fun convertResultStatus(resultStatus: ResultStatus): String {
-        return when (resultStatus) {
-            ResultStatus.OK -> "OK"
-            ResultStatus.MISPUNCHED -> "MissingPunch"
-            ResultStatus.NO_RANKING -> "MissingPunch"
-            ResultStatus.DISQUALIFIED -> "Disqualified"
-            ResultStatus.DID_NOT_START -> "DidNotStart"
-            ResultStatus.DID_NOT_FINISH -> "DidNotFinish"
-            ResultStatus.OVER_TIME_LIMIT -> "OverTime"
-            ResultStatus.UNOFFICIAL -> "NotCompeting"
-            ResultStatus.ERROR -> "Cancelled"
-        }
+        return IofResultStatus.fromResultStatus(resultStatus)
     }
 
     fun writeTextElement(serializer: XmlSerializer, name: String, value: String) {
