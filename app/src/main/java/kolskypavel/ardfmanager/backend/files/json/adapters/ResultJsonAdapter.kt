@@ -15,12 +15,14 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.util.UUID
 
+/** Moshi adapter for converting matched competitor readouts to result JSON. */
 class ResultJsonAdapter(
     val race: Race,
     val dataProcessor: DataProcessor
 ) {
     val punchJsonAdapter = PunchJsonAdapter(race.id, dataProcessor)
 
+    /** Serializes a matched readout and excludes the synthetic start punch from split output. */
     @ToJson
     fun toJson(resultData: CompetitorData): ResultJson {
         val result = resultData.readoutData?.result!!
@@ -34,7 +36,6 @@ class ResultJsonAdapter(
             modified = result.modified,
             run_time = TimeProcessor.durationToFormattedString(result.runTime, true),
             place = result.place,
-            // Use new punch_count field and also populate deprecated controls_num for backward compatibility
             punch_count = result.points,
             result_status = dataProcessor
                 .resultStatusToShortString(result.resultStatus),
@@ -51,6 +52,7 @@ class ResultJsonAdapter(
         )
     }
 
+    /** Deserializes a matched readout and reconstructs absolute punch times from split durations. */
     @Suppress("DEPRECATION")
     @FromJson
     fun fromJson(resultJson: ResultJson): ReadoutData {
@@ -58,8 +60,8 @@ class ResultJsonAdapter(
         val result = Result(
             id = UUID.randomUUID(),
             raceId = race.id,
-            siNumber = null, // Will be assigned in competitorJson
-            cardType = 0, // Not in ResultJson
+            siNumber = null, // Assigned by CompetitorJsonAdapter after the competitor is created.
+            cardType = 0, // Result JSON does not store SportIdent card type.
             checkTime = resultJson.check_time?.let { SITime(it, race.startDateTime) },
             points = resultJson.punch_count ?: 0,
             startTime = resultJson.start_time?.let { SITime(it, race.startDateTime) },

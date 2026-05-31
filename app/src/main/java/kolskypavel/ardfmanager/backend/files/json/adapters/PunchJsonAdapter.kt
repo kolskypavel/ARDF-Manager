@@ -11,8 +11,10 @@ import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SITime
 import java.util.UUID
 
+/** Moshi adapter for converting punch records to JSON control/split rows. */
 class PunchJsonAdapter(val raceId: UUID, val dataProcessor: DataProcessor) {
 
+    /** Serializes a punch using an alias display name when one exists. */
     @ToJson
     fun toJson(aliasPunch: AliasPunch): PunchJson {
         val punch = aliasPunch.punch
@@ -25,6 +27,7 @@ class PunchJsonAdapter(val raceId: UUID, val dataProcessor: DataProcessor) {
         )
     }
 
+    /** Deserializes a JSON punch and leaves absolute SI time reconstruction to the result adapter. */
     @FromJson
     fun fromJson(punchJson: PunchJson): Punch {
         val punchType = SIRecordType.valueOf(punchJson.control_type)
@@ -37,7 +40,7 @@ class PunchJsonAdapter(val raceId: UUID, val dataProcessor: DataProcessor) {
                 if (punchJson.si_code != null) {
                     punchJson.si_code!!
                 } else punchJson.code.toInt()
-            } else 0,           // For START and FINISH, siCode is set to 0
+            } else 0, // START and FINISH punches do not carry a control SI code.
 
             siTime = SITime(),
             origSiTime = SITime(),

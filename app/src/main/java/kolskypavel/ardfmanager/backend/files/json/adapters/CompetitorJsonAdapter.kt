@@ -14,7 +14,9 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import java.util.UUID
 
+/** Moshi adapter for converting competitors and their optional readouts to the race JSON schema. */
 class CompetitorJsonAdapter(val race: Race, val dataProcessor: DataProcessor) {
+    /** Serializes one competitor and omits invalid readouts that cannot be reconstructed safely. */
     @ToJson
     fun toJson(competitorData: CompetitorData): CompetitorJson {
         val competitor = competitorData.competitorCategory.competitor
@@ -36,13 +38,15 @@ class CompetitorJsonAdapter(val race: Race, val dataProcessor: DataProcessor) {
                 )
             } ?: "",
             result = if (competitorData.readoutData != null &&
-                competitorData.readoutData!!.result.resultStatus != ResultStatus.ERROR      // Do not serialize when start/finish time is missing
+                // Do not serialize when start or finish time is missing.
+                competitorData.readoutData!!.result.resultStatus != ResultStatus.ERROR
             ) {
                 ResultJsonAdapter(race, dataProcessor).toJson(competitorData)
             } else null
         )
     }
 
+    /** Deserializes a competitor and attaches a readout when the payload includes one. */
     @FromJson
     fun fromJson(competitorJson: CompetitorJson): CompetitorData {
         val competitor = Competitor(

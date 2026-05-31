@@ -6,7 +6,9 @@ import kolskypavel.ardfmanager.backend.files.json.temps.AliasJson
 import kolskypavel.ardfmanager.backend.files.json.temps.FinalResultsJson
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.RaceData
 
+/** Moshi adapter for exporting final results from a complete race aggregate. */
 class FinalResultJsonAdapter(val dataProcessor: DataProcessor) {
+    /** Serializes categories, aliases, and competitor results for final-result JSON export. */
     @ToJson
     fun toJson(raceData: RaceData): FinalResultsJson {
         val categoryAdapter = CategoryJsonAdapter(raceData.race.id)

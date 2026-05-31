@@ -17,8 +17,10 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.util.UUID
 
+/** Moshi adapter for importing and exporting a complete race aggregate as JSON. */
 class RaceDataJsonAdapter(val dataProcessor: DataProcessor) {
 
+    /** Serializes the race and all child aggregates into the race JSON schema. */
     @ToJson
     fun toJson(raceData: RaceData): RaceJson {
         val categoryAdapter = CategoryJsonAdapter(raceData.race.id)
@@ -41,6 +43,7 @@ class RaceDataJsonAdapter(val dataProcessor: DataProcessor) {
         )
     }
 
+    /** Deserializes a race payload with fresh local identifiers and rebuilt relations. */
     @FromJson
     fun fromJson(raceJson: RaceJson): RaceData {
 
@@ -79,6 +82,7 @@ class RaceDataJsonAdapter(val dataProcessor: DataProcessor) {
             .maxByOrNull { c -> c.start_number ?: 0 }
             ?.start_number ?: 0
 
+        // Preserve provided start numbers and assign stable new numbers to imported competitors missing one.
         for (compJson in raceJson.competitors) {
             val cd = competitorAdapter.fromJson(compJson)
                 .also { it.competitorCategory.competitor.raceId = race.id }

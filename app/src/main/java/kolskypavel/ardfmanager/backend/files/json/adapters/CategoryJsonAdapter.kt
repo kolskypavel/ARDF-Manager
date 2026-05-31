@@ -12,7 +12,9 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import java.util.UUID
 
+/** Moshi adapter for converting category Room aggregates to the race JSON schema. */
 class CategoryJsonAdapter(val raceId: UUID) {
+    /** Serializes a category, including its ordered control points. */
     @ToJson
     fun toJson(categoryData: CategoryData): CategoryJson {
         val category = categoryData.category
@@ -38,6 +40,7 @@ class CategoryJsonAdapter(val raceId: UUID) {
         )
     }
 
+    /** Deserializes a category and recreates its control points with fresh local identifiers. */
     @FromJson
     fun fromJson(categoryJson: CategoryJson): CategoryData {
         val catId = UUID.randomUUID()
