@@ -6,6 +6,7 @@ import org.openardf.radioomanager.shared.domain.RaceLevel
 import org.openardf.radioomanager.shared.domain.RaceType
 import org.openardf.radioomanager.shared.domain.ResultStatus
 import org.openardf.radioomanager.shared.domain.SIRecordType
+import org.openardf.radioomanager.shared.domain.StandardCategoryType
 import org.openardf.radioomanager.shared.course.ControlPointDisplayToken
 import org.openardf.radioomanager.shared.course.ControlPointRules
 import org.openardf.radioomanager.shared.event.EventAlias
@@ -87,6 +88,7 @@ fun main() {
         ) == "Desktop smoke\tResults"
     )
     check(StandardCategoryRules.parseDefinition("M21;1;39")?.maxAge == 39)
+    check(StandardCategoryRules.definitionsFor(StandardCategoryType.INTERNATIONAL).size == 12)
     println("Radio-O-Manager desktop shared smoke OK")
 }
 
