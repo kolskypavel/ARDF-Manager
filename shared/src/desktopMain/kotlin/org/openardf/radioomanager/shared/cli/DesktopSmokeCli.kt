@@ -17,6 +17,7 @@ import org.openardf.radioomanager.shared.event.EventRaceData
 import org.openardf.radioomanager.shared.event.EventReadoutData
 import org.openardf.radioomanager.shared.event.EventResult
 import org.openardf.radioomanager.shared.event.EventValidationRules
+import org.openardf.radioomanager.shared.event.StandardCategoryRules
 import org.openardf.radioomanager.shared.files.EventCsvRows
 import org.openardf.radioomanager.shared.files.FileConstants
 import org.openardf.radioomanager.shared.files.TemplateRenderer
@@ -70,6 +71,7 @@ fun main() {
             )
         ) == "Desktop smoke\tResults"
     )
+    check(StandardCategoryRules.parseDefinition("M21;1;39")?.maxAge == 39)
     println("Radio-O-Manager desktop shared smoke OK")
 }
 
