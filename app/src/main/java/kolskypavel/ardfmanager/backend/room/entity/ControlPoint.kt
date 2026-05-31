@@ -4,9 +4,9 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper.BEACON_CONTROL_MARKER
-import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper.SPECTATOR_CONTROL_MARKER
 import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
+import org.openardf.radioomanager.shared.course.ControlPointDefinition
+import org.openardf.radioomanager.shared.course.ControlPointRules
 import java.io.Serializable
 import java.util.UUID
 
@@ -31,12 +31,9 @@ data class ControlPoint(
 ) : Serializable {
 
     fun toCsvString(): String {
-        val type = when (type) {
-            ControlPointType.BEACON -> BEACON_CONTROL_MARKER
-            ControlPointType.SEPARATOR -> SPECTATOR_CONTROL_MARKER
-            ControlPointType.CONTROL -> ""
-        }
-        return "${siCode}${type}"
+        return ControlPointRules.formatControlPoints(
+            listOf(ControlPointDefinition(siCode, type, order))
+        )
     }
 
     constructor() : this(
