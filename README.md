@@ -30,6 +30,9 @@ Please refer to the wiki section [Printing](https://github.com/kolskypavel/ARDF-
 ## Building from source and developement information
 Please refer to the wiki section [Developement](https://github.com/kolskypavel/ARDF-Manager_mobile/wiki/Developement) for further information.
 
+The in-repo [multiplatform roadmap](docs/multiplatform-roadmap.md) describes the
+shared Kotlin module, desktop beta direction, and current verification gates.
+
 ## Third party libraries and resources
  - **Logo** - using SportIdent by Gonzo from <a href="https://thenounproject.com/browse/icons/term/sportident/" target="_blank" title="SportIdent Icons">Noun Project</a> (CC BY 3.0)
 - [SortableTableView](https://github.com/ISchwarz23/SortableTableView)
