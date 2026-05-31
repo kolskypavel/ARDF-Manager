@@ -16,8 +16,10 @@ import java.io.OutputStream
 import java.io.OutputStreamWriter
 import kotlin.collections.emptyList
 
+/** Import/export processor for IOF XML interoperability. */
 object IofXmlProcessor : FormatProcessor {
 
+    /** Imports IOF XML data types currently supported by the app. */
     override suspend fun importData(
         inStream: InputStream,
         dataType: DataType,
@@ -42,6 +44,7 @@ object IofXmlProcessor : FormatProcessor {
         return DataImportWrapper(emptyList(), emptyList(), ArrayList())
     }
 
+    /** Exports IOF XML data types currently supported by the app. */
     override suspend fun exportData(
         outStream: OutputStream,
         dataType: DataType,
@@ -67,10 +70,11 @@ object IofXmlProcessor : FormatProcessor {
         race: Race,
         categories: HashSet<CategoryData>
     ): DataImportWrapper {
-        // Competitor import not implemented yet; return empty wrapper
+        // Competitor import is not implemented yet; return an empty wrapper for callers that probe it.
         return DataImportWrapper(emptyList(), emptyList(), arrayListOf())
     }
 
+    /** Imports IOF XML course/category data into category aggregates. */
     fun importCategories(
         inStream: InputStream,
         race: Race,
@@ -81,6 +85,7 @@ object IofXmlProcessor : FormatProcessor {
         return DataImportWrapper(emptyList(), cats, arrayListOf())
     }
 
+    /** Placeholder for future IOF XML category export support. */
     fun exportCategories(
         outStream: OutputStream,
         race: Race,
@@ -88,6 +93,7 @@ object IofXmlProcessor : FormatProcessor {
     ) {
     }
 
+    /** Exports an IOF XML start list for the supplied category data. */
     suspend fun exportStartList(
         outStream: OutputStream,
         race: Race,
@@ -99,15 +105,12 @@ object IofXmlProcessor : FormatProcessor {
             val (serializer, w) = XmlHelper.createSerializer(outStream)
             writer = w
 
-            // Use helper to write root and race
             XmlHelper.writeRootTag(serializer, race, "StartList", dataProcessor)
 
-            // Write each category result with helper
             for (res in data) {
                 XmlHelper.writeCategoryStartList(serializer, res, race.startDateTime)
             }
 
-            // Finish document
             serializer.endTag(null, "StartList")
             XmlHelper.finishSerializer(serializer, writer)
         } catch (ex: Exception) {
@@ -115,6 +118,7 @@ object IofXmlProcessor : FormatProcessor {
         }
     }
 
+    /** Exports an IOF XML result list for categorized live results. */
     suspend fun exportResults(
         outStream: OutputStream,
         race: Race,
@@ -126,15 +130,12 @@ object IofXmlProcessor : FormatProcessor {
             val (serializer, w) = XmlHelper.createSerializer(outStream)
             writer = w
 
-            // Use helper to write root and race
             XmlHelper.writeRootTag(serializer, race, "ResultList", dataProcessor)
 
-            // Write each category result with helper
             for (res in results) {
                 XmlHelper.writeCategoryResult(serializer, res, race.startDateTime)
             }
 
-            // Finish document
             serializer.endTag(null, "ResultList")
             XmlHelper.finishSerializer(serializer, writer)
         } catch (ex: Exception) {
