@@ -6,23 +6,28 @@ import org.openardf.radioomanager.shared.domain.RaceType
 import org.openardf.radioomanager.shared.domain.ResultStatus
 import org.openardf.radioomanager.shared.domain.SIRecordType
 
+/** Control definition reduced to the fields needed by the course evaluator. */
 data class EvaluationControlPoint(
     val siCode: Int,
     val type: ControlPointType
 )
 
+/** Punch definition reduced to the fields needed by the course evaluator. */
 data class EvaluationPunch(
     val siCode: Int,
     val type: SIRecordType
 )
 
+/** Course evaluation output: point total, final result status, and per-punch statuses. */
 data class CourseEvaluation(
     val points: Int,
     val resultStatus: ResultStatus,
     val punchStatuses: List<PunchStatus>
 )
 
+/** Shared evaluator for ARDF/orienteering course completion rules. */
 object CourseEvaluator {
+    /** Evaluates punches against a course for the selected race type. */
     fun evaluate(
         raceType: RaceType,
         punches: List<EvaluationPunch>,

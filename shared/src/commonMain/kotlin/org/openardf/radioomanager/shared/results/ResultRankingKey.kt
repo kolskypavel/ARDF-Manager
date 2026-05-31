@@ -2,6 +2,7 @@ package org.openardf.radioomanager.shared.results
 
 import org.openardf.radioomanager.shared.domain.ResultStatus
 
+/** Comparable ranking key for sorting results by status, points, and runtime. */
 data class ResultRankingKey(
     val status: ResultStatus,
     val points: Int,

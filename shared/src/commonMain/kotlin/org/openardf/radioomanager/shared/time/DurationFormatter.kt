@@ -1,6 +1,8 @@
 package org.openardf.radioomanager.shared.time
 
+/** Shared duration formatting and parsing helpers used by import/export and UI adapters. */
 object DurationFormatter {
+    /** Formats seconds as either mmm:ss or HH:mm:ss, matching the existing Android behavior. */
     fun secondsToFormattedString(totalSeconds: Long, useMinutes: Boolean): String {
         val absSeconds = kotlin.math.abs(totalSeconds)
 
@@ -22,6 +24,7 @@ object DurationFormatter {
         }
     }
 
+    /** Parses an mmm:ss duration string and returns total seconds. */
     fun minuteStringToSeconds(value: String): Long {
         val parts = value.split(":")
         if (parts.size != 2) {
