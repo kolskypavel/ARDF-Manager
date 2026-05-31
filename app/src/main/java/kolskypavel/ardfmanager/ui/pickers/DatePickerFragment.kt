@@ -10,8 +10,11 @@ import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.navArgs
 import java.time.LocalDate
 
+/** DialogFragment wrapper that returns a selected date through the Fragment Result API. */
 class DatePickerFragment : DialogFragment() {
     private val args: DatePickerFragmentArgs by navArgs()
+
+    /** Builds a date picker initialized from navigation arguments. */
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         val dateListener =
@@ -25,7 +28,7 @@ class DatePickerFragment : DialogFragment() {
 
         val dateNow = args.curDate
         val initialYear = dateNow.year
-        val initialMonth = dateNow.month.value - 1 //Zero based conversion
+        val initialMonth = dateNow.month.value - 1 // DatePickerDialog months are zero-based.
         val initialDay = dateNow.dayOfMonth
         return DatePickerDialog(
             requireContext(),
@@ -36,6 +39,7 @@ class DatePickerFragment : DialogFragment() {
         )
     }
 
+    /** Fragment Result keys used to return the selected date. */
     companion object {
         const val REQUEST_KEY_DATE = "REQUEST_KEY_DATE"
         const val BUNDLE_KEY_DATE = "BUNDLE_KEY_DATE"

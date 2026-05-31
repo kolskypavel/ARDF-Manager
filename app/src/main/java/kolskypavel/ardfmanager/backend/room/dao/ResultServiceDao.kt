@@ -18,10 +18,10 @@ interface ResultServiceDao {
     /** Observes one race's result service plus the number of result rows available to send. */
     @Query(
         """
-    SELECT *, 
+    SELECT *,
     (SELECT COUNT(*) FROM result WHERE result.race_id = :raceId) AS resultCount
-    FROM result_service 
-    WHERE race_id = :raceId 
+    FROM result_service
+    WHERE race_id = :raceId
     LIMIT 1"""
     )
     fun getResultServiceLiveDataWithCountByRaceId(raceId: UUID): LiveData<ResultServiceData>

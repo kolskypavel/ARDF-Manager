@@ -33,6 +33,7 @@ import org.openardf.radioomanager.shared.results.EvaluationControlPoint
 import org.openardf.radioomanager.shared.results.EvaluationPunch
 import org.openardf.radioomanager.shared.sportident.SportIdentCodes
 
+/** Runs a small desktop smoke check over shared rules, models, and formatting helpers. */
 fun main() {
     check(SportIdentCodes.isSICodeValid(31))
 
@@ -96,6 +97,7 @@ fun main() {
     println("Radio-O-Manager desktop shared smoke OK")
 }
 
+/** Builds a minimal event used by the desktop smoke check. */
 private fun sampleRaceData(): EventRaceData =
     EventRaceData(
         race = EventRace(

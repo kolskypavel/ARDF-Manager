@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.UUID
 
+/** Detail screen for one readout, including competitor data, result status, and punch list. */
 class ReadoutDetailFragment : Fragment() {
 
     private val dataProcessor = DataProcessor.get()
@@ -50,6 +51,7 @@ class ReadoutDetailFragment : Fragment() {
     private lateinit var pointsView: TextView
     private lateinit var placeView: TextView
 
+    /** Inflates the readout detail screen. */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,6 +60,7 @@ class ReadoutDetailFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_readout_detail, container, false)
     }
 
+    /** Wires toolbar actions, field references, result listeners, and initial content. */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         resultData = args.resultData
@@ -88,6 +91,7 @@ class ReadoutDetailFragment : Fragment() {
         populateFields()
     }
 
+    /** Populates all visible readout and competitor fields from the current result data. */
     private fun populateFields() {
 
         if (resultData.competitorCategory?.competitor != null) {
@@ -142,6 +146,7 @@ class ReadoutDetailFragment : Fragment() {
         setRecyclerViewAdapter(resultData.punches)
     }
 
+    /** Handles toolbar actions for edit, print, category creation, control assignment, and delete. */
     private fun setMenuActions() {
         readoutDetailToolbar.setOnMenuItemClickListener {
             when (it.itemId) {
@@ -219,6 +224,7 @@ class ReadoutDetailFragment : Fragment() {
         }
     }
 
+    /** Shows a confirmation dialog before deleting the current readout. */
     private fun confirmReadoutDeletion(resultData: ResultData) {
         val builder = AlertDialog.Builder(context)
         builder.setTitle(getString(R.string.readout_delete_readout))
@@ -232,7 +238,7 @@ class ReadoutDetailFragment : Fragment() {
         builder.setPositiveButton(R.string.general_ok) { dialog, _ ->
             selectedRaceViewModel.deleteResult(resultData.result.id)
             dialog.dismiss()
-            parentFragmentManager.popBackStackImmediate();
+            parentFragmentManager.popBackStackImmediate()
         }
 
         builder.setNegativeButton(R.string.general_cancel) { dialog, _ ->
@@ -241,6 +247,7 @@ class ReadoutDetailFragment : Fragment() {
         builder.show()
     }
 
+    /** Refreshes this screen after readout or category edit dialogs report changes. */
     private fun setResultListener() {
         setFragmentResultListener(ReadoutEditDialogFragment.REQUEST_READOUT_MODIFICATION) { _, bundle ->
             val resultId = bundle.getString(
@@ -268,6 +275,7 @@ class ReadoutDetailFragment : Fragment() {
         }
     }
 
+    /** Displays the readout's ordered punch list. */
     private fun setRecyclerViewAdapter(punches: List<AliasPunch>) {
         punchRecyclerView.adapter = PunchRecyclerViewAdapter(punches, requireContext())
     }

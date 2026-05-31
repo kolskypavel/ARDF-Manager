@@ -13,6 +13,7 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.AliasPunch
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 
+/** Recycler adapter for displaying readout punches and their split times. */
 class PunchRecyclerViewAdapter(
     private var values: List<AliasPunch>,
     private val context: Context
@@ -20,6 +21,7 @@ class PunchRecyclerViewAdapter(
     RecyclerView.Adapter<PunchRecyclerViewAdapter.PunchViewHolder>() {
     private val dataProcessor = DataProcessor.get()
 
+    /** Creates one punch row view holder. */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PunchViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
             .inflate(R.layout.recycler_item_punch, parent, false)
@@ -27,8 +29,10 @@ class PunchRecyclerViewAdapter(
         return PunchViewHolder(adapterLayout)
     }
 
+    /** Returns the number of punches in the readout. */
     override fun getItemCount() = values.size
 
+    /** Binds punch code, type, status, absolute time, and split time. */
     override fun onBindViewHolder(holder: PunchViewHolder, position: Int) {
         val item = values[position]
 
@@ -38,7 +42,7 @@ class PunchRecyclerViewAdapter(
             dataProcessor.useMinuteTimeFormat()
         )
 
-        //Set the fields, based on the type of the punch
+        // Start and finish rows use labels; control rows show SI code, alias, and status.
         when (item.punch.punchType) {
             SIRecordType.START -> {
                 holder.punchSiCode.text = context.getText(R.string.punch_type_start)
@@ -66,6 +70,7 @@ class PunchRecyclerViewAdapter(
         }
     }
 
+    /** View holder for one punch row. */
     inner class PunchViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var punchOrder: TextView = view.findViewById(R.id.punch_item_order)
         var punchSiCode: TextView = view.findViewById(R.id.punch_item_si_code)
