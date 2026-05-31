@@ -9,6 +9,8 @@ import androidx.room.TypeConverters
 import kolskypavel.ardfmanager.backend.room.database.DateTimeTypeConverter
 import kolskypavel.ardfmanager.backend.room.enums.RaceBand
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
+import kolskypavel.ardfmanager.backend.shared.toEventCategory
+import org.openardf.radioomanager.shared.files.EventCsvRows
 import java.io.Serializable
 import java.time.Duration
 import java.util.UUID
@@ -44,7 +46,7 @@ data class Category(
 ) : Serializable {
 
     fun toCSVString(): String {
-        return "$name;${isMan.compareTo(false)};${maxAge ?: 0};${length};${climb};${order};${raceType?.value ?: ""};${timeLimit?.toMinutes() ?: ""}}"
+        return EventCsvRows.categoryRow(toEventCategory())
     }
 
     constructor(name: String) : this(

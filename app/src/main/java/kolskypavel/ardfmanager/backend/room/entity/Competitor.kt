@@ -7,6 +7,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.shared.toEventCompetitor
+import org.openardf.radioomanager.shared.files.EventCsvRows
 import java.io.Serializable
 import java.time.Duration
 import java.time.LocalDateTime
@@ -56,7 +57,7 @@ data class Competitor(
     }
 
     fun toSimpleCsvString(categoryName: String): String {
-        return "${siNumber ?: ""};${firstName};${lastName};${categoryName};${isMan.compareTo(false)};${birthYear};;${club};;${startNumber};${index}"
+        return EventCsvRows.competitorRow(toEventCompetitor(), categoryName)
     }
 
     fun toStartCsvString(
