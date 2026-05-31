@@ -15,7 +15,7 @@ import kolskypavel.ardfmanager.backend.room.entity.Race
 import java.util.UUID
 
 /**
- * [RecyclerView.Adapter] that can display a [Race].
+ * Recycler adapter for the race selection list and each race row's context menu.
  */
 class RaceRecyclerViewAdapter(
     private var values: List<Race>, private val onRaceClicked: (raceId: UUID) -> Unit,
@@ -24,6 +24,8 @@ class RaceRecyclerViewAdapter(
 ) : RecyclerView.Adapter<RaceRecyclerViewAdapter.RaceViewHolder>() {
 
     private val dataProcessor = DataProcessor.get()
+
+    /** Creates one race-list row view holder. */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RaceViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
             .inflate(R.layout.recycler_item_race, parent, false)
@@ -31,6 +33,7 @@ class RaceRecyclerViewAdapter(
         return RaceViewHolder(adapterLayout)
     }
 
+    /** Binds race summary text and click/context-menu callbacks. */
     override fun onBindViewHolder(holder: RaceViewHolder, position: Int) {
         val item = values[position]
         holder.title.text = item.name
@@ -77,8 +80,10 @@ class RaceRecyclerViewAdapter(
         }
     }
 
+    /** Returns the number of races currently displayed. */
     override fun getItemCount(): Int = values.size
 
+    /** View holder for one race selection row. */
     inner class RaceViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = view.findViewById(R.id.race_item_title)
         val date: TextView = view.findViewById(R.id.race_item_date)

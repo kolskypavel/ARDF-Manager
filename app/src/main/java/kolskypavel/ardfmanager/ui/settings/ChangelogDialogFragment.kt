@@ -12,8 +12,10 @@ import kolskypavel.ardfmanager.R
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
+/** Dialog rendering the bundled changelog Markdown file. */
 class ChangelogDialogFragment : DialogFragment() {
 
+    /** Builds the changelog dialog and renders Markdown into its text view. */
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val inflater = LayoutInflater.from(requireContext())
         val view: View = inflater.inflate(R.layout.dialog_changelog, null)
@@ -21,7 +23,6 @@ class ChangelogDialogFragment : DialogFragment() {
         val changelogTextView: TextView = view.findViewById(R.id.changelog_text)
         val markdown = loadChangelogFromAssets()
 
-        // Initialize Markwon and render the Markdown
         val markwon = Markwon.create(requireContext())
         markwon.setMarkdown(changelogTextView, markdown)
 
@@ -32,6 +33,7 @@ class ChangelogDialogFragment : DialogFragment() {
             .create()
     }
 
+    /** Loads CHANGELOG.md from app assets, returning a fallback message on failure. */
     private fun loadChangelogFromAssets(): String {
         return try {
             requireContext().assets.open("CHANGELOG.md").use { inputStream ->

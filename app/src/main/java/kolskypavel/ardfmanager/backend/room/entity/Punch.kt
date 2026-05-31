@@ -7,10 +7,12 @@ import androidx.room.PrimaryKey
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SITime
+import org.openardf.radioomanager.shared.files.EventCsvRows
 import java.io.Serializable
 import java.time.Duration
 import java.util.UUID
 
+/** Room entity for one punch read from a SportIdent card. */
 @Entity(
     tableName = "punch", foreignKeys = [ForeignKey(
         entity = Result::class,
@@ -26,17 +28,18 @@ data class Punch(
     @ColumnInfo(name = "card_number") var cardNumber: Int? = null,
     @ColumnInfo(name = "si_code") var siCode: Int,
     @ColumnInfo(name = "si_time") var siTime: SITime,
-    @ColumnInfo(name = "orig_si_time") var origSiTime: SITime, // Immutable copy of original SI Time, used mainly for SI 5 cards
+    @ColumnInfo(name = "orig_si_time") var origSiTime: SITime,
     @ColumnInfo(name = "punch_type") var punchType: SIRecordType,
     @ColumnInfo(name = "order") var order: Int,
-    @ColumnInfo(name = "punch_status") var punchStatus: PunchStatus,      //Holds the original SI Time in case a punch was modified
+    @ColumnInfo(name = "punch_status") var punchStatus: PunchStatus,
     @ColumnInfo(name = "split") var split: Duration
 ) : Serializable {
+    /** Formats this punch in the legacy readout CSV row shape. */
     fun toCsvString(): String {
-        return "${cardNumber ?: ""};${siCode};${siTime}"
+        return EventCsvRows.punchRow(cardNumber, siCode, siTime.toString())
     }
 
-    // For debugging purposes
+    /** Default constructor used by debug views, tests, and tooling that require defaults. */
     constructor() : this(
         id = UUID.randomUUID(),
         raceId = UUID.randomUUID(),
@@ -51,6 +54,7 @@ data class Punch(
         split = Duration.ZERO
     )
 
+    /** Convenience constructor for building parsed SportIdent punch records. */
     constructor(siCode: Int, siTime: SITime, punchType: SIRecordType, order: Int) : this(
         id = UUID.randomUUID(),
         raceId = UUID.randomUUID(),

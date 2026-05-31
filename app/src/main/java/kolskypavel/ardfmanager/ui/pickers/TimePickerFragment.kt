@@ -10,8 +10,11 @@ import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.navArgs
 import java.time.LocalTime
 
+/** DialogFragment wrapper that returns a selected time through the Fragment Result API. */
 class TimePickerFragment : DialogFragment() {
     private val args: TimePickerFragmentArgs by navArgs()
+
+    /** Builds a 24-hour time picker initialized from navigation arguments. */
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         val timeListener =
@@ -35,6 +38,7 @@ class TimePickerFragment : DialogFragment() {
         )
     }
 
+    /** Fragment Result keys used to return the selected time. */
     companion object {
         const val REQUEST_KEY_TIME = "REQUEST_KEY_TIME"
         const val BUNDLE_KEY_TIME = "BUNDLE_KEY_TIME"

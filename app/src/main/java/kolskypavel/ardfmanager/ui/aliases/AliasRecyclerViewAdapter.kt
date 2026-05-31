@@ -10,8 +10,9 @@ import androidx.core.widget.doOnTextChanged
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.entity.Alias
-import kolskypavel.ardfmanager.backend.sportident.SIConstants.isSICodeValid
 import kolskypavel.ardfmanager.backend.wrappers.AliasEditItemWrapper
+import org.openardf.radioomanager.shared.alias.AliasRules
+import org.openardf.radioomanager.shared.alias.AliasValidationResult
 import java.util.UUID
 
 class AliasRecyclerViewAdapter(
@@ -72,51 +73,47 @@ class AliasRecyclerViewAdapter(
     }
 
     private fun codeWatcher(position: Int, code: String, context: Context) {
-        if (code.isEmpty()) {
+        val result = AliasRules.validateCode(
+            code = code,
+            existingCodes = values.map { it.alias.siCode },
+            position = position
+        )
+
+        if (result == AliasValidationResult.Valid) {
+            values[position].isCodeValid = true
+            values[position].alias.siCode = code.toInt()
+        } else {
             values[position].isCodeValid = false
-            throw IllegalArgumentException(context.getString(R.string.general_required))
+            throw IllegalArgumentException(result.toMessage(context))
         }
-
-        val codeValue = code.toInt()
-
-        if (!isSICodeValid(codeValue)) {
-            values[position].isCodeValid = false
-            throw IllegalArgumentException(context.getString(R.string.general_invalid))
-        }
-
-        // Use position-aware availability so the item itself isn't treated as duplicate
-        if (!isCodeAvailable(codeValue, position)) {
-            values[position].isCodeValid = false
-            throw IllegalArgumentException(context.getString(R.string.general_duplicate))
-        }
-
-        values[position].isCodeValid = true
-        values[position].alias.siCode = if (code.isEmpty()) 0 else code.toInt()
     }
 
     private fun nameWatcher(position: Int, name: String, context: Context) {
-        if (name.isEmpty()) {
-            values[position].isNameValid = false
-            throw IllegalArgumentException(context.getString(R.string.general_required))
-        }
+        val result = AliasRules.validateName(
+            name = name,
+            existingNames = values.map { it.alias.name },
+            position = position
+        )
 
-        // Use position-aware availability so the item itself isn't treated as duplicate
-        if (!isNameAvailable(name, position)) {
+        if (result == AliasValidationResult.Valid) {
+            values[position].isNameValid = true
+            values[position].alias.name = name
+        } else {
             values[position].isNameValid = false
-            throw IllegalArgumentException(context.getString(R.string.general_duplicate))
+            throw IllegalArgumentException(result.toMessage(context))
         }
-
-        values[position].isNameValid = true
-        values[position].alias.name = name
     }
 
-    private fun isCodeAvailable(code: Int, position: Int): Boolean =
-        values.withIndex().all { (i, a) -> if (i == position) true else code != a.alias.siCode }
-
-    private fun isNameAvailable(name: String, position: Int): Boolean =
-        values.withIndex().all { (i, a) -> if (i == position) true else name != a.alias.name }
-
     fun checkFields(): Boolean = values.all { a -> a.isNameValid && a.isCodeValid }
+
+    private fun AliasValidationResult.toMessage(context: Context): String {
+        return when (this) {
+            AliasValidationResult.Valid -> ""
+            AliasValidationResult.Required -> context.getString(R.string.general_required)
+            AliasValidationResult.Invalid -> context.getString(R.string.general_invalid)
+            AliasValidationResult.Duplicate -> context.getString(R.string.general_duplicate)
+        }
+    }
 
     fun addAlias(position: Int) {
         val aliasWrapper = AliasEditItemWrapper(

@@ -12,9 +12,11 @@ import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.sportident.SITime
 import java.util.UUID
 
+/** Moshi adapter for readouts that are not matched to a competitor. */
 class UnmatchedResultJsonAdapter(val race: Race, val dataProcessor: DataProcessor) {
     val punchJsonAdapter = PunchJsonAdapter(race.id, dataProcessor)
 
+    /** Serializes an unmatched readout with card number, timing, and split punches. */
     @ToJson
     fun toJson(readoutData: ReadoutData): UnmatchedResultJson {
         val result = readoutData.result
@@ -29,6 +31,7 @@ class UnmatchedResultJsonAdapter(val race: Race, val dataProcessor: DataProcesso
         )
     }
 
+    /** Deserializes an unmatched readout and reconstructs absolute punch times from split durations. */
     @FromJson
     fun fromJson(json: UnmatchedResultJson): ReadoutData {
         val result = Result(

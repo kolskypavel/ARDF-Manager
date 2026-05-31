@@ -1,8 +1,4 @@
 package kolskypavel.ardfmanager.backend.room.enums
 
-enum class SIRecordType {
-    CHECK,
-    START,
-    FINISH,
-    CONTROL
-}
+/** Android compatibility alias for shared SportIdent record types. */
+typealias SIRecordType = org.openardf.radioomanager.shared.domain.SIRecordType

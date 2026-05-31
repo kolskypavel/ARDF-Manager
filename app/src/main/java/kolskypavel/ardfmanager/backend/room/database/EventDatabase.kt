@@ -20,6 +20,7 @@ import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.backend.room.entity.Result
 import kolskypavel.ardfmanager.backend.room.entity.ResultService
 
+/** Room database that stores all Android event administration data. */
 @Database(
     entities = [Race::class,
         Category::class,
@@ -34,12 +35,20 @@ import kolskypavel.ardfmanager.backend.room.entity.ResultService
 )
 @TypeConverters(DateTimeTypeConverter::class)
 abstract class EventDatabase : RoomDatabase() {
+    /** DAO for race records. */
     abstract fun raceDao(): RaceDao
+    /** DAO for control-point aliases. */
     abstract fun aliasDao(): AliasDao
+    /** DAO for category and course records. */
     abstract fun categoryDao(): CategoryDao
+    /** DAO for competitor records. */
     abstract fun competitorDao(): CompetitorDao
+    /** DAO for category control points. */
     abstract fun controlPointDao(): ControlPointDao
+    /** DAO for SportIdent punches. */
     abstract fun punchDao(): PunchDao
+    /** DAO for SI readout results. */
     abstract fun resultDao(): ResultDao
+    /** DAO for live-result service settings. */
     abstract fun resultServiceDao(): ResultServiceDao
 }

@@ -6,11 +6,14 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
+import kolskypavel.ardfmanager.backend.shared.toEventCompetitor
+import org.openardf.radioomanager.shared.files.EventCsvRows
 import java.io.Serializable
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.UUID
 
+/** Room entity for a registered competitor in a race. */
 @Entity(
     tableName = "competitor", indices = [Index(
         value = ["start_number", "race_id"],
@@ -46,18 +49,22 @@ data class Competitor(
     @ColumnInfo(name = "start_number") var startNumber: Int,
     @ColumnInfo(name = "drawn_start_time") var drawnRelativeStartTime: Duration? = null,
 ) : Serializable {
+    /** Returns the display name in the shared LASTNAME Firstname format. */
     fun getFullName(): String {
-        return "${lastName.uppercase()} $firstName"
+        return toEventCompetitor().fullName()
     }
 
+    /** Returns the display name with the competitor's start number appended. */
     fun getNameWithStartNumber(): String {
-        return "${lastName.uppercase()} $firstName (${startNumber})"
+        return toEventCompetitor().nameWithStartNumber()
     }
 
+    /** Formats this competitor in the legacy competitor CSV export row shape. */
     fun toSimpleCsvString(categoryName: String): String {
-        return "${siNumber ?: ""};${firstName};${lastName};${categoryName};${isMan.compareTo(false)};${birthYear};;${club};;${startNumber};${index}"
+        return EventCsvRows.competitorRow(toEventCompetitor(), categoryName)
     }
 
+    /** Formats this competitor in the start-list CSV export row shape. */
     fun toStartCsvString(
         categoryName: String,
         raceStart: LocalDateTime
@@ -68,10 +75,10 @@ data class Competitor(
                 TimeProcessor.hoursMinutesFormatter(raceStart + drawnRelativeStartTime)
             } else null
 
-        return "${startNumber};${lastName};${firstName};${categoryName};;${real ?: ""};${index};;${club};${siNumber ?: ""}"
+        return EventCsvRows.competitorStartRow(toEventCompetitor(), categoryName, real)
     }
 
-    //Non-args constructor
+    /** No-argument constructor used by serialization and tooling that require defaults. */
     constructor() : this(
         UUID.randomUUID(),
         UUID.randomUUID(),

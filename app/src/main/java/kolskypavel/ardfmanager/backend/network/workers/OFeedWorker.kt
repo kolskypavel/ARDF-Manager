@@ -20,7 +20,9 @@ import java.io.ByteArrayOutputStream
 import java.time.LocalTime
 import java.util.zip.GZIPOutputStream
 
+/** Live-result worker for the OFeed IOF XML upload API. */
 object OFeedWorker : ResultServiceWorker {
+    /** Uploads the start list before result uploads begin. */
     override suspend fun init(
         resultService: ResultService,
         race: Race,
@@ -40,10 +42,11 @@ object OFeedWorker : ResultServiceWorker {
         } catch (e: Exception) {
             Log.e(OResultsWorker.LOG_TAG, "Exception when init: ${e.message}")
             resultService.errorText =
-               context.getString(R.string.result_service_status_error)
+                context.getString(R.string.result_service_status_error)
         }
     }
 
+    /** Uploads current categorized results as compressed IOF XML. */
     override suspend fun exportResults(
         resultService: ResultService,
         race: Race,
@@ -64,13 +67,14 @@ object OFeedWorker : ResultServiceWorker {
             sendFile(xml, resultService, httpClient, context)
 
         } catch (exception: Exception) {
-            // Handle exceptions during the request
+            // Convert request failures into provider status so the UI can show the error.
             resultService.status = ResultServiceStatus.ERROR
             resultService.errorText = exception.message ?: "Unknown error"
             Log.e(OResultsWorker.LOG_TAG, "Exception sending : ${exception.message}")
         }
     }
 
+    /** Sends one gzipped IOF XML payload to OFeed and maps provider responses to service status. */
     @Throws(Exception::class)
     fun sendFile(
         data: String,
@@ -79,7 +83,6 @@ object OFeedWorker : ResultServiceWorker {
         context: Context
     ): Boolean {
 
-        // Compress data with gzip
         val compressed = gzipStringToByteArray(data)
 
         val multipartBody = MultipartBody.Builder()
@@ -131,7 +134,6 @@ object OFeedWorker : ResultServiceWorker {
                 return false
             }
 
-            // Other error
             else {
                 Log.e(
                     OResultsWorker.LOG_TAG,
@@ -147,6 +149,7 @@ object OFeedWorker : ResultServiceWorker {
     }
 
 
+    /** Compresses XML text as UTF-8 gzip bytes for provider upload. */
     fun gzipStringToByteArray(input: String): ByteArray {
         val bos = ByteArrayOutputStream()
         GZIPOutputStream(bos).use { gzip ->

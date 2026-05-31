@@ -13,6 +13,7 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.util.UUID
 
+/** Room entity for an event/race and its default timing and course settings. */
 @Entity(
     tableName = "race"
 )
@@ -27,6 +28,7 @@ data class Race(
     @ColumnInfo(name = "race_band") var raceBand: RaceBand,
     @ColumnInfo(name = "time_limit") var timeLimit: Duration
 ) : Serializable {
+    /** Default constructor used by edit screens and persistence tooling. */
     constructor() : this(
         UUID.randomUUID(),
         "", "",

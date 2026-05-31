@@ -11,6 +11,7 @@ import java.time.Duration
 import java.time.LocalTime
 import java.util.UUID
 
+/** Room entity for one configured live-result publishing service. */
 @Entity(
     tableName = "result_service",
     foreignKeys = [ForeignKey(
@@ -34,6 +35,7 @@ data class ResultService(
     @ColumnInfo(name = "sent") var sent: Int = 0,
     @ColumnInfo(name = "sent_at") var sentAt: LocalTime,
 ) : Serializable {
+    /** Creates a disabled default ROBIS service configuration for a race. */
     constructor(raceId: UUID) : this(
         UUID.randomUUID(),
         ProviderType.ROBIS,

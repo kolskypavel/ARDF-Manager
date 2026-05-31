@@ -10,8 +10,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import kolskypavel.ardfmanager.R
 
+/** Dialog showing app version and project links. */
 class AboutDialogFragment : DialogFragment() {
 
+    /** Builds the about dialog from its custom layout. */
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val view: View = LayoutInflater.from(requireContext())
             .inflate(R.layout.dialog_about_app, null)

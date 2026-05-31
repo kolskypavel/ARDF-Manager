@@ -8,11 +8,13 @@ import androidx.room.PrimaryKey
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.backend.sportident.SITime
+import org.openardf.radioomanager.shared.results.ResultRankingKey
 import java.io.Serializable
 import java.time.Duration
 import java.time.LocalDateTime
 import java.util.UUID
 
+/** Room entity for one SI card readout result, optionally matched to a competitor. */
 @Entity(
     tableName = "result", foreignKeys = [ForeignKey(
         entity = Race::class,
@@ -43,27 +45,20 @@ data class Result(
     @ColumnInfo(name = "points") var points: Int = 0,
     @ColumnInfo(name = "run_time") var runTime: Duration,
     @ColumnInfo(name = "modified") var modified: Boolean,
-    @ColumnInfo(name = "sent") var sent: Boolean,      //Marked as sent to the server
+    @ColumnInfo(name = "sent") var sent: Boolean,
 
 ) : Serializable, Comparable<Result> {
     @Ignore
     var place: Int = 0
-    override operator fun compareTo(other: Result): Int {
 
-        //Compare race status
-        return if (resultStatus != other.resultStatus) {
-            resultStatus.compareTo(other.resultStatus)
-        }
-        //Compare points - more points are before less points
-        else if (points != other.points) {
-            points.compareTo(other.points) * -1
-        }
-        //Compare times
-        else {
-            runTime.compareTo(other.runTime)
-        }
+    /** Sorts results using the same ranking policy as shared result placement. */
+    override operator fun compareTo(other: Result): Int {
+        return ResultRankingKey(resultStatus, points, runTime.toNanos()).compareTo(
+            ResultRankingKey(other.resultStatus, other.points, other.runTime.toNanos())
+        )
     }
 
+    /** Default constructor used by tests, previews, and persistence tooling. */
     constructor() : this(
         id = UUID.randomUUID(),
         raceId = UUID.randomUUID(),

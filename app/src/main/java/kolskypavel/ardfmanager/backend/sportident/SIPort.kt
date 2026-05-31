@@ -4,6 +4,7 @@ import android.util.Log
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.logging.DebugLog
 import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.GET_SI_CARD8_9_SIAC
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.GET_SYSTEM_INFO
@@ -92,6 +93,7 @@ class SIPort(
                         )
                     cardData.cardType = reply[1]
                     Log.d("SI", "Got card inserted event (CardID: " + cardData.siNumber + ")")
+                    DebugLog.info("SI", "Card inserted id=${cardData.siNumber}")
                     return true
                 }
 
@@ -102,7 +104,10 @@ class SIPort(
                         ) shl 8) + byteToUnsignedInt(reply[8])
                 }
 
-                else -> Log.d("SI", "Got unknown command waiting for card inserted event")
+                else -> {
+                    Log.d("SI", "Got unknown command waiting for card inserted event")
+                    DebugLog.debug("SI", "Unknown command while waiting for card insert command=${reply[1]}")
+                }
             }
         }
         return false
@@ -128,11 +133,17 @@ class SIPort(
             if (valid) {
                 if (dataProcessor.processCardData(cardData, race) == true) {
                     lastReadCardId = cardData.siNumber
+                    DebugLog.info(
+                        "SI",
+                        "Card read stored id=${cardData.siNumber} punches=${cardData.punchData.size}"
+                    )
                     setStatusRead(cardData.siNumber)
                 } else {
+                    DebugLog.warn("SI", "Card read ignored id=${cardData.siNumber}")
                     setStatusConnected()
                 }
             } else {
+                DebugLog.warn("SI", "Card read failed id=${cardData.siNumber}")
                 setStatusError(cardData.siNumber)
             }
         }
@@ -304,6 +315,7 @@ class SIPort(
 
         } catch (e: Exception) {
             Log.e("SI", "Failed to set parameters on USB serial port" + e.message)
+            DebugLog.error("SI", "Failed to set USB serial parameters: ${e.message}")
             return false
         }
 
@@ -313,6 +325,7 @@ class SIPort(
 
         if (reply == null || reply.isEmpty()) {
             Log.d("SI", "No response on high baud rate mode, trying low baud rate")
+            DebugLog.debug("SI", "No high-baud response; trying low baud")
             port.setBaudRate(SIConstants.BAUDRATE_LOW)
         }
 
@@ -321,6 +334,7 @@ class SIPort(
 
         if (reply != null && reply.isNotEmpty()) {
             Log.d("SI", "Unit responded, reading device info")
+            DebugLog.debug("SI", "Station responded; reading device info")
             msg = byteArrayOf(ZERO, 0x75)
             writeMsg(GET_SYSTEM_INFO, msg, true)
             reply = readMsg(6000, GET_SYSTEM_INFO)
@@ -334,6 +348,7 @@ class SIPort(
                 serialNo =
                     ((byteToUnsignedInt(reply[6]) shl 24) + (byteToUnsignedInt(reply[7]) shl 16)
                             + (byteToUnsignedInt(reply[8]) shl 8) + byteToUnsignedInt(reply[9]))
+                DebugLog.info("SI", "Station connected serial=$serialNo extended=$extendedMode")
                 ret = true
             }
 
@@ -353,12 +368,14 @@ class SIPort(
                         ((byteToUnsignedInt(reply[6]) shl 24) + (byteToUnsignedInt(reply[7]) shl 16) + (byteToUnsignedInt(
                             reply[8]
                         ) shl 8) + byteToUnsignedInt(reply[9]))
+                    DebugLog.info("SI", "Station connected serial=$serialNo extended=$extendedMode")
                     ret = true
                 }
             }
         }
 
         if (!ret) {
+            DebugLog.warn("SI", "Station probe failed")
             port.syncClose()
         }
         return ret

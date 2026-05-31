@@ -1,4 +1,4 @@
-package kolskypavel.ardfmanager.ui.data;
+package kolskypavel.ardfmanager.ui.data
 
 import android.view.LayoutInflater
 import android.view.View
@@ -12,6 +12,7 @@ import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
 import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 
+/** Recycler adapter for the small preview table shown before importing data. */
 class DataPreviewRecyclerViewAdapater(
     var value: DataImportWrapper,
     var dataType: DataType
@@ -19,6 +20,7 @@ class DataPreviewRecyclerViewAdapater(
     RecyclerView.Adapter<DataPreviewRecyclerViewAdapater.DataPreviewViewHolder>() {
     private val dataProcessor = DataProcessor.get()
 
+    /** Creates one four-column preview row. */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DataPreviewViewHolder {
         val adapterLayout = LayoutInflater.from(parent.context)
             .inflate(R.layout.recycler_item_data, parent, false)
@@ -26,7 +28,7 @@ class DataPreviewRecyclerViewAdapater(
         return DataPreviewViewHolder(adapterLayout)
     }
 
-    //Select the right number of elements
+    /** Returns the number of preview rows, limiting competitor previews to five rows. */
     override fun getItemCount(): Int {
         return when (dataType) {
             DataType.CATEGORIES -> value.categories.size
@@ -41,6 +43,7 @@ class DataPreviewRecyclerViewAdapater(
         }
     }
 
+    /** Binds one category, competitor, or start-list preview row. */
     override fun onBindViewHolder(holder: DataPreviewViewHolder, position: Int) {
         when (dataType) {
             DataType.CATEGORIES -> {
@@ -78,6 +81,7 @@ class DataPreviewRecyclerViewAdapater(
         }
     }
 
+    /** View holder for one import preview row. */
     inner class DataPreviewViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var columnOne: TextView = view.findViewById(R.id.data_import_item_column_1)
         var columnTwo: TextView = view.findViewById(R.id.data_import_item_column_2)

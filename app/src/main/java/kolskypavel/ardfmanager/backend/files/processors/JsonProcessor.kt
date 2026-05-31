@@ -25,9 +25,11 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.util.UUID
 
+/** Import/export processor for JSON race backups and live/final result feeds. */
 @OptIn(ExperimentalStdlibApi::class)
 object JsonProcessor : FormatProcessor {
 
+    /** JSON imports through this format contract are not implemented except for full race backups. */
     override suspend fun importData(
         inStream: InputStream,
         dataType: DataType,
@@ -41,6 +43,7 @@ object JsonProcessor : FormatProcessor {
         }
     }
 
+    /** Exports supported JSON result feeds; full race backups are handled by [exportRaceData]. */
     override suspend fun exportData(
         outStream: OutputStream,
         dataType: DataType,
@@ -67,6 +70,7 @@ object JsonProcessor : FormatProcessor {
         }
     }
 
+    /** Placeholder for future competitor-only JSON import support. */
     fun importCompetitorData(
         inStream: InputStream,
         race: Race,
@@ -75,19 +79,23 @@ object JsonProcessor : FormatProcessor {
         TODO()
     }
 
+    /** Placeholder for future category-only JSON import support. */
     suspend fun importCategories() {
 
     }
 
+    /** Placeholder for future competitor JSON import support. */
     suspend fun importCompetitors() {
 
     }
 
+    /** Imports a full race backup from a UTF-8 JSON stream. */
     fun importRaceData(inStream: InputStream, dataProcessor: DataProcessor): RaceData {
         val jsonString = inStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
         return importRaceData(jsonString, dataProcessor)
     }
 
+    /** Imports a full race backup from a JSON string using the race-data Moshi adapter. */
     fun importRaceData(jsonString: String, dataProcessor: DataProcessor): RaceData {
         val moshi: Moshi = Moshi.Builder()
             .add(RaceDataJsonAdapter(dataProcessor))
@@ -99,6 +107,7 @@ object JsonProcessor : FormatProcessor {
         return adapter.nonNull().fromJson(jsonString)!!
     }
 
+    /** Parses the ROBIS response shape returned by the live-result service. */
     fun parseRobisResponse(response: String): RobisResponseJson? {
         val moshi: Moshi = Moshi.Builder()
             .add(KotlinJsonAdapterFactory()).build()
@@ -107,6 +116,7 @@ object JsonProcessor : FormatProcessor {
         return adapter.fromJson(response)
     }
 
+    /** Exports complete final results, including categories, aliases, and competitor readouts. */
     suspend fun exportFinalResults(
         outStream: OutputStream,
         race: Race,
@@ -121,7 +131,7 @@ object JsonProcessor : FormatProcessor {
                 .build()
 
             val adapter = moshi.adapter<RaceData>()
-            val raceData: RaceData = dataProcessor.getRaceData(race.id);
+            val raceData: RaceData = dataProcessor.getRaceData(race.id)
 
             val json = adapter.toJson(raceData)
             outStream.write(json.toByteArray(Charsets.UTF_8))
@@ -129,6 +139,7 @@ object JsonProcessor : FormatProcessor {
         }
     }
 
+    /** Exports live results as a flat list of competitors with matched readouts. */
     suspend fun exportLiveResults(
         outStream: OutputStream,
         race: Race,
@@ -147,6 +158,7 @@ object JsonProcessor : FormatProcessor {
 
             val results = ResultsProcessor.getCompetitorDataByRace(race.id, dataProcessor)
             val exportList = results.mapNotNull { rd ->
+                // Live result feeds only include competitors with a readout and assigned category.
                 val result = rd.readoutData ?: return@mapNotNull null
 
                 val compCat = rd.competitorCategory
@@ -170,6 +182,7 @@ object JsonProcessor : FormatProcessor {
     }
 
 
+    /** Exports a complete race backup suitable for later import into a fresh race. */
     suspend fun exportRaceData(
         outStream: OutputStream,
         dataProcessor: DataProcessor,
@@ -181,7 +194,7 @@ object JsonProcessor : FormatProcessor {
                 .add(LocalDateTimeAdapter())
                 .add(KotlinJsonAdapterFactory())
                 .build()
-            val raceData: RaceData = dataProcessor.getRaceData(raceId);
+            val raceData: RaceData = dataProcessor.getRaceData(raceId)
             val adapter = moshi.adapter<RaceData>()
 
             val json = adapter.toJson(raceData)

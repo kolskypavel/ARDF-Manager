@@ -1,0 +1,40 @@
+plugins {
+    id("com.android.library")
+    id("org.jetbrains.kotlin.multiplatform")
+}
+
+import org.jetbrains.kotlin.gradle.targets.jvm.KotlinJvmTarget
+
+kotlin {
+    androidTarget()
+    jvm("desktop")
+
+    sourceSets {
+        commonTest {
+            dependencies {
+                implementation kotlin("test")
+            }
+        }
+    }
+}
+
+tasks.register("desktopSmokeRun", JavaExec) {
+    group = "application"
+    description = "Runs the Radio-O-Manager desktop smoke-test CLI."
+
+    def desktopTarget = kotlin.targets.getByName("desktop") as KotlinJvmTarget
+    def mainCompilation = desktopTarget.compilations.getByName("main")
+
+    dependsOn(mainCompilation.compileTaskProvider)
+    classpath(mainCompilation.runtimeDependencyFiles, mainCompilation.output.allOutputs)
+    mainClass.set("org.openardf.radioomanager.shared.cli.DesktopSmokeCliKt")
+}
+
+android {
+    namespace = "org.openardf.radioomanager.shared"
+    compileSdk = 36
+
+    defaultConfig {
+        minSdk = 26
+    }
+}

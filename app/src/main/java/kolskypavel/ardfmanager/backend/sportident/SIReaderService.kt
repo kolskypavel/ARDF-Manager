@@ -16,6 +16,7 @@ import com.felhr.usbserial.UsbSerialDevice
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.AppState
 import kolskypavel.ardfmanager.backend.DataProcessor
+import kolskypavel.ardfmanager.backend.logging.DebugLog
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_PRODUCT_ID
 import kolskypavel.ardfmanager.backend.sportident.SIConstants.SI_VENDOR_ID
 import kotlinx.coroutines.Job
@@ -54,6 +55,7 @@ class SIReaderService :
 
     private fun startService(newDevice: UsbDevice, context: Context) {
         if (newDevice.vendorId == SI_VENDOR_ID && newDevice.productId == SI_PRODUCT_ID) {
+            DebugLog.info("SI", "Reader service accepted SPORTident device ${newDevice.vendorId}:${newDevice.productId}")
             device = newDevice
             startSIDevice()
 
@@ -70,11 +72,14 @@ class SIReaderService :
 
             startForeground(NOTIFICATION_ID, notification)
             setNotificationObserver()
+        } else {
+            DebugLog.warn("SI", "Ignoring unsupported USB device ${newDevice.vendorId}:${newDevice.productId}")
         }
     }
 
     private fun stopService(removedDevice: UsbDevice) {
         if (removedDevice.vendorId == SI_VENDOR_ID && removedDevice.productId == SI_PRODUCT_ID) {
+            DebugLog.info("SI", "Reader service stopping for SPORTident device ${removedDevice.vendorId}:${removedDevice.productId}")
             siJob?.cancel()
 
             // Remove the observer if registered
@@ -98,6 +103,7 @@ class SIReaderService :
                     null, null
                 )
             )
+            DebugLog.info("SI", "Reader service stopped")
         }
     }
 
@@ -105,11 +111,13 @@ class SIReaderService :
         val usbManager = getSystemService(Context.USB_SERVICE) as UsbManager
         connection = usbManager.openDevice(device)
         serialDevice = UsbSerialDevice.createUsbSerialDevice(device, connection)
+        DebugLog.info("SI", "USB serial device created")
         siPort = SIPort(serialDevice!!)
 
         //Start the work on the SI reader
         siJob = siPort!!.workJob()
         siJob!!.start()
+        DebugLog.info("SI", "SI reader work job started")
     }
 
     private fun createNotificationChannel(context: Context) {

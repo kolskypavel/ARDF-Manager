@@ -10,12 +10,14 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.RaceData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ReadoutData
-import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
+import org.openardf.radioomanager.shared.importing.ImportValidationRules
+import org.openardf.radioomanager.shared.importing.ReadoutPunchValidationError
 import java.util.UUID
 
-// Used to validate imported data / RaceData
+/** Validates imported race data before it is written into the Android Room database. */
 object DataImportValidator {
 
+    /** Validates one import wrapper for the requested CSV-style data type. */
     @Throws(IllegalArgumentException::class)
     fun validateDataImport(
         data: DataImportWrapper,
@@ -26,30 +28,33 @@ object DataImportValidator {
     ) {
         when (dataType) {
 
-            //Name is required for each category and must be unique, categories can be empty
+            // Category names are required and unique; an import may still contain no categories.
             DataType.CATEGORIES -> {
                 validateCategories(data.categories, context)
             }
 
-            // SI number and start number must be unique
+            // SI numbers and start numbers must be unique within the file and the target race.
             DataType.COMPETITORS -> {
 
-                //TODO: add check for duplicate names
-                val startNumbers = HashSet<Int>()
-                val siNumbers = HashSet<Int>()
+                // TODO: Add optional duplicate-name validation once import settings define that policy.
+                val duplicateStartNumbers = ImportValidationRules.duplicateStartNumbers(
+                    data.competitorCategories.map { it.competitor.startNumber }
+                )
+                val duplicateSINumbers = ImportValidationRules.duplicateSINumbers(
+                    data.competitorCategories.map { it.competitor.siNumber }
+                )
                 for (comp in data.competitorCategories) {
                     val siNumber = comp.competitor.siNumber
                     val startNumber = comp.competitor.startNumber
 
-                    // Check the raceId and eventually set it - should not happen
+                    // Imported rows should already have this race id, but normalize them defensively.
                     if (comp.competitor.raceId != raceId) {
                         comp.competitor.raceId = raceId
                     }
 
-                    // Check if SI is duplicated in the list or in the database
+                    // Reject SI numbers duplicated in this file or already present in the race.
                     if (siNumber != null) {
-                        if (siNumbers.contains(siNumber)
-                        ) {
+                        if (duplicateSINumbers.contains(siNumber)) {
                             throw IllegalArgumentException(
                                 context.getString(
                                     R.string.data_import_competitor_duplicate_si_file,
@@ -67,9 +72,8 @@ object DataImportValidator {
                         }
                     }
 
-                    // Start number checks
-                    if (startNumbers.contains(startNumber)
-                    ) {
+                    // Reject start numbers duplicated in this file or already present in the race.
+                    if (duplicateStartNumbers.contains(startNumber)) {
                         throw IllegalArgumentException(
                             context.getString(
                                 R.string.data_import_competitor_duplicate_start_number_file,
@@ -86,17 +90,11 @@ object DataImportValidator {
                             )
                         )
                     }
-
-                    // Add the numbers to the sets
-                    if (siNumber != null) {
-                        siNumbers.add(siNumber)
-                    }
-                    startNumbers.add(startNumber)
                 }
             }
 
             DataType.COMPETITOR_STARTS -> {
-                // TODO: implement - based on settings
+                // TODO: Implement once import settings define how strict start-time updates should be.
             }
 
             else -> {
@@ -105,6 +103,7 @@ object DataImportValidator {
         }
     }
 
+    /** Validates a full race import, including race metadata, aliases, competitors, and readouts. */
     @Throws(IllegalArgumentException::class)
     fun validateRaceDataImport(
         raceData: RaceData,
@@ -124,12 +123,12 @@ object DataImportValidator {
         }
     }
 
-    // Checks for duplicate category names
+    /** Rejects duplicate category names within one import payload. */
     @Throws(IllegalArgumentException::class)
     fun validateCategories(categories: List<CategoryData>, context: Context) {
         val names = categories.map { it.category.name }
 
-        val catNames = names.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
+        val catNames = ImportValidationRules.duplicateCategoryNames(names)
         if (catNames.isNotEmpty()) {
             throw IllegalArgumentException(
                 context.getString(
@@ -140,6 +139,7 @@ object DataImportValidator {
         }
     }
 
+    /** Validates imported competitors and any readouts nested under them. */
     @Throws(IllegalArgumentException::class)
     fun validateRaceDataCompetitors(
         competitors: List<CompetitorData>,
@@ -147,22 +147,25 @@ object DataImportValidator {
         context: Context
     ) {
 
-        val startNumbers = HashSet<Int>()
-        val siNumbers = HashSet<Int>()
+        val duplicateStartNumbers = ImportValidationRules.duplicateStartNumbers(
+            competitors.map { it.competitorCategory.competitor.startNumber }
+        )
+        val duplicateSINumbers = ImportValidationRules.duplicateSINumbers(
+            competitors.map { it.competitorCategory.competitor.siNumber }
+        )
 
         for (comp in competitors) {
             val siNumber = comp.competitorCategory.competitor.siNumber
             val startNumber = comp.competitorCategory.competitor.startNumber
 
-            // Check the raceId and eventually set it - should not happen
+            // Imported rows should already have this race id, but normalize them defensively.
             if (comp.competitorCategory.competitor.raceId != raceId) {
                 comp.competitorCategory.competitor.raceId = raceId
             }
 
-            // Check if SI is duplicated in the list or in the database
+            // Full-race imports are self-contained, so only check duplicates inside the payload.
             if (siNumber != null) {
-                if (siNumbers.contains(siNumber)
-                ) {
+                if (duplicateSINumbers.contains(siNumber)) {
                     throw IllegalArgumentException(
                         context.getString(
                             R.string.data_import_competitor_duplicate_si_file,
@@ -172,9 +175,8 @@ object DataImportValidator {
                 }
             }
 
-            // Start number checks
-            if (startNumbers.contains(startNumber)
-            ) {
+            // Start numbers still need to be unique inside the payload.
+            if (duplicateStartNumbers.contains(startNumber)) {
                 throw IllegalArgumentException(
                     context.getString(
                         R.string.data_import_competitor_duplicate_start_number_file,
@@ -183,11 +185,12 @@ object DataImportValidator {
                 )
             }
 
-            //Validate readout
+            // Readouts nested under competitors must obey the same punch-shape rules as unmatched readouts.
             comp.readoutData?.let { validateRaceDataReadoutData(it, raceId, context) }
         }
     }
 
+    /** Validates one imported readout and normalizes child race/result identifiers. */
     @Throws(IllegalArgumentException::class)
     fun validateRaceDataReadoutData(
         readoutData: ReadoutData,
@@ -198,14 +201,10 @@ object DataImportValidator {
         val result = readoutData.result
         val punches = readoutData.punches.map { it -> it.punch }
 
-        // Fill the raceId if missing
+        // Normalize ids so child rows can be inserted under the newly imported race.
         if (result.raceId != raceId) {
             result.raceId = raceId
         }
-
-        // Check the punches for duplicate START/FINISH punches
-        var startPunchPresent = false
-        var finishPunchPresent = false
 
         for (punch in punches) {
             if (punch.raceId != raceId) {
@@ -214,48 +213,38 @@ object DataImportValidator {
             if (punch.resultId != result.id) {
                 punch.resultId = result.id
             }
-
-            if (punch.punchType == SIRecordType.START) {
-                if (startPunchPresent) {
-                    throw IllegalArgumentException(
-                        context.getString(
-                            R.string.data_import_readout_multiple_start,
-                            result.siNumber ?: "?"
-                        )
-                    )
-                } else {
-                    startPunchPresent = true
-                }
-            }
-
-            if (punch.punchType == SIRecordType.FINISH) {
-                if (finishPunchPresent) {
-                    throw IllegalArgumentException(
-                        context.getString(
-                            R.string.data_import_readout_multiple_finish,
-                            result.siNumber ?: "?"
-                        )
-                    )
-                } else {
-                    finishPunchPresent = true
-                }
-            }
         }
 
+        val punchErrors = ImportValidationRules.validateReadoutPunchTypes(punches.map { it.punchType })
+        if (punchErrors.contains(ReadoutPunchValidationError.MULTIPLE_START)) {
+            throw IllegalArgumentException(
+                context.getString(
+                    R.string.data_import_readout_multiple_start,
+                    result.siNumber ?: "?"
+                )
+            )
+        }
+        if (punchErrors.contains(ReadoutPunchValidationError.MULTIPLE_FINISH)) {
+            throw IllegalArgumentException(
+                context.getString(
+                    R.string.data_import_readout_multiple_finish,
+                    result.siNumber ?: "?"
+                )
+            )
+        }
     }
 
-    // Check if either name or code of alias is duplicate
+    /** Rejects aliases with duplicate names or SI codes inside a full-race import. */
     @Throws(IllegalArgumentException::class)
     fun validateRaceDataAliases(aliases: List<Alias>, context: Context) {
 
         val names = aliases.map { it.name }
         val codes = aliases.map { it.siCode }
 
-        // Find duplicates
-        val duplicateNames = names.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
-        val duplicateCodes = codes.groupingBy { it }.eachCount().filter { it.value > 1 }.keys
+        // Collect both duplicate dimensions so the user sees all alias conflicts at once.
+        val duplicateNames = ImportValidationRules.duplicateAliasNames(names)
+        val duplicateCodes = ImportValidationRules.duplicateAliasCodes(codes)
 
-        // Build error message(s)
         val errors = mutableListOf<String>()
         if (duplicateNames.isNotEmpty()) {
             errors.add(
@@ -274,7 +263,6 @@ object DataImportValidator {
             )
         }
 
-        // If any errors exist, throw exception
         if (errors.isNotEmpty()) {
             throw IllegalArgumentException(errors.joinToString("\n"))
         }

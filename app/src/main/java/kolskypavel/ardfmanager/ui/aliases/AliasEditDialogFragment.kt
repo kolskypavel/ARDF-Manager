@@ -17,6 +17,7 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.wrappers.AliasEditItemWrapper
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 
+/** Dialog for creating, editing, validating, and saving control-point aliases for one race. */
 class AliasEditDialogFragment : DialogFragment() {
     private lateinit var selectedRaceViewModel: SelectedRaceViewModel
     private val args: AliasEditDialogFragmentArgs by navArgs()
@@ -27,6 +28,7 @@ class AliasEditDialogFragment : DialogFragment() {
     private lateinit var cancelButton: Button
     private lateinit var aliasRecyclerView: RecyclerView
 
+    /** Inflates the alias-management dialog layout. */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,6 +37,7 @@ class AliasEditDialogFragment : DialogFragment() {
         return inflater.inflate(R.layout.dialog_manage_aliases, container, false)
     }
 
+    /** Sizes the dialog relative to the display width for compact phone and tablet layouts. */
     private fun DialogFragment.setWidthPercent(percentage: Int) {
         val percent = percentage.toFloat() / 100
         val dm = Resources.getSystem().displayMetrics
@@ -43,6 +46,7 @@ class AliasEditDialogFragment : DialogFragment() {
         dialog?.window?.setLayout(percentWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
+    /** Connects controls, loads existing aliases, and wires add/create buttons. */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.add_dialog)
@@ -78,6 +82,7 @@ class AliasEditDialogFragment : DialogFragment() {
         }
     }
 
+    /** Loads current aliases and wraps them with validation state for editing. */
     private fun setAdapter() {
         val aliases =
             selectedRaceViewModel.getAliasesByRace(args.raceId)
@@ -89,6 +94,7 @@ class AliasEditDialogFragment : DialogFragment() {
             )
     }
 
+    /** Wires cancel and save actions for the dialog. */
     private fun setButtons() {
         cancelButton.setOnClickListener {
             dialog?.cancel()

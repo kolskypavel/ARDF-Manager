@@ -28,14 +28,17 @@ import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
+import org.openardf.radioomanager.shared.event.StandardCategoryRules
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
 import java.time.Duration
 import java.util.UUID
 
+/** Import/export processor for Radio-O-Manager's semicolon-delimited CSV formats. */
 object CsvProcessor : FormatProcessor {
 
+    /** Imports the requested CSV data type into transient aggregates for validation and persistence. */
     override suspend fun importData(
         inStream: InputStream,
         dataType: DataType,
@@ -73,6 +76,7 @@ object CsvProcessor : FormatProcessor {
         return DataImportWrapper(emptyList(), emptyList(), ArrayList())
     }
 
+    /** Exports the requested data type in the app's legacy CSV shape. */
     override suspend fun exportData(
         outStream: OutputStream,
         dataType: DataType,
@@ -115,13 +119,14 @@ object CsvProcessor : FormatProcessor {
     }
 
 
-    //Use reader with semicolon separator
+    /** Creates a CSV reader configured for the app's semicolon-delimited files. */
     private fun getReader(): CsvReader {
         val context = CsvReaderContext()
         context.delimiter = ';'
         return CsvReader(context)
     }
 
+    /** Imports category/course rows and reports invalid rows without aborting the whole import. */
     private fun importCategories(
         inStream: InputStream,
         race: Race,
@@ -151,7 +156,7 @@ object CsvProcessor : FormatProcessor {
                         } else 0
                         val followRacePresets = row[5].trim() == "1"
 
-                        //Check validity
+                        // Reject rows that cannot describe a usable category/course.
                         if (categoryName.isEmpty() || maxAge <= 0 || length <= 0 || climb < 0) {
                             throw IllegalArgumentException("Invalid category data: $row")
                         }
@@ -172,7 +177,7 @@ object CsvProcessor : FormatProcessor {
                             ""
                         )
 
-                        // Parse the category specific fields
+                        // Rows can either inherit race defaults or override race type, time limit, and band.
                         if (!followRacePresets) {
                             val raceType = RaceType.valueOf(row[6].trim())
                             val timeLimit = row[7].trim().toLong()
@@ -215,39 +220,31 @@ object CsvProcessor : FormatProcessor {
         return DataImportWrapper(emptyList(), categories.toList(), invalidLines)
     }
 
+    /** Creates missing built-in categories for the selected standard category set. */
     suspend fun importStandardCategories(
         type: StandardCategoryType,
         race: Race,
         dataProcessor: DataProcessor
     ): List<Category> {
         val context = dataProcessor.getContext()
-        val categoryArr = context?.let {
-            when (type) {
-                StandardCategoryType.INTERNATIONAL -> context.resources.getStringArray(
-                    R.array.standard_categories_international
-                )
+        if (context == null) {
+            return emptyList()
+        }
 
-                StandardCategoryType.CZECH -> context.resources.getStringArray(
-                    R.array.standard_categories_czech
-                )
-            }
-        } ?: emptyArray<String>()
+        val definitions = StandardCategoryRules.definitionsFor(type)
         val categories = ArrayList<Category>()
 
-        for (line in categoryArr.withIndex()) {
-            val split = line.value.split(";")
-            if (split.size == 3 &&
-                dataProcessor.getCategoryByName(split[0].trim(), race.id) == null
-            ) {
+        for ((index, definition) in definitions.withIndex()) {
+            if (dataProcessor.getCategoryByName(definition.name, race.id) == null) {
                 val cat = Category(
                     UUID.randomUUID(),
                     race.id,
-                    split[0].trim(),
-                    split[1].trim() == "1",
-                    split[2].trim().toInt(),
+                    definition.name,
+                    definition.isMan,
+                    definition.maxAge,
                     0,
                     0,
-                    line.index,
+                    index,
                     false,
                     null,
                     null,
@@ -261,6 +258,7 @@ object CsvProcessor : FormatProcessor {
         return categories.toList()
     }
 
+    /** Imports competitor rows, creating category placeholders for category names not yet in the race. */
     private suspend fun importCompetitorData(
         inStream: InputStream,
         race: Race,
@@ -273,7 +271,7 @@ object CsvProcessor : FormatProcessor {
         val csvReader = getReader().readAll(inStream)
         val competitors = ArrayList<CompetitorCategory>()
         var currOrder =
-            dataProcessor.getHighestCategoryOrder(race.id) + 1    // Used to keep order of categories correct
+            dataProcessor.getHighestCategoryOrder(race.id) + 1 // Preserve category order when new categories are created.
         var currStartNum = dataProcessor.getHighestStartNumberByRace(race.id) + 1
         val invalidLines = ArrayList<Pair<Int, String>>()
 
@@ -282,7 +280,7 @@ object CsvProcessor : FormatProcessor {
                 val row = csvRow.value
                 var category: CategoryData? = null
 
-                //Check if category exists
+                // Reuse existing categories by name, or create lightweight placeholders for new names.
                 if (row[4].isNotEmpty()) {
                     val catName = row[4].trim()
                     val origCat = categories.find { it.category.name == catName }
@@ -327,7 +325,7 @@ object CsvProcessor : FormatProcessor {
                 val index = if (row.size > 8) row[8].trim() else ""
                 val siNumber = row[0].trim().toIntOrNull()
 
-                // Validate SI number
+                // Validate SI numbers here because invalid numbers cannot be fixed during persistence.
                 if (siNumber != null && !SIConstants.isSINumberValid(siNumber)) {
                     throw IllegalArgumentException(
                         context.getString(
@@ -342,7 +340,7 @@ object CsvProcessor : FormatProcessor {
                         TimeProcessor.minuteStringToDuration(row[9].trim())
                     } else null
 
-                // Validate first name and last name
+                // Competitor names are required by the UI and export paths.
                 if (firstName.isEmpty() || lastName.isEmpty()) {
                     throw IllegalArgumentException(
                         context.getString(
@@ -386,6 +384,7 @@ object CsvProcessor : FormatProcessor {
         return DataImportWrapper(competitors, categories.toList(), invalidLines)
     }
 
+    /** Imports start-list rows and updates matched competitors by start number. */
     private fun importCompetitorStarts(
         inStream: InputStream,
         competitors: HashSet<CompetitorData>,
@@ -409,7 +408,7 @@ object CsvProcessor : FormatProcessor {
                     val relativeTime = TimeProcessor.minuteStringToDuration(row[1].trim())
                     val siNumber = row[2].trim().toIntOrNull()
 
-                    // Validate SI number
+                    // Validate SI numbers before attaching them to existing competitors.
                     if (siNumber != null && !SIConstants.isSINumberValid(siNumber)) {
                         throw IllegalArgumentException(
                             context.getString(
@@ -448,8 +447,9 @@ object CsvProcessor : FormatProcessor {
     }
 
 
-    // ------------- TODO: To be finished - non priority exports
+    // TODO: Finish lower-priority CSV export variants that are currently only partially implemented.
 
+    /** Exports categories with the compact control-point list used by legacy CSV consumers. */
     @Throws(IOException::class)
     suspend fun exportCategories(outStream: OutputStream, categories: List<CategoryData>) {
 
@@ -462,11 +462,10 @@ object CsvProcessor : FormatProcessor {
                 writer.write(data.controlPoints.size.toString())
                 writer.write(";")
 
-                //Write all control points
+                // Control points are stored as a comma-separated list inside the final CSV column.
                 for (cp in data.controlPoints.withIndex()) {
                     writer.write(cp.value.toCsvString())
 
-                    //Separate control points by comma
                     if (cp.index < data.controlPoints.size - 1) {
                         writer.write(",")
                     }
@@ -477,6 +476,7 @@ object CsvProcessor : FormatProcessor {
         }
     }
 
+    /** Exports registered competitors with category names for event administration. */
     @Throws(IOException::class)
     suspend fun exportCompetitors(
         outStream: OutputStream,
@@ -497,6 +497,7 @@ object CsvProcessor : FormatProcessor {
         }
     }
 
+    /** Exports the competitor start list with start times relative to the race start. */
     @Throws(IOException::class)
     suspend fun exportStarts(
         outStream: OutputStream,
@@ -519,6 +520,7 @@ object CsvProcessor : FormatProcessor {
         }
     }
 
+    /** Exports raw readout rows for downstream processing or troubleshooting. */
     @Throws(IOException::class)
     suspend fun exportReadoutData(outStream: OutputStream, readoutData: List<ResultData>) {
         val writer = outStream.bufferedWriter()
@@ -531,6 +533,7 @@ object CsvProcessor : FormatProcessor {
         }
     }
 
+    /** Placeholder for final result CSV export, which is currently not implemented. */
     @Throws(IOException::class)
     suspend fun exportResults(outStream: OutputStream, results: List<ResultWrapper>) {
         val writer = outStream.bufferedWriter()

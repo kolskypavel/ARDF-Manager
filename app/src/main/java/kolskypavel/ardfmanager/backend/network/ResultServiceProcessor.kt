@@ -8,6 +8,7 @@ import kolskypavel.ardfmanager.backend.network.workers.ResultWorkerFactory
 import kolskypavel.ardfmanager.backend.room.entity.ResultService
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.ResultServiceStatus
+import kolskypavel.ardfmanager.backend.shared.toEventCompetitorData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -15,13 +16,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.openardf.radioomanager.shared.results.EventResultSending
 import java.time.Duration
 import java.util.UUID
 
-// Used for result service communication - distributes work
+/** Coordinates background publishing to configured live-result services. */
 object ResultServiceProcessor {
     private val MIN_SERVICE_DELAY: Duration = Duration.ofSeconds(1)
 
+    /** Starts the long-running result-service loop for one race. */
     fun resultServiceJob(
         raceId: UUID,
         dataProcessor: DataProcessor,
@@ -36,12 +39,12 @@ object ResultServiceProcessor {
 
             while (true) {
 
-                // Get the result service from db
+                // Reload service settings each cycle so UI changes take effect without restarting the job.
                 resultService = dataProcessor.getResultServiceByRaceId(raceId)
                 if (resultService != null) {
                     val serviceDelay = getServiceDelay(resultService)
 
-                    // Test connection before sending.
+                    // Avoid marking provider failures when the device has no validated network.
                     if (!isNetworkConnected(context)) {
                         resultService.status = ResultServiceStatus.NO_NETWORK
                         updateResultService(dataProcessor, resultService)
@@ -51,7 +54,7 @@ object ResultServiceProcessor {
                     dataProcessor.getRace(raceId)?.let { race ->
                         val worker = ResultWorkerFactory.getResultWorker(resultService.serviceType)
 
-                        // Init the service
+                        // Some providers need a one-time start-list upload before result uploads.
                         if (!resultService.init) {
                             worker.init(
                                 resultService,
@@ -65,7 +68,7 @@ object ResultServiceProcessor {
                             val worker =
                                 ResultWorkerFactory.getResultWorker(resultService.serviceType)
 
-                            // Init the service
+                            // Some providers need a one-time start-list upload before result uploads.
                             if (!resultService.init) {
                                 worker.init(
                                     resultService,
@@ -76,9 +79,8 @@ object ResultServiceProcessor {
                                 )
                             }
 
-                            // Redo the check to prevent additional waiting
+                            // Send immediately after a successful init instead of waiting for another cycle.
                             if (resultService.init) {
-                                // Main result sending
                                 worker.exportResults(
                                     resultService,
                                     race,
@@ -94,13 +96,14 @@ object ResultServiceProcessor {
                     updateResultService(dataProcessor, resultService)
                     delay(serviceDelay)
                 } else {
-                    delay(MIN_SERVICE_DELAY)     // Failsafe - should never occur
+                    delay(MIN_SERVICE_DELAY) // Failsafe for races without a result-service row.
                 }
 
             }
         }
     }
 
+    /** Enforces a minimum loop delay so invalid intervals cannot spin the worker. */
     private fun getServiceDelay(resultService: ResultService): Duration {
         return if (resultService.interval.isZero || resultService.interval.isNegative) {
             MIN_SERVICE_DELAY
@@ -109,6 +112,7 @@ object ResultServiceProcessor {
         }
     }
 
+    /** Returns true only when Android reports a validated internet connection. */
     private fun isNetworkConnected(context: Context): Boolean {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
@@ -120,19 +124,21 @@ object ResultServiceProcessor {
     }
 
 
+    /** Keeps only competitor results that have not already been marked as sent. */
     fun filterCompetitorDataBySent(
         results: List<CompetitorData>
     ): ArrayList<CompetitorData> {
-        val filtered = ArrayList<CompetitorData>()
-        for (cd in results) {
-            if (cd.readoutData != null && !cd.readoutData!!.result.sent) {
-                filtered.add(cd)
+        val unsentCompetitorIds = EventResultSending.unsentCompetitorIds(
+            results.map { it.toEventCompetitorData() }
+        )
+        return results
+            .filter { competitorData ->
+                unsentCompetitorIds.contains(competitorData.competitorCategory.competitor.id.toString())
             }
-        }
-        return filtered
+            .toCollection(ArrayList())
     }
 
-    // Mark the results as sent
+    /** Marks successfully accepted results as sent in the local database. */
     fun updateSentResults(
         dataProcessor: DataProcessor,
         resultData: List<CompetitorData>
@@ -148,6 +154,7 @@ object ResultServiceProcessor {
         }
     }
 
+    /** Persists the latest result-service status asynchronously. */
     private fun updateResultService(
         dataProcessor: DataProcessor,
         resultService: ResultService

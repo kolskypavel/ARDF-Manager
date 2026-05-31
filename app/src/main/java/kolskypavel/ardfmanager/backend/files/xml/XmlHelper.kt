@@ -17,6 +17,7 @@ import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
+import org.openardf.radioomanager.shared.results.IofResultStatus
 import org.xmlpull.v1.XmlPullParserFactory
 import org.xmlpull.v1.XmlSerializer
 import org.xmlpull.v1.XmlPullParser
@@ -29,8 +30,10 @@ import java.time.Duration
 import java.time.LocalDateTime
 import java.util.UUID
 
+/** XML utility functions for IOF 3.0 course, start-list, and result-list exchange. */
 object XmlHelper {
 
+    /** Creates a UTF-8 XML serializer and starts the XML document. */
     fun createSerializer(outStream: OutputStream): Pair<XmlSerializer, OutputStreamWriter> {
         val factory = XmlPullParserFactory.newInstance()
         val serializer = factory.newSerializer()
@@ -40,6 +43,7 @@ object XmlHelper {
         return Pair(serializer, writer)
     }
 
+    /** Ends and flushes a serializer, ignoring close-time XML/IO errors from best-effort exports. */
     fun finishSerializer(serializer: XmlSerializer, writer: OutputStreamWriter) {
         try {
             serializer.endDocument()
@@ -52,6 +56,7 @@ object XmlHelper {
     }
 
 
+    /** Creates a UTF-8 pull parser for IOF XML input. */
     fun createParser(inStream: InputStream): XmlPullParser {
         val factory = XmlPullParserFactory.newInstance()
         val parser = factory.newPullParser()
@@ -61,9 +66,10 @@ object XmlHelper {
     }
 
     /**
-     * Parse categories (IOF "Class" elements) from the provided input stream.
-     * Produces a list of CategoryData with empty control points and competitors lists.
-     * This is intentionally conservative: missing values are set to sensible defaults.
+     * Parses IOF course data into category aggregates.
+     *
+     * The importer reads Course elements inside RaceCourseData, maps course controls to category
+     * control points, and uses conservative defaults for optional values that are absent.
      */
     fun parseCategories(inStream: InputStream, race: Race, context: Context): List<CategoryData> {
         val parser = createParser(inStream)
@@ -73,11 +79,11 @@ object XmlHelper {
         var parserEvent = parser.eventType
         while (parserEvent != XmlPullParser.END_DOCUMENT) {
             if (parserEvent == XmlPullParser.START_TAG && parser.name == "RaceCourseData") {
-                // Iterate the contents of RaceCourseData and parse every Course element
+                // IOF Course elements are treated as Radio-O-Manager categories.
                 var innerEvent = parser.next()
                 while (!(innerEvent == XmlPullParser.END_TAG && parser.name == "RaceCourseData")) {
                     if (innerEvent == XmlPullParser.START_TAG && parser.name == "Course") {
-                        // New course -> new category id and lists
+                        // Each imported course gets fresh local ids for the category and controls.
                         val categoryId = UUID.randomUUID()
                         var courseEvent = parser.next()
                         var name = ""
@@ -117,7 +123,7 @@ object XmlHelper {
                                                             parser.nextText().trim().toIntOrNull()
                                                                 ?: 0
                                                     } else {
-                                                        // advance over other nested tags (e.g. LegLength) without using their values
+                                                        // Advance over unused nested tags, such as LegLength.
                                                         parser.nextText()
                                                     }
                                                 }
@@ -139,7 +145,7 @@ object XmlHelper {
                             courseEvent = parser.next()
                         }
 
-                        // Require non-blank category name
+                        // A category without a name cannot be presented or matched later.
                         if (name.isBlank()) {
                             val line = try {
                                 parser.lineNumber
@@ -170,7 +176,6 @@ object XmlHelper {
                             ControlPointsHelper.getStringFromControlPoints(controlPoints)
                         )
 
-                        // Attach parsed control points for this category
                         categories.add(CategoryData(cat, controlPoints.toList(), emptyList()))
                     }
                     innerEvent = parser.next()
@@ -181,7 +186,7 @@ object XmlHelper {
         return categories
     }
 
-    // Helper: skip the current element completely by matching start/end tags (handles nested elements)
+    /** Skips the current XML element, including any nested child elements. */
     private fun skipCurrentElement(parser: XmlPullParser) {
         var depth = 1
         var ev = parser.next()
@@ -194,7 +199,7 @@ object XmlHelper {
         }
     }
 
-    // Write root ResultList element and embedded Event information
+    /** Writes the IOF document root and shared event metadata. */
     fun writeRootTag(
         serializer: XmlSerializer,
         race: Race,
@@ -206,7 +211,7 @@ object XmlHelper {
         serializer.attribute(null, "iofVersion", "3.0")
         serializer.attribute(null, "creator", "Radio-O Manager ${dataProcessor.getAppVersion()}")
 
-        // Show result status only with results
+        // IOF result lists include a status attribute; start lists do not.
         if (rootTag == "ResultList") {
             serializer.attribute(null, "status", "Complete")
         }
@@ -214,6 +219,7 @@ object XmlHelper {
     }
 
 
+    /** Writes the IOF Event element with race name and start date/time. */
     fun writeRaceTag(serializer: XmlSerializer, race: Race) {
         serializer.startTag(null, "Event")
         writeTextElement(serializer, "Name", race.name)
@@ -232,6 +238,7 @@ object XmlHelper {
         serializer.endTag(null, "Event")
     }
 
+    /** Writes one IOF ClassStart block for a category and its competitor starts. */
     fun writeCategoryStartList(
         serializer: XmlSerializer,
         categoryData: CategoryData,
@@ -239,24 +246,22 @@ object XmlHelper {
     ) {
         serializer.startTag(null, "ClassStart")
 
-        // Class data
         serializer.startTag(null, "Class")
         writeTextElement(serializer, "Name", categoryData.category.name)
         serializer.endTag(null, "Class")
 
-        // Course data
         serializer.startTag(null, "Course")
         writeTextElement(serializer, "Length", categoryData.category.length.toString())
         writeTextElement(serializer, "Climb", categoryData.category.climb.toString())
         serializer.endTag(null, "Course")
 
-        // Competitor starts
         for (comp in categoryData.competitors) {
             writePersonStart(serializer, comp, startZero)
         }
         serializer.endTag(null, "ClassStart")
     }
 
+    /** Writes one IOF PersonStart block for a competitor. */
     fun writePersonStart(
         serializer: XmlSerializer,
         competitor: Competitor,
@@ -265,7 +270,7 @@ object XmlHelper {
         serializer.startTag(null, "PersonStart")
         writePersonAndClub(serializer, competitor)
 
-        // Actual start
+        // IOF StartTime is absolute, while competitors store starts relative to race start.
         serializer.startTag(null, "Start")
         writeTextElement(serializer, "BibNumber", competitor.startNumber.toString())
 
@@ -282,6 +287,7 @@ object XmlHelper {
         serializer.endTag(null, "PersonStart")
     }
 
+    /** Writes one IOF ClassResult block for a result category. */
     fun writeCategoryResult(
         serializer: XmlSerializer,
         res: ResultWrapper,
@@ -300,6 +306,7 @@ object XmlHelper {
         serializer.endTag(null, "ClassResult")
     }
 
+    /** Writes one IOF PersonResult block for a competitor and optional readout. */
     fun writePersonResult(
         serializer: XmlSerializer,
         competitorData: CompetitorData,
@@ -307,13 +314,13 @@ object XmlHelper {
     ) {
         serializer.startTag(null, "PersonResult")
 
-        // Use embedded CompetitorCategory to access the Competitor instance
         writePersonAndClub(serializer, competitorData.competitorCategory.competitor)
         writeResult(serializer, competitorData.readoutData, startZero)
 
         serializer.endTag(null, "PersonResult")
     }
 
+    /** Writes IOF person identity and optional organisation data. */
     private fun writePersonAndClub(
         serializer: XmlSerializer,
         competitor: Competitor
@@ -342,6 +349,7 @@ object XmlHelper {
     }
 
 
+    /** Writes the IOF Result block, including timing, status, place, and splits when present. */
     private fun writeResult(
         serializer: XmlSerializer,
         readout: ReadoutData?,
@@ -382,6 +390,7 @@ object XmlHelper {
         serializer.endTag(null, "Result")
     }
 
+    /** Writes cumulative IOF split times for control punches. */
     private fun writeSplitTimes(serializer: XmlSerializer, punches: List<AliasPunch>?) {
         if (punches == null || punches.isEmpty()) return
         var cumulativeMillis: Long = 0
@@ -399,21 +408,12 @@ object XmlHelper {
         }
     }
 
-    // Converts result status to the IOF version
+    /** Converts the app result status enum to its IOF status string. */
     fun convertResultStatus(resultStatus: ResultStatus): String {
-        return when (resultStatus) {
-            ResultStatus.OK -> "OK"
-            ResultStatus.MISPUNCHED -> "MissingPunch"
-            ResultStatus.NO_RANKING -> "MissingPunch"
-            ResultStatus.DISQUALIFIED -> "Disqualified"
-            ResultStatus.DID_NOT_START -> "DidNotStart"
-            ResultStatus.DID_NOT_FINISH -> "DidNotFinish"
-            ResultStatus.OVER_TIME_LIMIT -> "OverTime"
-            ResultStatus.UNOFFICIAL -> "NotCompeting"
-            ResultStatus.ERROR -> "Cancelled"
-        }
+        return IofResultStatus.fromResultStatus(resultStatus)
     }
 
+    /** Writes a simple text-only XML element. */
     fun writeTextElement(serializer: XmlSerializer, name: String, value: String) {
         serializer.startTag(null, name)
         serializer.text(value)

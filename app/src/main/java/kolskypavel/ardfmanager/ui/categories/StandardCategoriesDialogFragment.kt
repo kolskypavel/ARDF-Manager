@@ -14,12 +14,14 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.room.enums.StandardCategoryType
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 
+/** Dialog for adding one of the built-in standard category sets to the current race. */
 class StandardCategoriesDialogFragment : DialogFragment() {
     private lateinit var selectedRaceViewModel: SelectedRaceViewModel
     private lateinit var presetGroup: RadioGroup
     private lateinit var okButton: Button
     private lateinit var cancelButton: Button
 
+    /** Inflates the standard-category selection dialog layout. */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -28,6 +30,7 @@ class StandardCategoriesDialogFragment : DialogFragment() {
         return inflater.inflate(R.layout.dialog_standard_categories, container, false)
     }
 
+    /** Sizes the dialog relative to the display width for compact phone and tablet layouts. */
     private fun DialogFragment.setWidthPercent(percentage: Int) {
         val percent = percentage.toFloat() / 100
         val dm = Resources.getSystem().displayMetrics
@@ -36,6 +39,7 @@ class StandardCategoriesDialogFragment : DialogFragment() {
         dialog?.window?.setLayout(percentWidth.toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
     }
 
+    /** Initializes controls and the shared race view model. */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setWidthPercent(95)
@@ -51,6 +55,7 @@ class StandardCategoriesDialogFragment : DialogFragment() {
         setButtons()
     }
 
+    /** Applies the selected standard category set or cancels the dialog. */
     private fun setButtons() {
         presetGroup.check(R.id.standard_cat_dialog_btn_international)
         okButton.setOnClickListener {

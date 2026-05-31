@@ -6,6 +6,7 @@ import kolskypavel.ardfmanager.backend.room.enums.RaceLevel
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import java.time.LocalDateTime
 
+/** JSON DTO for full race import/export payloads. */
 data class RaceJson(
     val race_name: String,
     val race_start: LocalDateTime?,
@@ -20,6 +21,7 @@ data class RaceJson(
     val unmatched_results: List<UnmatchedResultJson>?
 )
 
+/** JSON DTO for one category in a race import/export payload. */
 data class CategoryJson(
     val category_name: String,
     val category_gender: Boolean,
@@ -33,16 +35,19 @@ data class CategoryJson(
     val category_band: RaceBand?
 )
 
+/** JSON DTO for one control point in a category course. */
 data class ControlPointJson(
     val si_code: Int,
     val control_type: ControlPointType
 )
 
+/** JSON DTO for one control-point alias in a race payload. */
 data class AliasJson(
     val alias_si_code: Int,
     val alias_name: String
 )
 
+/** JSON DTO for one competitor and optional result in a race payload. */
 data class CompetitorJson(
     val first_name: String,
     val last_name: String,

@@ -4,15 +4,13 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper.BEACON_CONTROL_MARKER
-import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper.SPECTATOR_CONTROL_MARKER
 import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
+import org.openardf.radioomanager.shared.course.ControlPointDefinition
+import org.openardf.radioomanager.shared.course.ControlPointRules
 import java.io.Serializable
 import java.util.UUID
 
-/**
- * Control point entity, used to define categories
- */
+/** Room entity for one ordered control point in a category course. */
 @Entity(
     tableName = "control_point",
     foreignKeys = [ForeignKey(
@@ -30,15 +28,14 @@ data class ControlPoint(
     @ColumnInfo(name = "order") var order: Int
 ) : Serializable {
 
+    /** Formats this single control point as the compact CSV token used by exports. */
     fun toCsvString(): String {
-        val type = when (type) {
-            ControlPointType.BEACON -> BEACON_CONTROL_MARKER
-            ControlPointType.SEPARATOR -> SPECTATOR_CONTROL_MARKER
-            ControlPointType.CONTROL -> ""
-        }
-        return "${siCode}${type}"
+        return ControlPointRules.formatControlPoints(
+            listOf(ControlPointDefinition(siCode, type, order))
+        )
     }
 
+    /** Default constructor used by tests and Room/tooling support. */
     constructor() : this(
         UUID.randomUUID(),
         UUID.randomUUID(),
@@ -47,6 +44,7 @@ data class ControlPoint(
         0
     )
 
+    /** Convenience constructor for tests that only need a control SI code. */
     constructor(siCode: Int) : this(
         UUID.randomUUID(),
         UUID.randomUUID(),

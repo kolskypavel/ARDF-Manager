@@ -30,6 +30,15 @@ Please refer to the wiki section [Printing](https://github.com/kolskypavel/ARDF-
 ## Building from source and developement information
 Please refer to the wiki section [Developement](https://github.com/kolskypavel/ARDF-Manager_mobile/wiki/Developement) for further information.
 
+The in-repo [multiplatform roadmap](docs/multiplatform-roadmap.md) describes the
+shared Kotlin module, desktop beta direction, and current verification gates.
+Deferred dependency-management follow-ups are tracked in
+[docs/dependency-update-todo.md](docs/dependency-update-todo.md).
+The 2026-05-31 Moto/download-box Android regression pass is recorded in
+[docs/android-regression-2026-05-31.md](docs/android-regression-2026-05-31.md).
+Hidden developer-only diagnostic logging is described in
+[docs/debug-logging.md](docs/debug-logging.md).
+
 ## Third party libraries and resources
  - **Logo** - using SportIdent by Gonzo from <a href="https://thenounproject.com/browse/icons/term/sportident/" target="_blank" title="SportIdent Icons">Noun Project</a> (CC BY 3.0)
 - [SortableTableView](https://github.com/ISchwarz23/SortableTableView)

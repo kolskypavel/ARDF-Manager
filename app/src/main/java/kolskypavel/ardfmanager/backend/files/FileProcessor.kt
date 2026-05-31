@@ -21,10 +21,12 @@ import java.io.OutputStream
 import java.lang.ref.WeakReference
 import java.util.UUID
 
+/** Android file import/export coordinator backed by the system content resolver. */
 class FileProcessor(appContext: WeakReference<Context>) {
     private val dataProcessor = DataProcessor.get()
     private val contentResolver = appContext.get()?.contentResolver
 
+    /** Opens a read stream for a user-selected document URI. */
     private fun openInputStream(uri: Uri): InputStream? {
         try {
             return contentResolver?.openInputStream(uri)
@@ -34,6 +36,7 @@ class FileProcessor(appContext: WeakReference<Context>) {
         return null
     }
 
+    /** Opens a write stream for a user-selected document URI. */
     private fun openOutputStream(uri: Uri): OutputStream? {
         try {
             return contentResolver?.openOutputStream(uri)
@@ -43,6 +46,7 @@ class FileProcessor(appContext: WeakReference<Context>) {
         return null
     }
 
+    /** Imports typed event data from the selected file using the requested format processor. */
     suspend fun importData(
         uri: Uri,
         type: DataType,
@@ -60,12 +64,14 @@ class FileProcessor(appContext: WeakReference<Context>) {
     }
 
 
+    /** Creates built-in standard categories for a race. */
     suspend fun importStandardCategories(
         type: StandardCategoryType,
         race: Race
     ): List<Category> =
         CsvProcessor.importStandardCategories(type, race, dataProcessor)
 
+    /** Exports typed event data to the selected file using the requested format processor. */
     suspend fun exportData(
         uri: Uri,
         type: DataType,
@@ -89,7 +95,7 @@ class FileProcessor(appContext: WeakReference<Context>) {
         }
     }
 
-    // Race data
+    /** Imports a full race backup from JSON. */
     suspend fun importRaceData(uri: Uri, context: Context): RaceData {
         val inStream = openInputStream(uri)
         if (inStream != null) {
@@ -98,6 +104,7 @@ class FileProcessor(appContext: WeakReference<Context>) {
         throw IOException(context.getString(R.string.data_import_file_error))
     }
 
+    /** Exports a full race backup to JSON. */
     suspend fun exportRaceData(uri: Uri, raceId: UUID) {
         val outStream = openOutputStream(uri)
         if (outStream != null) {

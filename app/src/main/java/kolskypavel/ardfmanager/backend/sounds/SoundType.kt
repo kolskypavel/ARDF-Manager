@@ -1,7 +1,4 @@
 package kolskypavel.ardfmanager.backend.sounds
 
-enum class SoundType {
-    ERROR_UNKNOWN,
-    DUPLICATE,
-    RENT
-}
+/** Android compatibility alias for shared readout sound event types. */
+typealias SoundType = org.openardf.radioomanager.shared.sound.SoundType
