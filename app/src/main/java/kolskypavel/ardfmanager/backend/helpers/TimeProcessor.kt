@@ -1,6 +1,7 @@
 package kolskypavel.ardfmanager.backend.helpers
 
 import kolskypavel.ardfmanager.backend.DataProcessor
+import org.openardf.radioomanager.shared.time.DurationFormatter
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -35,42 +36,12 @@ object TimeProcessor {
         duration: Duration,
         useMinutes: Boolean
     ): String {
-        val totalSeconds = duration.seconds
-        val absSeconds = kotlin.math.abs(totalSeconds)
-
-        return if (useMinutes) {
-            val minutes = totalSeconds / 60
-            val seconds = absSeconds % 60
-
-            if (kotlin.math.abs(minutes) <= 99) {
-                String.format("%02d:%02d", minutes, seconds)
-            } else {
-                String.format("%d:%02d", minutes, seconds)
-            }
-        } else {
-            val hours = totalSeconds / 3600
-            val minutes = (absSeconds % 3600) / 60
-            val seconds = absSeconds % 60
-
-            String.format("%02d:%02d:%02d", hours, minutes, seconds)
-        }
+        return DurationFormatter.secondsToFormattedString(duration.seconds, useMinutes)
     }
 
     @Throws(IllegalArgumentException::class)
     fun minuteStringToDuration(string: String): Duration {
-        val parts = string.split(":")
-        if (parts.size != 2) {
-            throw IllegalArgumentException("Invalid time format. Expected format: mmm:ss")
-        }
-
-        val minutes = parts[0].toLongOrNull() ?: throw IllegalArgumentException("Invalid minutes")
-        val seconds = parts[1].toLongOrNull() ?: throw IllegalArgumentException("Invalid seconds")
-
-        if (minutes < 0 || seconds < 0 || seconds >= 60) {
-            throw IllegalArgumentException("Invalid time values in input: $string")
-        }
-
-        return Duration.ofMinutes(minutes).plusSeconds(seconds)
+        return Duration.ofSeconds(DurationFormatter.minuteStringToSeconds(string))
     }
 
     fun getAbsoluteDateTimeFromRelativeTime(
