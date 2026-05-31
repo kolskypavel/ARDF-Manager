@@ -1,9 +1,11 @@
 # Dependency Update TODO
 
-This list is intentionally deferred until after Android regression testing,
-baseline labeling, and SI reader hardware checks are complete. The current
-multiplatform foundation work should remain behavior-preserving for Android
-while giving future desktop work a cleaner shared-code base.
+This list was intentionally deferred until after Android regression testing,
+baseline labeling, and SI reader hardware checks. Those Android hardware checks
+passed on 2026-05-31 and are recorded in
+[`android-regression-2026-05-31.md`](android-regression-2026-05-31.md). The
+current multiplatform foundation work should remain behavior-preserving for
+Android while giving future desktop work a cleaner shared-code base.
 
 ## Dependency Management
 
