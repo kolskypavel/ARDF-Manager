@@ -50,6 +50,34 @@ class EventCsvRowsTest {
     }
 
     @Test
+    fun formatsCompetitorStartRows() {
+        val competitor = EventCompetitor(
+            id = "competitor",
+            raceId = "race",
+            categoryId = "category",
+            firstName = "Pavel",
+            lastName = "Kolsky",
+            club = "OK",
+            index = "OK001",
+            isMan = true,
+            birthYear = 1980,
+            siNumber = 123456,
+            siRent = false,
+            startNumber = 42,
+            drawnStartTimeSeconds = 600
+        )
+
+        assertEquals(
+            "42;Kolsky;Pavel;M21;;10:10;OK001;;OK;123456",
+            EventCsvRows.competitorStartRow(competitor, "M21", "10:10")
+        )
+        assertEquals(
+            "42;Kolsky;Pavel;M21;;;OK001;;OK;123456",
+            EventCsvRows.competitorStartRow(competitor, "M21", null)
+        )
+    }
+
+    @Test
     fun formatsPunchRows() {
         assertEquals("123456;31;10:15:00", EventCsvRows.punchRow(123456, 31, "10:15:00"))
         assertEquals(";31;10:15:00", EventCsvRows.punchRow(null, 31, "10:15:00"))

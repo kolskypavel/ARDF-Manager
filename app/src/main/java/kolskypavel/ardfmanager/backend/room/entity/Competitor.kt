@@ -70,7 +70,7 @@ data class Competitor(
                 TimeProcessor.hoursMinutesFormatter(raceStart + drawnRelativeStartTime)
             } else null
 
-        return "${startNumber};${lastName};${firstName};${categoryName};;${real ?: ""};${index};;${club};${siNumber ?: ""}"
+        return EventCsvRows.competitorStartRow(toEventCompetitor(), categoryName, real)
     }
 
     //Non-args constructor

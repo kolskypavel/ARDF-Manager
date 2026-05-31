@@ -21,6 +21,16 @@ object EventCsvRows {
                 "${competitor.club};;${competitor.startNumber};${competitor.index}"
     }
 
+    fun competitorStartRow(
+        competitor: EventCompetitor,
+        categoryName: String,
+        startTimeText: String?
+    ): String {
+        return "${competitor.startNumber};${competitor.lastName};${competitor.firstName};" +
+                "$categoryName;;${startTimeText ?: ""};${competitor.index};;" +
+                "${competitor.club};${competitor.siNumber ?: ""}"
+    }
+
     fun punchRow(cardNumber: Int?, siCode: Int, timeText: String): String {
         return "${cardNumber ?: ""};$siCode;$timeText"
     }
