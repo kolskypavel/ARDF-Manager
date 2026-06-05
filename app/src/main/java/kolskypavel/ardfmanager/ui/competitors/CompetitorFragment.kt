@@ -120,6 +120,13 @@ class CompetitorFragment : Fragment() {
                 return true
             }
 
+            R.id.competitor_menu_draw_start_times -> {
+                findNavController().navigate(
+                    CompetitorFragmentDirections.drawStartList()
+                )
+                return true
+            }
+
             R.id.competitor_menu_delete_all_competitors -> {
                 confirmAllCompetitorsDeletion()
                 return true

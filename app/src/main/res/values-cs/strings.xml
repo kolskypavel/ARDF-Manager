@@ -17,6 +17,7 @@
     <string name="race_level_district">Okresní</string>
     <string name="band_combined">Kombinované</string>
     <string name="general_name">Jméno</string>
+    <string name="general_overview">Přehled</string>
     <string name="general_date">Datum</string>
     <string name="race_level">Úroveň</string>
     <string name="race_type">Typ</string>
@@ -102,6 +103,7 @@
     <string name="competitor_delete_confirmation">Opravdu chcete smazat tohoto závodníka?\n%1$s</string>
     <string name="competitor_delete_readout_data">Smazat i vyčítání (pokud existuje)</string>
     <string name="competitor_delete_all_confirmation">Opravdu chcete smazat všechny závodníky? Tuto akci NELZE vrátit.</string>
+    <string name="competitor_draw_start_times">Losovat startovní časy</string>
     <string name="general_index">Index/Volačka</string>
     <string name="general_si_number">Číslo SI</string>
     <string name="general_automatic">Automaticky</string>
@@ -164,6 +166,12 @@
     <string name="competitor_display_on_the_way">Na trati</string>
     <string name="competitor_display_si_rent">Půjčovna čipů</string>
 
+    <string name="startlist_hint_interval">Interval (mm:ss)</string>
+    <string name="startlist_hint_category_interval">Interval v kategorii (mm:ss)</string>
+    <string name="startlist_draw">Losování</string>
+    <string name="startlist_separate_clubs">Rozdělit závodníky ze stejného klubu</string>
+    <string name="startlist_space_occupied">Nelze umístit: čas obsazen.</string>
+
     <string name="readout_started">Odstartovali</string>
     <string name="readout_finished">Doběhli</string>
     <string name="readout_in_limit">V limitu</string>
@@ -211,7 +219,7 @@
     <string name="general_type">Typ</string>
     <string name="competitor_start_number_header" translatable="false">Start #</string>
     <string name="competitor_hint_day">D</string>
-    <string name="competitor_hint_week" translatable="false">T</string>
+    <string name="competitor_hint_week">T</string>
     <string name="preferences_results_time_format">Formát času</string>
     <string name="preferences_results_time_format_hint">Formát času použitý v zobrazení výsledků. Buď mm:ss nebo hh:mm:ss\n[%1$s]</string>
     <string name="preferences_results_time_format_minutes">mm:ss</string>

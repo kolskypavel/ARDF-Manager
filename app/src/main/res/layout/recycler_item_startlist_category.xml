@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/startlist_category_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingEnd="5dp"
+        android:text="CAT"
+        android:textColor="@color/black"
+        android:textColorHint="@color/grey" />
+
+    <EditText
+        android:id="@+id/startlist_category_start_zero"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="@string/startlist_hint_start_zero"
+        android:inputType="number"
+        android:maxLength="3"
+        android:paddingEnd="5dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/grey" />
+
+    <EditText
+        android:id="@+id/startlist_category_interval"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="@string/startlist_hint_interval"
+        android:inputType="number"
+        android:maxLength="3"
+        android:paddingEnd="5dp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/grey" />
+
+    <TextView
+        android:id="@+id/startlist_category_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:paddingEnd="5dp"
+        android:text="INFO"
+        android:textColor="@color/black"
+        android:textColorHint="@color/grey" />
+</LinearLayout>

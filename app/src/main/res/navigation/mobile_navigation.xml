@@ -27,6 +27,10 @@
         android:id="@+id/bottomNav"
         app:startDestination="@id/navigation_categories">
 
+        <fragment
+            android:id="@+id/startlistDrawFragment"
+            android:name="kolskypavel.ardfmanager.ui.startlist.StartlistDrawFragment"
+            android:label="StartlistDrawFragment" />
         <dialog
             android:id="@+id/assignControlPointsDialogFragment3"
             android:name="kolskypavel.ardfmanager.ui.readouts.AssignControlPointsDialogFragment"
@@ -114,6 +118,9 @@
             <action
                 android:id="@+id/importExportDataCompetitors"
                 app:destination="@id/DataImportExportDialogFragment" />
+            <action
+                android:id="@+id/drawStartList"
+                app:destination="@id/startlistDrawFragment" />
         </fragment>
 
         <fragment

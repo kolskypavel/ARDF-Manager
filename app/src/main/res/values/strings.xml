@@ -31,6 +31,7 @@
     <string name="general_max_age">Maximal age</string>
     <string name="general_name">Name</string>
     <string name="general_ok" translatable="false">OK</string>
+    <string name="general_overview">Overview</string>
     <string name="general_points">Points</string>
     <string name="general_place">Place</string>
     <string name="general_preview">Preview</string>
@@ -139,7 +140,7 @@
     <string name="control_point_sprint_duplicate"> Duplicate controls are not allowed in a single lap of a sprint race.</string>
     <string name="control_point_sprint_two_usages">" Control point with SI code [%1$d] used as a separator / beacon and as a control."</string>
 
-    <!--Category presets-->
+    <!--CategoryDrawWrapper presets-->
     <string name="category_preset_international">International</string>
     <string name="category_preset_czech">Czech</string>
 
@@ -153,6 +154,7 @@
     <string name="competitor_edit">Edit competitor</string>
     <string name="competitor_delete">Delete competitor</string>
     <string name="competitor_delete_all">Delete all competitors</string>
+    <string name="competitor_draw_start_times">Draw start times</string>
     <string name="competitor_delete_confirmation">Do you really want to delete this competitor?\n%1$s</string>
     <string name="competitor_delete_readout_data">Also delete readout data (if exist)</string>
     <string name="competitor_delete_all_confirmation">Do you really want to delete all competitors? This action CAN\'T be undone!</string>
@@ -168,6 +170,14 @@
     <string name="competitor_display_finish_reached">Finish reached</string>
     <string name="competitor_display_on_the_way">On the way</string>
     <string name="competitor_display_si_rent">SI rent</string>
+
+    <!--Startlist-->
+    <string name="startlist_hint_interval">Interval (mm:ss)</string>
+    <string name="startlist_hint_category_interval">Category interval (mm:ss)</string>
+    <string name="startlist_draw">Draw</string>
+    <string name="startlist_separate_clubs">Separate competitors from the same club</string>
+    <string name="startlist_space_occupied">Cannot place here: space occupied.</string>
+
 
     <!--SI station display-->
     <string name="si_service">SI service</string>
