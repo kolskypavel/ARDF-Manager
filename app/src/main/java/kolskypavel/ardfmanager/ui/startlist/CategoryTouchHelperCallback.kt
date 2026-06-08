@@ -2,6 +2,7 @@ package kolskypavel.ardfmanager.ui.startlist
 
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import kolskypavel.ardfmanager.ui.startlist.adapers.CategoryDrawWrapperAdapter
 
 class CategoryTouchHelperCallback(
     private val adapter: CategoryDrawWrapperAdapter

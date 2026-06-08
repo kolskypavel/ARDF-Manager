@@ -8,7 +8,7 @@ data class CategoryDrawWrapper(
     val catData: CategoryData,
     val color: Int = 0xFF00FF00.toInt(),
     var order: Int = 0,
-    val startPoint: Duration = Duration.ZERO
+    var startPoint: Duration = Duration.ZERO
 ) {
     fun getCompetitorCount() = catData.competitors.size
     fun getCategoryId() = catData.category.id

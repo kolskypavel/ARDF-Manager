@@ -40,7 +40,12 @@ data class Category(
     @ColumnInfo(name = "race_type") var raceType: RaceType? = null,
     @ColumnInfo(name = "category_band") var categoryBand: RaceBand? = null,
     @ColumnInfo(name = "limit") var timeLimit: Duration? = null,
-    @ColumnInfo(name = "control_points_string") var controlPointsString: String
+    @ColumnInfo(name = "control_points_string") var controlPointsString: String,
+
+    // Start list drawing properties
+    @ColumnInfo(name = "start_list_column") var startListColumn: Int? = null,
+    @ColumnInfo(name = "start_list_start_time") var startListStartTime: Duration? = null,
+    @ColumnInfo(name = "color") var color: Int? = null
 ) : Serializable {
 
     fun toCSVString(): String {
@@ -60,6 +65,9 @@ data class Category(
         null,
         null,
         null,
-        ""
+        "",
+        null,
+        null,
+        null
     )
 }

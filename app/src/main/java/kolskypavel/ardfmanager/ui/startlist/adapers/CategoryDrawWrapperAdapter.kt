@@ -1,13 +1,16 @@
-package kolskypavel.ardfmanager.ui.startlist
+package kolskypavel.ardfmanager.ui.startlist.adapers
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.ui.startlist.CategoryDrawWrapper
 import java.util.UUID
 
 class CategoryDrawWrapperAdapter(
@@ -39,6 +42,12 @@ class CategoryDrawWrapperAdapter(
         // show competitor count if available
         holder.count.text = if (c.getCompetitorCount() > 0) "${c.getCompetitorCount()}" else ""
 
+        // Apply background color while keeping the rounded corners and stroke from the drawable
+        val background = holder.itemView.background as? GradientDrawable
+        background?.let {
+            it.setColor(c.color)
+        }
+
         // Start drag on press
         holder.itemView.setOnTouchListener { v, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
@@ -60,6 +69,8 @@ class CategoryDrawWrapperAdapter(
     }
 
     fun getItems(): List<CategoryDrawWrapper> = items
+
+    fun isEmpty() = items.isEmpty()
 
     // Remove the first item with matching id and return it, or null if not found
     fun removeById(id: UUID): CategoryDrawWrapper? {

@@ -6,6 +6,7 @@ import androidx.room.withTransaction
 import kolskypavel.ardfmanager.backend.room.database.EventDatabase
 import kolskypavel.ardfmanager.backend.room.database.MIGRATION_1_2
 import kolskypavel.ardfmanager.backend.room.database.MIGRATION_2_3
+import kolskypavel.ardfmanager.backend.room.database.MIGRATION_3_4
 import kolskypavel.ardfmanager.backend.room.entity.Alias
 import kolskypavel.ardfmanager.backend.room.entity.Category
 import kolskypavel.ardfmanager.backend.room.entity.Competitor
@@ -27,7 +28,7 @@ class ARDFRepository private constructor(context: Context) {
             EventDatabase::class.java,
             "event-database"
         )
-        .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
+        .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
         .build()
 
     //-------------------Races-------------------
@@ -128,6 +129,12 @@ class ARDFRepository private constructor(context: Context) {
 
     suspend fun createCompetitor(competitor: Competitor) =
         eventDatabase.competitorDao().createCompetitor(competitor)
+
+    suspend fun updateCompetitors(competitors: List<Competitor>) {
+        eventDatabase.withTransaction {
+            competitors.forEach { eventDatabase.competitorDao().createCompetitor(it) }
+        }
+    }
 
     suspend fun deleteCompetitor(id: UUID) = eventDatabase.competitorDao().deleteCompetitor(id)
 
