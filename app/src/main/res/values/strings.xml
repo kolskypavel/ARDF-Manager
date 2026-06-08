@@ -172,12 +172,18 @@
     <string name="competitor_display_si_rent">SI rent</string>
 
     <!--Startlist-->
+    <string name="startlist_overview">Startlist overview</string>
     <string name="startlist_hint_interval">Interval (mm:ss)</string>
     <string name="startlist_hint_category_interval">Category interval (mm:ss)</string>
+    <string name="startlist_invalid_category_interval">Category interval must be a multiple of start interval.</string>
     <string name="startlist_draw">Draw</string>
     <string name="startlist_separate_clubs">Separate competitors from the same club</string>
     <string name="startlist_space_occupied">Cannot place here: space occupied.</string>
-
+    <string name="startlist_confirm_partial_draw_title">Partial draw confirmation</string>
+    <string name="startlist_confirm_partial_draw_text">Not all categories have time window assigned. Continue?</string>
+    <string name="startlist_confirm_overwrite_title">Overwrite start times?</string>
+    <string name="startlist_confirm_overwrite_text">Some competitors already have assigned start times. Re-drawing will overwrite them. Continue?</string>
+    <string name="startlist_draw_completed">Draw completed successfully.</string>
 
     <!--SI station display-->
     <string name="si_service">SI service</string>
@@ -236,10 +242,12 @@
     <!-- Result service -->
     <string name="result_service_enable">Enable results service</string>
     <string name="result_service_interval">Interval of export (s)</string>
-    <string name="result_service_send_again">Send results again</string>
+    <string name="result_service_upload_startlists">Upload startlists</string>
+    <string name="result_service_upload_again">Upload results again</string>
     <string name="result_service_api_key_missing">API key must be set.</string>
     <string name="result_service_status_text">%1$s, sent at %2$s</string>
     <string name="result_service_status_text_counter">, results %1$d/%2$d</string>
+    <string name="result_service_status_text_category">, category %1$s</string>
     <string name="result_service_invalid_result">Invalid result: %1$s, SI: %2$d, Index: %3$s, Cause: %4$s</string>
 
     <string name="result_service_validation_error">Validation error</string>

@@ -323,6 +323,13 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
+    suspend fun updateCompetitors(competitors: List<Competitor>) {
+        ardfRepository.updateCompetitors(competitors)
+        if (competitors.isNotEmpty()) {
+            updateResultsByRace(competitors.first().raceId)
+        }
+    }
+
     suspend fun deleteCompetitor(id: UUID, deleteResult: Boolean) {
         if (deleteResult) {
             ardfRepository.deleteResultForCompetitor(id)

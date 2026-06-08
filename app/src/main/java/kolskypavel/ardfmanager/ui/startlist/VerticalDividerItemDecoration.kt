@@ -13,8 +13,8 @@ class VerticalDividerItemDecoration(
     context: Context,
     private val color: Int,
     private val strokeWidthPx: Float = 2f,
-    private val columns: Int = 1, // number of columns in the grid (including time column if present)
-    private val rowHeightPx: Int = 48 // height of a single row in px (adapter provides this)
+    private val columns: Int = 1,
+    private val rowHeightPx: Int = 48
 ) : RecyclerView.ItemDecoration() {
 
     private val paint = Paint().apply {
@@ -28,73 +28,59 @@ class VerticalDividerItemDecoration(
 
     override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         val childCount = parent.childCount
-        if (childCount == 0 || columns <= 0 || rowHeightPx <= 0) return
+        if (childCount == 0 || columns <= 0) return
 
+        // 1. Draw vertical dividers based on the first visible row of children
+        // We calculate column widths once from the parent width
         val leftBound = parent.paddingLeft.toFloat()
         val rightBound = (parent.width - parent.paddingRight).toFloat()
-        val topBound = parent.paddingTop.toFloat()
-        val bottomBound = (parent.height - parent.paddingBottom).toFloat()
-
         val usableWidth = rightBound - leftBound
         val colWidth = usableWidth / columns.toFloat()
 
-        // draw vertical lines between columns (i from 1..columns-1)
-        for (i in 1 until columns) {
+        // We draw vertical lines spanning from the top of the first visible child to the bottom of the last one
+        val firstChild = parent.getChildAt(0)
+        val lastChild = parent.getChildAt(childCount - 1)
+        val gridTop = firstChild.top.toFloat()
+        val gridBottom = lastChild.bottom.toFloat()
+
+        paint.pathEffect = null
+        for (i in 0..columns) {
             val x = leftBound + colWidth * i
-            c.drawLine(x, topBound, x, bottomBound, paint)
+            c.drawLine(x, gridTop, x, gridBottom, paint)
         }
 
-        // draw horizontal separators at row boundaries
-        // compute how many visible rows fit into the viewport
-        val visibleHeight = bottomBound - topBound
-        val numVisibleRows = (visibleHeight / rowHeightPx).toInt() + 2 // +2 to cover partial
-
-        // Build a map of rowIndex -> whether any cell in that row is a span end of a category
-        val rowHasSpanEnd = mutableMapOf<Int, Boolean>()
+        // 2. Draw horizontal lines for each visible child
         for (i in 0 until childCount) {
             val child = parent.getChildAt(i)
             val tag = child.getTag(R.id.grid_cell_text)
+            
+            var isSpanEnd = false
+            var isCategory = false
             if (tag is Pair<*, *>) {
-                val isSpanEnd = tag.first as? Boolean ?: false
-                val catId = tag.second
-                // Only treat as span end if catId is non-null (time cells have null)
-                if (isSpanEnd && catId != null) {
-                    // compute row index of this child
-                    val rowIndex = ((child.top - parent.paddingTop) / rowHeightPx.toFloat()).toInt()
-                    rowHasSpanEnd[rowIndex] = true
-                }
+                isSpanEnd = tag.first as? Boolean ?: false
+                isCategory = tag.second != null
             }
-        }
 
-        // Determine topmost visible row index
-        val firstVisibleRow = ((parent.computeVerticalScrollOffset() - parent.paddingTop) / rowHeightPx.toFloat()).toInt().coerceAtLeast(0)
-
-        for (r in firstVisibleRow until firstVisibleRow + numVisibleRows) {
-            val y = topBound + r * rowHeightPx
-            if (y < topBound || y > bottomBound) continue
-
-            // if any column has a span end at this row -> solid, else dashed
-            val solid = rowHasSpanEnd[r] == true
-            if (solid) {
+            // Draw horizontal line at the bottom of the cell if:
+            // - It's not a category (time column or empty cell)
+            // - It's a category and it's the end of its span
+            if (!isCategory || isSpanEnd) {
+                paint.pathEffect = if (!isCategory) dashed else null
+                c.drawLine(child.left.toFloat(), child.bottom.toFloat(), child.right.toFloat(), child.bottom.toFloat(), paint)
+            }
+            
+            // Special case: draw top line for the very first row of the entire grid if it's visible
+            val position = parent.getChildAdapterPosition(child)
+            if (position != RecyclerView.NO_POSITION && position < columns) {
                 paint.pathEffect = null
-            } else {
-                paint.pathEffect = dashed
+                c.drawLine(child.left.toFloat(), child.top.toFloat(), child.right.toFloat(), child.top.toFloat(), paint)
             }
-            // draw full-width horizontal line
-            c.drawLine(leftBound, y, rightBound, y, paint)
         }
-
-        // reset pathEffect
+        
         paint.pathEffect = null
     }
 
-    override fun getItemOffsets(
-        outRect: Rect,
-        view: View,
-        parent: RecyclerView,
-        state: RecyclerView.State
-    ) {
-        // no offsets; we don't want extra spacing introduced
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
         outRect.set(0, 0, 0, 0)
     }
 }

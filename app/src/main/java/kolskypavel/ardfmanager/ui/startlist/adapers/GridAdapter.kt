@@ -1,31 +1,35 @@
-package kolskypavel.ardfmanager.ui.startlist
+package kolskypavel.ardfmanager.ui.startlist.adapers
 
+import android.content.ClipData
 import android.view.Gravity
-import android.view.MotionEvent
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.content.ClipData
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.ui.startlist.CategoryDrawWrapper
+import java.util.UUID
 
 // Simple cell model: a cell may be empty, a start of a spanned categoryDrawWrapper, or a placeholder pointing to a start index
 data class CellModel(
     var categoryDrawWrapper: CategoryDrawWrapper? = null,
     var spanStartIndex: Int? = null,
     var isSpanEnd: Boolean = false, // mark last row of a span so we can draw a bottom separator
-    var timeText: String? = null
+    var timeText: String? = null // if non-null, this cell is a time label (first column)
 )
 
 class GridAdapter(
     private val columns: Int,
-    private val cells: MutableList<CellModel>,
+    private var cells: MutableList<CellModel>,
     private val baseRowHeightPx: Int = 64 // default px; fragment should pass converted dp value
 ) : RecyclerView.Adapter<GridAdapter.VH>() {
 
     // track spans for start indices (startIndex -> spanRows)
     private val spans = mutableMapOf<Int, Int>()
+
+    data class Placement(val category: CategoryDrawWrapper, val startIndex: Int)
 
     class VH(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val text: TextView = itemView.findViewById(R.id.grid_cell_text)
@@ -81,7 +85,7 @@ class GridAdapter(
             }
         }
 
-        // expose whether this cell is the end of a span so decoration can draw a bottom separator, use category ID for changes between rows
+        // expose whether this cell is the end of a span so decoration can draw a bottom separator
         val catIdTag = cell.categoryDrawWrapper?.getCategoryId()
         holder.itemView.setTag(R.id.grid_cell_text, Pair(cell.isSpanEnd, catIdTag))
 
@@ -111,6 +115,19 @@ class GridAdapter(
 
     override fun getItemCount(): Int = cells.size
 
+    fun updateCells(newCells: MutableList<CellModel>) {
+        this.cells = newCells
+        this.spans.clear()
+        notifyDataSetChanged()
+    }
+
+    fun getPlacements(): List<Placement> {
+        return spans.mapNotNull { (idx, _) ->
+            val cat = cells.getOrNull(idx)?.categoryDrawWrapper
+            if (cat != null) Placement(cat, idx) else null
+        }
+    }
+
     // remove an existing span by its start index
     fun removeSpan(startIndex: Int) {
         val spanRows = spans[startIndex] ?: return
@@ -131,7 +148,6 @@ class GridAdapter(
     }
 
     // Check if a category spanning `spanRows` rows can be placed starting at `startIndex`.
-    // If `ignoreStartIndex` is provided, cells belonging to that existing span are treated as free
     fun canPlaceAt(startIndex: Int, spanRows: Int, ignoreStartIndex: Int? = null): Boolean {
         if (startIndex < 0 || startIndex >= cells.size) return false
         if (spanRows <= 0) return false
@@ -154,27 +170,12 @@ class GridAdapter(
         return true
     }
 
-    // set a single cell to a categoryDrawWrapper (used for manual placement without spanning)
-    fun setCell(index: Int, categoryDrawWrapper: CategoryDrawWrapper?) {
-        if (index < 0 || index >= cells.size) return
-        // clearing any spans that overlap this index
-        // if this index is a start of a span, remove the span
-        spans.remove(index)
-        cells[index].categoryDrawWrapper = categoryDrawWrapper
-        cells[index].spanStartIndex = if (categoryDrawWrapper != null) index else null
-        // single cell is both start and end
-        cells[index].isSpanEnd = categoryDrawWrapper != null
-        notifyItemChanged(index)
-    }
-
     // Place a categoryDrawWrapper spanning multiple rows starting at startIndex.
     fun setCellSpan(startIndex: Int, categoryDrawWrapper: CategoryDrawWrapper?, spanRows: Int) {
         if (startIndex < 0 || startIndex >= cells.size) return
         if (spanRows <= 0) return
         val startCol = startIndex % columns
         val startRow = startIndex / columns
-        // clear any existing spans that overlap
-        // naive: just overwrite
         spans[startIndex] = spanRows
         // set categoryDrawWrapper for every cell in the spanned rows of the same column
         for (r in 0 until spanRows) {
@@ -182,7 +183,7 @@ class GridAdapter(
             if (idx >= 0 && idx < cells.size) {
                 cells[idx].categoryDrawWrapper = categoryDrawWrapper
                 // mark span start index on the first cell; others point to start index
-                cells[idx].spanStartIndex = if (r == 0) startIndex else startIndex
+                cells[idx].spanStartIndex = startIndex
                 // mark whether this cell is the last row of the span
                 cells[idx].isSpanEnd = (r == spanRows - 1)
             } else break

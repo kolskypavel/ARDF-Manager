@@ -7,94 +7,116 @@ import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import kolskypavel.ardfmanager.R
+import kolskypavel.ardfmanager.backend.draw.StartlistProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
-import kolskypavel.ardfmanager.backend.room.entity.Category
-import kolskypavel.ardfmanager.backend.room.entity.Competitor
-import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
-import java.util.UUID
+import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
+import kolskypavel.ardfmanager.ui.startlist.adapers.CategoryDrawWrapperAdapter
+import kolskypavel.ardfmanager.ui.startlist.adapers.CellModel
+import kolskypavel.ardfmanager.ui.startlist.adapers.GridAdapter
+import kotlinx.coroutines.launch
 import java.time.Duration
 
 class StartlistDrawFragment : Fragment() {
 
-    private lateinit var recycler: RecyclerView
+    private val selectedRaceViewModel: SelectedRaceViewModel by activityViewModels()
+
+    private lateinit var separateClubsCheckBox: CheckBox
+    private lateinit var categoryRecycler: RecyclerView
     private lateinit var adapter: CategoryDrawWrapperAdapter
     private lateinit var touchHelper: ItemTouchHelper
     private lateinit var drawButton: FloatingActionButton
     private lateinit var intervalInput: TextInputEditText
     private lateinit var categoryIntervalInput: TextInputEditText
-
+    private lateinit var intervalLayout: TextInputLayout
+    private lateinit var categoryIntervalLayout: TextInputLayout
 
     private lateinit var gridRecycler: RecyclerView
     private lateinit var gridAdapter: GridAdapter
 
-    // keep top categories visible even when adapter is empty
     private var categoriesObserver: RecyclerView.AdapterDataObserver? = null
 
-    private var curInterval: Duration = Duration.ofMinutes(5L)
-    private var curCategoryInterval: Duration = Duration.ofMinutes(5L)
-    private var currentRows: Int = 20
+    private var curInterval: Duration = StartlistConstants.DEFAULT_INTERVAL
+    private var curCategoryInterval: Duration = StartlistConstants.DEFAULT_CATEGORY_INTERVAL
+    private var currentRows: Int = StartlistConstants.STARTLIST_MIN_ROWS
 
-    private fun createSample(name: String, count: Int, color: Int): CategoryDrawWrapper {
-        val cat = Category(name)
-        val comps = List(count) { Competitor() }
-        val catData = CategoryData(cat, emptyList(), comps)
-        return CategoryDrawWrapper(catData, color)
-    }
+    private val categoryColors = listOf(
+        0xFFBBDEFB.toInt(), // Light Blue
+        0xFFF8BBD0.toInt(), // Pink
+        0xFFC8E6C9.toInt(), // Light Green
+        0xFFFFF9C4.toInt(), // Light Yellow
+        0xFFD1C4E9.toInt(), // Purple
+        0xFFFFE0B2.toInt(), // Orange
+        0xFFF5F5F5.toInt(), // Grey
+        0xFFE1F5FE.toInt(), // Light Cyan
+        0xFFFFCCBC.toInt(), // Deep Orange
+        0xFFD7CCC8.toInt(), // Brown
+        0xFFF0F4C3.toInt(), // Lime
+        0xFFE0F2F1.toInt()  // Teal
+    )
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_startlist, container, false)
+        val view = inflater.inflate(R.layout.fragment_startlist_draw, container, false)
 
+        initViews(view)
+        setupCategoryRecycler()
+        setupGridRecycler(view)
+        setupIntervalWatchers()
+        populateFields()
+
+        drawButton.setOnClickListener { onDrawClicked() }
+
+        return view
+    }
+
+    private fun initViews(view: View) {
+        separateClubsCheckBox = view.findViewById(R.id.startlist_separate_same_club_checkbox)
         intervalInput = view.findViewById(R.id.startlist_interval_input)
         categoryIntervalInput = view.findViewById(R.id.startlist_category_interval_input)
-        recycler = view.findViewById(R.id.startlist_categories_recycler)
+        intervalLayout = view.findViewById(R.id.startlist_interval_layout)
+        categoryIntervalLayout = view.findViewById(R.id.startlist_category_interval_layout)
+        categoryRecycler = view.findViewById(R.id.startlist_categories_recycler)
         drawButton = view.findViewById(R.id.startlist_btn_draw)
+    }
 
-        // use a grid for categories: 5 columns to fit more items per row
-        val categoryColumns = 5
-        recycler.layoutManager = GridLayoutManager(requireContext(), categoryColumns)
+    private fun setupCategoryRecycler() {
+        categoryRecycler.layoutManager =
+            GridLayoutManager(requireContext(), StartlistConstants.CATEGORY_COLUMNS)
 
-        // sample categories for preview; replace with real data from ViewModel
-        val sample = mutableListOf(
-            createSample("M21", 4, 0xFF8EFAC8.toInt()),
-            createSample("W21", 2, 0xFF8EFAC8.toInt()),
-            createSample("M19", 1, 0xFF8EFAC8.toInt()),
-            createSample("W19", 3, 0xFF8EFAC8.toInt()),
-            createSample("M40", 2, 0xFF8EFAC8.toInt()),
-            createSample("W40", 1, 0xFF8EFAC8.toInt()),
-            createSample("M50", 1, 0xFF8EFAC8.toInt()),
-            createSample("W50", 2, 0xFF8EFAC8.toInt()),
-        )
-
-        adapter = CategoryDrawWrapperAdapter(sample) { v, cat ->
+        adapter = CategoryDrawWrapperAdapter(mutableListOf()) { v, cat ->
             val clip = ClipData.newPlainText("categoryId", cat.getCategoryId().toString())
             v.startDragAndDrop(clip, View.DragShadowBuilder(v), cat, 0)
         }
 
-        recycler.adapter = adapter
+        categoryRecycler.adapter = adapter
 
-        // keep a small minimum height for the top categories list when it's empty
-        val minTopListHeightDp = 64f
         val minTopListHeightPx = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            minTopListHeightDp,
-            resources.displayMetrics
+            TypedValue.COMPLEX_UNIT_DIP, 64f, resources.displayMetrics
         ).toInt()
 
         categoriesObserver = object : RecyclerView.AdapterDataObserver() {
             private fun update() {
-                recycler.minimumHeight = if (adapter.itemCount == 0) minTopListHeightPx else 0
+                categoryRecycler.minimumHeight =
+                    if (adapter.itemCount == 0) minTopListHeightPx else 0
             }
 
             override fun onChanged() = update()
@@ -102,45 +124,62 @@ class StartlistDrawFragment : Fragment() {
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) = update()
         }
         adapter.registerAdapterDataObserver(categoriesObserver!!)
-        if (adapter.itemCount == 0) recycler.minimumHeight = minTopListHeightPx
+        if (adapter.itemCount == 0) categoryRecycler.minimumHeight = minTopListHeightPx
 
         val callback = CategoryTouchHelperCallback(adapter)
         touchHelper = ItemTouchHelper(callback)
-        touchHelper.attachToRecyclerView(recycler)
+        touchHelper.attachToRecyclerView(categoryRecycler)
 
-        // wire adapter to request ItemTouchHelper to start a drag when a chip is pressed
-        adapter.itemDragStart = { holder ->
-            touchHelper.startDrag(holder)
+        adapter.itemDragStart = { holder -> touchHelper.startDrag(holder) }
+        categoryRecycler.setOnDragListener { _, event -> handleCategoryListDrag(event) }
+
+        // Observe categories and restore placements
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                selectedRaceViewModel.categories.collect { categories ->
+                    // Only perform initial placement if we haven't loaded anything yet
+                    if (adapter.isEmpty() && gridAdapter.getPlacements().isEmpty()) {
+                        val totalColumns = StartlistConstants.STARTLIST_COLUMNS + 1
+                        
+                        // Only display categories that have at least one competitor
+                        categories.filter { it.competitors.isNotEmpty() }.forEachIndexed { index, categoryData ->
+                            val cat = categoryData.category
+                            val color = cat.color ?: categoryColors[index % categoryColors.size]
+                            val wrapper = CategoryDrawWrapper(categoryData, color)
+                            
+                            val startTime = cat.startListStartTime
+                            val column = cat.startListColumn
+                            
+                            if (startTime != null && column != null && column > 0 && column < totalColumns) {
+                                val row = (startTime.toMillis() / curInterval.toMillis()).toInt()
+                                val startIndex = row * totalColumns + column
+                                val spanRows = calculateSpanRows(wrapper)
+                                
+                                if (gridAdapter.canPlaceAt(startIndex, spanRows)) {
+                                    gridAdapter.setCellSpan(startIndex, wrapper, spanRows)
+                                } else {
+                                    adapter.addItem(wrapper)
+                                }
+                            } else {
+                                adapter.addItem(wrapper)
+                            }
+                        }
+                    }
+                }
+            }
         }
+    }
 
-        // grid wiring
+    private fun setupGridRecycler(view: View) {
         gridRecycler = view.findViewById(R.id.startlist_grid_recycler)
-
-        // total columns includes the time column as first column
         val totalColumns = StartlistConstants.STARTLIST_COLUMNS + 1
 
-        // initial placeholder rows (ensure minimum for easy scrolling)
-        val rows = currentRows.coerceAtLeast(StartlistConstants.STARTLIST_MIN_ROWS)
-        val cellsCount = rows * totalColumns
-        // create CellModel list (so only start cells render the category block); set timeText in first column
-        val cells = MutableList<CellModel>(cellsCount) { CellModel(null, null, false, null) }
-        // fill time labels using currentIntervalMinutes (default 5)
-        var acc = Duration.ZERO
-        for (r in 0 until rows) {
-            acc += curInterval
-            val timeLabel = TimeProcessor.durationToFormattedString(acc, true)
-            val idx = r * totalColumns // first column
-            if (idx in cells.indices) cells[idx].timeText = timeLabel
-        }
+        val cellHeightPx = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP, 32f, resources.displayMetrics
+        ).toInt()
 
-        // convert dp->px once and pass to adapter
-        val cellHeightDp = 32f
-        val metrics = resources.displayMetrics
-        val cellHeightPx =
-            TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, cellHeightDp, metrics).toInt()
-
-        // grid adapter: drag is started directly by the GridAdapter cell touch handler
-        gridAdapter = GridAdapter(totalColumns, cells, cellHeightPx)
+        val initialCells = createGridCells(currentRows, totalColumns, curInterval)
+        gridAdapter = GridAdapter(totalColumns, initialCells, cellHeightPx)
         gridRecycler.layoutManager = GridLayoutManager(requireContext(), totalColumns)
         gridRecycler.adapter = gridAdapter
 
@@ -150,165 +189,256 @@ class StartlistDrawFragment : Fragment() {
                 requireContext(),
                 dividerColor,
                 2f,
-                totalColumns, // ensure decoration knows the column count
+                totalColumns,
                 cellHeightPx
             )
         )
         gridRecycler.isNestedScrollingEnabled = false
-
-        drawButton.setOnClickListener {
-
-        }
-
-        // Allow dropping a category back to the categories recycler: re-add only if missing
-        recycler.setOnDragListener { _, event ->
-            when (event.action) {
-                DragEvent.ACTION_DRAG_STARTED -> true
-                DragEvent.ACTION_DROP -> {
-                    val local = event.localState
-                    if (local is Pair<*, *>) {
-                        val cat = local.first as? CategoryDrawWrapper
-                        val startIndex = local.second as? Int
-                        if (cat != null) {
-                            // only add back if not already present (avoid duplicates)
-                            val exists =
-                                adapter.getItems().any { it.getCategoryId() == cat.getCategoryId() }
-                            if (!exists) adapter.addItem(cat)
-                            // remove original span if present
-                            if (startIndex != null) gridAdapter.removeSpan(startIndex)
-                            true
-                        } else false
-                    } else if (local is CategoryDrawWrapper) {
-                        // dragged directly from top list and dropped back - nothing to do
-                        true
-                    } else false
-                }
-
-                else -> false
-            }
-        }
-
         gridRecycler.setOnDragListener { v, event ->
-            when (event.action) {
-                DragEvent.ACTION_DRAG_STARTED -> {
-                    event.clipDescription != null
+            handleGridDrag(v, event, totalColumns, cellHeightPx)
+        }
+    }
+
+    private fun setupIntervalWatchers() {
+        intervalInput.doAfterTextChanged { onIntervalsChanged() }
+        categoryIntervalInput.doAfterTextChanged { onIntervalsChanged() }
+    }
+
+    private fun onIntervalsChanged() {
+        val intervalStr = intervalInput.text?.toString() ?: ""
+        val catIntervalStr = categoryIntervalInput.text?.toString() ?: ""
+
+        val interval = parseDuration(intervalStr)
+        val catInterval = parseDuration(catIntervalStr)
+
+        intervalLayout.error = if (intervalStr.isNotEmpty() && interval == null)
+            getString(R.string.general_invalid) else null
+        categoryIntervalLayout.error = if (catIntervalStr.isNotEmpty() && catInterval == null)
+            getString(R.string.general_invalid) else null
+
+        if (interval != null && catInterval != null && !interval.isZero) {
+            if (catInterval.toMillis() % interval.toMillis() != 0L) {
+                categoryIntervalLayout.error =
+                    getString(R.string.startlist_invalid_category_interval)
+            }
+
+            curInterval = interval
+            curCategoryInterval = catInterval
+            refreshGrid()
+        }
+    }
+
+    private fun parseDuration(input: String): Duration? {
+        return try {
+            TimeProcessor.minuteStringToDuration(input.trim())
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    private fun refreshGrid() {
+        val placements = gridAdapter.getPlacements()
+        val totalColumns = StartlistConstants.STARTLIST_COLUMNS + 1
+
+        val totalCompetitors = adapter.getItems().sumOf { it.getCompetitorCount() } +
+                placements.sumOf { it.category.getCompetitorCount() }
+
+        val ratio = curCategoryInterval.toMillis().toDouble() / curInterval.toMillis().toDouble()
+        val estimatedRows = (totalCompetitors * ratio).toInt()
+
+        val maxRequiredRows = placements.maxOfOrNull {
+            (it.startIndex / totalColumns) + calculateSpanRows(it.category)
+        } ?: 0
+
+        currentRows =
+            maxOf(StartlistConstants.STARTLIST_MIN_ROWS, maxRequiredRows + 10, estimatedRows + 20)
+
+        val newCells = createGridCells(currentRows, totalColumns, curInterval)
+        gridAdapter.updateCells(newCells)
+
+        for (p in placements) {
+            val spanRows = calculateSpanRows(p.category)
+            if (gridAdapter.canPlaceAt(p.startIndex, spanRows)) {
+                gridAdapter.setCellSpan(p.startIndex, p.category, spanRows)
+            } else {
+                gridAdapter.removeSpan(p.startIndex)
+                if (!adapter.getItems().any { it.getCategoryId() == p.category.getCategoryId() }) {
+                    adapter.addItem(p.category)
+                    saveCategoryPosition(p.category, null, null)
                 }
-
-                DragEvent.ACTION_DRAG_LOCATION -> true
-                DragEvent.ACTION_DROP -> {
-                    val clip = event.clipData
-                    if (clip != null && clip.itemCount > 0) {
-                        val idText = clip.getItemAt(0).text.toString()
-                        val catId = try {
-                            UUID.fromString(idText)
-                        } catch (_: Exception) {
-                            null
-                        }
-                        val local = event.localState
-                        var categoryDrawWrapper: CategoryDrawWrapper? = null
-                        var originStartIndex: Int? = null
-                        if (local is Pair<*, *>) {
-                            categoryDrawWrapper = local.first as? CategoryDrawWrapper
-                            originStartIndex = local.second as? Int
-                        } else if (local is CategoryDrawWrapper) categoryDrawWrapper = local
-                        else if (catId != null) categoryDrawWrapper =
-                            sample.find { it.getCategoryId() == catId }
-
-                        if (categoryDrawWrapper != null) {
-                            // compute target index based on x,y
-                            val rx = event.x.toInt()
-                            val ry = event.y.toInt()
-                            val cellWidth = v.width / totalColumns
-                            val col = (rx / cellWidth).coerceIn(0, totalColumns - 1)
-                            // use the actual number of rows used to build the grid to avoid OOB
-                            val row = (ry / cellHeightPx).coerceIn(0, rows - 1)
-                            val index = row * totalColumns + col
-
-                            // determine span rows based on number of competitors in the categoryDrawWrapper
-                            val spanRows = categoryDrawWrapper.getCompetitorCount().coerceAtLeast(1)
-
-                            // forbid placing into the time column (col == 0)
-                            if (col == 0) {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "Cannot place on time column",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                return@setOnDragListener false
-                            }
-
-                            // check availability: if originStartIndex != null (moving within grid), allow its original cells
-                            val canPlace = gridAdapter.canPlaceAt(index, spanRows, originStartIndex)
-                            if (!canPlace) {
-                                Toast.makeText(
-                                    requireContext(),
-                                    requireContext().getString(R.string.startlist_space_occupied),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                return@setOnDragListener false
-                            }
-
-                            // now commit: if dragged from top list, remove from adapter; if from grid, remove original span
-                            if (local is CategoryDrawWrapper) {
-                                adapter.removeById(categoryDrawWrapper.getCategoryId())
-                            }
-                            if (originStartIndex != null) {
-                                // if moving to the same start index, no-op; otherwise remove original span before placing
-                                if (originStartIndex != index) gridAdapter.removeSpan(
-                                    originStartIndex
-                                )
-                            }
-
-                            gridAdapter.setCellSpan(index, categoryDrawWrapper, spanRows)
-                            true
-                        } else {
-                            Toast.makeText(
-                                requireContext(),
-                                "Unknown categoryDrawWrapper dropped",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            false
-                        }
-                    } else false
-                }
-
-                else -> false
             }
         }
+    }
 
-        return view
+    private fun createGridCells(
+        rows: Int,
+        columns: Int,
+        interval: Duration
+    ): MutableList<CellModel> {
+        val cellsCount = rows * columns
+        val cells = MutableList(cellsCount) { CellModel(null, null, false, null) }
+        var acc = Duration.ZERO
+        for (r in 0 until rows) {
+            val timeLabel = TimeProcessor.durationToFormattedString(acc, true)
+            val idx = r * columns
+            if (idx in cells.indices) cells[idx].timeText = timeLabel
+            acc += interval
+        }
+        return cells
+    }
+
+    private fun calculateSpanRows(category: CategoryDrawWrapper): Int {
+        val ratio = curCategoryInterval.toMillis().toDouble() / curInterval.toMillis().toDouble()
+        return (category.getCompetitorCount() * ratio).toInt().coerceAtLeast(1)
+    }
+
+    private fun onDrawClicked() {
+        val placements = gridAdapter.getPlacements()
+        val anyHasStartTime = placements.any { p ->
+            p.category.catData.competitors.any { it.drawnRelativeStartTime != null }
+        }
+
+        if (!adapter.isEmpty()) {
+            AlertDialog.Builder(requireContext())
+                .setTitle(R.string.startlist_confirm_partial_draw_title)
+                .setMessage(R.string.startlist_confirm_partial_draw_text)
+                .setPositiveButton(R.string.general_ok) { _, _ ->
+                    if (anyHasStartTime) showOverwriteConfirmation() else performDraw()
+                }
+                .setNegativeButton(R.string.general_cancel, null)
+                .show()
+        } else if (anyHasStartTime) {
+            showOverwriteConfirmation()
+        } else {
+            performDraw()
+        }
+    }
+
+    private fun showOverwriteConfirmation() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.startlist_confirm_overwrite_title)
+            .setMessage(R.string.startlist_confirm_overwrite_text)
+            .setPositiveButton(R.string.general_ok) { _, _ -> performDraw() }
+            .setNegativeButton(R.string.general_cancel, null)
+            .show()
+    }
+
+    private fun performDraw() {
+        val totalColumns = StartlistConstants.STARTLIST_COLUMNS + 1
+        val placements = gridAdapter.getPlacements()
+        
+        for (p in placements) {
+            val row = p.startIndex / totalColumns
+            p.category.startPoint = curInterval.multipliedBy(row.toLong())
+        }
+
+        StartlistProcessor.drawStartTimes(
+            placements.map { it.category },
+            curCategoryInterval,
+            separateClubsCheckBox.isChecked
+        )
+        
+        // Collect all competitors from all categories and save them
+        val competitorsToSave = placements.flatMap { it.category.catData.competitors }
+        selectedRaceViewModel.updateCompetitors(competitorsToSave)
+
+        Toast.makeText(requireContext(), R.string.startlist_draw_completed, Toast.LENGTH_SHORT)
+            .show()
+    }
+
+    private fun handleCategoryListDrag(event: DragEvent): Boolean {
+        if (event.action == DragEvent.ACTION_DROP) {
+            val local = event.localState
+            if (local is Pair<*, *>) {
+                val cat = local.first as? CategoryDrawWrapper
+                val startIndex = local.second as? Int
+                if (cat != null) {
+                    if (adapter.getItems().none { it.getCategoryId() == cat.getCategoryId() }) {
+                        adapter.addItem(cat)
+                    }
+                    if (startIndex != null) gridAdapter.removeSpan(startIndex)
+                    saveCategoryPosition(cat, null, null)
+                    return true
+                }
+            }
+        }
+        return event.action == DragEvent.ACTION_DRAG_STARTED
+    }
+
+    private fun handleGridDrag(
+        v: View,
+        event: DragEvent,
+        totalColumns: Int,
+        cellHeightPx: Int
+    ): Boolean {
+        if (event.action == DragEvent.ACTION_DROP) {
+            val local = event.localState
+            var category: CategoryDrawWrapper? = null
+            var originStartIndex: Int? = null
+
+            if (local is Pair<*, *>) {
+                category = local.first as? CategoryDrawWrapper
+                originStartIndex = local.second as? Int
+            } else if (local is CategoryDrawWrapper) {
+                category = local
+            }
+
+            category?.let { cat ->
+                val rx = event.x.toInt()
+                val ry = event.y.toInt()
+                val col = (rx / (v.width / totalColumns)).coerceIn(0, totalColumns - 1)
+                val row = (ry / cellHeightPx).coerceIn(0, currentRows - 1)
+                val index = row * totalColumns + col
+
+                if (col == 0) {
+                    Toast.makeText(requireContext(), "Cannot place on time column", Toast.LENGTH_SHORT).show()
+                    return false
+                }
+
+                val spanRows = calculateSpanRows(cat)
+                if (gridAdapter.canPlaceAt(index, spanRows, originStartIndex)) {
+                    if (local is CategoryDrawWrapper) adapter.removeById(cat.getCategoryId())
+                    if (originStartIndex != null && originStartIndex != index) gridAdapter.removeSpan(originStartIndex)
+                    
+                    gridAdapter.setCellSpan(index, cat, spanRows)
+                    
+                    val startTime = curInterval.multipliedBy(row.toLong())
+                    saveCategoryPosition(cat, col, startTime)
+                    return true
+                } else {
+                    Toast.makeText(requireContext(), R.string.startlist_space_occupied, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        return event.action == DragEvent.ACTION_DRAG_STARTED || event.action == DragEvent.ACTION_DRAG_LOCATION
+    }
+
+    private fun saveCategoryPosition(wrapper: CategoryDrawWrapper, column: Int?, startTime: Duration?) {
+        val cat = wrapper.catData.category
+        cat.startListColumn = column
+        cat.startListStartTime = startTime
+        cat.color = wrapper.color
+        selectedRaceViewModel.createOrUpdateCategory(cat, null)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         categoriesObserver?.let {
-            try {
-                if (::adapter.isInitialized) adapter.unregisterAdapterDataObserver(it)
-            } catch (_: Exception) {
-            }
+            if (::adapter.isInitialized) adapter.unregisterAdapterDataObserver(it)
             categoriesObserver = null
         }
     }
 
-    fun populateFields() {
-        // Preset interval
+    private fun populateFields() {
+        intervalInput.setText(TimeProcessor.durationToFormattedString(curInterval, true))
+        categoryIntervalInput.setText(TimeProcessor.durationToFormattedString(curCategoryInterval, true))
     }
 
-    fun validateInterval(text: String): Boolean {
-        try {
-            Duration.parse(text)
-            return true
-        } catch (_: Exception) {
-        }
-        return false
-    }
-
-    // Constants used for display
     object StartlistConstants {
-        const val STARTLIST_MIN_ROWS = 20
+        const val STARTLIST_MIN_ROWS = 30
+        const val CATEGORY_COLUMNS = 5
         const val STARTLIST_COLUMNS = 5
         val DEFAULT_INTERVAL = Duration.ofMinutes(5)
         val DEFAULT_CATEGORY_INTERVAL = Duration.ofMinutes(5)
-
     }
 }

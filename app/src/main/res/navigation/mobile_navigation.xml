@@ -28,9 +28,10 @@
         app:startDestination="@id/navigation_categories">
 
         <fragment
-            android:id="@+id/startlistDrawFragment"
-            android:name="kolskypavel.ardfmanager.ui.startlist.StartlistDrawFragment"
-            android:label="StartlistDrawFragment" />
+            android:id="@+id/startlistFragment"
+            android:name="kolskypavel.ardfmanager.ui.startlist.StartlistFragment"
+            android:label="@string/competitor_draw_start_times" />
+        
         <dialog
             android:id="@+id/assignControlPointsDialogFragment3"
             android:name="kolskypavel.ardfmanager.ui.readouts.AssignControlPointsDialogFragment"
@@ -120,7 +121,7 @@
                 app:destination="@id/DataImportExportDialogFragment" />
             <action
                 android:id="@+id/drawStartList"
-                app:destination="@id/startlistDrawFragment" />
+                app:destination="@id/startlistFragment" />
         </fragment>
 
         <fragment

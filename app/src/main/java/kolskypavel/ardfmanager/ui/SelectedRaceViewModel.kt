@@ -233,6 +233,10 @@ class SelectedRaceViewModel : ViewModel() {
         dataProcessor.createOrUpdateCompetitor(competitor)
     }
 
+    fun updateCompetitors(competitors: List<Competitor>) = CoroutineScope(Dispatchers.IO).launch {
+        dataProcessor.updateCompetitors(competitors)
+    }
+
     fun deleteCompetitor(competitorId: UUID, deleteResult: Boolean) =
         CoroutineScope(Dispatchers.IO).launch {
             dataProcessor.deleteCompetitor(
@@ -329,6 +333,15 @@ class SelectedRaceViewModel : ViewModel() {
         CoroutineScope(Dispatchers.IO).launch {
             dataProcessor.setAllResultsUnsent(raceId)
         }
+    }
+
+    fun uploadStartlist(raceId: UUID): Boolean {
+        var uploaded = false
+        viewModelScope.launch(Dispatchers.IO) {
+            uploaded = dataProcessor.uploadStartlist(raceId)
+        }
+
+        return uploaded
     }
 
     //DATA IMPORT/EXPORT
