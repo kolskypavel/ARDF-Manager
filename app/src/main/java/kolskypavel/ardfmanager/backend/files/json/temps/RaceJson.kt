@@ -57,3 +57,13 @@ data class CompetitorJson(
     val competitor_start_time: String?,
     val result: ResultJson?
 )
+
+data class CompetitorStartlistJson(
+    val first_name: String,
+    val last_name: String,
+    val competitor_category: String,
+    val competitor_index: String?,
+    val si_number: Int?,
+    val start_number: Int?,
+    val competitor_start_time: String?,
+)

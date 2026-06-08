@@ -3,33 +3,31 @@ package kolskypavel.ardfmanager.files.json
 import com.squareup.moshi.JsonDataException
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.processors.JsonProcessor
+import kolskypavel.ardfmanager.backend.room.entity.Category
+import kolskypavel.ardfmanager.backend.room.entity.Competitor
+import kolskypavel.ardfmanager.backend.room.entity.Race
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorCategory
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceBand
 import kolskypavel.ardfmanager.backend.room.enums.RaceLevel
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
+import java.io.ByteArrayOutputStream
 import java.time.LocalDateTime
+import java.time.Duration
 
 class RaceJsonTests {
     val dataProcessor: DataProcessor = mock()
-
-//    @Test
-//    fun testToJson() {
-//        val race = Race()
-//        val cat1 = Category("A")
-//        val cat2 = Category("B")
-//
-//        val adapter = RaceDataJsonAdapter()
-//        val raceData = RaceData(race, listOf(cat1, cat2),)
-//        val raceJson = adapter.fromJson(raceData)
-//
-//    }
+    val race = Race()
 
     @Before
     fun setup() {
@@ -39,12 +37,28 @@ class RaceJsonTests {
                 .shortStringToPunchStatus(org.mockito.kotlin.any())
         )
             .thenReturn(PunchStatus.VALID)
+
+        `when`(dataProcessor.resultStatusShortStringToEnum("MP")).thenReturn(ResultStatus.MISPUNCHED)
+
+        // Prepare startlist
+        val compData = ArrayList<CompetitorData>()
+
+        for (i in 1..5) {
+            val competitor = Competitor()
+            competitor.drawnRelativeStartTime = Duration.ofMinutes(5L * i)
+
+            compData.add(
+                CompetitorData(CompetitorCategory(competitor, Category("A")), null)
+            )
+        }
+        `when`(dataProcessor.getCompetitorDataFlowByRace(race.id)).thenReturn(flowOf(compData))
     }
 
     @Test
     fun testValidFromJson() {
 
-        val stream = this::class.java.classLoader.getResourceAsStream("json/json_valid_race_import.ardfjs")
+        val stream =
+            this::class.java.classLoader.getResourceAsStream("json/json_valid_race_import.ardfjs")
         val raceData = JsonProcessor.importRaceData(stream, dataProcessor)
 
         assertEquals("EXAMPLE", raceData.race.name)
@@ -70,12 +84,22 @@ class RaceJsonTests {
     // Should throw exception, since the required start time is missing
     @Test
     fun testInvalidFromJson() {
-        val stream = this::class.java.classLoader.getResourceAsStream("json/json_invalid_race_import.ardfjs")
+        val stream =
+            this::class.java.classLoader.getResourceAsStream("json/json_invalid_race_import.ardfjs")
         assertThrows(JsonDataException::class.java) {
             JsonProcessor.importRaceData(
                 stream,
                 dataProcessor
             )
         }
+    }
+
+    @Test
+    fun testStartlistToJson() = runTest {
+
+        val stream = ByteArrayOutputStream()
+        JsonProcessor.exportStartlist(stream, race, dataProcessor)
+
+        assertEquals("", stream.toString())
     }
 }

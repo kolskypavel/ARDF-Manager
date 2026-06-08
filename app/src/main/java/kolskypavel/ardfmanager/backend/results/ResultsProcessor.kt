@@ -1,13 +1,9 @@
 package kolskypavel.ardfmanager.backend.results
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.preference.PreferenceManager
-import com.google.android.material.snackbar.Snackbar
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
@@ -179,7 +175,7 @@ object ResultsProcessor {
             dataProcessor.getCompetitor(result.competitorId!!)?.drawnRelativeStartTime?.let { relativeStartTime ->
                 val raceStart = race.startDateTime
                 val startTime =
-                    TimeProcessor.getAbsoluteDateTimeFromRelativeTime(raceStart, relativeStartTime)
+                    TimeProcessor.getAbsoluteTimeFromRelativeTime(raceStart, relativeStartTime)
                 result.startTime =
                     SITime(startTime.toLocalTime(), SITime.dayOfWeekToSIIndex(startTime.dayOfWeek))
                 return true
