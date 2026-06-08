@@ -135,7 +135,7 @@ class RunTimesUnitTests {
     @Test
     fun testGetAbsoluteDateTimeFromRelativeTime() {
         val abs =
-            TimeProcessor.getAbsoluteDateTimeFromRelativeTime(baseDateTime, Duration.ofMinutes(5))
+            TimeProcessor.getAbsoluteTimeFromRelativeTime(baseDateTime, Duration.ofMinutes(5))
         assertEquals(baseDateTime.plusMinutes(5), abs)
     }
 
@@ -196,8 +196,14 @@ class RunTimesUnitTests {
 
     @Test
     fun testIsInLimitTrueWhenBeforeLimit() {
+
+        // Limit sufficient even without relative start time
         val curTime = baseDateTime.plusMinutes(15)
-        val result = TimeProcessor.isInLimit(baseDateTime, Duration.ofMinutes(5), Duration.ofMinutes(30), curTime)
+        var result = TimeProcessor.isInLimit(baseDateTime, Duration.ofMinutes(5), Duration.ofMinutes(30), curTime)
+        assertTrue(result)
+
+        // Run time exactly equals limit
+        result = TimeProcessor.isInLimit(baseDateTime, Duration.ofMinutes(5), Duration.ofMinutes(10), curTime)
         assertTrue(result)
     }
 

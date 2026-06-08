@@ -73,7 +73,7 @@ object TimeProcessor {
         return Duration.ofMinutes(minutes).plusSeconds(seconds)
     }
 
-    fun getAbsoluteDateTimeFromRelativeTime(
+    fun getAbsoluteTimeFromRelativeTime(
         startDateTime: LocalDateTime,
         relativeStartTime: Duration
     ): LocalDateTime {
@@ -90,7 +90,7 @@ object TimeProcessor {
         curTime: LocalDateTime
     ): Boolean {
         return (curTime.isAfter(
-            getAbsoluteDateTimeFromRelativeTime(
+            getAbsoluteTimeFromRelativeTime(
                 startDateTime,
                 relativeStartTime
             )
@@ -139,7 +139,13 @@ object TimeProcessor {
         curTime: LocalDateTime
     ): Boolean {
         return if (hasStarted(startDateTime, relativeStartTime, curTime)) {
-            curTime.isBefore(startDateTime.plusSeconds(timeLimit.seconds))
+            !curTime.isAfter(
+                // Add start 00 + relative start time + limit
+                getAbsoluteTimeFromRelativeTime(
+                    startDateTime,
+                    relativeStartTime
+                ).plusSeconds(timeLimit.seconds)
+            )
         } else true
     }
 
