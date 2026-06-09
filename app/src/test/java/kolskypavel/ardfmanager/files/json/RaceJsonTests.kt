@@ -24,6 +24,7 @@ import org.mockito.Mockito.`when`
 import java.io.ByteArrayOutputStream
 import java.time.LocalDateTime
 import java.time.Duration
+import kotlin.io.bufferedReader
 
 class RaceJsonTests {
     val dataProcessor: DataProcessor = mock()
@@ -97,9 +98,14 @@ class RaceJsonTests {
     @Test
     fun testStartlistToJson() = runTest {
 
-        val stream = ByteArrayOutputStream()
-        JsonProcessor.exportStartlist(stream, race, dataProcessor)
+        val outStream = ByteArrayOutputStream()
+        JsonProcessor.exportStartlist(outStream, race, dataProcessor)
+        val validStream =
+            this::class.java.classLoader.getResourceAsStream("json/json_startlist_export.ardfjs")
 
-        assertEquals("", stream.toString())
+        val valid =
+            validStream.bufferedReader().use { it.readText() }.filterNot { it.isWhitespace() }
+
+        assertEquals(valid, outStream.toString())
     }
 }

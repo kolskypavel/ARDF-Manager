@@ -1,0 +1,47 @@
+[
+  {
+    "first_name": "Test",
+    "last_name": "Tester",
+    "competitor_category": "A",
+    "competitor_index": "ACT0001",
+    "si_number": 123456789,
+    "start_number": 0,
+    "competitor_start_time": "05:00"
+  },
+  {
+    "first_name": "Test",
+    "last_name": "Tester",
+    "competitor_category": "A",
+    "competitor_index": "ACT0001",
+    "si_number": 123456789,
+    "start_number": 0,
+    "competitor_start_time": "10:00"
+  },
+  {
+    "first_name": "Test",
+    "last_name": "Tester",
+    "competitor_category": "A",
+    "competitor_index": "ACT0001",
+    "si_number": 123456789,
+    "start_number": 0,
+    "competitor_start_time": "15:00"
+  },
+  {
+    "first_name": "Test",
+    "last_name": "Tester",
+    "competitor_category": "A",
+    "competitor_index": "ACT0001",
+    "si_number": 123456789,
+    "start_number": 0,
+    "competitor_start_time": "20:00"
+  },
+  {
+    "first_name": "Test",
+    "last_name": "Tester",
+    "competitor_category": "A",
+    "competitor_index": "ACT0001",
+    "si_number": 123456789,
+    "start_number": 0,
+    "competitor_start_time": "25:00"
+  }
+]
