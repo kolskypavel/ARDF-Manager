@@ -1,4 +1,3 @@
-
 package kolskypavel.ardfmanager.backend.network.workers
 
 import android.content.Context
@@ -7,7 +6,6 @@ import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.json.temps.RobisResultJson
 import kolskypavel.ardfmanager.backend.files.processors.JsonProcessor
-
 import kolskypavel.ardfmanager.backend.network.ResultServiceProcessor
 import kolskypavel.ardfmanager.backend.network.ResultServiceProcessor.updateSentResults
 import kolskypavel.ardfmanager.backend.network.NetworkConstants
@@ -28,7 +26,6 @@ import java.time.LocalTime
 
 object RobisWorker : ResultServiceWorker {
 
-    // No init actions needed
     override suspend fun init(
         resultService: ResultService,
         race: Race,
@@ -36,7 +33,10 @@ object RobisWorker : ResultServiceWorker {
         dataProcessor: DataProcessor,
         context: Context
     ) {
-        resultService.init = true
+        // Send the startlist
+        if (uploadStartlist(resultService, race, httpClient, dataProcessor, context)) {
+            resultService.init = true
+        }
     }
 
     override suspend fun exportResults(
@@ -73,7 +73,7 @@ object RobisWorker : ResultServiceWorker {
             .url(
                 if (resultService.serviceType == ProviderType.ROBIS_TEST) {
                     NetworkConstants.ROBIS_PLAYGROUND_RESULTS_API_URL
-               } else {
+                } else {
                     NetworkConstants.ROBIS_RESULTS_API_URL
                 }
             )
@@ -132,6 +132,51 @@ object RobisWorker : ResultServiceWorker {
             resultService.status = ResultServiceStatus.ERROR
             resultService.errorText = exception.message ?: "Unknown error"
             Log.e(LOG_TAG, "Exception sending results to ROBis: ${exception.message}")
+        }
+    }
+
+    override suspend fun uploadStartlist(
+        resultService: ResultService,
+        race: Race,
+        httpClient: OkHttpClient,
+        dataProcessor: DataProcessor,
+        context: Context
+    ): Boolean {
+        Log.i(LOG_TAG, "Starting to upload startlist")
+
+        val outStream = ByteArrayOutputStream()
+        JsonProcessor.exportStartlist(outStream, race, dataProcessor)
+        val startlistString = outStream.toString("UTF-8")
+        Log.i(LOG_TAG, "Startlist JSON payload:\n$startlistString")
+        val body: RequestBody = startlistString.toRequestBody(CONTENT_TYPE_JSON)
+
+        val request: Request = Request.Builder()
+            .url(
+                if (resultService.serviceType == ProviderType.ROBIS_TEST) {
+                    NetworkConstants.ROBIS_PLAYGROUND_STARTLIST_API_URL
+                } else {
+                    NetworkConstants.ROBIS_STARTLIST_API_URL
+                }
+            )
+            .addHeader(ROBIS_API_HEADER, resultService.apiKey)
+            .post(body)
+            .build()
+
+        return try {
+            httpClient.newCall(request).execute().use { response ->
+                val bodyString = response.body.string()
+                Log.i(LOG_TAG, "ROBIS startlist response code=${response.code}, body=$bodyString")
+                if (response.code in 200..299) {
+                    true
+                } else {
+                    resultService.errorText = "Startlist upload failed: $bodyString"
+                    false
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(LOG_TAG, "Exception uploading startlist to ROBis: ${e.message}")
+            resultService.errorText = "Startlist upload exception: ${e.message}"
+            false
         }
     }
 

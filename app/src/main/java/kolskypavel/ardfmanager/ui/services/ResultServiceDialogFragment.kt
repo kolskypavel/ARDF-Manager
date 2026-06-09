@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.navArgs
@@ -49,6 +50,7 @@ class ResultServiceDialogFragment : DialogFragment() {
     private lateinit var intervalInput: TextInputEditText
     private lateinit var statusView: TextView
     private lateinit var errorTextView: TextView
+    private lateinit var uploadStartlistsButton: Button
     private lateinit var resendResultsButton: Button
     private lateinit var closeButton: Button
 
@@ -87,6 +89,7 @@ class ResultServiceDialogFragment : DialogFragment() {
         statusView = view.findViewById(R.id.results_service_dialog_status)
         errorTextView = view.findViewById(R.id.results_service_dialog_error)
         resendResultsButton = view.findViewById(R.id.results_service_dialog_resend_results)
+        uploadStartlistsButton = view.findViewById(R.id.results_service_dialog_upload_startlists)
         closeButton = view.findViewById(R.id.results_service_dialog_close)
 
         populateFields()
@@ -147,6 +150,23 @@ class ResultServiceDialogFragment : DialogFragment() {
                 intervalLayout.error = ""
             } else {
                 enableSwitch.isChecked = false
+            }
+        }
+
+        uploadStartlistsButton.setOnClickListener {
+
+            if (validateFields()) {
+                initResultService() // Only init result service, dont enable
+                if (selectedRaceViewModel.uploadStartlist(resultService, requireContext()))
+                    Toast.makeText(context, R.string.startlist_upload_completed, Toast.LENGTH_SHORT)
+                        .show()
+                else {
+                    Toast.makeText(context, R.string.startlist_upload_failed, Toast.LENGTH_SHORT)
+                        .show()
+                }
+            } else {
+                // Display warning about required apiKey
+                apiKeyLayout.error = getString(R.string.result_service_api_key_missing)
             }
         }
 
@@ -249,10 +269,7 @@ class ResultServiceDialogFragment : DialogFragment() {
         statusView.text = text
     }
 
-    private fun enableResultService() {
-
-        // Copy the fields
-        resultService.enabled = true
+    private fun initResultService() {
         resultService.serviceType = getResultServiceType()
 
         val serviceType =
@@ -263,6 +280,13 @@ class ResultServiceDialogFragment : DialogFragment() {
         }
         resultService.apiKey = apiKeyInput.text.toString()
         resultService.interval = Duration.ofSeconds(intervalInput.text.toString().toLong())
+
+    }
+
+    private fun enableResultService() {
+
+        initResultService()
+        resultService.enabled = true
 
         CoroutineScope(Dispatchers.IO).launch {
             dataProcessor.createOrUpdateResultService(resultService)

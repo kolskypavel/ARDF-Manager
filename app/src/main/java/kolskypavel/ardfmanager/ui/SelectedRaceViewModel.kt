@@ -20,6 +20,7 @@ import kolskypavel.ardfmanager.backend.room.entity.ControlPoint
 import kolskypavel.ardfmanager.backend.room.entity.Punch
 import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.backend.room.entity.Result
+import kolskypavel.ardfmanager.backend.room.entity.ResultService
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData
@@ -335,14 +336,10 @@ class SelectedRaceViewModel : ViewModel() {
         }
     }
 
-    fun uploadStartlist(raceId: UUID): Boolean {
-        var uploaded = false
-        viewModelScope.launch(Dispatchers.IO) {
-            uploaded = dataProcessor.uploadStartlist(raceId)
+    fun uploadStartlist(resultService: ResultService, context: Context): Boolean =
+        runBlocking {
+            return@runBlocking dataProcessor.uploadStartlist(resultService, context)
         }
-
-        return uploaded
-    }
 
     //DATA IMPORT/EXPORT
     suspend fun importData(

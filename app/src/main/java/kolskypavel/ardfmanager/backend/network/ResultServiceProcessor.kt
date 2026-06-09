@@ -13,6 +13,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.time.delay
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import java.time.Duration
@@ -61,32 +62,17 @@ object ResultServiceProcessor {
                                 context
                             )
                         }
-                        dataProcessor.getRace(raceId)?.let { race ->
-                            val worker =
-                                ResultWorkerFactory.getResultWorker(resultService.serviceType)
 
-                            // Init the service
-                            if (!resultService.init) {
-                                worker.init(
-                                    resultService,
-                                    race,
-                                    httpClient,
-                                    dataProcessor,
-                                    context
-                                )
-                            }
-
-                            // Redo the check to prevent additional waiting
-                            if (resultService.init) {
-                                // Main result sending
-                                worker.exportResults(
-                                    resultService,
-                                    race,
-                                    httpClient,
-                                    dataProcessor,
-                                    context
-                                )
-                            }
+                        // Redo the check to prevent additional waiting
+                        if (resultService.init) {
+                            // Main result sending
+                            worker.exportResults(
+                                resultService,
+                                race,
+                                httpClient,
+                                dataProcessor,
+                                context
+                            )
                         }
                         updateResultService(dataProcessor, resultService)
                         delay(resultService.interval)
@@ -101,6 +87,29 @@ object ResultServiceProcessor {
         }
     }
 
+    suspend fun uploadStartlist(
+        resultService: ResultService,
+        dataProcessor: DataProcessor,
+        context: Context
+    ): Boolean = withContext(Dispatchers.IO) {
+        val race = dataProcessor.getRace(resultService.raceId)
+        if (race != null) {
+            val worker = ResultWorkerFactory.getResultWorker(resultService.serviceType)
+            val httpClient = OkHttpClient.Builder().build()
+            val result =
+                worker.uploadStartlist(resultService, race, httpClient, dataProcessor, context)
+
+            // Clear errors if startlist sent successfully
+            if (result) {
+                resultService.errorText = ""
+            }
+
+            dataProcessor.createOrUpdateResultService(resultService)
+            return@withContext result
+        }
+        return@withContext false
+    }
+
     private fun getServiceDelay(resultService: ResultService): Duration {
         return if (resultService.interval.isZero || resultService.interval.isNegative) {
             MIN_SERVICE_DELAY
@@ -109,7 +118,7 @@ object ResultServiceProcessor {
         }
     }
 
-    private fun isNetworkConnected(context: Context): Boolean {
+    fun isNetworkConnected(context: Context): Boolean {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
         val network = cm.activeNetwork ?: return false

@@ -27,20 +27,8 @@ object OResultsWorker : ResultServiceWorker {
         dataProcessor: DataProcessor,
         context: Context
     ) {
-        resultService.status = ResultServiceStatus.RUNNING
-        try {
-            val stream = ByteArrayOutputStream()
-            val data = dataProcessor.getCategoryDataFlowForRace(race.id).first()
-            IofXmlProcessor.exportStartList(stream, race, data, dataProcessor)
-
-            val xml = stream.toString()
-            if (sendFile(xml, resultService, httpClient, "/start-lists")) {
-                resultService.init = true
-            } else {
-                resultService.status = ResultServiceStatus.ERROR
-            }
-        } catch (e: Exception) {
-            Log.e(LOG_TAG, "Exception when init: ${e.message}")
+        if (uploadStartlist(resultService, race, httpClient, dataProcessor, context)) {
+            resultService.init = true
         }
     }
 
@@ -74,6 +62,33 @@ object OResultsWorker : ResultServiceWorker {
             resultService.status = ResultServiceStatus.ERROR
             resultService.errorText = exception.message ?: "Unknown error"
             Log.e(LOG_TAG, "Exception sending : ${exception.message}")
+        }
+    }
+
+    override suspend fun uploadStartlist(
+        resultService: ResultService,
+        race: Race,
+        httpClient: OkHttpClient,
+        dataProcessor: DataProcessor,
+        context: Context
+    ): Boolean {
+        resultService.status = ResultServiceStatus.RUNNING
+        return try {
+            val stream = ByteArrayOutputStream()
+            val data = dataProcessor.getCategoryDataFlowForRace(race.id).first()
+            IofXmlProcessor.exportStartList(stream, race, data, dataProcessor)
+
+            val xml = stream.toString()
+            if (sendFile(xml, resultService, httpClient, "/start-lists")) {
+                true
+            } else {
+                resultService.status = ResultServiceStatus.ERROR
+                false
+            }
+        } catch (e: Exception) {
+            Log.e(LOG_TAG, "Exception when uploadStartlist: ${e.message}")
+            resultService.status = ResultServiceStatus.ERROR
+            false
         }
     }
 

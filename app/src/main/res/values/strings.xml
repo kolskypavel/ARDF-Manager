@@ -184,6 +184,8 @@
     <string name="startlist_confirm_overwrite_title">Overwrite start times?</string>
     <string name="startlist_confirm_overwrite_text">Some competitors already have assigned start times. Re-drawing will overwrite them. Continue?</string>
     <string name="startlist_draw_completed">Draw completed successfully.</string>
+    <string name="startlist_upload_completed">Upload completed successfully.</string>
+    <string name="startlist_upload_failed">Upload failed.</string>
 
     <!--SI station display-->
     <string name="si_service">SI service</string>

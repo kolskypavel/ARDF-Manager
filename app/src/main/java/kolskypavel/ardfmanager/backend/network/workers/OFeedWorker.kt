@@ -28,21 +28,34 @@ object OFeedWorker : ResultServiceWorker {
         dataProcessor: DataProcessor,
         context: Context
     ) {
+        if (uploadStartlist(resultService, race, httpClient, dataProcessor, context)) {
+            resultService.init = true
+        }
+    }
+
+    override suspend fun uploadStartlist(
+        resultService: ResultService,
+        race: Race,
+        httpClient: OkHttpClient,
+        dataProcessor: DataProcessor,
+        context: Context
+    ): Boolean {
         try {
             val stream = ByteArrayOutputStream()
             val data = dataProcessor.getCategoryDataFlowForRace(race.id).first()
             IofXmlProcessor.exportStartList(stream, race, data, dataProcessor)
 
             val xml = stream.toString()
-            if (!sendFile(xml, resultService, httpClient, context)) {
-                resultService.init = true
-            }
+            return sendFile(xml, resultService, httpClient, context)
+
         } catch (e: Exception) {
             Log.e(OResultsWorker.LOG_TAG, "Exception when init: ${e.message}")
             resultService.errorText =
-               context.getString(R.string.result_service_status_error)
+                context.getString(R.string.result_service_status_error)
         }
+        return false
     }
+
 
     override suspend fun exportResults(
         resultService: ResultService,

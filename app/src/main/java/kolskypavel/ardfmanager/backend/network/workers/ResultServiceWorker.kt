@@ -33,4 +33,16 @@ interface ResultServiceWorker {
         dataProcessor: DataProcessor,
         context: Context
     )
+
+    /**
+     * Upload startlist to the result service
+     * @return true if successful
+     */
+    suspend fun uploadStartlist(
+        resultService: ResultService,
+        race: Race,
+        httpClient: OkHttpClient,
+        dataProcessor: DataProcessor,
+        context: Context
+    ): Boolean
 }

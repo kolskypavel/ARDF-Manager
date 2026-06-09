@@ -16,6 +16,7 @@ import kolskypavel.ardfmanager.backend.files.wrappers.DataImportWrapper
 import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.network.ProviderClient
+import kolskypavel.ardfmanager.backend.network.ResultServiceProcessor
 import kolskypavel.ardfmanager.backend.prints.PrintProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor.updateResultsForCategory
@@ -33,12 +34,12 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.RaceData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData
+import kolskypavel.ardfmanager.backend.room.enums.ProviderType
 import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceBand
 import kolskypavel.ardfmanager.backend.room.enums.RaceLevel
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.ResultServiceStatus
-import kolskypavel.ardfmanager.backend.room.enums.ProviderType
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.room.enums.StandardCategoryType
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
@@ -455,6 +456,16 @@ class DataProcessor private constructor(context: Context) {
                 null
             )
         })
+    }
+
+    suspend fun uploadStartlist(resultService: ResultService, context: Context): Boolean {
+        if (ResultServiceProcessor.isNetworkConnected(context)) {
+            return ResultServiceProcessor.uploadStartlist(resultService, this, context)
+        }
+        // No connection
+        resultService.status = ResultServiceStatus.NO_NETWORK
+        createOrUpdateResultService(resultService)
+        return false
     }
 
     //DATA IMPORT/EXPORT

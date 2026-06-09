@@ -166,8 +166,10 @@
     <string name="competitor_display_on_the_way">Na trati</string>
     <string name="competitor_display_si_rent">Půjčovna čipů</string>
 
+    <string name="startlist_overview">Přehled startovky</string>
     <string name="startlist_hint_interval">Interval (mm:ss)</string>
     <string name="startlist_hint_category_interval">Interval v kategorii (mm:ss)</string>
+    <string name="startlist_invalid_category_interval">Interval v kategorii musí být násobek startovního intervalu.</string>
     <string name="startlist_draw">Losování</string>
     <string name="startlist_separate_clubs">Rozdělit závodníky ze stejného klubu</string>
     <string name="startlist_space_occupied">Nelze umístit: čas obsazen.</string>
@@ -176,6 +178,8 @@
     <string name="startlist_confirm_overwrite_title">Přepsat startovní časy?</string>
     <string name="startlist_confirm_overwrite_text">Něktěří závodníci již mají přiřazené startovní časy. Losováním budou přepsány. Pokračovat?</string>
     <string name="startlist_draw_completed">Losování úspěšně dokončeno.</string>
+    <string name="startlist_upload_completed">Úspěšně nahráno.</string>
+    <string name="startlist_upload_failed">Nahrávání selhalo.</string>
 
     <string name="readout_started">Odstartovali</string>
     <string name="readout_finished">Doběhli</string>
