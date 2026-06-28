@@ -100,7 +100,7 @@ class PrintProcessor(context: Context, private val dataProcessor: DataProcessor)
                     context.getString(R.string.key_prints_remove_diacritics),
                     false
                 )
-            val version = "ARDF Manager v${dataProcessor.getAppVersion()}"
+            val version = "Radio-O Manager v${dataProcessor.getAppVersion()}"
 
             // Remove diacritics if the preference is set
             val textToPrint = if (preference) {
@@ -164,7 +164,7 @@ class PrintProcessor(context: Context, private val dataProcessor: DataProcessor)
 
         val formatted = "[C]<b>${race.name}</b>\n" +
                 "[L]\n" +
-                "[L]${getMaxCompetitorName(competitor)}\n" +
+                "[L]${getMaxCompetitorName(competitor, getCharactersPerLine())}\n" +
                 "[L]$compIndex\n" +
                 "[L]$category\n\n" +
                 punches + "\n\n" +
@@ -190,8 +190,7 @@ class PrintProcessor(context: Context, private val dataProcessor: DataProcessor)
         }
     }
 
-    private fun getMaxCompetitorName(competitor: Competitor?): String {
-        val maxLength = getCharactersPerLine()
+    private fun getMaxCompetitorName(competitor: Competitor?, maxLength: Int): String {
         val fullName = competitor?.getFullName() ?: "?"
         return if (fullName.length > maxLength) {
             fullName.take(maxLength)
@@ -213,7 +212,7 @@ class PrintProcessor(context: Context, private val dataProcessor: DataProcessor)
 
             SIRecordType.FINISH -> {
                 return "[L]${appContext.get()?.getString(R.string.general_finish)}" +
-                        "[R]${aliasPunch.punch.siTime.getTimeString()}" +
+                        "[C]${aliasPunch.punch.siTime.getTimeString()}" +
                         "[R]${
                             TimeProcessor.durationToFormattedString(
                                 aliasPunch.punch.split, dataProcessor.useMinuteTimeFormat()
@@ -223,7 +222,7 @@ class PrintProcessor(context: Context, private val dataProcessor: DataProcessor)
 
             SIRecordType.CONTROL -> {
                 return "[L]${formatCodeString(aliasPunch)}" +
-                        "[R]${aliasPunch.punch.siTime.getTimeString()}" +
+                        "[C]${aliasPunch.punch.siTime.getTimeString()}" +
                         "[R]${
                             TimeProcessor.durationToFormattedString(
                                 aliasPunch.punch.split, dataProcessor.useMinuteTimeFormat()
@@ -300,14 +299,20 @@ class PrintProcessor(context: Context, private val dataProcessor: DataProcessor)
             result.runTime,
             dataProcessor.useMinuteTimeFormat()
         )
-        val name = getMaxName(competitorData.competitorCategory.competitor.getFullName())
+
+        // count the total number of chars available for name
+        val available = getCharactersPerLine() - place.length - runTime.length - 5
+        val name = getMaxCompetitorName(
+            competitorData.competitorCategory.competitor,
+            available
+        )
 
         if (result.resultStatus != ResultStatus.OK) {
             place = "-"
             runTime = dataProcessor.resultStatusToShortString(result.resultStatus)
         }
 
-        return "[L]$place[L]$name[R]$runTime"
+        return "[L]$place   $name[R]$runTime"
     }
 
     private fun formatHorizontalLine(): String {
@@ -320,15 +325,6 @@ class PrintProcessor(context: Context, private val dataProcessor: DataProcessor)
             printer!!.printerNbrCharactersPerLine
         } else {
             32 // Default width for ESC/POS printers
-        }
-    }
-
-    private fun getMaxName(name: String): String {
-        val maxLength = getCharactersPerLine()
-        return if (name.length > maxLength) {
-            name.substring(0, maxLength)
-        } else {
-            name
         }
     }
 }
