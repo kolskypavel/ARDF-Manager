@@ -205,6 +205,17 @@ class AliasRecyclerViewAdapter(
             )
         )
 
+        standard.add(
+            AliasEditItemWrapper(
+                Alias(
+                    UUID.randomUUID(),
+                    raceId,
+                    99,
+                    if (international) "B" else "M"
+                ), true, true
+            )
+        )
+
         values = standard
         notifyDataSetChanged()
     }
