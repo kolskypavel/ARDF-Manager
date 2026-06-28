@@ -32,13 +32,14 @@ object OResultsWorker : ResultServiceWorker {
         }
     }
 
-    override suspend fun exportResults(
+    override suspend fun uploadResults(
+        final: Boolean,
         resultService: ResultService,
         race: Race,
         httpClient: OkHttpClient,
         dataProcessor: DataProcessor,
         context: Context
-    ) {
+    ): Boolean {
 
         val results =
             ResultsProcessor.getResultWrapperFlowByRace(resultService.raceId, dataProcessor)
@@ -53,6 +54,7 @@ object OResultsWorker : ResultServiceWorker {
             if (sendFile(xml, resultService, httpClient, "/results")) {
                 resultService.status = ResultServiceStatus.RUNNING
                 resultService.sentAt = LocalTime.now()
+                return true
             } else {
                 resultService.status = ResultServiceStatus.ERROR
             }
@@ -63,6 +65,7 @@ object OResultsWorker : ResultServiceWorker {
             resultService.errorText = exception.message ?: "Unknown error"
             Log.e(LOG_TAG, "Exception sending : ${exception.message}")
         }
+        return false
     }
 
     override suspend fun uploadStartlist(
@@ -127,7 +130,6 @@ object OResultsWorker : ResultServiceWorker {
                 )
                 return false
             }
-
         }
     }
 

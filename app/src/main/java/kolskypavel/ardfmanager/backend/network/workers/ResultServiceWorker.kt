@@ -26,13 +26,14 @@ interface ResultServiceWorker {
      * Export results using the provided http client
      * The method is responsible for fetching and updating results in the db, as well as updating the result service status
      */
-    suspend fun exportResults(
+    suspend fun uploadResults(
+        final: Boolean,
         resultService: ResultService,
         race: Race,
         httpClient: OkHttpClient,
         dataProcessor: DataProcessor,
         context: Context
-    )
+    ): Boolean
 
     /**
      * Upload startlist to the result service

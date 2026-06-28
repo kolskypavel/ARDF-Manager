@@ -246,10 +246,10 @@
     <string name="result_service_interval">Interval of export (s)</string>
     <string name="result_service_upload_startlists">Upload startlists</string>
     <string name="result_service_upload_again">Upload results again</string>
+    <string name="result_service_upload_final_results">Upload final results</string>
     <string name="result_service_api_key_missing">API key must be set.</string>
     <string name="result_service_status_text">%1$s, sent at %2$s</string>
     <string name="result_service_status_text_counter">, results %1$d/%2$d</string>
-    <string name="result_service_status_text_category">, category %1$s</string>
     <string name="result_service_invalid_result">Invalid result: %1$s, SI: %2$d, Index: %3$s, Cause: %4$s</string>
 
     <string name="result_service_validation_error">Validation error</string>
@@ -418,6 +418,7 @@
     <string name="data_type_competitors">Competitors</string>
     <string name="data_type_competitor_starts">Competitor starts</string>
     <string name="data_type_results">Results</string>
+    <string name="data_type_results_live">Live results</string>
     <string name="data_type_readout_data">SI Readout data</string>
 
     <!-- Providers-->
@@ -563,6 +564,7 @@
         <item>@string/data_type_categories</item>
         <item>@string/data_type_competitors</item>
         <item>@string/data_type_competitor_starts</item>
+        <item>@string/data_type_results_live</item>
         <item>@string/data_type_results</item>
         <item>@string/data_type_readout_data</item>
     </string-array>

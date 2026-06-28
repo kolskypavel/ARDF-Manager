@@ -216,6 +216,7 @@
     <string name="data_type_competitors">Závodníci</string>
     <string name="data_type_competitor_starts">Starty</string>
     <string name="data_type_results">Výsledky</string>
+    <string name="data_type_results_live">Živé výsledky</string>
     <string name="data_type_readout_data">Data z vyčítání</string>
     <string name="general_race">Závod</string>
     <string name="general_close">Zavřít</string>
@@ -294,6 +295,7 @@
     <string name="result_service_unknown_response">Neznámá odpověď</string>
     <string name="result_service_upload_startlists">Nahrát startovky</string>
     <string name="result_service_upload_again">Nahrát výsledky znovu</string>
+    <string name="result_service_upload_final_results">Nahrát konečné výsledky</string>
     <string name="result_service_api_key_missing">API klíč musí být nastaven.</string>
     <string name="prints_bluetooth_disabled">Bluetooth musí být zapnutý pro tisk!</string>
     <string name="prints_error">Chyba při tisku! %1$s</string>

@@ -51,7 +51,7 @@ object IofXmlProcessor : FormatProcessor {
     ) {
         when (dataType) {
             DataType.COMPETITORS -> TODO()
-            DataType.RESULTS_LIVE -> exportResults(
+            DataType.RESULTS_FINAL, DataType.RESULTS_LIVE -> exportResults(
                 outStream,
                 race, ResultsProcessor.getResultWrapperFlowByRace(race.id, dataProcessor).first()
                     .filter { it.category != null },

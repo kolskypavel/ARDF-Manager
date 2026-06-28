@@ -39,13 +39,27 @@ object RobisWorker : ResultServiceWorker {
         }
     }
 
-    override suspend fun exportResults(
+    override suspend fun uploadResults(
+        final: Boolean,
         resultService: ResultService,
         race: Race,
         httpClient: OkHttpClient,
         dataProcessor: DataProcessor,
         context: Context
-    ) {
+    ): Boolean {
+        if (final) {
+            return uploadFinalResults(resultService, race, httpClient, dataProcessor, context)
+        }
+        return uploadLiveResults(resultService, race, httpClient, dataProcessor, context)
+    }
+
+    suspend fun uploadLiveResults(
+        resultService: ResultService,
+        race: Race,
+        httpClient: OkHttpClient,
+        dataProcessor: DataProcessor,
+        context: Context
+    ): Boolean {
         Log.i(LOG_TAG, "Starting to export results")
 
         // Fetch results and convert them to JSON
@@ -59,7 +73,7 @@ object RobisWorker : ResultServiceWorker {
         // If there are no results to send, return early
         if (filteredResults.isEmpty()) {
             Log.i(LOG_TAG, "  nothing to send, exiting")
-            return
+            return true
         }
 
         val outStream = ByteArrayOutputStream()
@@ -72,9 +86,9 @@ object RobisWorker : ResultServiceWorker {
         val request: Request = Request.Builder()
             .url(
                 if (resultService.serviceType == ProviderType.ROBIS_TEST) {
-                    NetworkConstants.ROBIS_PLAYGROUND_RESULTS_API_URL
+                    NetworkConstants.ROBIS_PLAYGROUND_LIVE_RESULTS_API_URL
                 } else {
-                    NetworkConstants.ROBIS_RESULTS_API_URL
+                    NetworkConstants.ROBIS_LIVE_RESULTS_API_URL
                 }
             )
             .addHeader(ROBIS_API_HEADER, resultService.apiKey)
@@ -96,19 +110,20 @@ object RobisWorker : ResultServiceWorker {
                             filteredResults,
                             bodyString,
                             resultService,
-                            dataProcessor.getContext()
+                            context
                         )
                         updateSentResults(dataProcessor, filteredResults)
                         resultService.status = ResultServiceStatus.RUNNING
                         resultService.sentAt = LocalTime.now()
                         resultService.sent += filteredResults.size
+                        return true
                     }
 
                     401 -> {
                         // Handle unauthorized response
                         resultService.status = ResultServiceStatus.UNAUTHORIZED
-                        resultService.errorText = dataProcessor.getContext()
-                            ?.getString(R.string.result_service_invalid_api_key) ?: "Error"
+                        resultService.errorText = context
+                            .getString(R.string.result_service_invalid_api_key)
 
                         Log.e(
                             LOG_TAG,
@@ -133,6 +148,81 @@ object RobisWorker : ResultServiceWorker {
             resultService.errorText = exception.message ?: "Unknown error"
             Log.e(LOG_TAG, "Exception sending results to ROBis: ${exception.message}")
         }
+        return false
+    }
+
+    suspend fun uploadFinalResults(
+        resultService: ResultService,
+        race: Race,
+        httpClient: OkHttpClient,
+        dataProcessor: DataProcessor,
+        context: Context
+    ): Boolean {
+
+        Log.i(LOG_TAG, "Starting to upload final results")
+        val outStream = ByteArrayOutputStream()
+        JsonProcessor.exportFinalResults(outStream, race, dataProcessor)
+        val resultString = outStream.toString("UTF-8")
+        Log.i(LOG_TAG, "Export JSON payload:\n$resultString")
+        val body: RequestBody = resultString.toRequestBody(CONTENT_TYPE_JSON)
+
+        // Send the results to the ROBIS API
+        val request: Request = Request.Builder()
+            .url(
+                if (resultService.serviceType == ProviderType.ROBIS_TEST) {
+                    NetworkConstants.ROBIS_PLAYGROUND_FINAL_RESULTS_API_URL
+                } else {
+                    NetworkConstants.ROBIS_FINAL_RESULTS_API_URL
+                }
+            )
+            .addHeader(ROBIS_API_HEADER, resultService.apiKey)
+            .post(body)
+            .build()
+
+        try {
+            //TODO: Handle loging
+            httpClient.newCall(request).execute().use { response ->
+                val bodyString = response.body.string()
+
+                Log.i(LOG_TAG, "ROBIS response code=${response.code}, body=$bodyString")
+
+                when (response.code) {
+                    in 200..299 -> {
+                        resultService.errorText = ""
+                        return true
+                    }
+
+                    401 -> {
+                        1
+                        // Handle unauthorized response
+                        resultService.status = ResultServiceStatus.UNAUTHORIZED
+                        resultService.errorText =
+                            context.getString(R.string.result_service_invalid_api_key)
+
+                        Log.e(
+                            LOG_TAG,
+                            "Error ${response.code} sending results to ROBis: ${response.message}"
+                        )
+                    }
+
+                    else -> {
+                        // Handle error response and log it
+                        resultService.status = ResultServiceStatus.ERROR
+                        resultService.errorText = bodyString
+                        Log.e(
+                            LOG_TAG,
+                            "Error ${response.code} sending results to ROBis: ${response.message}"
+                        )
+                    }
+                }
+            }
+        } catch (exception: Exception) {
+            // Handle exceptions during the request
+            resultService.status = ResultServiceStatus.ERROR
+            resultService.errorText = exception.message ?: "Unknown error"
+            Log.e(LOG_TAG, "Exception sending results to ROBis: ${exception.message}")
+        }
+        return false
     }
 
     override suspend fun uploadStartlist(
@@ -167,6 +257,7 @@ object RobisWorker : ResultServiceWorker {
                 val bodyString = response.body.string()
                 Log.i(LOG_TAG, "ROBIS startlist response code=${response.code}, body=$bodyString")
                 if (response.code in 200..299) {
+                    resultService.errorText = ""
                     true
                 } else {
                     resultService.errorText = "Startlist upload failed: $bodyString"

@@ -52,6 +52,7 @@ class ResultServiceDialogFragment : DialogFragment() {
     private lateinit var errorTextView: TextView
     private lateinit var uploadStartlistsButton: Button
     private lateinit var resendResultsButton: Button
+    private lateinit var uploadFinalResultsButton: Button
     private lateinit var closeButton: Button
 
     override fun onCreateView(
@@ -90,6 +91,8 @@ class ResultServiceDialogFragment : DialogFragment() {
         errorTextView = view.findViewById(R.id.results_service_dialog_error)
         resendResultsButton = view.findViewById(R.id.results_service_dialog_resend_results)
         uploadStartlistsButton = view.findViewById(R.id.results_service_dialog_upload_startlists)
+        uploadFinalResultsButton =
+            view.findViewById(R.id.results_service_dialog_upload_final_results)
         closeButton = view.findViewById(R.id.results_service_dialog_close)
 
         populateFields()
@@ -180,6 +183,20 @@ class ResultServiceDialogFragment : DialogFragment() {
                 // Update the service in the database
                 CoroutineScope(Dispatchers.IO).launch {
                     dataProcessor.createOrUpdateResultService(currService)
+                }
+            }
+        }
+
+        // Upload final results to online provider
+        uploadFinalResultsButton.setOnClickListener {
+            if (validateFields()) {
+                initResultService() // Only init result service, dont enable
+                if (selectedRaceViewModel.uploadFinalResults(resultService, requireContext()))
+                    Toast.makeText(context, R.string.startlist_upload_completed, Toast.LENGTH_SHORT)
+                        .show()
+                else {
+                    Toast.makeText(context, R.string.startlist_upload_failed, Toast.LENGTH_SHORT)
+                        .show()
                 }
             }
         }

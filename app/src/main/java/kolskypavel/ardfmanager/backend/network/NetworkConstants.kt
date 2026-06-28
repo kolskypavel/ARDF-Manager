@@ -6,11 +6,15 @@ object NetworkConstants {
 
     // API URLS
     const val ROBIS_RACE_API_URL = "https://rob-is.cz/api/?type=json&name=race"
-    const val ROBIS_PLAYGROUND_RACE_API_URL = "https://playground.rob-is.cz/api/?type=json&name=race"
     const val ROBIS_STARTLIST_API_URL = "https://rob-is.cz/api/startlist/?valid=True"
+    const val ROBIS_LIVE_RESULTS_API_URL = "https://rob-is.cz/api/results/?name=json"
+    const val ROBIS_FINAL_RESULTS_API_URL = "https://rob-is.cz/api/results/?valid=True"
+
+    const val ROBIS_PLAYGROUND_RACE_API_URL = "https://playground.rob-is.cz/api/?type=json&name=race"
     const val ROBIS_PLAYGROUND_STARTLIST_API_URL = "https://playground.rob-is.cz/api/startlist/?valid=True"
-    const val ROBIS_RESULTS_API_URL = "https://rob-is.cz/api/results/?name=json"
-    const val ROBIS_PLAYGROUND_RESULTS_API_URL = "https://playground.rob-is.cz/api/results/?name=json"
+    const val ROBIS_PLAYGROUND_LIVE_RESULTS_API_URL = "https://playground.rob-is.cz/api/results/?name=json"
+    const val ROBIS_PLAYGROUND_FINAL_RESULTS_API_URL = "https://playground.rob-is.cz/api/results/?valid=True"
+
     const val ORESULTS_RESULTS_API_URL =  "https://api.oresults.eu"
     const val OFEED_RESULTS_API_URL =  "https://api.orienteerfeed.com/rest/v1/upload/iof"
 

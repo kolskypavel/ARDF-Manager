@@ -341,6 +341,11 @@ class SelectedRaceViewModel : ViewModel() {
             return@runBlocking dataProcessor.uploadStartlist(resultService, context)
         }
 
+    fun uploadFinalResults(resultService: ResultService, context: Context): Boolean =
+        runBlocking {
+            return@runBlocking dataProcessor.uploadFinalResults(resultService, context)
+        }
+
     //DATA IMPORT/EXPORT
     suspend fun importData(
         uri: Uri, dataType: DataType, dataFormat: DataFormat, raceId: UUID

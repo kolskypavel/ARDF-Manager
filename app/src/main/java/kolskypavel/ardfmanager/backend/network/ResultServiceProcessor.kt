@@ -66,7 +66,8 @@ object ResultServiceProcessor {
                         // Redo the check to prevent additional waiting
                         if (resultService.init) {
                             // Main result sending
-                            worker.exportResults(
+                            worker.uploadResults(
+                                false,
                                 resultService,
                                 race,
                                 httpClient,
@@ -82,7 +83,6 @@ object ResultServiceProcessor {
                 } else {
                     delay(MIN_SERVICE_DELAY)     // Failsafe - should never occur
                 }
-
             }
         }
     }
@@ -92,21 +92,58 @@ object ResultServiceProcessor {
         dataProcessor: DataProcessor,
         context: Context
     ): Boolean = withContext(Dispatchers.IO) {
-        val race = dataProcessor.getRace(resultService.raceId)
-        if (race != null) {
-            val worker = ResultWorkerFactory.getResultWorker(resultService.serviceType)
-            val httpClient = OkHttpClient.Builder().build()
-            val result =
-                worker.uploadStartlist(resultService, race, httpClient, dataProcessor, context)
 
-            // Clear errors if startlist sent successfully
-            if (result) {
-                resultService.errorText = ""
+        if (isNetworkConnected(context)) {
+            val race = dataProcessor.getRace(resultService.raceId)
+            if (race != null) {
+                val worker = ResultWorkerFactory.getResultWorker(resultService.serviceType)
+                val httpClient = OkHttpClient.Builder().build()
+                val result =
+                    worker.uploadStartlist(resultService, race, httpClient, dataProcessor, context)
+
+                dataProcessor.createOrUpdateResultService(resultService)
+                return@withContext result
             }
-
-            dataProcessor.createOrUpdateResultService(resultService)
-            return@withContext result
         }
+        // No connection
+        else {
+            resultService.status = ResultServiceStatus.NO_NETWORK
+            dataProcessor.createOrUpdateResultService(resultService)
+        }
+        return@withContext false
+    }
+
+    suspend fun uploadFinalResults(
+        resultService: ResultService,
+        dataProcessor: DataProcessor,
+        context: Context
+    ): Boolean = withContext(Dispatchers.IO) {
+
+        if (isNetworkConnected(context)) {
+            val race = dataProcessor.getRace(resultService.raceId)
+            if (race != null) {
+                val worker = ResultWorkerFactory.getResultWorker(resultService.serviceType)
+                val httpClient = OkHttpClient.Builder().build()
+                val result =
+                    worker.uploadResults(
+                        true,
+                        resultService,
+                        race,
+                        httpClient,
+                        dataProcessor,
+                        context
+                    )
+
+                dataProcessor.createOrUpdateResultService(resultService)
+                return@withContext result
+            }
+        }
+        // No connection
+        else {
+            resultService.status = ResultServiceStatus.NO_NETWORK
+            dataProcessor.createOrUpdateResultService(resultService)
+        }
+
         return@withContext false
     }
 
@@ -118,6 +155,7 @@ object ResultServiceProcessor {
         }
     }
 
+    // Check network capabilities
     fun isNetworkConnected(context: Context): Boolean {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 

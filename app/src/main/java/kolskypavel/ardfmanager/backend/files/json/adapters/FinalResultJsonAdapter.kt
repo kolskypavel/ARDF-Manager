@@ -1,5 +1,6 @@
 package kolskypavel.ardfmanager.backend.files.json.adapters;
 
+import com.squareup.moshi.FromJson
 import com.squareup.moshi.ToJson;
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.files.json.temps.AliasJson
@@ -17,5 +18,10 @@ class FinalResultJsonAdapter(val dataProcessor: DataProcessor) {
             aliases = raceData.aliases.map { al -> AliasJson(al.siCode, al.name) },
             competitors = raceData.competitorData.map { cd -> competitorAdapter.toJson(cd) },
         )
+    }
+
+    @FromJson
+    fun fromJson(json: String): RaceData {
+        TODO()  // Not meant for import
     }
 }

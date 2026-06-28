@@ -458,15 +458,12 @@ class DataProcessor private constructor(context: Context) {
         })
     }
 
-    suspend fun uploadStartlist(resultService: ResultService, context: Context): Boolean {
-        if (ResultServiceProcessor.isNetworkConnected(context)) {
-            return ResultServiceProcessor.uploadStartlist(resultService, this, context)
-        }
-        // No connection
-        resultService.status = ResultServiceStatus.NO_NETWORK
-        createOrUpdateResultService(resultService)
-        return false
-    }
+    suspend fun uploadStartlist(resultService: ResultService, context: Context): Boolean =
+        ResultServiceProcessor.uploadStartlist(resultService, this, context)
+
+    suspend fun uploadFinalResults(resultService: ResultService, context: Context): Boolean =
+        ResultServiceProcessor.uploadFinalResults(resultService, this, context)
+
 
     //DATA IMPORT/EXPORT
     suspend fun importData(
@@ -504,7 +501,7 @@ class DataProcessor private constructor(context: Context) {
             race
         )
 
-    //-----------------------RACE DATA-----------------------
+//-----------------------RACE DATA-----------------------
 
     suspend fun getRaceData(raceId: UUID): RaceData {
         val race = getRace(raceId)
@@ -597,7 +594,7 @@ class DataProcessor private constructor(context: Context) {
     suspend fun printResults(results: List<ResultWrapper>, race: Race) =
         printProcessor.printResults(results, race)
 
-    //============================= GENERAL HELPER METHODS =========================================
+//============================= GENERAL HELPER METHODS =========================================
 
     //Enums manipulation
     fun raceTypeToString(raceType: RaceType): String {

@@ -57,13 +57,14 @@ object OFeedWorker : ResultServiceWorker {
     }
 
 
-    override suspend fun exportResults(
+    override suspend fun uploadResults(
+        final: Boolean,
         resultService: ResultService,
         race: Race,
         httpClient: OkHttpClient,
         dataProcessor: DataProcessor,
         context: Context
-    ) {
+    ): Boolean {
         val results =
             ResultsProcessor.getResultWrapperFlowByRace(resultService.raceId, dataProcessor)
                 .first()
@@ -74,14 +75,18 @@ object OFeedWorker : ResultServiceWorker {
         val xml = stream.toString()
 
         try {
-            sendFile(xml, resultService, httpClient, context)
-
+            if (sendFile(xml, resultService, httpClient, context)) {
+                resultService.status = ResultServiceStatus.RUNNING
+                resultService.sentAt = LocalTime.now()
+                return true
+            }
         } catch (exception: Exception) {
             // Handle exceptions during the request
             resultService.status = ResultServiceStatus.ERROR
             resultService.errorText = exception.message ?: "Unknown error"
             Log.e(OResultsWorker.LOG_TAG, "Exception sending : ${exception.message}")
         }
+        return false
     }
 
     @Throws(Exception::class)

@@ -74,7 +74,7 @@ class ResultsExportDialogFragment : DialogFragment() {
         dataTypePicker.setOnItemClickListener { _, _, _, _ ->
             val selectedType = getCurrentType()
             when (selectedType) {
-                DataType.RESULTS_LIVE -> {
+                DataType.RESULTS_FINAL -> {
                     dataFormatPicker.setSimpleItems(R.array.results_data_formats)
                     dataFormatPicker.setText(getString(R.string.data_format_txt), false)
                 }
