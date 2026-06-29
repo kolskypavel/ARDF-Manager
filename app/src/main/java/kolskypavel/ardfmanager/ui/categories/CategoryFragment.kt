@@ -233,6 +233,12 @@ class CategoryFragment : Fragment() {
 
             1 -> selectedRaceViewModel.duplicateCategory(categoryData)
             2 -> confirmCategoryDeletion(categoryData.category)
+            3 -> findNavController().navigate(
+                CategoryFragmentDirections.moveCompetitors(
+                    categoryData.category.id.toString(),
+                    categoryData.category.name
+                )
+            )
         }
     }
 

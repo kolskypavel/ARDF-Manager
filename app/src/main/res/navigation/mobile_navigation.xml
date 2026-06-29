@@ -144,6 +144,9 @@
             <action
                 android:id="@+id/createStandardCategories"
                 app:destination="@id/standardCategoriesDialogFragment" />
+            <action
+                android:id="@+id/moveCompetitors"
+                app:destination="@id/moveCompetitorsDialogFragment" />
         </fragment>
         <dialog
             android:id="@+id/DataImportExportDialogFragment"
@@ -206,6 +209,19 @@
                 app:argType="kolskypavel.ardfmanager.backend.room.entity.Race" />
 
         </dialog>
+
+        <dialog
+            android:id="@+id/moveCompetitorsDialogFragment"
+            android:name="kolskypavel.ardfmanager.ui.categories.MoveCompetitorsDialogFragment"
+            android:label="MoveCompetitorsDialogFragment">
+            <argument
+                android:name="sourceCategoryId"
+                app:argType="string" />
+            <argument
+                android:name="sourceCategoryName"
+                app:argType="string" />
+        </dialog>
+
         <action
             android:id="@+id/closeRace"
             app:destination="@id/raceSelectionFragment" />

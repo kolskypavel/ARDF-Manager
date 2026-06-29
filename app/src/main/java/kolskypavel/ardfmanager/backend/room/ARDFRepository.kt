@@ -118,7 +118,7 @@ class ARDFRepository private constructor(context: Context) {
     fun getCompetitorDataFlowByRace(raceId: UUID): Flow<List<CompetitorData>> =
         eventDatabase.competitorDao().getCompetitorDataFlow(raceId)
 
-    suspend fun getCompetitorsByCategory(categoryId: UUID) =
+    suspend fun getCompetitorsByCategory(categoryId: UUID?) =
         eventDatabase.competitorDao().getCompetitorsByCategory(categoryId)
 
     suspend fun getCompetitorsByRace(raceId: UUID) =

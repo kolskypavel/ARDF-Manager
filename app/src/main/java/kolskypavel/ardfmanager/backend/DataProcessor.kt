@@ -228,6 +228,13 @@ class DataProcessor private constructor(context: Context) {
         }
     }
 
+    // Moves competitors from category with sourceId to category with destId
+    suspend fun moveCompetitorsToCategory(sourceId: UUID?, destId: UUID?) {
+        val competitors = getCompetitorsByCategory(sourceId)
+        competitors.forEach { it.categoryId = destId }
+        updateCompetitors(competitors)
+    }
+
     //CONTROL POINTS
     suspend fun getControlPointsByCategory(categoryId: UUID) =
         ardfRepository.getControlPointsByCategory(categoryId)
@@ -254,7 +261,7 @@ class DataProcessor private constructor(context: Context) {
     suspend fun getCompetitorBySINumber(siNumber: Int, raceId: UUID): Competitor? =
         ardfRepository.getCompetitorBySINumber(siNumber, raceId)
 
-    suspend fun getCompetitorsByCategory(categoryId: UUID): List<Competitor> =
+    suspend fun getCompetitorsByCategory(categoryId: UUID?): List<Competitor> =
         ardfRepository.getCompetitorsByCategory(categoryId)
 
     suspend fun getStatisticsByRace(raceId: UUID): StatisticsWrapper {

@@ -10,6 +10,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:title="@string/category_duplicate" />
+
+    <item
+        android:id="@+id/menu_item_move_competitors"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/category_move_competitors" />
+
     <item
         android:id="@+id/menu_item_delete_category"
         android:layout_width="wrap_content"

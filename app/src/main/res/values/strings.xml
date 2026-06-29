@@ -118,6 +118,9 @@
     <string name="category_create">Create category</string>
     <string name="category_edit">Edit category</string>
     <string name="category_duplicate">Duplicate category</string>
+    <string name="category_move_competitors">Move competitors</string>
+    <string name="category_destination_category">Destination category</string>
+    <string name="category_original_category">Original category %1$s</string>
     <string name="category_delete">Delete category</string>
     <string name="category_delete_confirmation">Do you really want to delete this category?\n%1$s</string>
     <string name="category_delete_competitors">Also delete competitors in this category</string>

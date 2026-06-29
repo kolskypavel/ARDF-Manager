@@ -30,7 +30,7 @@ interface CompetitorDao {
     suspend fun getHighestStartNumberByRace(raceId: UUID): Int
 
     @Query("SELECT * FROM competitor WHERE category_id=(:categoryId)")
-    suspend fun getCompetitorsByCategory(categoryId: UUID): List<Competitor>
+    suspend fun getCompetitorsByCategory(categoryId: UUID?): List<Competitor>
 
     @Query("SELECT * FROM competitor WHERE category_id IS NULL AND race_id=(:raceId)")
     suspend fun getUnmatchedCompetitorsByRace(raceId: UUID): List<Competitor>

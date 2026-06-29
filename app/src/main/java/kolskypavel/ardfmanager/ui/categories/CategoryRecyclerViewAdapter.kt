@@ -75,6 +75,11 @@ class CategoryRecyclerViewAdapter(
                         true
                     }
 
+                    R.id.menu_item_move_competitors -> {
+                        onMoreClicked(3, position, item)
+                        true
+                    }
+
                     R.id.menu_item_delete_category -> {
                         onMoreClicked(2, position, item)
                         true

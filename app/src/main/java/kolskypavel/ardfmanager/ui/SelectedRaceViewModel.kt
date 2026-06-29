@@ -206,6 +206,11 @@ class SelectedRaceViewModel : ViewModel() {
             )
         }
 
+    fun moveCompetitorsToCategory(sourceId: UUID?, destId: UUID?) =
+        CoroutineScope(Dispatchers.IO).launch {
+            dataProcessor.moveCompetitorsToCategory(sourceId, destId)
+        }
+
 
     fun getControlPointsByCategory(categoryId: UUID): ArrayList<ControlPoint> {
         return runBlocking {

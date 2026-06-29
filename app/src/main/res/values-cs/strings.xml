@@ -115,6 +115,9 @@
     <string name="category_climb_title">Převýšení (m)</string>
     <string name="competitor_delete">Smazat závodníka</string>
     <string name="category_duplicate">Duplikovat kategorii</string>
+    <string name="category_move_competitors">Přesunout závodníky</string>
+    <string name="category_original_category">Původní kategorie %1$s</string>
+    <string name="category_destination_category">Cílová kategorie</string>
     <string name="category_delete">Smazat kategorii</string>
     <string name="general_print">Tisk</string>
     <string name="duplicate_si_number">Čip již existuje!</string>
