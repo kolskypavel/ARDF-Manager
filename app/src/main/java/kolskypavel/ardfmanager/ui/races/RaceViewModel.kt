@@ -61,7 +61,7 @@ class RaceViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             dataProcessor.getRaces().collect { races ->
-                _races.value = races.sortedBy { it.startDateTime }
+                _races.value = races.sortedByDescending { it.startDateTime }
             }
         }
     }
