@@ -48,14 +48,11 @@ class CategoryDrawWrapperAdapter(
             it.setColor(c.color)
         }
 
-        // Start drag on press
-        holder.itemView.setOnTouchListener { v, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                itemDragStart?.invoke(holder)
-                crossDragStart(v, c)
-                v.performClick()
-                true
-            } else false
+        // Start drag on long press
+        holder.itemView.setOnLongClickListener { v ->
+            itemDragStart?.invoke(holder)
+            crossDragStart(v, c)
+            true
         }
     }
 

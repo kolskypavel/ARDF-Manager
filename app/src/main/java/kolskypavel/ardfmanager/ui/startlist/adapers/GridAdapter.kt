@@ -89,26 +89,14 @@ class GridAdapter(
         val catIdTag = cell.categoryDrawWrapper?.getCategoryId()
         holder.itemView.setTag(R.id.grid_cell_text, Pair(cell.isSpanEnd, catIdTag))
 
-        // Start drag on press from any cell that belongs to a placed category
-        holder.itemView.setOnTouchListener { v, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                val cat = cell.categoryDrawWrapper
-                val startIdx = cell.spanStartIndex ?: position
-                if (cat != null && startIdx >= 0) {
-                    // prevent parent RecyclerView from intercepting touch so drag starts reliably
-                    var parent = v.parent
-                    while (parent is View) {
-                        if (parent is RecyclerView) {
-                            parent.requestDisallowInterceptTouchEvent(true)
-                            break
-                        }
-                        parent = parent.parent
-                    }
-                    val clip = ClipData.newPlainText("categoryId", cat.getCategoryId().toString())
-                    v.startDragAndDrop(clip, View.DragShadowBuilder(v), Pair(cat, startIdx), 0)
-                    v.performClick()
-                    true
-                } else false
+        // Start drag on long press from any cell that belongs to a placed category
+        holder.itemView.setOnLongClickListener { v ->
+            val cat = cell.categoryDrawWrapper
+            val startIdx = cell.spanStartIndex ?: position
+            if (cat != null && startIdx >= 0) {
+                val clip = ClipData.newPlainText("categoryId", cat.getCategoryId().toString())
+                v.startDragAndDrop(clip, View.DragShadowBuilder(v), Pair(cat, startIdx), 0)
+                true
             } else false
         }
     }
