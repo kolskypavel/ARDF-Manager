@@ -97,18 +97,23 @@ class StartlistOverviewFragment : Fragment() {
         categoryPicker.setOnItemClickListener { _, _, position, _ ->
             val selectedName = autocompleteAdapter.getItem(position)
             selectedCategory = categories.find { it.category.name == selectedName }
+            viewModel.selectedOverviewCategoryId = selectedCategory?.category?.id
             displayCategoryCompetitors()
         }
 
-        // Keep current selection if data refreshes
-        selectedCategory?.let { current ->
-            val updated = categories.find { it.category.id == current.category.id }
+        // Keep current selection if data refreshes or restore from ViewModel
+        val targetId = viewModel.selectedOverviewCategoryId ?: selectedCategory?.category?.id
+        
+        targetId?.let { id ->
+            val updated = categories.find { it.category.id == id }
             if (updated != null) {
                 selectedCategory = updated
+                categoryPicker.setText(updated.category.name, false)
                 displayCategoryCompetitors()
             } else {
                 // If the previously selected category is now empty or deleted, clear selection
                 selectedCategory = null
+                viewModel.selectedOverviewCategoryId = null
                 adapter.updateItems(emptyList())
                 categoryPicker.setText("", false)
             }

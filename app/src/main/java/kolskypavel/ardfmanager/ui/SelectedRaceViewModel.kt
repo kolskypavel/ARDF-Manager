@@ -29,6 +29,7 @@ import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.room.enums.StandardCategoryType
 import kolskypavel.ardfmanager.backend.wrappers.ResultWrapper
 import kolskypavel.ardfmanager.backend.wrappers.StatisticsWrapper
+import kolskypavel.ardfmanager.ui.competitors.CompetitorTableDisplayType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -65,6 +66,10 @@ class SelectedRaceViewModel : ViewModel() {
 
     var resultService: LiveData<ResultServiceData> = MutableLiveData(null)
 
+    // UI State - Not persisted, cleared when race changes
+    var selectedOverviewCategoryId: UUID? = null
+    var competitorTableDisplayType: CompetitorTableDisplayType = CompetitorTableDisplayType.OVERVIEW
+
     // Jobs for running collectors - stored so we can cancel them when switching races
     private var categoryJob: Job? = null
     private var competitorJob: Job? = null
@@ -94,6 +99,8 @@ class SelectedRaceViewModel : ViewModel() {
         _readoutData.value = emptyList()
         _resultWrappers.value = emptyList()
         _race.postValue(null)
+        selectedOverviewCategoryId = null
+        competitorTableDisplayType = CompetitorTableDisplayType.OVERVIEW
 
         // Use viewModelScope so the collectors are lifecycle-aware and can be cancelled when VM is cleared
         viewModelScope.launch(Dispatchers.IO) {
@@ -152,6 +159,8 @@ class SelectedRaceViewModel : ViewModel() {
         _readoutData.value = emptyList()
         _resultWrappers.value = emptyList()
         _race.postValue(null)
+        selectedOverviewCategoryId = null
+        competitorTableDisplayType = CompetitorTableDisplayType.OVERVIEW
 
         dataProcessor.removeCurrentRace()
     }

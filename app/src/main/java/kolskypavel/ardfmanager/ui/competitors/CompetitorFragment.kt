@@ -84,7 +84,9 @@ class CompetitorFragment : Fragment() {
         }
 
         competitorDisplayTypePicker.setOnItemClickListener { _, _, _, pos ->
-            toggleCompetitorDisplay(CompetitorTableDisplayType.getByValue(pos.toInt()))
+            val displayType = CompetitorTableDisplayType.getByValue(pos.toInt())
+            selectedRaceViewModel.competitorTableDisplayType = displayType
+            toggleCompetitorDisplay(displayType)
         }
 
         competitorAddFab.setOnClickListener {
@@ -104,8 +106,14 @@ class CompetitorFragment : Fragment() {
         // Set collator for comparing
         collator = Collator.getInstance(selectedRaceViewModel.getCurrentLocale(requireContext()))
 
-        competitorDisplayTypePicker.setText(getText(R.string.competitor_display_overview), false)
-        toggleCompetitorDisplay(CompetitorTableDisplayType.OVERVIEW)
+        // Restore state from ViewModel
+        val currentDisplayType = selectedRaceViewModel.competitorTableDisplayType
+        val displayOptions = resources.getStringArray(R.array.competitor_display_options)
+        if (currentDisplayType.value < displayOptions.size) {
+            competitorDisplayTypePicker.setText(displayOptions[currentDisplayType.value], false)
+        }
+        toggleCompetitorDisplay(currentDisplayType)
+
         setBackButton()
         setResultListener()
     }
