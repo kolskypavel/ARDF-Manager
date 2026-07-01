@@ -24,6 +24,7 @@ import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ResultData
+import kolskypavel.ardfmanager.backend.room.enums.ResultServiceStatus
 import kolskypavel.ardfmanager.databinding.FragmentResultsBinding
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import kolskypavel.ardfmanager.ui.races.RaceEditDialogFragment
@@ -83,12 +84,22 @@ class ResultsFragment : Fragment() {
         // Set results service icon
         selectedRaceViewModel.resultService.observe(viewLifecycleOwner) { data ->
             if (data != null && data.resultService?.enabled == true) {
-                resultsServiceMenuItem.icon =
-                    ResourcesCompat.getDrawable(
-                        resources,
-                        R.drawable.ic_result_service_running,
-                        null
-                    )
+
+                if (data.resultService.status == ResultServiceStatus.RUNNING) {
+                    resultsServiceMenuItem.icon =
+                        ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.ic_result_service_running,
+                            null
+                        )
+                } else {
+                    resultsServiceMenuItem.icon =
+                        ResourcesCompat.getDrawable(
+                            resources,
+                            R.drawable.ic_result_service_error,
+                            null
+                        )
+                }
             } else {
                 resultsServiceMenuItem.icon =
                     ResourcesCompat.getDrawable(

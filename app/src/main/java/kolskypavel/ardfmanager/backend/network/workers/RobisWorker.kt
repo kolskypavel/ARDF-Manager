@@ -193,7 +193,6 @@ object RobisWorker : ResultServiceWorker {
                     }
 
                     401 -> {
-                        1
                         // Handle unauthorized response
                         resultService.status = ResultServiceStatus.UNAUTHORIZED
                         resultService.errorText =
@@ -252,23 +251,36 @@ object RobisWorker : ResultServiceWorker {
             .post(body)
             .build()
 
-        return try {
+        try {
             httpClient.newCall(request).execute().use { response ->
                 val bodyString = response.body.string()
                 Log.i(LOG_TAG, "ROBIS startlist response code=${response.code}, body=$bodyString")
-                if (response.code in 200..299) {
-                    resultService.errorText = ""
-                    true
-                } else {
-                    resultService.errorText = "Startlist upload failed: $bodyString"
-                    false
+
+                when (response.code) {
+                    in 200..299 -> {
+                        resultService.errorText = ""
+                        return true
+                    }
+
+                    401 -> {
+                        // Handle unauthorized response
+                        resultService.status = ResultServiceStatus.UNAUTHORIZED
+                        resultService.errorText = "Startlist upload failed: $bodyString"
+                        return false
+                    }
+
+                    else -> {
+                        resultService.status = ResultServiceStatus.ERROR
+                        resultService.errorText = "Startlist upload failed: $bodyString"
+                        return false
+                    }
                 }
             }
         } catch (e: Exception) {
             Log.e(LOG_TAG, "Exception uploading startlist to ROBis: ${e.message}")
             resultService.errorText = "Startlist upload exception: ${e.message}"
-            false
         }
+        return false
     }
 
     // Filter the invalid results that were sent to ROBIS and inform about the errors

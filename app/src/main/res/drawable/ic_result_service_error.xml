@@ -12,6 +12,6 @@
 
     <!-- RSS dot (green) -->
     <path
-        android:fillColor="#C62828"
+        android:fillColor="#FD8204"
         android:pathData="M6.18,17.82A2.18,2.18 0,1 1,4,15.64A2.18,2.18 0,0 1,6.18,17.82z" />
 </vector>
