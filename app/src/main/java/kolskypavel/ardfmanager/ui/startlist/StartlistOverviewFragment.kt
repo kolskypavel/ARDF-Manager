@@ -136,10 +136,8 @@ class StartlistOverviewFragment : Fragment() {
         }
 
         reorderedList.forEachIndexed { index, competitor ->
-            if (competitor.drawnRelativeStartTime != originalTimes[index]) {
-                competitor.drawnRelativeStartTime = originalTimes[index]
-                viewModel.createOrUpdateCompetitor(competitor)
-            }
+            competitor.drawnRelativeStartTime = originalTimes[index]
         }
+        viewModel.updateCompetitors(reorderedList)
     }
 }
