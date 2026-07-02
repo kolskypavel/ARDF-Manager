@@ -24,7 +24,7 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorCategory
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.RaceData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ReadoutData
-import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
+import kolskypavel.ardfmanager.backend.room.enums.ControlPointType
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
 import kolskypavel.ardfmanager.backend.sportident.SITime
@@ -92,7 +92,7 @@ class ResultJsonTests {
         val out = moshi.adapter(ResultJson::class.java).toJson(json)
 
         val stream =
-            this::class.java.classLoader.getResourceAsStream("json/json_results_filtered_start.ardfjs")
+            this::class.java.classLoader.getResourceAsStream("json/json_results_filtered_start.json")
         val valid = stream.bufferedReader().use { it.readText() }.filterNot { it.isWhitespace() }
 
         assertEquals(valid, out)
@@ -112,13 +112,13 @@ class ResultJsonTests {
         result.readoutTime = LocalDateTime.of(2025, 11, 23, 14, 18, 24)
 
         val punches = arrayListOf(
-            Punch(13, SITime(LocalTime.of(13, 0, 0)), SIRecordType.START, 1),
+            Punch(13, SITime(LocalTime.of(13, 0, 0)), SIRecordType.START, 0),
             Punch(31, SITime(LocalTime.of(13, 35, 0)), SIRecordType.CONTROL, 1),
-            Punch(32, SITime(LocalTime.of(13, 43, 11)), SIRecordType.CONTROL, 1),
-            Punch(33, SITime(LocalTime.of(14, 5, 50)), SIRecordType.CONTROL, 1),
-            Punch(34, SITime(LocalTime.of(14, 10, 22)), SIRecordType.CONTROL, 1),
+            Punch(32, SITime(LocalTime.of(13, 43, 11)), SIRecordType.CONTROL, 2),
+            Punch(33, SITime(LocalTime.of(14, 5, 50)), SIRecordType.CONTROL, 3),
+            Punch(34, SITime(LocalTime.of(14, 10, 22)), SIRecordType.CONTROL, 4),
+            Punch(99, SITime(LocalTime.of(14, 11, 22)), SIRecordType.CONTROL, 5),
         )
-        ResultsProcessor.calculateSplits(punches)
 
         val ap = punches.mapIndexed { index, punch ->
             AliasPunch(
@@ -126,6 +126,8 @@ class ResultJsonTests {
                 Alias(punch.siCode, index.toString())
             )
         }
+        ap.last().alias?.name ="M"
+
         val category = Category("A")
         val competitor = Competitor()
         val readoutData = ReadoutData(result, ap)
@@ -140,15 +142,20 @@ class ResultJsonTests {
             ControlPoint(31),
             ControlPoint(32),
             ControlPoint(33),
-            ControlPoint(34)
+            ControlPoint(34),
+            ControlPoint(99).apply { type = ControlPointType.BEACON }
         )
 
         val aliases = listOf(
             Alias(31, "1"),
             Alias(32, "2"),
             Alias(33, "3"),
-            Alias(34, "4")
+            Alias(34, "4"),
+            Alias(99, "M")
         )
+        ResultsProcessor.calculateSplits(punches)
+        ResultsProcessor.evaluateClassics(punches, controlPoints, result)
+
         val catData = listOf(CategoryData(category, controlPoints, listOf(competitor)))
 
         val rd = RaceData(race, catData, aliases, compData, emptyList())
@@ -162,7 +169,7 @@ class ResultJsonTests {
         val out = moshi.adapter(FinalResultsJson::class.java).toJson(json)
 
         val stream =
-            this::class.java.classLoader.getResourceAsStream("json/json_final_results.ardfjs")
+            this::class.java.classLoader.getResourceAsStream("json/json_final_results.json")
         val valid = stream.bufferedReader().use { it.readText() }.filterNot { it.isWhitespace() }
 
         assertEquals(valid, out)

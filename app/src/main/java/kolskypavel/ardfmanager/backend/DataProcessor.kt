@@ -327,7 +327,7 @@ class DataProcessor private constructor(context: Context) {
     ) {
         ardfRepository.createCompetitor(competitor)
         getRace(competitor.raceId)?.let { race ->
-            ResultsProcessor.updateResultsForCompetitor(competitor.id, race, this)
+            ResultsProcessor.updateResultsForCompetitor(competitor, race, this)
         }
     }
 
@@ -381,7 +381,7 @@ class DataProcessor private constructor(context: Context) {
 
             }
             ardfRepository.getUnmatchedCompetitorsByRace(raceId)
-                .forEach { comp -> updateResultsForCompetitor(comp.id, race, this) }
+                .forEach { comp -> updateResultsForCompetitor(comp, race, this) }
         }
     }
 

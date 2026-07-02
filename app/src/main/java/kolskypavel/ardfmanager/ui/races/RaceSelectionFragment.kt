@@ -261,7 +261,7 @@ class RaceSelectionFragment : Fragment() {
         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
         intent.type = "text/json"
-        intent.putExtra(Intent.EXTRA_TITLE, "race.ardfjs")
+        intent.putExtra(Intent.EXTRA_TITLE, "race.json")
         getResult.launch(intent)
     }
 

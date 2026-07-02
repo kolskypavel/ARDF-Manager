@@ -4,5 +4,7 @@ enum class SIRecordType {
     CHECK,
     START,
     FINISH,
-    CONTROL
+    CONTROL,
+    SEPARATOR,
+    BEACON
 }

@@ -550,33 +550,32 @@ object ResultsProcessor {
         val competitors = dataProcessor.getCompetitorsByCategory(categoryId)
 
         competitors.forEach { competitor ->
-            updateResultsForCompetitor(competitor.id, race, dataProcessor)
+            updateResultsForCompetitor(competitor, race, dataProcessor)
         }
     }
 
     suspend fun updateResultsForCompetitor(
-        competitorId: UUID,
+        competitor: Competitor,
         race: Race,
         dataProcessor: DataProcessor
     ) {
-        var result = dataProcessor.getResultByCompetitor(competitorId)
-        val competitor = dataProcessor.getCompetitor(competitorId)
+        var result = dataProcessor.getResultByCompetitor(competitor.id)
 
         //Try to get result by SI instead and update competitor ID
-        if (result == null && competitor?.siNumber != null) {
+        if (result == null && competitor.siNumber != null) {
             val siResult = dataProcessor.getResultBySINumber(
                 competitor.siNumber!!, competitor.raceId
             )
             if (siResult != null) {
                 result = siResult
-                result.competitorId = competitorId
+                result.competitorId = competitor.id
             }
         }
 
         //If result is found, recalculate it
         if (result != null) {
             val punches = ArrayList(dataProcessor.getPunchesByResult(result.id))
-            val category = competitor?.categoryId?.let { dataProcessor.getCategory(it) }
+            val category = competitor.categoryId?.let { dataProcessor.getCategory(it) }
 
             if (category == null) {
                 clearEvaluation(punches, result)
@@ -695,7 +694,8 @@ object ResultsProcessor {
      */
     private fun evaluateLoop(
         punches: List<Punch>,
-        controlPoints: List<ControlPoint>
+        controlPoints: List<ControlPoint>,
+        separator: Boolean   // is to mark last punch as a separator, or as beacon
     ): Int {
         val codes = controlPoints.map { p -> p.siCode }.toSet()
         val taken = TreeSet<Int>()  //Already taken CPs
@@ -707,11 +707,16 @@ object ResultsProcessor {
             } else -1
 
         punches.forEach { punch ->
-            if (punch.punchType == SIRecordType.CONTROL && codes.contains(punch.siCode)) {
+            if ((punch.punchType == SIRecordType.CONTROL
+                        || punch.punchType == SIRecordType.BEACON
+                        || punch.punchType == SIRecordType.SEPARATOR)
+                && codes.contains(punch.siCode)
+            ) {
 
                 //Valid punch
                 if (!taken.contains(punch.siCode) && punch.siCode != beacon) {
                     punch.punchStatus = PunchStatus.VALID
+                    punch.punchType = SIRecordType.CONTROL
                     points++
                     taken.add(punch.siCode)
                 }
@@ -720,7 +725,16 @@ object ResultsProcessor {
                     if (punches.indexOf(punch) == punches.lastIndex) {
                         points++
                         punch.punchStatus = PunchStatus.VALID
-                    } else {
+
+                        // Change punch type
+                        if (separator) {
+                            punch.punchType = SIRecordType.SEPARATOR
+                        } else {
+                            punch.punchType = SIRecordType.BEACON
+                        }
+                    }
+                    // Invalidly taken last punch
+                    else {
                         punch.punchStatus = PunchStatus.INVALID
                     }
                 }
@@ -745,7 +759,7 @@ object ResultsProcessor {
         controlPoints: List<ControlPoint>,
         result: Result
     ) {
-        result.points = evaluateLoop(punches, controlPoints)
+        result.points = evaluateLoop(punches, controlPoints, false)
 
         //Set the status accordingly
         if (result.points > 1) {
@@ -789,7 +803,7 @@ object ResultsProcessor {
                         controlPoints.subList(
                             prevControlSep,
                             separators[separIndex].second
-                        )
+                        ), true
                     )
                     prevPunchSep = pun.index
                     prevControlSep = separators[separIndex].second
@@ -802,7 +816,7 @@ object ResultsProcessor {
                 controlPoints.subList(
                     prevControlSep,
                     controlPoints.size
-                )
+                ), false
             )
         }
 
@@ -810,7 +824,8 @@ object ResultsProcessor {
         else {
             points = evaluateLoop(
                 punches,
-                controlPoints
+                controlPoints,
+                false
             )    //TODO: Fix the last beacon to not be required
         }
 

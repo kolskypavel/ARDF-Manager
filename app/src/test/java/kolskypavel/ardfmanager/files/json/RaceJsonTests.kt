@@ -59,7 +59,7 @@ class RaceJsonTests {
     fun testValidFromJson() {
 
         val stream =
-            this::class.java.classLoader.getResourceAsStream("json/json_valid_race_import.ardfjs")
+            this::class.java.classLoader.getResourceAsStream("json/json_valid_race_import.json")
         val raceData = JsonProcessor.importRaceData(stream, dataProcessor)
 
         assertEquals("EXAMPLE", raceData.race.name)
@@ -86,7 +86,7 @@ class RaceJsonTests {
     @Test
     fun testInvalidFromJson() {
         val stream =
-            this::class.java.classLoader.getResourceAsStream("json/json_invalid_race_import.ardfjs")
+            this::class.java.classLoader.getResourceAsStream("json/json_invalid_race_import.json")
         assertThrows(JsonDataException::class.java) {
             JsonProcessor.importRaceData(
                 stream,
@@ -101,7 +101,7 @@ class RaceJsonTests {
         val outStream = ByteArrayOutputStream()
         JsonProcessor.exportStartlist(outStream, race, dataProcessor)
         val validStream =
-            this::class.java.classLoader.getResourceAsStream("json/json_startlist_export.ardfjs")
+            this::class.java.classLoader.getResourceAsStream("json/json_startlist_export.json")
 
         val valid =
             validStream.bufferedReader().use { it.readText() }.filterNot { it.isWhitespace() }

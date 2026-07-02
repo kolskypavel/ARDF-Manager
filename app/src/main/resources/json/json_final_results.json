@@ -21,6 +21,10 @@
         {
           "si_code": 34,
           "control_type": "CONTROL"
+        },
+        {
+          "si_code": 99,
+          "control_type": "BEACON"
         }
       ],
       "category_different_properties": false,
@@ -43,6 +47,10 @@
     {
       "alias_si_code": 34,
       "alias_name": "4"
+    },
+    {
+      "alias_si_code": 99,
+      "alias_name": "M"
     }
   ],
   "competitors": [
@@ -66,7 +74,7 @@
         "place": 0,
         "readoutTime": "2025-11-23T14:18:24",
         "modified": false,
-        "punch_count": 0,
+        "punch_count": 5,
         "result_status": "OK",
         "automatic_status": true,
         "punches": [
@@ -97,6 +105,13 @@
             "control_type": "CONTROL",
             "punch_status": "OK",
             "split_time": "04:32"
+          },
+          {
+            "code": "M",
+            "si_code": 99,
+            "control_type": "BEACON",
+            "punch_status": "OK",
+            "split_time": "01:00"
           }
         ]
       }

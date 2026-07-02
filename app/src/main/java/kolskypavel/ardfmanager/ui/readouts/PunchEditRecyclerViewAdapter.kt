@@ -68,7 +68,7 @@ class PunchEditRecyclerViewAdapter(
                 holder.deleteBtn.visibility = View.GONE
             }
 
-            SIRecordType.CONTROL -> {
+            SIRecordType.CONTROL, SIRecordType.BEACON, SIRecordType.SEPARATOR -> {
                 if (item.punch.siCode != 0) {
                     holder.code.setText(item.punch.siCode.toString())
                 } else {
