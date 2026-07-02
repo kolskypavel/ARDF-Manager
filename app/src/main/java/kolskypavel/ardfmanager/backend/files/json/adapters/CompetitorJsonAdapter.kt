@@ -12,6 +12,7 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorCategory
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
+import kolskypavel.ardfmanager.backend.sportident.SITime
 import java.util.UUID
 
 class CompetitorJsonAdapter(val race: Race, val dataProcessor: DataProcessor) {
@@ -63,10 +64,19 @@ class CompetitorJsonAdapter(val race: Race, val dataProcessor: DataProcessor) {
             } else null
         )
         if (competitorJson.result != null) {
+
+            // Calculate drawn start time, if set
+            val drawnStart = if (competitor.drawnRelativeStartTime != null) {
+                SITime(
+                    race.startDateTime.plus(competitor.drawnRelativeStartTime),
+                    race.startDateTime
+                )
+            } else null
+
             val resultData = ResultJsonAdapter(
                 race,
                 dataProcessor
-            ).fromJson(competitorJson.result)
+            ).fromJson(competitorJson.result, drawnStart)
             resultData.result.competitorId = competitor.id
             resultData.result.siNumber = competitor.siNumber
             val readoutData = ReadoutData(resultData.result, resultData.punches)

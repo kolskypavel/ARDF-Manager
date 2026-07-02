@@ -53,7 +53,7 @@ class ResultJsonAdapter(
 
     @Suppress("DEPRECATION")
     @FromJson
-    fun fromJson(resultJson: ResultJson): ReadoutData {
+    fun fromJson(resultJson: ResultJson, drawnStart: SITime?): ReadoutData {
 
         val result = Result(
             id = UUID.randomUUID(),
@@ -62,7 +62,7 @@ class ResultJsonAdapter(
             cardType = 0, // Not in ResultJson
             checkTime = resultJson.check_time?.let { SITime(it, race.startDateTime) },
             points = resultJson.punch_count ?: 0,
-            startTime = resultJson.start_time?.let { SITime(it, race.startDateTime) },
+            startTime = resultJson.start_time?.let { SITime(it, race.startDateTime) } ?: drawnStart,    // Add drawn start if missing
             finishTime = resultJson.finish_time?.let {
                 resultJson.start_time?.let { startZero ->
                     SITime(
