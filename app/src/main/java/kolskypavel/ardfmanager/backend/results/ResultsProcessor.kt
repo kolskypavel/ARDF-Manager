@@ -108,13 +108,15 @@ object ResultsProcessor {
     }
 
     private fun removeStartAndFinishPunch(result: Result, punches: ArrayList<Punch>) {
-        if (punches.first().punchType == SIRecordType.START) {
-            result.startTime = punches.first().siTime
-            punches.removeAt(0)
-        }
-        if (punches.last().punchType == SIRecordType.FINISH) {
-            result.finishTime = punches.last().siTime
-            punches.removeAt(punches.lastIndex)
+        if (punches.isNotEmpty()) {
+            if (punches.first().punchType == SIRecordType.START) {
+                result.startTime = punches.first().siTime
+                punches.removeAt(0)
+            }
+            if (punches.last().punchType == SIRecordType.FINISH) {
+                result.finishTime = punches.last().siTime
+                punches.removeAt(punches.lastIndex)
+            }
         }
     }
 
