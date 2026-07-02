@@ -92,6 +92,8 @@ class ReadoutDataRecyclerViewAdapter(
             holder.itemView.setBackgroundResource(R.color.orange_reading)
         } else if (item.competitorCategory?.competitor?.siRent == true) {
             holder.itemView.setBackgroundResource(R.color.yellow_warning)
+        } else {
+            holder.itemView.background = null
         }
 
         //Set context menu
