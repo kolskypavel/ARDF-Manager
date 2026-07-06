@@ -509,8 +509,7 @@ object CsvProcessor : FormatProcessor {
                 val category = com.competitorCategory.category
                 writer.write(
                     com.competitorCategory.competitor.toStartCsvString(
-                        category?.name ?: "",
-                        race.startDateTime
+                        category?.name ?: ""
                     )
                 )
                 writer.newLine()

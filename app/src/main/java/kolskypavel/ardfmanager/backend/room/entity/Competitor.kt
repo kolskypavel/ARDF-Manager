@@ -8,7 +8,6 @@ import androidx.room.PrimaryKey
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import java.io.Serializable
 import java.time.Duration
-import java.time.LocalDateTime
 import java.util.UUID
 
 @Entity(
@@ -59,16 +58,13 @@ data class Competitor(
     }
 
     fun toStartCsvString(
-        categoryName: String,
-        raceStart: LocalDateTime
+        categoryName: String
     ): String {
 
-        val real =
-            if (drawnRelativeStartTime != null) {
-                TimeProcessor.hoursMinutesFormatter(raceStart + drawnRelativeStartTime)
-            } else null
+        val time =
+            drawnRelativeStartTime?.let { TimeProcessor.durationToFormattedString(it, true) }
 
-        return "${startNumber};${lastName};${firstName};${categoryName};;${real ?: ""};${index};;${club};${siNumber ?: ""}"
+        return "${startNumber};${lastName};${firstName};${categoryName};${time ?: ""};;${index};;${club};${siNumber ?: ""}"
     }
 
     //Non-args constructor
