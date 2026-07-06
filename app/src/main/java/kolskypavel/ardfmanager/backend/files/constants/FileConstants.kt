@@ -4,23 +4,29 @@ object FileConstants {
 
     const val OCM_START_CSV_COLUMNS = 3
     const val CATEGORY_CSV_COLUMNS = 11
-    const val UNKNOWN_COMPETITOR_SYMBOL = "?"
 
+    const val TEMPLATE_TEXT_STARTLIST = "templates/textStartlistTemplate.tmpl"
+    const val TEMPLATE_TEXT_STARTLIST_ROW = "templates/textStartlistRow.tmpl"
     const val TEMPLATE_TEXT_RESULTS = "templates/textResultsTemplate.tmpl"
-    const val TEMPLATE_TEXT_CATEGORY = "templates/textResCatHeader.tmpl"
-    const val TEMPLATE_TEXT_COMPETITOR = "templates/textResCompSimple.tmpl"
-    const val TEMPLATE_TEXT_COMPETITOR_SPLITS = "templates/textResCompSplits.tmpl"
+    const val TEMPLATE_TEXT_RES_CATEGORY = "templates/textResCatHeader.tmpl"
+    const val TEMPLATE_TEXT_RES_COMPETITOR = "templates/textResCompSimple.tmpl"
+    const val TEMPLATE_TEXT_RES_COMPETITOR_SPLITS = "templates/textResCompSplits.tmpl"
+
+    const val TEMPLATE_HTML_STARTLIST = "templates/htmlStartlistTemplate.tmpl"
+    const val TEMPLATE_HTML_STARTLIST_CATEGORY = "templates/htmlStartlistCatHeader.tmpl"
+    const val TEMPLATE_HTML_STARTLIST_ROW = "templates/htmlStartlistRow.tmpl"
     const val TEMPLATE_HTML_RESULTS = "templates/htmlResultsTemplate.tmpl"
-    const val TEMPLATE_HTML_CATEGORY = "templates/htmlResCatHeader.tmpl"
-    const val TEMPLATE_HTML_COMPETITOR = "templates/htmlResComp.tmpl"
+    const val TEMPLATE_HTML_RES_CATEGORY = "templates/htmlResCatHeader.tmpl"
+    const val TEMPLATE_HTML_RES_COMPETITOR = "templates/htmlResComp.tmpl"
 
     const val KEY_TAB = "{{TAB}}"
+    const val LINE_LENGTH = 146
 
     //TEMPLATE RACE KEYS
     const val KEY_TITLE_RESULTS = "{{title_results}}"
     const val KEY_TITLE_RACE_NAME = "{{title_race_name}}"
     const val KEY_TITLE_RACE_DATE = "{{title_race_date}}"
-    const val KEY_TITLE_RACE_START_TIME = "{{title_race_start_time}}"
+    const val KEY_TITLE_START_TIME = "{{title_start_time}}"
     const val KEY_TITLE_RACE_LEVEL = "{{title_race_level}}"
     const val KEY_TITLE_CATEGORY = "{{title_category}}"
     const val KEY_TITLE_LIMIT = "{{title_limit}}"
@@ -49,11 +55,20 @@ object FileConstants {
     const val KEY_CAT_LENGTH = "{{cat_length}}"
     const val KEY_CAT_CONTROLS = "{{cat_controls}}"
 
+    // TEMPLATE STARTLIST KEYS
+    const val KEY_TITLE_STARTLIST = "{{title_startlist}}"
+    const val KEY_TITLE_START_NUMBER = "{{title_start_number}}"
+    const val KEY_TITLE_SI_NUMBER = "{{title_si_number}}"
+    const val KEY_RACE_STARTLIST = "{{race_startlist}}"
+
     // TEMPLATE RESULT KEYS
     const val KEY_COMP_PLACE = "{{comp_place}}"
     const val KEY_COMP_NAME = "{{comp_name}}"
     const val KEY_COMP_CLUB = "{{comp_club}}"
     const val KEY_COMP_INDEX = "{{comp_index}}"
+    const val KEY_COMP_START_TIME = "{{comp_start_time}}"
+    const val KEY_COMP_START_NUMBER = "{{comp_start_number}}"
+    const val KEY_COMP_SI_NUMBER = "{{comp_si_number}}"
     const val KEY_COMP_RUN_TIME = "{{comp_run_time}}"
     const val KEY_COMP_POINTS = "{{comp_points}}"
     const val KEY_COMP_CONTROLS = "{{comp_controls}}"
@@ -64,6 +79,7 @@ object FileConstants {
 
     const val KEY_GENERATED_WITH = "{{generated_with}}"
     const val KEY_VERSION = "{{software_version}}"
+    const val KEY_CURR_TIME = "{{curr_time}}"
 
     const val KEY_TITLE_RESULTS_SPLITS = "{{title_results_splits}}"
     const val KEY_RACE_RESULTS_SPLITS = "{{race_results_splits}}"

@@ -79,6 +79,11 @@ class ResultsExportDialogFragment : DialogFragment() {
                     dataFormatPicker.setText(getString(R.string.data_format_txt), false)
                 }
 
+                DataType.STARTLIST -> {
+                    dataFormatPicker.setSimpleItems(R.array.startlist_data_formats)
+                    dataFormatPicker.setText(getString(R.string.data_format_txt), false)
+                }
+
                 DataType.READOUT_DATA -> {
                     dataFormatPicker.setSimpleItems(R.array.readout_data_data_formats)
                     dataFormatPicker.setText(getString(R.string.data_format_csv), false)
@@ -93,43 +98,73 @@ class ResultsExportDialogFragment : DialogFragment() {
         exportButton.setOnClickListener {
             val intent = Intent(Intent.ACTION_CREATE_DOCUMENT)
             intent.addCategory(Intent.CATEGORY_OPENABLE)
-            setFlags(intent, getCurrentFormat())
+            setFlags(intent, getCurrentType(), getCurrentFormat())
             getResult.launch(intent)
         }
-
 
         cancelButton.setOnClickListener {
             dialog?.cancel()
         }
     }
 
-    private fun setFlags(intent: Intent, dataFormat: DataFormat) {
-        when (dataFormat) {
+    private fun setFlags(intent: Intent, dataType: DataType, dataFormat: DataFormat) {
+        when (dataType) {
+            DataType.RESULTS_FINAL -> {
+                when (dataFormat) {
+                    DataFormat.TXT -> {
+                        intent.type = "text/txt"
+                        intent.putExtra(Intent.EXTRA_TITLE, "results.txt")
+                    }
 
-            DataFormat.TXT -> {
-                intent.type = "text/txt"
-                intent.putExtra(Intent.EXTRA_TITLE, "results.txt")
+                    DataFormat.CSV -> {
+                        intent.type = "text/csv"
+                        intent.putExtra(Intent.EXTRA_TITLE, "results.csv")
+                    }
+
+                    DataFormat.JSON -> {
+                        intent.type = "text/*"
+                        intent.putExtra(Intent.EXTRA_TITLE, "results.json")
+                    }
+
+                    DataFormat.IOF_XML -> {
+                        intent.type = "text/xml"
+                        intent.putExtra(Intent.EXTRA_TITLE, "results.xml")
+                    }
+
+                    DataFormat.HTML -> {
+                        intent.type = "text/html"
+                        intent.putExtra(Intent.EXTRA_TITLE, "results.html")
+                    }
+                }
             }
 
-            DataFormat.CSV -> {
+            DataType.STARTLIST -> {
+                when (dataFormat) {
+                    DataFormat.TXT -> {
+                        intent.type = "text/txt"
+                        intent.putExtra(Intent.EXTRA_TITLE, "startlist.txt")
+                    }
+
+                    DataFormat.HTML -> {
+                        intent.type = "text/html"
+                        intent.putExtra(Intent.EXTRA_TITLE, "startlist.html")
+                    }
+
+                    DataFormat.CSV -> {
+                        intent.type = "text/csv"
+                        intent.putExtra(Intent.EXTRA_TITLE, "startlist.csv")
+                    }
+
+                    else -> {}
+                }
+            }
+
+            DataType.READOUT_DATA -> {
                 intent.type = "text/csv"
-                intent.putExtra(Intent.EXTRA_TITLE, "results.csv")
+                intent.putExtra(Intent.EXTRA_TITLE, "readouts.csv")
             }
 
-            DataFormat.JSON -> {
-                intent.type = "text/*"
-                intent.putExtra(Intent.EXTRA_TITLE, "results.json")
-            }
-
-            DataFormat.IOF_XML -> {
-                intent.type = "text/xml"
-                intent.putExtra(Intent.EXTRA_TITLE, "results.xml")
-            }
-
-            DataFormat.HTML -> {
-                intent.type = "text/html"
-                intent.putExtra(Intent.EXTRA_TITLE, "results.html")
-            }
+            else -> {}
         }
     }
 

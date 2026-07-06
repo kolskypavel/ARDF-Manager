@@ -12,8 +12,10 @@ import kolskypavel.ardfmanager.backend.helpers.ControlPointsHelper
 import kolskypavel.ardfmanager.backend.helpers.TimeProcessor
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.entity.Category
+import kolskypavel.ardfmanager.backend.room.entity.Competitor
 import kolskypavel.ardfmanager.backend.room.entity.Race
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.AliasPunch
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ControlPointAlias
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
@@ -23,8 +25,11 @@ import kotlinx.coroutines.flow.first
 import java.io.InputStream
 import java.io.OutputStream
 import java.time.LocalDateTime
-import java.util.UUID
 
+/**
+ * Processor for generating text-based files (TXT and HTML).
+ * It handles both results and startlists by processing templates with dynamic parameters.
+ */
 object TextProcessor : FormatProcessor {
 
     override suspend fun importData(
@@ -47,95 +52,42 @@ object TextProcessor : FormatProcessor {
             DataType.RESULTS_LIVE, DataType.RESULTS_FINAL -> exportResults(
                 format,
                 outStream,
-                race.id,
+                race,
                 dataProcessor
             )
 
-            else -> {
-                TODO()
-            }
+            DataType.STARTLIST -> exportStartlist(
+                format,
+                outStream,
+                race,
+                dataProcessor
+            )
+
+            else -> {}
         }
     }
 
+    // --------------------------------------------------------------------------------------------
+    // HIGH-LEVEL EXPORT ORCHESTRATION
+    // --------------------------------------------------------------------------------------------
+
+    /**
+     * Orchestrates the export of race results. Fetches data, generates content, and writes to stream.
+     */
     @Throws(IllegalArgumentException::class)
     private suspend fun exportResults(
         format: DataFormat,
         outStream: OutputStream,
-        raceId: UUID,
+        race: Race,
         dataProcessor: DataProcessor
     ) {
-        val results = ResultsProcessor.getResultWrapperFlowByRace(raceId, dataProcessor).first()
-        val params = HashMap<String, String>()
-        val context = dataProcessor.getContext()
+        val results = ResultsProcessor.getResultWrapperFlowByRace(race.id, dataProcessor).first()
+        val context = dataProcessor.getContext() ?: return
+        val params = getBaseParams(dataProcessor, context, race)
 
-        if (context != null) {
-            dataProcessor.getRace(raceId)?.let { race ->
-                // Init all the parameters for the template
-                initParams(
-                    dataProcessor,
-                    context,
-                    params,
-                    results,
-                    race,
-                    format
-                )
-            }
-
-            val templateType =
-                if (format == DataFormat.TXT) {
-                    FileConstants.TEMPLATE_TEXT_RESULTS
-                } else {
-                    FileConstants.TEMPLATE_HTML_RESULTS
-                }
-
-            val template = TemplateProcessor.loadTemplate(
-                templateType,
-                context
-            )
-            val out = TemplateProcessor.processTemplate(
-                template,
-                params
-            )
-
-            outStream.write(out.toByteArray())
-            outStream.flush()
-        }
-    }
-
-    private suspend fun initParams(
-        dataProcessor: DataProcessor,
-        context: Context,
-        params: HashMap<String, String>,
-        results: List<ResultWrapper>,
-        race: Race,
-        format: DataFormat
-    ) {
-        params[FileConstants.KEY_TITLE_RESULTS] = context.getString(R.string.general_results)
-
-        params[FileConstants.KEY_TITLE_RACE_NAME] = context.getString(R.string.general_race)
-        params[FileConstants.KEY_RACE_NAME] = race.name
-        params[FileConstants.KEY_TITLE_RACE_DATE] = context.getString(R.string.general_date)
-        params[FileConstants.KEY_RACE_DATE] =
-            TimeProcessor.formatLocalDate(race.startDateTime.toLocalDate())
-        params[FileConstants.KEY_TITLE_RACE_START_TIME] =
-            context.getString(R.string.general_start_time)
-        params[FileConstants.KEY_RACE_START_TIME] =
-            TimeProcessor.formatLocalTime(race.startDateTime.toLocalTime())
-        params[FileConstants.KEY_TITLE_RACE_LEVEL] = context.getString(R.string.race_level)
-        params[FileConstants.KEY_RACE_LEVEL] = dataProcessor.raceLevelToString(race.raceLevel)
-
-        params[FileConstants.KEY_TITLE_PLACE] = context.getString(R.string.general_place)
-        params[FileConstants.KEY_TITLE_NAME] = context.getString(R.string.general_name)
-        params[FileConstants.KEY_TITLE_INDEX] = context.getString(R.string.general_index)
-        params[FileConstants.KEY_TITLE_RUN_TIME] = context.getString(R.string.general_run_time)
-        params[FileConstants.KEY_TITLE_POINTS] = context.getString(R.string.general_points)
-        params[FileConstants.KEY_TITLE_CONTROLS] = context.getString(R.string.general_controls)
-        params[FileConstants.KEY_TITLE_RESULTS_SPLITS] = context.getString(R.string.results_splits)
-
-        // Init format specific parameters
         if (format == DataFormat.TXT) {
             params[FileConstants.KEY_RACE_RESULTS] =
-                generateTxtResults(dataProcessor, context, results, race)
+                generateTxtResults(dataProcessor, context, results, race, false)
             params[FileConstants.KEY_RACE_RESULTS_SPLITS] =
                 generateTxtResults(dataProcessor, context, results, race, true)
         } else {
@@ -143,283 +95,431 @@ object TextProcessor : FormatProcessor {
                 generateHtmlResults(dataProcessor, context, results, race)
         }
 
-        params[FileConstants.KEY_GENERATED_WITH] =
-            context.getString(
-                R.string.results_generated_with,
-                TimeProcessor.formatDisplayLocalDateTime(LocalDateTime.now())
-            )
-        params[FileConstants.KEY_VERSION] = dataProcessor.getAppVersion()
+        val templateType = if (format == DataFormat.TXT) {
+            FileConstants.TEMPLATE_TEXT_RESULTS
+        } else {
+            FileConstants.TEMPLATE_HTML_RESULTS
+        }
+
+        writeTemplateToStream(templateType, params, context, outStream)
     }
 
-
-    //Generates one line of competitor data
-    private fun generateTxtCompetitorData(
-        dataProcessor: DataProcessor,
-        context: Context,
-        competitorData: CompetitorData,
-        generateSplits: Boolean = false
-    ): String {
-
-        val templateName =
-            if (generateSplits) FileConstants.TEMPLATE_TEXT_COMPETITOR_SPLITS
-            else FileConstants.TEMPLATE_TEXT_COMPETITOR
-
-        val template =
-            TemplateProcessor.loadTemplate(templateName, context)
-        val params = HashMap<String, String>()
-
-        val result = competitorData.readoutData?.result!!
-
-        params[FileConstants.KEY_COMP_PLACE] =
-            if (result.resultStatus == ResultStatus.OK) {
-                "${result.place}."
-            } else {
-                dataProcessor.resultStatusToShortString(result.resultStatus)
-            }
-
-        params[FileConstants.KEY_COMP_NAME] =
-            competitorData.competitorCategory.competitor.getFullName()
-        params[FileConstants.KEY_COMP_INDEX] =
-            competitorData.competitorCategory.competitor.index
-        params[FileConstants.KEY_COMP_RUN_TIME] =
-            TimeProcessor.durationToFormattedString(
-                result.runTime,
-                dataProcessor.useMinuteTimeFormat()
-            )
-        params[FileConstants.KEY_COMP_POINTS] =
-            result.points.toString()
-
-        // TODO: remove for orienteering
-        params[FileConstants.KEY_COMP_CONTROLS] = ControlPointsHelper.getStringFromAliasPunches(
-            competitorData.readoutData!!.punches,
-            context
-        )
-
-        params[FileConstants.KEY_COMP_SPLITS] =
-            getSplitsString(competitorData.readoutData!!.punches, dataProcessor)
-
-        val out = TemplateProcessor.processTemplate(template, params)
-        return out
-    }
-
-    private fun getSplitsString(
-        punches: List<AliasPunch>,
+    /**
+     * Orchestrates the export of the race startlist.
+     */
+    private suspend fun exportStartlist(
+        format: DataFormat,
+        outStream: OutputStream,
+        race: Race,
         dataProcessor: DataProcessor
-    ): String {
-        var out = ""
+    ) {
+        val categoryData = dataProcessor.getCategoryDataForRace(race.id)
+        val context = dataProcessor.getContext() ?: return
+        val params = getBaseParams(dataProcessor, context, race)
 
-        for (aliasPunch in punches.withIndex()) {
-            if (aliasPunch.value.punch.punchType != SIRecordType.START) {
-
-                out += TimeProcessor.durationToFormattedString(
-                    aliasPunch.value.punch.split,
-                    dataProcessor.useMinuteTimeFormat()
-                )
-
-                if (aliasPunch.index < punches.size - 1) {
-                    out += " "
-                }
-            }
+        if (format == DataFormat.TXT) {
+            params[FileConstants.KEY_RACE_STARTLIST] =
+                generateTxtStartListData(categoryData, context)
+        } else {
+            params[FileConstants.KEY_RACE_STARTLIST] =
+                generateHtmlStartListData(context, categoryData)
         }
-        return out
+
+        val templateType = if (format == DataFormat.TXT) {
+            FileConstants.TEMPLATE_TEXT_STARTLIST
+        } else {
+            FileConstants.TEMPLATE_HTML_STARTLIST
+        }
+
+        writeTemplateToStream(templateType, params, context, outStream)
     }
 
-    private fun generateCategoryHeader(
-        templateName: String,
-        dataProcessor: DataProcessor,
-        context: Context,
-        category: Category,
-        controlPointsAliases: List<ControlPointAlias>,
-        race: Race
-    ): String {
-        val template = TemplateProcessor.loadTemplate(templateName, context)
-        val params = HashMap<String, String>()
+    // --------------------------------------------------------------------------------------------
+    // TXT GENERATION LOGIC
+    // --------------------------------------------------------------------------------------------
 
-        params[FileConstants.KEY_TITLE_CATEGORY] = context.getString(R.string.general_category)
-        params[FileConstants.KEY_CAT_NAME] = category.name
-        params[FileConstants.KEY_TITLE_LIMIT] = context.getString(R.string.general_limit)
-        params[FileConstants.KEY_CAT_LIMIT] = if (category.timeLimit != null) {
-            category.timeLimit!!.toMinutes().toString()
-        } else {
-            race.timeLimit.toMinutes().toString()
-        }
-
-        params[FileConstants.KEY_TITLE_BAND] = context.getString(R.string.general_band)
-        params[FileConstants.KEY_CAT_BAND] = if (category.categoryBand != null) {
-            dataProcessor.raceBandToString(category.categoryBand!!)
-        } else {
-            dataProcessor.raceBandToString(race.raceBand)
-        }
-
-        params[FileConstants.KEY_TITLE_LENGTH] = context.getString(R.string.general_length)
-        params[FileConstants.KEY_CAT_LENGTH] = category.length.toString()
-
-        params[FileConstants.KEY_TITLE_CONTROLS] = context.getString(R.string.general_controls)
-        params[FileConstants.KEY_CAT_CONTROLS] =
-            ControlPointsHelper.getStringFromControlPointAliases(controlPointsAliases, context)
-
-        params[FileConstants.KEY_TITLE_PLACE] = context.getString(R.string.general_place)
-        params[FileConstants.KEY_TITLE_NAME] = context.getString(R.string.general_name)
-        params[FileConstants.KEY_TITLE_CLUB] = context.getString(R.string.general_club)
-        params[FileConstants.KEY_TITLE_POINTS] = context.getString(R.string.general_points)
-        params[FileConstants.KEY_TITLE_RUN_TIME] = context.getString(R.string.general_run_time)
-        params[FileConstants.KEY_TITLE_SPLITS] = context.getString(R.string.general_splits)
-
-        val gen = TemplateProcessor.processTemplate(template, params)
-        return gen
-    }
-
-    // Generates the whole result block
+    /**
+     * Generates TXT content for all result categories.
+     */
     private suspend fun generateTxtResults(
         dataProcessor: DataProcessor,
         context: Context,
         results: List<ResultWrapper>,
         race: Race,
-        generateSplits: Boolean = false
+        generateSplits: Boolean
     ): String {
-        var output = ""
-
+        val output = StringBuilder()
         for (result in results) {
-            if (result.category != null) {
-                output += generateCategoryHeader(
-                    FileConstants.TEMPLATE_TEXT_CATEGORY,
-                    dataProcessor, context,
-                    result.category,
-                    dataProcessor.getControlPointAliasesByCategory(result.category.id),
-                    race
-                )
-                output += "\n"
+            val category = result.category ?: continue
+            
+            // Category Header
+            output.append(generateResCategoryHeader(FileConstants.TEMPLATE_TEXT_RES_CATEGORY, dataProcessor, context, category, race)).append("\n")
 
-                for (rd in result.competitorData) {
-                    if (rd.readoutData != null) {
-                        val competitorData =
-                            generateTxtCompetitorData(dataProcessor, context, rd, generateSplits)
-                        output += competitorData + "\n"
-                    }
+            // Competitor Rows
+            for (rd in result.competitorData) {
+                if (rd.readoutData != null) {
+                    output.append(generateTxtResCompData(dataProcessor, context, rd, generateSplits)).append("\n")
                 }
-                output += "\n\n"
             }
+            output.append("\n\n")
         }
-
-        return output
+        return output.toString()
     }
 
-    // HTML SECTION
+    /**
+     * Generates TXT content for the startlist, grouped by categories.
+     */
+    private fun generateTxtStartListData(
+        categoryData: List<CategoryData>,
+        context: Context
+    ): String {
+        val output = StringBuilder()
+        for (catWrapper in categoryData.withIndex()) {
+            val cd = catWrapper.value
+            val sortedComp = cd.competitors.sortedBy { it.drawnRelativeStartTime }
+            
+            output.append(cd.category.name).append("\n")
+            output.append("-".repeat(FileConstants.LINE_LENGTH)).append("\n")
+
+            for (comp in sortedComp) {
+                output.append(generateStartlistRow(comp, DataFormat.TXT, context)).append("\n")
+            }
+
+            if (catWrapper.index < categoryData.size - 1) {
+                output.append("\n\n")
+            }
+        }
+        return output.toString()
+    }
+
+    /**
+     * Generates one line of competitor result for TXT format.
+     */
+    private fun generateTxtResCompData(
+        dataProcessor: DataProcessor,
+        context: Context,
+        competitorData: CompetitorData,
+        generateSplits: Boolean
+    ): String {
+        val templateName = if (generateSplits) FileConstants.TEMPLATE_TEXT_RES_COMPETITOR_SPLITS
+        else FileConstants.TEMPLATE_TEXT_RES_COMPETITOR
+
+        val template = TemplateProcessor.loadTemplate(templateName, context)
+        val params = getCompetitorParams(competitorData, dataProcessor)
+
+        // Add special fields for TXT results
+        params[FileConstants.KEY_COMP_CONTROLS] = ControlPointsHelper.getStringFromAliasPunches(
+            competitorData.readoutData!!.punches,
+            context
+        )
+        params[FileConstants.KEY_COMP_SPLITS] = getSplitsString(competitorData.readoutData!!.punches, dataProcessor)
+
+        return TemplateProcessor.processTemplate(template, params)
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // HTML GENERATION LOGIC
+    // --------------------------------------------------------------------------------------------
+
+    /**
+     * Generates HTML content for results.
+     */
     private suspend fun generateHtmlResults(
         dataProcessor: DataProcessor,
         context: Context,
         results: List<ResultWrapper>,
         race: Race
     ): String {
-        var output = ""
+        val output = StringBuilder()
+        for (resultWrapper in results.withIndex()) {
+            val result = resultWrapper.value
+            val category = result.category ?: continue
 
-        for (result in results.withIndex()) {
+            output.append(generateResCategoryHeader(FileConstants.TEMPLATE_HTML_RES_CATEGORY, dataProcessor, context, category, race))
 
-            if (result.value.category != null) {
-                output += generateCategoryHeader(
-                    FileConstants.TEMPLATE_HTML_CATEGORY,
-                    dataProcessor,
-                    context,
-                    result.value.category!!,
-                    dataProcessor.getControlPointAliasesByCategory(result.value.category!!.id),
-                    race
-                )
-
-                for (rd in result.value.competitorData.withIndex()) {
-                    if (rd.value.readoutData != null) {
-                        val competitorData =
-                            generateHtmlCompetitorData(dataProcessor, context, rd.value)
-                        output += competitorData
-                    }
-                }
-                output += FileConstants.HTML_TABLE_END
-
-                // Add a line break between categories
-                if (result.index < results.size - 1) {
-                    output += FileConstants.HTML_DOUBLE_BREAK
+            for (rd in result.competitorData) {
+                if (rd.readoutData != null) {
+                    output.append(generateHtmlCompetitorResults(dataProcessor, context, rd))
                 }
             }
+            output.append(FileConstants.HTML_TABLE_END)
+
+            if (resultWrapper.index < results.size - 1) {
+                output.append(FileConstants.HTML_DOUBLE_BREAK)
+            }
         }
-        return output
+        return output.toString()
     }
 
-    // Generates two rows of competitor splits
+    /**
+     * Generates HTML content for startlist.
+     */
+    private suspend fun generateHtmlStartListData(
+        context: Context,
+        categoryData: List<CategoryData>
+    ): String {
+        val output = StringBuilder()
+        for (cdWrapper in categoryData.withIndex()) {
+            val cd = cdWrapper.value
+            output.append(generateHtmlStartListCatHeader(context, cd.category))
+
+            val sortedComp = cd.competitors.sortedBy { it.drawnRelativeStartTime }
+            for (comp in sortedComp) {
+                output.append(generateStartlistRow(comp, DataFormat.HTML, context))
+            }
+
+            output.append(FileConstants.HTML_TABLE_END)
+
+            if (cdWrapper.index < categoryData.size - 1) {
+                output.append(FileConstants.HTML_DOUBLE_BREAK)
+            }
+        }
+        return output.toString()
+    }
+
+    /**
+     * Generates one HTML row for competitor results.
+     */
+    private fun generateHtmlCompetitorResults(
+        dataProcessor: DataProcessor,
+        context: Context,
+        competitorData: CompetitorData
+    ): String {
+        val template = TemplateProcessor.loadTemplate(FileConstants.TEMPLATE_HTML_RES_COMPETITOR, context)
+        val params = getCompetitorParams(competitorData, dataProcessor)
+
+        params[FileConstants.KEY_COMP_SPLITS] = generateHtmlCompetitorSplits(
+            competitorData.readoutData!!.punches,
+            context,
+            dataProcessor
+        )
+
+        return TemplateProcessor.processTemplate(template, params)
+    }
+
+    /**
+     * Generates HTML formatted splits.
+     */
     private fun generateHtmlCompetitorSplits(
         splits: List<AliasPunch>,
         context: Context,
         dataProcessor: DataProcessor
     ): String {
-        var out = ""
-
+        val output = StringBuilder()
         val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-        val useAlias =
-            sharedPref.getBoolean(context.getString(R.string.key_results_use_aliases), true)
+        val useAlias = sharedPref.getBoolean(context.getString(R.string.key_results_use_aliases), true)
 
-        // TODO: Limit row length
         for (split in splits) {
             if (split.punch.punchType == SIRecordType.CONTROL) {
-                val aliasCode: String = if (useAlias && split.alias != null) {
-                    split.alias!!.name
-                } else {
-                    split.punch.siCode.toString()
-                }
-
-                val split = TemplateProcessor.processTemplate(
-                    FileConstants.HTML_SPLITS_CODE,
-                    mapOf(
-                        FileConstants.KEY_COMP_SPLIT_CODE to aliasCode,
-                        FileConstants.KEY_COMP_SPLIT_TIME to TimeProcessor.durationToFormattedString(
-                            split.punch.split, dataProcessor.useMinuteTimeFormat()
+                val aliasCode = if (useAlias && split.alias != null) split.alias!!.name else split.punch.siCode.toString()
+                output.append(
+                    TemplateProcessor.processTemplate(
+                        FileConstants.HTML_SPLITS_CODE,
+                        mapOf(
+                            FileConstants.KEY_COMP_SPLIT_CODE to aliasCode,
+                            FileConstants.KEY_COMP_SPLIT_TIME to TimeProcessor.durationToFormattedString(
+                                split.punch.split, dataProcessor.useMinuteTimeFormat()
+                            )
                         )
                     )
                 )
+            }
+        }
+        return output.toString()
+    }
 
-                out += split
+    // --------------------------------------------------------------------------------------------
+    // SHARED GENERATION HELPERS
+    // --------------------------------------------------------------------------------------------
+
+    /**
+     * Generates a category header (works for both TXT and HTML depending on template).
+     */
+    private suspend fun generateResCategoryHeader(
+        templateName: String,
+        dataProcessor: DataProcessor,
+        context: Context,
+        category: Category,
+        race: Race
+    ): String {
+        val template = TemplateProcessor.loadTemplate(templateName, context)
+        val aliases = dataProcessor.getControlPointAliasesByCategory(category.id)
+        
+        val params = getBaseParams(dataProcessor, context, race)
+        params.putAll(getCategoryParams(dataProcessor, category, race, aliases, context))
+
+        return TemplateProcessor.processTemplate(template, params)
+    }
+
+    /**
+     * Generates a header for HTML startlist category table.
+     */
+    private fun generateHtmlStartListCatHeader(
+        context: Context,
+        category: Category
+    ): String {
+        val template = TemplateProcessor.loadTemplate(FileConstants.TEMPLATE_HTML_STARTLIST_CATEGORY, context)
+        val params = getCategoryParams(null, category, null, null, null)
+        
+        // Add headers required by the template
+        params[FileConstants.KEY_TITLE_CATEGORY] = context.getString(R.string.general_category)
+        params[FileConstants.KEY_TITLE_NAME] = context.getString(R.string.general_name)
+        params[FileConstants.KEY_TITLE_CLUB] = context.getString(R.string.general_club)
+        params[FileConstants.KEY_TITLE_POINTS] = context.getString(R.string.general_points)
+        params[FileConstants.KEY_TITLE_RUN_TIME] = context.getString(R.string.general_run_time)
+        params[FileConstants.KEY_TITLE_SI_NUMBER] = context.getString(R.string.general_si_number)
+        params[FileConstants.KEY_TITLE_SPLITS] = context.getString(R.string.general_splits)
+
+        return TemplateProcessor.processTemplate(template, params)
+    }
+
+    /**
+     * Generates one row for the startlist (either TXT or HTML).
+     */
+    private fun generateStartlistRow(
+        competitor: Competitor,
+        dataFormat: DataFormat,
+        context: Context
+    ): String {
+        val templateName = if (dataFormat == DataFormat.TXT) FileConstants.TEMPLATE_TEXT_STARTLIST_ROW 
+                           else FileConstants.TEMPLATE_HTML_STARTLIST_ROW
+        val template = TemplateProcessor.loadTemplate(templateName, context)
+
+        val params = getCompetitorParams(null, null, competitor)
+        return TemplateProcessor.processTemplate(template, params)
+    }
+
+    /**
+     * Formats splits into a space-separated string for TXT files.
+     */
+    private fun getSplitsString(punches: List<AliasPunch>, dataProcessor: DataProcessor): String {
+        val output = StringBuilder()
+        val nonStartPunches = punches.filter { it.punch.punchType != SIRecordType.START }
+
+        for (aliasPunch in nonStartPunches.withIndex()) {
+            output.append(TimeProcessor.durationToFormattedString(aliasPunch.value.punch.split, dataProcessor.useMinuteTimeFormat()))
+            if (aliasPunch.index < nonStartPunches.size - 1) output.append(" ")
+        }
+        return output.toString()
+    }
+
+    /**
+     * Processes a template and writes it to the output stream.
+     */
+    private fun writeTemplateToStream(templatePath: String, params: Map<String, String>, context: Context, outStream: OutputStream) {
+        val template = TemplateProcessor.loadTemplate(templatePath, context)
+        val out = TemplateProcessor.processTemplate(template, params)
+        outStream.write(out.toByteArray())
+        outStream.flush()
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // PARAMETER EXTRACTION HELPERS (Centralized mapping)
+    // --------------------------------------------------------------------------------------------
+
+    /**
+     * Initializes a map with basic race info, global UI titles, and metadata.
+     */
+    private fun getBaseParams(dataProcessor: DataProcessor, context: Context, race: Race): HashMap<String, String> {
+        val params = HashMap<String, String>()
+        
+        // Race Information
+        params[FileConstants.KEY_RACE_NAME] = race.name
+        params[FileConstants.KEY_RACE_DATE] = TimeProcessor.formatLocalDate(race.startDateTime.toLocalDate())
+        params[FileConstants.KEY_RACE_START_TIME] = TimeProcessor.formatLocalTime(race.startDateTime.toLocalTime())
+        params[FileConstants.KEY_RACE_LEVEL] = dataProcessor.raceLevelToString(race.raceLevel)
+
+        // General UI Titles
+        params[FileConstants.KEY_TITLE_RESULTS] = context.getString(R.string.general_results)
+        params[FileConstants.KEY_TITLE_STARTLIST] = context.getString(R.string.general_startlist)
+        params[FileConstants.KEY_TITLE_RACE_NAME] = context.getString(R.string.general_race)
+        params[FileConstants.KEY_TITLE_RACE_DATE] = context.getString(R.string.general_date)
+        params[FileConstants.KEY_TITLE_START_TIME] = context.getString(R.string.general_start_time)
+        params[FileConstants.KEY_TITLE_RACE_LEVEL] = context.getString(R.string.race_level)
+        params[FileConstants.KEY_TITLE_CATEGORY] = context.getString(R.string.general_category)
+        params[FileConstants.KEY_TITLE_LIMIT] = context.getString(R.string.general_limit)
+        params[FileConstants.KEY_TITLE_BAND] = context.getString(R.string.general_band)
+        params[FileConstants.KEY_TITLE_LENGTH] = context.getString(R.string.general_length)
+        params[FileConstants.KEY_TITLE_CONTROLS] = context.getString(R.string.general_controls)
+        params[FileConstants.KEY_TITLE_PLACE] = context.getString(R.string.general_place)
+        params[FileConstants.KEY_TITLE_NAME] = context.getString(R.string.general_name)
+        params[FileConstants.KEY_TITLE_CLUB] = context.getString(R.string.general_club)
+        params[FileConstants.KEY_TITLE_INDEX] = context.getString(R.string.general_index)
+        params[FileConstants.KEY_TITLE_POINTS] = context.getString(R.string.general_points)
+        params[FileConstants.KEY_TITLE_RUN_TIME] = context.getString(R.string.general_run_time)
+        params[FileConstants.KEY_TITLE_SI_NUMBER] = context.getString(R.string.general_si_number)
+        params[FileConstants.KEY_TITLE_START_NUMBER] = context.getString(R.string.competitor_start_number)
+        params[FileConstants.KEY_TITLE_SPLITS] = context.getString(R.string.general_splits)
+        params[FileConstants.KEY_TITLE_RESULTS_SPLITS] = context.getString(R.string.results_splits)
+
+        // Generation Metadata
+        val now = LocalDateTime.now()
+        params[FileConstants.KEY_GENERATED_WITH] = context.getString(R.string.generated_with, TimeProcessor.formatDisplayLocalDateTime(now))
+        params[FileConstants.KEY_VERSION] = dataProcessor.getAppVersion()
+        params[FileConstants.KEY_CURR_TIME] = TimeProcessor.formatDisplayLocalDateTime(now)
+        
+        // Support for TAB characters in TXT templates
+        params[FileConstants.KEY_TAB] = "\t"
+
+        return params
+    }
+
+    /**
+     * Extracts parameters specific to a category.
+     */
+    private fun getCategoryParams(
+        dataProcessor: DataProcessor?,
+        category: Category,
+        race: Race?,
+        aliases: List<ControlPointAlias>?,
+        context: Context?
+    ): HashMap<String, String> {
+        val params = HashMap<String, String>()
+        params[FileConstants.KEY_CAT_NAME] = category.name
+        params[FileConstants.KEY_CAT_LENGTH] = category.length.toString()
+        
+        race?.let {
+            params[FileConstants.KEY_CAT_LIMIT] = (category.timeLimit ?: it.timeLimit).toMinutes().toString()
+            dataProcessor?.let { dp ->
+                params[FileConstants.KEY_CAT_BAND] = dp.raceBandToString(category.categoryBand ?: it.raceBand)
             }
         }
 
-        return out
+        if (aliases != null && context != null) {
+            params[FileConstants.KEY_CAT_CONTROLS] = ControlPointsHelper.getStringFromControlPointAliases(aliases, context)
+        }
+        return params
     }
 
-    private fun generateHtmlCompetitorData(
-        dataProcessor: DataProcessor,
-        context: Context,
-        competitorData: CompetitorData
-    ): String {
-
-        val template =
-            TemplateProcessor.loadTemplate(FileConstants.TEMPLATE_HTML_COMPETITOR, context)
+    /**
+     * Extracts parameters for a competitor. Handles both startlist and result scenarios.
+     */
+    private fun getCompetitorParams(
+        competitorData: CompetitorData? = null,
+        dataProcessor: DataProcessor? = null,
+        directCompetitor: Competitor? = null
+    ): HashMap<String, String> {
         val params = HashMap<String, String>()
+        val competitor = directCompetitor ?: competitorData?.competitorCategory?.competitor ?: return params
+        
+        // Competitor Info
+        params[FileConstants.KEY_COMP_NAME] = competitor.getFullName()
+        params[FileConstants.KEY_COMP_CLUB] = competitor.club
+        params[FileConstants.KEY_COMP_INDEX] = competitor.index
+        params[FileConstants.KEY_COMP_SI_NUMBER] = competitor.siNumber?.toString().orEmpty()
+        params[FileConstants.KEY_COMP_START_NUMBER] = competitor.startNumber.toString()
+        params[FileConstants.KEY_COMP_START_TIME] = competitor.drawnRelativeStartTime?.let {
+            TimeProcessor.durationToFormattedString(it, true)
+        } ?: "-"
 
-        val result = competitorData.readoutData?.result!!
+        // Result Info (if available)
+        competitorData?.readoutData?.result?.let { res ->
+            params[FileConstants.KEY_COMP_PLACE] = if (res.resultStatus == ResultStatus.OK) "${res.place}." 
+                                                   else dataProcessor?.resultStatusToShortString(res.resultStatus).orEmpty()
+            params[FileConstants.KEY_COMP_RUN_TIME] = TimeProcessor.durationToFormattedString(res.runTime, dataProcessor?.useMinuteTimeFormat() ?: false)
+            params[FileConstants.KEY_COMP_POINTS] = res.points.toString()
+        }
 
-        params[FileConstants.KEY_COMP_PLACE] =
-            if (result.resultStatus == ResultStatus.OK) {
-                "${result.place}."
-            } else {
-                dataProcessor.resultStatusToShortString(result.resultStatus)
-            }
-
-        params[FileConstants.KEY_COMP_NAME] =
-            competitorData.competitorCategory.competitor.getFullName()
-        params[FileConstants.KEY_COMP_CLUB] = competitorData.competitorCategory.competitor.club
-        params[FileConstants.KEY_COMP_INDEX] =
-            competitorData.competitorCategory.competitor.index
-        params[FileConstants.KEY_COMP_RUN_TIME] =
-            TimeProcessor.durationToFormattedString(
-                result.runTime, dataProcessor.useMinuteTimeFormat()
-            )
-        params[FileConstants.KEY_COMP_POINTS] =
-            result.points.toString()
-
-        params[FileConstants.KEY_COMP_SPLITS] =
-            generateHtmlCompetitorSplits(
-                competitorData.readoutData!!.punches,
-                context,
-                dataProcessor
-            )
-
-        val out = TemplateProcessor.processTemplate(template, params)
-        return out
+        return params
     }
 }

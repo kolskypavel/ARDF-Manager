@@ -2,7 +2,7 @@
 <html lang="{{language}}">
 <head>
     <meta charset="UTF-8">
-    <title>{{race_name}} - {{title_results}}</title>
+    <title>{{race_name}} - {{title_startlist}}</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 40px; }
         h1, h2 { margin-bottom: 10px; }
@@ -15,20 +15,20 @@
     </style>
 </head>
 <body>
-<h1>{{title_results}}</h1>
+<h1>{{title_startlist}}</h1>
 <h2>{{race_name}}</h2>
 <p>
     {{title_race_date}}: {{race_date}}<br>
-    {{title_start_time}}: {{start_time}}<br>
+    {{title_start_time}}: {{race_start_time}}<br>
     {{title_race_level}}: {{race_level}}<br>
 </p>
 <hr/>
 
-<!--Auto generated race results-->
-{{race_results}}
+<!--Auto generated startlist-->
+{{race_startlist}}
 
 <div class="footer">
-    {{generated_with}} <a href="https://github.com/kolskypavel/Radio-O-Manager">Radio-O Manager {{software_version}}</a>
+    {{generated_with}} <a href="https://github.com/kolskypavel/Radio-O-Manager">Radio-O Manager {{software_version}}</a>.
 </div>
 </body>
 </html>

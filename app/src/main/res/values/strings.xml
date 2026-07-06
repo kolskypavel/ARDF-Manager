@@ -12,6 +12,7 @@
     <string name="general_close">Close</string>
     <string name="general_competitor">Competitor</string>
     <string name="general_competitors">Competitors</string>
+    <string name="general_startlist">Startlist</string>
     <string name="general_controls">Controls</string>
     <string name="general_copy">Copy</string>
     <string name="general_date">Date</string>
@@ -240,7 +241,7 @@
     <string name="results_share">Share results</string>
     <string name="results_service">Results service</string>
     <string name="results_export_error">Error when exporting data: %1$s</string>
-    <string name="results_generated_with">Results generated at %1$s with</string>
+    <string name="generated_with">Generated at %1$s with</string>
     <string name="results_splits">Results with splits</string>
     <string name="results_recalculate">Recalculate all results</string>
 
@@ -419,7 +420,7 @@
 
     <string name="data_type_categories">Categories</string>
     <string name="data_type_competitors">Competitors</string>
-    <string name="data_type_competitor_starts">Competitor starts</string>
+    <string name="data_type_startlist">Startlist</string>
     <string name="data_type_results">Results</string>
     <string name="data_type_results_live">Live results</string>
     <string name="data_type_readout_data">SI Readout data</string>
@@ -550,6 +551,13 @@
         <!--        <item>@string/data_format_xml</item>-->
     </string-array>
 
+    <string-array name="startlist_data_formats">
+        <item>@string/data_format_csv</item>
+        <item>@string/data_format_txt</item>
+        <item>@string/data_format_html</item>
+        <!--        <item>@string/data_format_xml</item>-->
+    </string-array>
+
     <string-array name="results_data_formats">
         <item>@string/data_format_txt</item>
         <item>@string/data_format_html</item>
@@ -566,7 +574,7 @@
     <string-array name="data_types">
         <item>@string/data_type_categories</item>
         <item>@string/data_type_competitors</item>
-        <item>@string/data_type_competitor_starts</item>
+        <item>@string/data_type_startlist</item>
         <item>@string/data_type_results_live</item>
         <item>@string/data_type_results</item>
         <item>@string/data_type_readout_data</item>
@@ -575,7 +583,7 @@
     <string-array name="import_data_types">
         <item>@string/data_type_categories</item>
         <item>@string/data_type_competitors</item>
-        <item>@string/data_type_competitor_starts</item>
+        <item>@string/data_type_startlist</item>
     </string-array>
 
     <string-array name="internet_import_types">
@@ -585,6 +593,7 @@
 
     <string-array name="results_data_types">
         <item>@string/data_type_results</item>
+        <item>@string/data_type_startlist</item>
         <item>@string/data_type_readout_data</item>
     </string-array>
 

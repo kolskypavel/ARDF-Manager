@@ -3,6 +3,7 @@
     <string name="general_competitors">Závodníci</string>
     <string name="general_categories">Kategorie</string>
     <string name="general_readouts">Vyčítání</string>
+    <string name="general_startlist">Startovka</string>
     <string name="general_results">Výsledky</string>
     <string name="prints_error_init">Chyba při spouštění tiskárny!</string>
     <string name="global_settings">Globální nastavení</string>
@@ -217,7 +218,7 @@
     <string name="band_none">Žádné</string>
     <string name="data_type_categories">Kategorie</string>
     <string name="data_type_competitors">Závodníci</string>
-    <string name="data_type_competitor_starts">Starty</string>
+    <string name="data_type_startlist">Startovka</string>
     <string name="data_type_results">Výsledky</string>
     <string name="data_type_results_live">Živé výsledky</string>
     <string name="data_type_readout_data">Data z vyčítání</string>
@@ -289,7 +290,7 @@
     <string name="race_export_success">Závod úspěšně exportován</string>
     <string name="race_import_success">Závod úspěšně importován</string>
     <string name="race_import_failure">Chyba při importu závodu</string>
-    <string name="results_generated_with">Výsledky vygenerovány v %1$s pomocí</string>
+    <string name="generated_with"> Vygenerováno v %1$s pomocí</string>
     <string name="results_splits">Výsledky s mezičasy</string>
     <string name="results_recalculate">Přepočítat všechny výsledky</string>
     <string name="result_service_enable">Zapnout výsledkovou službu</string>
