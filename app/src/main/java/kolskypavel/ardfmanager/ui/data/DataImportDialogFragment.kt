@@ -96,7 +96,7 @@ class DataImportDialogFragment : DialogFragment() {
                 when (type) {
                     DataType.CATEGORIES -> R.array.category_data_formats
                     DataType.COMPETITORS -> R.array.competitor_data_formats
-                    DataType.COMPETITOR_STARTS -> R.array.competitor_data_formats
+                    DataType.STARTLIST -> R.array.competitor_data_formats
                     else -> {
                         R.array.category_data_formats
                     }      //Failsafe - should not happen
@@ -214,7 +214,7 @@ class DataImportDialogFragment : DialogFragment() {
                     selectedRaceViewModel.saveDataImportWrapper(data!!)
                 }
 
-                DataType.COMPETITOR_STARTS -> {
+                DataType.STARTLIST -> {
                     //Save competitor starts - TODO: ADD duplicates check
                     for (compData in data!!.competitorCategories) {
                         selectedRaceViewModel.createOrUpdateCompetitor(compData.competitor)

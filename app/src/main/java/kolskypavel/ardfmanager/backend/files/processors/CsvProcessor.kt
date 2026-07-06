@@ -61,7 +61,7 @@ object CsvProcessor : FormatProcessor {
                     context
                 )
 
-                DataType.COMPETITOR_STARTS -> return importCompetitorStarts(
+                DataType.STARTLIST -> return importCompetitorStarts(
                     inStream,
                     dataProcessor.getCompetitorDataFlowByRace(race.id).first().toHashSet(),
                     context
@@ -92,7 +92,7 @@ object CsvProcessor : FormatProcessor {
                 dataProcessor.getCompetitorDataFlowByRace(race.id).first()
             )
 
-            DataType.COMPETITOR_STARTS ->
+            DataType.STARTLIST ->
                 exportStarts(
                     outStream,
                     dataProcessor.getCompetitorDataFlowByRace(race.id).first(),

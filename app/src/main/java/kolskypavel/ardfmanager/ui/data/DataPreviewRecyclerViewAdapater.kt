@@ -30,7 +30,7 @@ class DataPreviewRecyclerViewAdapater(
     override fun getItemCount(): Int {
         return when (dataType) {
             DataType.CATEGORIES -> value.categories.size
-            DataType.COMPETITORS, DataType.COMPETITOR_STARTS ->
+            DataType.COMPETITORS, DataType.STARTLIST ->
                 if (value.competitorCategories.size < 5) {
                     value.competitorCategories.size
                 } else {
@@ -60,7 +60,7 @@ class DataPreviewRecyclerViewAdapater(
                 holder.columnFour.text = item.category?.name ?: "-"
             }
 
-            DataType.COMPETITOR_STARTS -> {
+            DataType.STARTLIST -> {
                 val item = value.competitorCategories[position]
                 holder.columnOne.text = if (item.competitor.drawnRelativeStartTime != null) {
                     TimeProcessor.durationToFormattedString(

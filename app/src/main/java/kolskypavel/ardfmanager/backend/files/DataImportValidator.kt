@@ -95,7 +95,7 @@ object DataImportValidator {
                 }
             }
 
-            DataType.COMPETITOR_STARTS -> {
+            DataType.STARTLIST -> {
                 // TODO: implement - based on settings
             }
 
