@@ -3,14 +3,12 @@ package kolskypavel.ardfmanager.ui.startlist.adapers
 import android.content.ClipData
 import android.view.Gravity
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kolskypavel.ardfmanager.R
 import kolskypavel.ardfmanager.ui.startlist.CategoryDrawWrapper
-import java.util.UUID
 
 // Simple cell model: a cell may be empty, a start of a spanned categoryDrawWrapper, or a placeholder pointing to a start index
 data class CellModel(
@@ -130,9 +128,8 @@ class GridAdapter(
             }
         }
         spans.remove(startIndex)
-        val first = startIndex
         val last = ((startRow + spanRows - 1) * columns + startCol).coerceAtMost(cells.size - 1)
-        notifyItemRangeChanged(first, last - first + 1)
+        notifyItemRangeChanged(startIndex, last - startIndex + 1)
     }
 
     // Check if a category spanning `spanRows` rows can be placed starting at `startIndex`.

@@ -168,13 +168,27 @@ class DataProcessor private constructor(context: Context) {
     suspend fun getHighestCategoryOrder(raceId: UUID) =
         ardfRepository.getHighestCategoryOrder(raceId)
 
-    suspend fun createOrUpdateCategory(category: Category, controlPoints: List<ControlPoint>?) {
+    suspend fun createOrUpdateCategory(
+        category: Category,
+        controlPoints: List<ControlPoint>?,
+        updateResults: Boolean
+    ) {
         // Update the control points string
         controlPoints?.let {
             category.controlPointsString = ControlPointsHelper.getStringFromControlPoints(it)
         }
         ardfRepository.createOrUpdateCategory(category, controlPoints)
-        getRace(category.raceId)?.let { race -> updateResultsForCategory(category.id, race, this) }
+
+        // Update results only if needed
+        if (updateResults) {
+            getRace(category.raceId)?.let { race ->
+                updateResultsForCategory(
+                    category.id,
+                    race,
+                    this
+                )
+            }
+        }
     }
 
     /**
@@ -193,7 +207,11 @@ class DataProcessor private constructor(context: Context) {
             cp.categoryId = categoryData.category.id
         }
 
-        createOrUpdateCategory(categoryData.category, categoryData.controlPoints)
+        createOrUpdateCategory(
+            categoryData.category,
+            categoryData.controlPoints,
+            false
+        )    // Result update not needed
     }
 
     suspend fun createStandardCategories(type: StandardCategoryType, raceId: UUID) {
@@ -548,7 +566,8 @@ class DataProcessor private constructor(context: Context) {
         for (catData in data.categories) {
             createOrUpdateCategory(
                 catData.category,
-                catData.controlPoints
+                catData.controlPoints,
+                true
             )
         }
         //Create competitors - TODO: ADD duplicates check

@@ -44,9 +44,7 @@ class CategoryDrawWrapperAdapter(
 
         // Apply background color while keeping the rounded corners and stroke from the drawable
         val background = holder.itemView.background as? GradientDrawable
-        background?.let {
-            it.setColor(c.color)
-        }
+        background?.setColor(c.color)
 
         // Start drag on long press
         holder.itemView.setOnLongClickListener { v ->

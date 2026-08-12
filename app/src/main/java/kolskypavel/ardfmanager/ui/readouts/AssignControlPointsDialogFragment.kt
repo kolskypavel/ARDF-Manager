@@ -110,7 +110,7 @@ class AssignControlPointsDialogFragment : DialogFragment() {
                 val currCat = getCurrentCategory()
                 val controlPoints = getControlPoints(currCat)
 
-                selectedRaceViewModel.createOrUpdateCategory(currCat, controlPoints)
+                selectedRaceViewModel.createOrUpdateCategory(currCat, controlPoints, true)
                 dialog?.dismiss()
             }
         }

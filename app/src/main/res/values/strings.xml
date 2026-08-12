@@ -178,6 +178,7 @@
     <!--Startlist-->
     <string name="startlist_overview">Startlist overview</string>
     <string name="startlist_hint_interval">Interval (mm:ss)</string>
+    <string name="startlist_set_interval">Set intervals</string>
     <string name="startlist_hint_category_interval">Category interval (mm:ss)</string>
     <string name="startlist_invalid_category_interval">Category interval must be a multiple of start interval.</string>
     <string name="startlist_draw">Draw</string>

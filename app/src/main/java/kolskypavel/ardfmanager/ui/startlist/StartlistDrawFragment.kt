@@ -7,6 +7,7 @@ import android.view.DragEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.CheckBox
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -29,6 +30,7 @@ import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import kolskypavel.ardfmanager.ui.startlist.adapers.CategoryDrawWrapperAdapter
 import kolskypavel.ardfmanager.ui.startlist.adapers.CellModel
 import kolskypavel.ardfmanager.ui.startlist.adapers.GridAdapter
+import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kotlinx.coroutines.launch
 import java.time.Duration
 
@@ -43,6 +45,7 @@ class StartlistDrawFragment : Fragment() {
     private lateinit var drawButton: FloatingActionButton
     private lateinit var intervalInput: TextInputEditText
     private lateinit var categoryIntervalInput: TextInputEditText
+    private lateinit var intervalSetButton: Button
     private lateinit var intervalLayout: TextInputLayout
     private lateinit var categoryIntervalLayout: TextInputLayout
 
@@ -80,10 +83,10 @@ class StartlistDrawFragment : Fragment() {
         initViews(view)
         setupCategoryRecycler()
         setupGridRecycler(view)
-        setupIntervalWatchers()
         populateFields()
 
         drawButton.setOnClickListener { onDrawClicked() }
+        intervalSetButton.setOnClickListener { onIntervalsChanged()}
 
         return view
     }
@@ -95,6 +98,7 @@ class StartlistDrawFragment : Fragment() {
         intervalLayout = view.findViewById(R.id.startlist_interval_layout)
         categoryIntervalLayout = view.findViewById(R.id.startlist_category_interval_layout)
         categoryRecycler = view.findViewById(R.id.startlist_categories_recycler)
+        intervalSetButton = view.findViewById(R.id.startlist_set_interval_btn)
         drawButton = view.findViewById(R.id.startlist_btn_draw)
     }
 
@@ -139,22 +143,37 @@ class StartlistDrawFragment : Fragment() {
                 selectedRaceViewModel.categories.collect { categories ->
                     // Only perform initial placement if we haven't loaded anything yet
                     if (adapter.isEmpty() && gridAdapter.getPlacements().isEmpty()) {
+                        val activeCategories = categories.filter { it.competitors.isNotEmpty() }
+                        if (activeCategories.isEmpty()) return@collect
+
                         val totalColumns = StartlistConstants.STARTLIST_COLUMNS + 1
-                        
-                        // Only display categories that have at least one competitor
-                        categories.filter { it.competitors.isNotEmpty() }.forEachIndexed { index, categoryData ->
+
+                        // Recalculate and update grid size before placing categories
+                        val requiredRows = calculateRequiredRows(activeCategories)
+                        if (requiredRows > currentRows) {
+                            currentRows = requiredRows
+                            gridAdapter.updateCells(
+                                createGridCells(
+                                    currentRows,
+                                    totalColumns,
+                                    curInterval
+                                )
+                            )
+                        }
+
+                        activeCategories.forEachIndexed { index, categoryData ->
                             val cat = categoryData.category
                             val color = cat.color ?: categoryColors[index % categoryColors.size]
                             val wrapper = CategoryDrawWrapper(categoryData, color)
-                            
+
                             val startTime = cat.startListStartTime
                             val column = cat.startListColumn
-                            
+
                             if (startTime != null && column != null && column > 0 && column < totalColumns) {
                                 val row = (startTime.toMillis() / curInterval.toMillis()).toInt()
                                 val startIndex = row * totalColumns + column
                                 val spanRows = calculateSpanRows(wrapper)
-                                
+
                                 if (gridAdapter.canPlaceAt(startIndex, spanRows)) {
                                     gridAdapter.setCellSpan(startIndex, wrapper, spanRows)
                                 } else {
@@ -173,6 +192,12 @@ class StartlistDrawFragment : Fragment() {
     private fun setupGridRecycler(view: View) {
         gridRecycler = view.findViewById(R.id.startlist_grid_recycler)
         val totalColumns = StartlistConstants.STARTLIST_COLUMNS + 1
+
+        // Adjust initial rows based on currently available categories (if any)
+        val cats = selectedRaceViewModel.categories.value
+        if (cats.isNotEmpty()) {
+            currentRows = calculateRequiredRows(cats)
+        }
 
         val cellHeightPx = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP, 32f, resources.displayMetrics
@@ -199,11 +224,6 @@ class StartlistDrawFragment : Fragment() {
         }
     }
 
-    private fun setupIntervalWatchers() {
-        intervalInput.doAfterTextChanged { onIntervalsChanged() }
-        categoryIntervalInput.doAfterTextChanged { onIntervalsChanged() }
-    }
-
     private fun onIntervalsChanged() {
         val intervalStr = intervalInput.text?.toString() ?: ""
         val catIntervalStr = categoryIntervalInput.text?.toString() ?: ""
@@ -216,7 +236,7 @@ class StartlistDrawFragment : Fragment() {
         categoryIntervalLayout.error = if (catIntervalStr.isNotEmpty() && catInterval == null)
             getString(R.string.general_invalid) else null
 
-        if (interval != null && catInterval != null && !interval.isZero) {
+        if (interval != null && catInterval != null && !interval.isZero && !catInterval.isZero) {
             if (catInterval.toMillis() % interval.toMillis() != 0L) {
                 categoryIntervalLayout.error =
                     getString(R.string.startlist_invalid_category_interval)
@@ -240,18 +260,9 @@ class StartlistDrawFragment : Fragment() {
         val placements = gridAdapter.getPlacements()
         val totalColumns = StartlistConstants.STARTLIST_COLUMNS + 1
 
-        val totalCompetitors = adapter.getItems().sumOf { it.getCompetitorCount() } +
-                placements.sumOf { it.category.getCompetitorCount() }
-
-        val ratio = curCategoryInterval.toMillis().toDouble() / curInterval.toMillis().toDouble()
-        val estimatedRows = (totalCompetitors * ratio).toInt()
-
-        val maxRequiredRows = placements.maxOfOrNull {
-            (it.startIndex / totalColumns) + calculateSpanRows(it.category)
-        } ?: 0
-
-        currentRows =
-            maxOf(StartlistConstants.STARTLIST_MIN_ROWS, maxRequiredRows + 10, estimatedRows + 20)
+        val allCategories =
+            adapter.getItems().map { it.catData } + placements.map { it.category.catData }
+        currentRows = calculateRequiredRows(allCategories)
 
         val newCells = createGridCells(currentRows, totalColumns, curInterval)
         gridAdapter.updateCells(newCells)
@@ -287,9 +298,29 @@ class StartlistDrawFragment : Fragment() {
         return cells
     }
 
-    private fun calculateSpanRows(category: CategoryDrawWrapper): Int {
+    private fun calculateRequiredRows(categories: List<CategoryData>): Int {
+        val activeCategories = categories.filter { it.competitors.isNotEmpty() }
+        val estimatedRows = activeCategories.sumOf { calculateSpanRows(it.competitors.size) }
+
+        var maxSavedRow = 0
+        activeCategories.forEach { catData ->
+            val startTime = catData.category.startListStartTime
+            if (startTime != null) {
+                val row = (startTime.toMillis() / curInterval.toMillis()).toInt()
+                val span = calculateSpanRows(catData.competitors.size)
+                maxSavedRow = maxOf(maxSavedRow, row + span)
+            }
+        }
+        return maxOf(StartlistConstants.STARTLIST_MIN_ROWS, maxSavedRow + 10, estimatedRows + 20)
+    }
+
+    private fun calculateSpanRows(competitorCount: Int): Int {
         val ratio = curCategoryInterval.toMillis().toDouble() / curInterval.toMillis().toDouble()
-        return (category.getCompetitorCount() * ratio).toInt().coerceAtLeast(1)
+        return (competitorCount * ratio).toInt().coerceAtLeast(1)
+    }
+
+    private fun calculateSpanRows(category: CategoryDrawWrapper): Int {
+        return calculateSpanRows(category.getCompetitorCount())
     }
 
     private fun onDrawClicked() {
@@ -323,10 +354,11 @@ class StartlistDrawFragment : Fragment() {
             .show()
     }
 
+    // Performs the actual draw
     private fun performDraw() {
         val totalColumns = StartlistConstants.STARTLIST_COLUMNS + 1
         val placements = gridAdapter.getPlacements()
-        
+
         for (p in placements) {
             val row = p.startIndex / totalColumns
             p.category.startPoint = curInterval.multipliedBy(row.toLong())
@@ -337,7 +369,7 @@ class StartlistDrawFragment : Fragment() {
             curCategoryInterval,
             separateClubsCheckBox.isChecked
         )
-        
+
         // Collect all competitors from all categories and save them
         val competitorsToSave = placements.flatMap { it.category.catData.competitors }
         selectedRaceViewModel.updateCompetitors(competitorsToSave)
@@ -391,34 +423,48 @@ class StartlistDrawFragment : Fragment() {
                 val index = row * totalColumns + col
 
                 if (col == 0) {
-                    Toast.makeText(requireContext(), "Cannot place on time column", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Cannot place on time column",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return false
                 }
 
                 val spanRows = calculateSpanRows(cat)
                 if (gridAdapter.canPlaceAt(index, spanRows, originStartIndex)) {
                     if (local is CategoryDrawWrapper) adapter.removeById(cat.getCategoryId())
-                    if (originStartIndex != null && originStartIndex != index) gridAdapter.removeSpan(originStartIndex)
-                    
+                    if (originStartIndex != null && originStartIndex != index) gridAdapter.removeSpan(
+                        originStartIndex
+                    )
+
                     gridAdapter.setCellSpan(index, cat, spanRows)
-                    
+
                     val startTime = curInterval.multipliedBy(row.toLong())
                     saveCategoryPosition(cat, col, startTime)
                     return true
                 } else {
-                    Toast.makeText(requireContext(), R.string.startlist_space_occupied, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        R.string.startlist_space_occupied,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
         return event.action == DragEvent.ACTION_DRAG_STARTED || event.action == DragEvent.ACTION_DRAG_LOCATION
     }
 
-    private fun saveCategoryPosition(wrapper: CategoryDrawWrapper, column: Int?, startTime: Duration?) {
+    private fun saveCategoryPosition(
+        wrapper: CategoryDrawWrapper,
+        column: Int?,
+        startTime: Duration?
+    ) {
         val cat = wrapper.catData.category
         cat.startListColumn = column
         cat.startListStartTime = startTime
         cat.color = wrapper.color
-        selectedRaceViewModel.createOrUpdateCategory(cat, null)
+        selectedRaceViewModel.createOrUpdateCategory(cat, null, false)
     }
 
     override fun onDestroyView() {
@@ -431,14 +477,20 @@ class StartlistDrawFragment : Fragment() {
 
     private fun populateFields() {
         intervalInput.setText(TimeProcessor.durationToFormattedString(curInterval, true))
-        categoryIntervalInput.setText(TimeProcessor.durationToFormattedString(curCategoryInterval, true))
+
+        categoryIntervalInput.setText(
+            TimeProcessor.durationToFormattedString(
+                curCategoryInterval,
+                true
+            )
+        )
     }
 
     object StartlistConstants {
         const val STARTLIST_MIN_ROWS = 30
         const val CATEGORY_COLUMNS = 5
         const val STARTLIST_COLUMNS = 5
-        val DEFAULT_INTERVAL = Duration.ofMinutes(5)
-        val DEFAULT_CATEGORY_INTERVAL = Duration.ofMinutes(5)
+        val DEFAULT_INTERVAL: Duration = Duration.ofMinutes(5)
+        val DEFAULT_CATEGORY_INTERVAL: Duration = Duration.ofMinutes(5)
     }
 }

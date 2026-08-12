@@ -4,6 +4,7 @@ import kolskypavel.ardfmanager.backend.files.constants.DataType
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CategoryData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorCategory
 
+// Class used for importing categories and competitors to the program
 data class DataImportWrapper(
     var competitorCategories: List<CompetitorCategory>,
     var categories: List<CategoryData>,

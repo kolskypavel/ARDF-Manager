@@ -333,7 +333,7 @@ class CategoryEditDialogFragment : DialogFragment() {
                     category.raceType ?: race.raceType,
                     requireContext()
                 )
-                selectedRaceViewModel.createOrUpdateCategory(category, controlPoints)
+                selectedRaceViewModel.createOrUpdateCategory(category, controlPoints, true)
 
                 setFragmentResult(
                     REQUEST_CATEGORY_MODIFICATION, bundleOf(

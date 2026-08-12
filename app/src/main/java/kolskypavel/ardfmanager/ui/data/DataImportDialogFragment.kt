@@ -247,7 +247,7 @@ class DataImportDialogFragment : DialogFragment() {
                 }
             }
 
-            selectedRaceViewModel.createOrUpdateCategory(cd.category, cd.controlPoints)
+            selectedRaceViewModel.createOrUpdateCategory(cd.category, cd.controlPoints, true)
         }
     }
 }

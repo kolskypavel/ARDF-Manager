@@ -119,14 +119,14 @@ class CategoryRecyclerViewAdapter(
         if (up) {
             values[position - 1].category.order++
             values[position].category.order--
-            selectedRaceViewModel.createOrUpdateCategory(values[position - 1].category, null)
-            selectedRaceViewModel.createOrUpdateCategory(values[position].category, null)
+            selectedRaceViewModel.createOrUpdateCategory(values[position - 1].category, null, false)
+            selectedRaceViewModel.createOrUpdateCategory(values[position].category, null, false)
             notifyItemMoved(position, position - 1)
         } else {
             values[position + 1].category.order--
             values[position].category.order++
-            selectedRaceViewModel.createOrUpdateCategory(values[position + 1].category, null)
-            selectedRaceViewModel.createOrUpdateCategory(values[position].category, null)
+            selectedRaceViewModel.createOrUpdateCategory(values[position + 1].category, null, false)
+            selectedRaceViewModel.createOrUpdateCategory(values[position].category, null, false)
             notifyItemMoved(position, position + 1)
         }
     }
