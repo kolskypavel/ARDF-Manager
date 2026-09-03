@@ -245,6 +245,9 @@
     <string name="preferences_results_service_hint">Vyberte, kdy odesílat výsledky pomocí výsledkové služby\n[%1$s]</string>
     <string name="preferences_result_service_matched">Při nalezení závodníka</string>
     <string name="preferences_result_service_always">Vždy</string>
+    <string name="preferences_results_service_init">Přeskočit počáteční data</string>
+    <string name="preferences_results_service_init_hint">Vyberte, pokud nechcete po spuštění výsledkové služby odeslat startovky, data o závodě atd. (záleží na typu služby).</string>
+
     <string name="preferences_file_prefer_app_start_time_hint">Při importu startovních časů nebude čas v aplikaci přepsán tím ze souboru.</string>
     <string name="preferences_prints_hint">Výběr tiskárny, automatický tisk atd.</string>
     <string name="preferences_prints_enable">Povolit tisk</string>

@@ -100,23 +100,12 @@
         android:title="@string/results_service"
         app:iconSpaceReserved="false">
 
-        <ListPreference
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:defaultValue="@string/preferences_result_service_matched_value"
-            android:entries="@array/preferences_result_service_options"
-            android:entryValues="@array/preferences_result_service_values"
-            android:key="@string/key_result_service"
-            android:summary="@string/preferences_results_service_hint"
-            android:title="@string/preferences_results_service"
-            app:iconSpaceReserved="false" />
-
         <CheckBoxPreference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:defaultValue="true"
+            android:defaultValue="false"
             android:enabled="true"
-            android:key="@string/key_files_prefer_app_start_time"
+            android:key="@string/key_result_service_skip_init"
             android:summary=""
             android:title="@string/preferences_results_service_init"
             app:iconSpaceReserved="false"

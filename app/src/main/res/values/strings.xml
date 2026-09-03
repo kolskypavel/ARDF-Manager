@@ -240,14 +240,14 @@
 
     <!--Results-->
     <string name="results_share">Share results</string>
-    <string name="results_service">Results service</string>
+    <string name="results_service">Result service</string>
     <string name="results_export_error">Error when exporting data: %1$s</string>
     <string name="generated_with">Generated at %1$s with</string>
     <string name="results_splits">Results with splits</string>
     <string name="results_recalculate">Recalculate all results</string>
 
     <!-- Result service -->
-    <string name="result_service_enable">Enable results service</string>
+    <string name="result_service_enable">Enable result service</string>
     <string name="result_service_interval">Interval of export (s)</string>
     <string name="result_service_upload_startlists">Upload startlists</string>
     <string name="result_service_upload_again">Upload results again</string>
@@ -327,8 +327,12 @@
     <string name="preferences_results_time_format_hours" translatable="false">hh:mm:ss</string>
     <string name="preferences_results_use_aliases">Use aliases</string>
     <string name="preferences_results_use_aliases_hint">Use defined aliases for control points instead of SI codes</string>
+
+    <!--Result service-->
     <string name="preferences_results_service">Result service sending</string>
     <string name="preferences_results_service_hint">Select when to send the results with the result service.</string>
+    <string name="preferences_results_service_init">Skip init of result service</string>
+    <string name="preferences_results_service_init_hint">Select, if you want to skip init phase (startlist upload, race data sending) etc. after start. Actions depend on the result service type.</string>
 
     <string name="preferences_result_service_matched">When competitor matched</string>
     <string name="preferences_result_service_always">Always</string>

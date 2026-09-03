@@ -15,7 +15,7 @@
 
     <!--RESULT SERVICE-->
     <string name="key_result_service" translatable="false">result_service</string>
-    <string name="key_result_service_init" translatable="false">result_service_init</string>
+    <string name="key_result_service_skip_init" translatable="false">result_service_skip_init</string>
 
     <!--FILES-->
     <string name="key_files_prefer_app_start_time" translatable="false">prefer_app_start_time</string>

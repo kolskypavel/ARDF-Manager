@@ -3,11 +3,13 @@ package kolskypavel.ardfmanager.backend.network
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.preference.PreferenceManager
 import kolskypavel.ardfmanager.backend.DataProcessor
 import kolskypavel.ardfmanager.backend.network.workers.ResultWorkerFactory
 import kolskypavel.ardfmanager.backend.room.entity.ResultService
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.enums.ResultServiceStatus
+import kolskypavel.ardfmanager.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -52,28 +54,15 @@ object ResultServiceProcessor {
                     dataProcessor.getRace(raceId)?.let { race ->
                         val worker = ResultWorkerFactory.getResultWorker(resultService.serviceType)
 
-                        // Init the service
                         if (!resultService.init) {
-                            worker.init(
-                                resultService,
-                                race,
-                                httpClient,
-                                dataProcessor,
-                                context
-                            )
+                            val skipInit = PreferenceManager.getDefaultSharedPreferences(context)
+                                .getBoolean(context.getString(R.string.key_result_service_skip_init), false)
+                            if (skipInit) resultService.init = true
+                            else worker.init(resultService, race, httpClient, dataProcessor, context)
                         }
 
-                        // Redo the check to prevent additional waiting
                         if (resultService.init) {
-                            // Main result sending
-                            worker.uploadResults(
-                                false,
-                                resultService,
-                                race,
-                                httpClient,
-                                dataProcessor,
-                                context
-                            )
+                            worker.uploadResults(false, resultService, race, httpClient, dataProcessor, context)
                         }
                         updateResultService(dataProcessor, resultService)
                         delay(resultService.interval)

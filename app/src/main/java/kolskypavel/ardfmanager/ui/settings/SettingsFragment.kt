@@ -112,7 +112,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 true
             }
 
-        // Result service
+        // Result service sending
         val resultServicePref =
             findPreference<ListPreference>(requireContext().getString(R.string.key_result_service))
 
@@ -124,6 +124,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
             editor.apply()
             true
         }
+
+        // Result service init
+        findPreference<CheckBoxPreference>(requireContext().getString(R.string.key_result_service_skip_init))
+            ?.setOnPreferenceChangeListener { _, init ->
+
+                editor.putBoolean(
+                    requireContext().getString(R.string.key_result_service_skip_init),
+                    init as Boolean
+                )
+                editor.apply()
+                true
+            }
 
         findPreference<CheckBoxPreference>(requireContext().getString(R.string.key_files_prefer_app_start_time))
             ?.setOnPreferenceChangeListener { _, keepOpen ->
