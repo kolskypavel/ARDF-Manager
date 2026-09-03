@@ -46,14 +46,14 @@ object CsvProcessor : FormatProcessor {
 
         if (context != null) {
             return when (dataType) {
-                DataType.CATEGORIES -> return importCategories(
+                DataType.CATEGORIES -> importCategories(
                     inStream,
                     race,
                     dataProcessor,
                     context
                 )
 
-                DataType.COMPETITORS -> return importCompetitorData(
+                DataType.COMPETITORS -> importCompetitorData(
                     inStream,
                     race,
                     dataProcessor.getCategoryDataFlowForRace(race.id).first().toHashSet(),
@@ -61,7 +61,7 @@ object CsvProcessor : FormatProcessor {
                     context
                 )
 
-                DataType.STARTLIST -> return importCompetitorStarts(
+                DataType.STARTLIST -> importCompetitorStarts(
                     inStream,
                     dataProcessor.getCompetitorDataFlowByRace(race.id).first().toHashSet(),
                     context

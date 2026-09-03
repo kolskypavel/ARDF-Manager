@@ -34,7 +34,6 @@ class CategoryDrawWrapperAdapter(
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onBindViewHolder(holder: VH, position: Int) {
-        // use holder.adapterPosition to be robust against adapter changes
         val pos = holder.bindingAdapterPosition
         if (pos == RecyclerView.NO_POSITION) return
         val c = items[pos]

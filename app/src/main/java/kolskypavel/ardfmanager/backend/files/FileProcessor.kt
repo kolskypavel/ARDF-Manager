@@ -29,7 +29,7 @@ class FileProcessor(appContext: WeakReference<Context>) {
         try {
             return contentResolver?.openInputStream(uri)
         } catch (exception: Exception) {
-            Log.e("Failed to open file for read: ", exception.stackTrace.toString())
+            Log.e("Failed to open file for read: ", exception.stackTrace.contentToString())
         }
         return null
     }
@@ -38,7 +38,7 @@ class FileProcessor(appContext: WeakReference<Context>) {
         try {
             return contentResolver?.openOutputStream(uri)
         } catch (exception: Exception) {
-            Log.e("Failed to open file for write: ", exception.stackTrace.toString())
+            Log.e("Failed to open file for write: ", exception.stackTrace.contentToString())
         }
         return null
     }
@@ -85,7 +85,9 @@ class FileProcessor(appContext: WeakReference<Context>) {
             )
 
         } else {
-            throw IOException(dataProcessor.getContext()?.getString(R.string.data_import_file_error))
+            throw IOException(
+                dataProcessor.getContext()?.getString(R.string.data_import_file_error)
+            )
         }
     }
 

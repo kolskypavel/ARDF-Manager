@@ -40,7 +40,7 @@ class PunchEditRecyclerViewAdapter(
         holder.week.setText(item.punch.siTime.getWeek().toString())
 
         holder.addBtn.setOnClickListener {
-            addPunch(holder.adapterPosition)
+            addPunch(holder.bindingAdapterPosition)
         }
 
         holder.deleteBtn.setOnClickListener {
@@ -48,7 +48,7 @@ class PunchEditRecyclerViewAdapter(
             holder.time.clearFocus()
             holder.week.clearFocus()
             holder.weekday.clearFocus()
-            deletePunch(holder.adapterPosition)
+            deletePunch(holder.bindingAdapterPosition)
         }
 
         //Set the start punch
@@ -84,26 +84,26 @@ class PunchEditRecyclerViewAdapter(
         holder.code.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
             // Omit the check for start and finish
             if (item.punch.punchType != SIRecordType.START && item.punch.punchType != SIRecordType.FINISH) {
-                if (!codeWatcher(holder.adapterPosition, cs.toString())) {
+                if (!codeWatcher(holder.bindingAdapterPosition, cs.toString())) {
                     holder.code.error = holder.code.context.getString(R.string.general_invalid)
                 }
             }
         }
 
         holder.time.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
-            if (!timeWatcher(holder.adapterPosition, cs.toString())) {
+            if (!timeWatcher(holder.bindingAdapterPosition, cs.toString())) {
                 holder.time.error = holder.code.context.getString(R.string.general_invalid)
             }
         }
 
         holder.weekday.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
-            if (!dayWatcher(holder.adapterPosition, cs.toString())) {
+            if (!dayWatcher(holder.bindingAdapterPosition, cs.toString())) {
                 holder.weekday.error = holder.code.context.getString(R.string.general_invalid)
             }
         }
 
         holder.week.doOnTextChanged { cs: CharSequence?, i: Int, i1: Int, i2: Int ->
-            if (!weekWatcher(holder.adapterPosition, cs.toString())) {
+            if (!weekWatcher(holder.bindingAdapterPosition, cs.toString())) {
                 holder.week.error = holder.code.context.getString(R.string.general_invalid)
             }
         }

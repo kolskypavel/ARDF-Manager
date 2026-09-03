@@ -137,7 +137,7 @@
                 android:text="@string/general_check_time"
                 app:layout_constraintStart_toEndOf="@id/readout_detail_check_time_title"
                 app:layout_constraintTop_toTopOf="parent" />
-            ;
+
             <TextView
                 android:id="@+id/readout_detail_category_title"
                 android:layout_width="wrap_content"

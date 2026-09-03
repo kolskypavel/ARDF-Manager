@@ -45,7 +45,7 @@ class AliasRecyclerViewAdapter(
 
         holder.name.doOnTextChanged { cs: CharSequence?, _, _, _ ->
             try {
-                nameWatcher(holder.adapterPosition, cs.toString(), holder.name.context)
+                nameWatcher(holder.bindingAdapterPosition, cs.toString(), holder.name.context)
             } catch (e: IllegalArgumentException) {
                 holder.name.error = e.message
             }
@@ -53,21 +53,21 @@ class AliasRecyclerViewAdapter(
 
         holder.siCode.doOnTextChanged { cs: CharSequence?, _, _, _ ->
             try {
-                codeWatcher(holder.adapterPosition, cs.toString(), holder.name.context)
+                codeWatcher(holder.bindingAdapterPosition, cs.toString(), holder.name.context)
             } catch (e: IllegalArgumentException) {
                 holder.siCode.error = e.message
             }
         }
 
         holder.addBtn.setOnClickListener {
-            addAlias(holder.adapterPosition)
+            addAlias(holder.bindingAdapterPosition)
         }
 
         holder.deleteBtn.setOnClickListener {
             //Remove focus to prevent crash
             holder.name.clearFocus()
             holder.siCode.clearFocus()
-            deleteAlias(holder.adapterPosition)
+            deleteAlias(holder.bindingAdapterPosition)
         }
     }
 
