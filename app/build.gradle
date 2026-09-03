@@ -26,6 +26,14 @@ android {
     }
 
     buildTypes {
+        debug {
+            /* Test API key should be provided here in the form
+            buildConfigField "String", 'ROBIS_TEST_IMPORT_API_KEY', '"XXXXXXXXX"'
+            buildConfigField "String", 'ROBIS_TEST_EXPORT_API_KEY', '"XXXXXXXXX"'
+           */
+
+        }
+
         release {
             minifyEnabled = true
 
@@ -48,6 +56,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 
     packaging {
@@ -55,8 +64,8 @@ android {
             // Exclude duplicate OSGI MANIFEST entries from dependencies (okhttp logging-interceptor, jspecify etc.)
             // Keep these exclusions narrow to avoid removing useful metadata from other libs.
             excludes += [
-                "META-INF/versions/**/OSGI-INF/MANIFEST.MF",
-                "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+                    "META-INF/versions/**/OSGI-INF/MANIFEST.MF",
+                    "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
             ]
         }
     }
@@ -67,7 +76,6 @@ android {
         }
     }
 }
-
 
 dependencies {
 
