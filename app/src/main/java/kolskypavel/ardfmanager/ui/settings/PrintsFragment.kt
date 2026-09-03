@@ -186,6 +186,21 @@ class PrintsFragment : PreferenceFragmentCompat() {
             true
         }
 
+        // Extra feed
+        val extraFeedPreference =
+            findPreference<SeekBarPreference>(requireContext().getString(R.string.key_prints_extra_feed))
+
+        extraFeedPreference?.setOnPreferenceChangeListener { _, extraFeed ->
+            editor.putInt(
+                requireContext().getString(R.string.key_prints_extra_feed),
+                extraFeed as Int
+            )
+            editor.apply()
+            true
+        }
+
+
+        // Double print preference
         val doublePrintPreference =
             findPreference<CheckBoxPreference>(requireContext().getString(R.string.key_prints_double_print))
         val doublePrintDelayPreference =

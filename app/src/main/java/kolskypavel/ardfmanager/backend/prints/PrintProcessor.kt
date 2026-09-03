@@ -95,7 +95,7 @@ class PrintProcessor(context: Context, private val dataProcessor: DataProcessor)
 
         if (printerReady) {
             val sharedPref = PreferenceManager.getDefaultSharedPreferences(context)
-            val preference =
+            val removeDiacritics =
                 sharedPref.getBoolean(
                     context.getString(R.string.key_prints_remove_diacritics),
                     false
@@ -103,14 +103,17 @@ class PrintProcessor(context: Context, private val dataProcessor: DataProcessor)
             val version = "Radio-O Manager v${dataProcessor.getAppVersion()}"
 
             // Remove diacritics if the preference is set
-            val textToPrint = if (preference) {
+            val textToPrint = if (removeDiacritics) {
                 removeDiacritics(formatted)
             } else {
                 formatted
             }
 
+            // Get the extra line feed
+            val feed = sharedPref.getInt(context.getString(R.string.key_prints_extra_feed), 0)
+
             try {
-                printer!!.printFormattedText(textToPrint + "\n\n[C]${version}", 100)
+                printer!!.printFormattedText(textToPrint + "\n\n[C]${version}", 10f + feed)
             } catch (e: Exception) {
                 CoroutineScope(Dispatchers.Main).launch {
                     makeToast(
