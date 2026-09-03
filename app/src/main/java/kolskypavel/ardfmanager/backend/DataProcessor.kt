@@ -717,7 +717,7 @@ class DataProcessor private constructor(context: Context) {
         return arr?.getOrNull(punchStatus.ordinal) ?: ""
     }
 
-    fun shortStringToPunchStatus(string: String): PunchStatus {
+    fun punchStatusShortStringToEnum(string: String): PunchStatus {
         val punchStatusStrings =
             appContext.get()?.resources?.getStringArray(R.array.punch_status_array_short)
         val idx = punchStatusStrings?.indexOf(string) ?: -1

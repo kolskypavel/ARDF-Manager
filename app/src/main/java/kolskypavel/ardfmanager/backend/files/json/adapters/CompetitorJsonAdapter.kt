@@ -76,7 +76,7 @@ class CompetitorJsonAdapter(val race: Race, val dataProcessor: DataProcessor) {
             val resultData = ResultJsonAdapter(
                 race,
                 dataProcessor
-            ).fromJson(competitorJson.result)
+            ).fromJson(competitorJson.result, drawnStart)
             resultData.result.competitorId = competitor.id
             resultData.result.siNumber = competitor.siNumber
             val readoutData = ReadoutData(resultData.result, resultData.punches)

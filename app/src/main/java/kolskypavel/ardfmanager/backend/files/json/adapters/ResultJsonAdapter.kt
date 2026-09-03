@@ -51,9 +51,20 @@ class ResultJsonAdapter(
         )
     }
 
-    @Suppress("DEPRECATION")
+    /**
+     * Standard Moshi FromJson. Does not support drawn start time.
+     */
     @FromJson
-    fun fromJson(resultJson: ResultJson, drawnStart: SITime?): ReadoutData {
+    fun fromJson(resultJson: ResultJson): ReadoutData {
+        return fromJson(resultJson, null)
+    }
+
+    /**
+     * Custom fromJson that allows passing drawnStartTime. 
+     * Not annotated with @FromJson to avoid Moshi validation errors.
+     */
+    @Suppress("DEPRECATION")
+    fun fromJson(resultJson: ResultJson, drawnStartTime: SITime?): ReadoutData {
 
         val result = Result(
             id = UUID.randomUUID(),
@@ -62,12 +73,13 @@ class ResultJsonAdapter(
             cardType = 0, // Not in ResultJson
             checkTime = resultJson.check_time?.let { SITime(it, race.startDateTime) },
             points = resultJson.punch_count ?: 0,
-            startTime = resultJson.start_time?.let { SITime(it, race.startDateTime) } ?: drawnStart,    // Add drawn start if missing
+            startTime = resultJson.start_time?.let { SITime(it, race.startDateTime) } ?: drawnStartTime,
             finishTime = resultJson.finish_time?.let {
-                resultJson.start_time?.let { startZero ->
+                val startZero = resultJson.start_time ?: drawnStartTime?.toLocalDateTime(race.startDateTime)
+                startZero?.let { sz ->
                     SITime(
                         it,
-                        startZero
+                        sz
                     )
                 }
             },

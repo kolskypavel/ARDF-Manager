@@ -44,7 +44,7 @@ class PunchJsonAdapter(val raceId: UUID, val dataProcessor: DataProcessor) {
             punchType = punchType,
             order = 0,
             punchStatus = dataProcessor
-                .shortStringToPunchStatus(punchJson.punch_status),
+                .punchStatusShortStringToEnum(punchJson.punch_status),
             split = TimeProcessor.minuteStringToDuration(punchJson.split_time),
         )
     }
