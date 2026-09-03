@@ -257,8 +257,8 @@
     <string name="preferences_prints_double_print">Tisknout lístečky dvakrát</string>
     <string name="preferences_prints_double_print_hint">Použijte tuto možnost, pokud chcete každý lístek tisknout dvakrát.</string>
     <string name="preferences_prints_double_print_delay">Zpoždění mezi dvojtým tiskem lístků (sekundy)</string>
-    <string name="preferences_prints_printer_feed">Extra místo na konci lístku</string>
-    <string name="preferences_prints_printer_feed_hint">Kolik extra milimetrů má být vynecháno po konci tisku.</string>
+    <string name="preferences_prints_printer_feed">Extra místo na začátku lístku</string>
+    <string name="preferences_prints_printer_feed_hint">Kolik extra milimetrů má být vynecháno před začátkem tisku.</string>
 
     <string name="preferences_sounds_enable_error_sounds">Povolit chybové zvuky zvuky</string>
     <string name="preferences_sounds_enable_sounds_hint">Povolte, pokud chcete chybové zvuky po vyčtení čipu</string>

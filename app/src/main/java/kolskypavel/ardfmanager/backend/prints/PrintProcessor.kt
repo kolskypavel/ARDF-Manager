@@ -113,7 +113,8 @@ class PrintProcessor(context: Context, private val dataProcessor: DataProcessor)
             val feed = sharedPref.getInt(context.getString(R.string.key_prints_extra_feed), 0)
 
             try {
-                printer!!.printFormattedText(textToPrint + "\n\n[C]${version}", 10f + feed)
+                printer!!.printFormattedText("", feed.toFloat())    // Workaround to put feed at the start
+                printer!!.printFormattedText(textToPrint + "\n\n[C]${version}", 10f)
             } catch (e: Exception) {
                 CoroutineScope(Dispatchers.Main).launch {
                     makeToast(

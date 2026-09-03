@@ -91,6 +91,15 @@
             android:title="@string/preferences_results_use_aliases"
             app:iconSpaceReserved="false"
             app:summary="@string/preferences_results_use_aliases_hint" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:title="@string/results_service"
+        app:iconSpaceReserved="false">
+
         <ListPreference
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -101,6 +110,17 @@
             android:summary="@string/preferences_results_service_hint"
             android:title="@string/preferences_results_service"
             app:iconSpaceReserved="false" />
+
+        <CheckBoxPreference
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:defaultValue="true"
+            android:enabled="true"
+            android:key="@string/key_files_prefer_app_start_time"
+            android:summary=""
+            android:title="@string/preferences_results_service_init"
+            app:iconSpaceReserved="false"
+            app:summary="@string/preferences_results_service_init_hint" />
 
     </PreferenceCategory>
 
