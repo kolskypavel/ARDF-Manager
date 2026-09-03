@@ -33,13 +33,12 @@ class RaceJsonTests {
     @Before
     fun setup() {
         `when`(dataProcessor.resultStatusShortStringToEnum("MP")).thenReturn(ResultStatus.MISPUNCHED)
+        `when`(dataProcessor.resultStatusShortStringToEnum("OK")).thenReturn(ResultStatus.OK)
         `when`(
             dataProcessor
-                .shortStringToPunchStatus(org.mockito.kotlin.any())
+                .punchStatusShortStringToEnum(org.mockito.kotlin.any())
         )
             .thenReturn(PunchStatus.VALID)
-
-        `when`(dataProcessor.resultStatusShortStringToEnum("MP")).thenReturn(ResultStatus.MISPUNCHED)
 
         // Prepare startlist
         val compData = ArrayList<CompetitorData>()
@@ -56,10 +55,10 @@ class RaceJsonTests {
     }
 
     @Test
-    fun testValidFromJson() {
+    fun testBasicJsonImport() {
 
         val stream =
-            this::class.java.classLoader.getResourceAsStream("json/json_valid_race_import.json")
+            this::class.java.classLoader.getResourceAsStream("json/valid_race_import.json")
         val raceData = JsonProcessor.importRaceData(stream, dataProcessor)
 
         assertEquals("EXAMPLE", raceData.race.name)
@@ -82,11 +81,22 @@ class RaceJsonTests {
 
     }
 
+    /* Should correctly import the race with results, even when letter codes are present (S,M).
+     They should get converted to the basic codes based on alias import
+     */
+    @Test
+    fun testJsonImportWithLetterCodes() {
+        val stream =
+            this::class.java.classLoader.getResourceAsStream("json/valid_race_import_letter_codes.json")
+        val raceData = JsonProcessor.importRaceData(stream, dataProcessor)
+
+    }
+
     // Should throw exception, since the required start time is missing
     @Test
-    fun testInvalidFromJson() {
+    fun testInvalidJsonImport() {
         val stream =
-            this::class.java.classLoader.getResourceAsStream("json/json_invalid_race_import.json")
+            this::class.java.classLoader.getResourceAsStream("json/invalid_race_import.json")
         assertThrows(JsonDataException::class.java) {
             JsonProcessor.importRaceData(
                 stream,
@@ -101,7 +111,7 @@ class RaceJsonTests {
         val outStream = ByteArrayOutputStream()
         JsonProcessor.exportStartlist(outStream, race, dataProcessor)
         val validStream =
-            this::class.java.classLoader.getResourceAsStream("json/json_startlist_export.json")
+            this::class.java.classLoader.getResourceAsStream("json/startlist_export.json")
 
         val valid =
             validStream.bufferedReader().use { it.readText() }.filterNot { it.isWhitespace() }

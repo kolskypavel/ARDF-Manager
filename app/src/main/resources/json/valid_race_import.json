@@ -135,7 +135,62 @@
       "start_number": null,
       "start_preference": null,
       "competitor_start_time": null,
-      "result": null
+      "result": {
+        "check_time": "2025-11-28T05:17:16",
+        "start_time": "2025-11-28T17:24:57",
+        "finish_time": "2025-11-28T18:27:39",
+        "run_time": "62:42",
+        "place": 1,
+        "readoutTime": "2025-09-23T18:28:20",
+        "modified": false,
+        "punch_count": 5,
+        "result_status": "OK",
+        "automatic_status": true,
+        "punches": [
+          {
+            "code": "42",
+            "si_code": 42,
+            "control_type": "CONTROL",
+            "punch_status": "OK",
+            "split_time": "12:02"
+          },
+          {
+            "code": "41",
+            "si_code": 41,
+            "control_type": "CONTROL",
+            "punch_status": "OK",
+            "split_time": "14:44"
+          },
+          {
+            "code": "43",
+            "si_code": 43,
+            "control_type": "CONTROL",
+            "punch_status": "OK",
+            "split_time": "12:00"
+          },
+          {
+            "code": "45",
+            "si_code": 45,
+            "control_type": "CONTROL",
+            "punch_status": "OK",
+            "split_time": "11:54"
+          },
+          {
+            "code": "99",
+            "si_code": 99,
+            "control_type": "CONTROL",
+            "punch_status": "OK",
+            "split_time": "11:57"
+          },
+          {
+            "code": "F",
+            "si_code": 0,
+            "control_type": "FINISH",
+            "punch_status": "OK",
+            "split_time": "00:05"
+          }
+        ]
+      }
     },
     {
       "first_name": "Pavel",
@@ -159,7 +214,7 @@
         "readoutTime": "2025-09-23T18:28:20",
         "modified": false,
         "punch_count": 5,
-        "result_status": "MP",
+        "result_status": "DSQ",
         "automatic_status": false,
         "punches": [
           {
