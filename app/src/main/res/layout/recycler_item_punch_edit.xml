@@ -61,7 +61,8 @@
             android:layout_height="wrap_content"
             android:text="W:"
             android:textColor="@color/black"
-            android:textSize="18sp" />
+            android:textSize="18sp"
+            android:visibility="gone" />
 
         <EditText
             android:id="@+id/punch_edit_item_week"
@@ -73,9 +74,11 @@
             android:maxLength="1"
             android:paddingEnd="5dp"
             android:textColor="@color/black"
-            android:textColorHint="@color/grey" />
+            android:textColorHint="@color/grey"
+            android:visibility="gone" />
 
         <ImageButton
+            android:layout_marginStart="8dp"
             android:id="@+id/punch_edit_item_add_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
