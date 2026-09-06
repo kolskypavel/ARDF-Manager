@@ -6,6 +6,7 @@ import androidx.room.ForeignKey
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
+import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.backend.sportident.SITime
 import java.io.Serializable
@@ -44,7 +45,7 @@ data class Result(
     @ColumnInfo(name = "run_time") var runTime: Duration,
     @ColumnInfo(name = "modified") var modified: Boolean,
     @ColumnInfo(name = "sent") var sent: Boolean,      //Marked as sent to the server
-
+    @ColumnInfo(name = "start_time_source") var startTimeSource: StartTimeSource = StartTimeSource.PUNCHED,
 ) : Serializable, Comparable<Result> {
     @Ignore
     var place: Int = 0
@@ -79,6 +80,7 @@ data class Result(
         points = 0,
         runTime = Duration.ZERO,
         modified = false,
-        sent = false
+        sent = false,
+        startTimeSource = StartTimeSource.PUNCHED
     )
 }

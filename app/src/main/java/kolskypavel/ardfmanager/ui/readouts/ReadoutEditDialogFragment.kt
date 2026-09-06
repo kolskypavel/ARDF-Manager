@@ -26,6 +26,7 @@ import kolskypavel.ardfmanager.backend.room.entity.Competitor
 import kolskypavel.ardfmanager.backend.room.entity.Result
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
+import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import kolskypavel.ardfmanager.backend.wrappers.PunchEditItemWrapper
 import kolskypavel.ardfmanager.ui.SelectedRaceViewModel
 import kotlinx.coroutines.runBlocking
@@ -127,7 +128,8 @@ class ReadoutEditDialogFragment : DialogFragment() {
                     resultStatus = ResultStatus.NO_RANKING,
                     runTime = Duration.ZERO,
                     modified = true,
-                    sent = false
+                    sent = false,
+                    startTimeSource = StartTimeSource.PUNCHED
                 )
 
             raceStatusPicker.setText(getString(R.string.general_automatic), false)

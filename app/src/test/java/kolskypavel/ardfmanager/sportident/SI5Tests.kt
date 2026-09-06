@@ -4,6 +4,7 @@ import junit.framework.TestCase.assertEquals
 import kolskypavel.ardfmanager.backend.results.ResultsProcessor
 import kolskypavel.ardfmanager.backend.room.entity.Result
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
+import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.backend.sportident.SIPort
 import kolskypavel.ardfmanager.backend.sportident.SIPort.CardData
@@ -56,7 +57,8 @@ class SI5Tests {
                 resultStatus = ResultStatus.NO_RANKING,
                 runTime = Duration.ZERO,
                 modified = false,
-                sent = false
+                sent = false,
+                startTimeSource = StartTimeSource.PUNCHED
             )
 
         val resultPunches = ResultsProcessor.processCardPunches(
@@ -116,7 +118,8 @@ class SI5Tests {
                 resultStatus = ResultStatus.NO_RANKING,
                 runTime = Duration.ZERO,
                 modified = false,
-                sent = false
+                sent = false,
+                startTimeSource = StartTimeSource.PUNCHED
             )
 
         ResultsProcessor.processCardPunches(

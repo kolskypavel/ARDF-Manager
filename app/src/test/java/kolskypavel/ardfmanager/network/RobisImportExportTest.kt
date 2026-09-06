@@ -26,6 +26,7 @@ import kolskypavel.ardfmanager.backend.room.enums.RaceLevel
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
+import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
 import kolskypavel.ardfmanager.backend.sportident.SITime
 import kotlinx.coroutines.runBlocking
@@ -163,7 +164,8 @@ class RobisImportExportTest {
                 points,
                 runTime,
                 false,
-                false
+                false,
+                StartTimeSource.PUNCHED
             )
             result.place = place
 

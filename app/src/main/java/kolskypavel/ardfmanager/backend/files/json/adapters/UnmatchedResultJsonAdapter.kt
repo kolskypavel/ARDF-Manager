@@ -9,6 +9,7 @@ import kolskypavel.ardfmanager.backend.room.entity.Result
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.AliasPunch
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
+import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import kolskypavel.ardfmanager.backend.sportident.SITime
 import java.util.UUID
 
@@ -43,7 +44,8 @@ class UnmatchedResultJsonAdapter(val race: Race, val dataProcessor: DataProcesso
             resultStatus = ResultStatus.NO_RANKING,
             runTime = TimeProcessor.minuteStringToDuration(json.run_time),
             modified = false,
-            sent = false
+            sent = false,
+            startTimeSource = StartTimeSource.PUNCHED
         )
 
         val punches = ArrayList<AliasPunch>()

@@ -19,6 +19,7 @@ import kolskypavel.ardfmanager.backend.room.enums.PunchStatus
 import kolskypavel.ardfmanager.backend.room.enums.RaceType
 import kolskypavel.ardfmanager.backend.room.enums.ResultStatus
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
+import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import kolskypavel.ardfmanager.backend.sounds.SoundProcessor
 import kolskypavel.ardfmanager.backend.sounds.SoundType
 import kolskypavel.ardfmanager.backend.sportident.SIConstants
@@ -107,14 +108,25 @@ object ResultsProcessor {
         }
     }
 
-    private fun removeStartAndFinishPunch(result: Result, punches: ArrayList<Punch>) {
+    private fun removeStartAndFinishPunch(
+        result: Result,
+        punches: ArrayList<Punch>,
+        setTimes: Boolean   // Wherever to set the start and finish times to result
+    ) {
         if (punches.isNotEmpty()) {
             if (punches.first().punchType == SIRecordType.START) {
-                result.startTime = punches.first().siTime
+                if (setTimes) {
+                    result.startTime = punches.first().siTime
+                    result.startTimeSource = StartTimeSource.PUNCHED
+                }
                 punches.removeAt(0)
             }
+        }
+        if (punches.isNotEmpty()) {
             if (punches.last().punchType == SIRecordType.FINISH) {
-                result.finishTime = punches.last().siTime
+                if (setTimes) {
+                    result.finishTime = punches.last().siTime
+                }
                 punches.removeAt(punches.lastIndex)
             }
         }
@@ -168,18 +180,19 @@ object ResultsProcessor {
 
     // Attempt to get the start time from the competitor's drawn start time
     // Returns true if start time was found and set, false otherwise
-    suspend fun getStartTimeFromStartList(
+    fun getStartTimeFromStartList(
         result: Result,
-        race: Race,
-        dataProcessor: DataProcessor
+        competitor: Competitor,
+        race: Race
     ): Boolean {
-        if (result.competitorId != null) {
-            dataProcessor.getCompetitor(result.competitorId!!)?.drawnRelativeStartTime?.let { relativeStartTime ->
+        if (competitor.drawnRelativeStartTime != null) {
+            competitor.drawnRelativeStartTime?.let { relativeStartTime ->
                 val raceStart = race.startDateTime
                 val startTime =
                     TimeProcessor.getAbsoluteTimeFromRelativeTime(raceStart, relativeStartTime)
                 result.startTime =
                     SITime(startTime.toLocalTime(), SITime.dayOfWeekToSIIndex(startTime.dayOfWeek))
+                result.startTimeSource = StartTimeSource.DRAWN
                 return true
             }
         }
@@ -260,11 +273,13 @@ object ResultsProcessor {
                 resultStatus = ResultStatus.NO_RANKING,
                 runTime = Duration.ZERO,
                 modified = false,
-                sent = false
+                sent = false,
+                startTimeSource = if (cardData.startTime != null) StartTimeSource.PUNCHED else StartTimeSource.DRAWN
             )
 
-        if (result.startTime == null) {
-            drawnTime = getStartTimeFromStartList(result, race, dataProcessor)
+        // Attempt to get the drawn start time
+        if (result.startTime == null && competitor != null) {
+            drawnTime = getStartTimeFromStartList(result, competitor, race)
         }
 
         //Process the punches
@@ -396,7 +411,7 @@ object ResultsProcessor {
         }
 
         //Modify the start and finish times
-        removeStartAndFinishPunch(result, punches)
+        removeStartAndFinishPunch(result, punches, true)
 
         calculateResult(
             result,
@@ -419,8 +434,6 @@ object ResultsProcessor {
         race: Race,
         dataProcessor: DataProcessor
     ) {
-        // If no start time is found in the SI card, try to get it from the competitor
-        getStartTimeFromStartList(result, race, dataProcessor)
 
         if (category != null) {
             evaluatePunches(punches, category, result, race, dataProcessor)
@@ -574,6 +587,13 @@ object ResultsProcessor {
 
         //If result is found, recalculate it
         if (result != null) {
+
+            // Check if the readout was modified -> if so, don't overwrite start time by drawn value
+            // Also check priority: only overwrite if current start is null or was also drawn
+            if (!result.modified && (result.startTime == null || result.startTimeSource == StartTimeSource.DRAWN)) {
+                getStartTimeFromStartList(result, competitor, race)
+            }
+
             val punches = ArrayList(dataProcessor.getPunchesByResult(result.id))
             val category = competitor.categoryId?.let { dataProcessor.getCategory(it) }
 
@@ -581,17 +601,26 @@ object ResultsProcessor {
                 clearEvaluation(punches, result)
             }
 
+            // Remove start and finish punches before calculation
             removeStartAndFinishPunch(
                 result,
-                punches
-            )  // Remove start and finish punches before calculation
+                punches,
+                false   // No need to overwrite the drawn values
+            )
 
             // In case the manual status was previously set, keep it
             val manualStatus = if (!result.automaticStatus) {
                 result.resultStatus
             } else null
 
-            calculateResult(result, category, punches, manualStatus, race, dataProcessor)
+            calculateResult(
+                result,
+                category,
+                punches,
+                manualStatus,
+                race,
+                dataProcessor
+            )
         }
     }
 

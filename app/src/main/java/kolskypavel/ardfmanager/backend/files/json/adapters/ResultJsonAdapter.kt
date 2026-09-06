@@ -10,6 +10,7 @@ import kolskypavel.ardfmanager.backend.room.entity.embeddeds.AliasPunch
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.CompetitorData
 import kolskypavel.ardfmanager.backend.room.entity.embeddeds.ReadoutData
 import kolskypavel.ardfmanager.backend.room.enums.SIRecordType
+import kolskypavel.ardfmanager.backend.room.enums.StartTimeSource
 import kolskypavel.ardfmanager.backend.sportident.SITime
 import java.time.Duration
 import java.time.LocalDateTime
@@ -89,7 +90,8 @@ class ResultJsonAdapter(
                 ?: Duration.ZERO,
             modified = resultJson.modified ?: false,
             sent = false,
-            readoutTime = resultJson.readoutTime ?: LocalDateTime.now()
+            readoutTime = resultJson.readoutTime ?: LocalDateTime.now(),
+            startTimeSource = if (resultJson.start_time != null) StartTimeSource.PUNCHED else StartTimeSource.DRAWN
         )
 
         val punches = ArrayList<AliasPunch>()
