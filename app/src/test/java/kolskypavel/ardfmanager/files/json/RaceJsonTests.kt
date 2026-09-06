@@ -32,7 +32,7 @@ class RaceJsonTests {
 
     @Before
     fun setup() {
-        `when`(dataProcessor.resultStatusShortStringToEnum("MP")).thenReturn(ResultStatus.MISPUNCHED)
+        `when`(dataProcessor.resultStatusShortStringToEnum("DSQ")).thenReturn(ResultStatus.DISQUALIFIED)
         `when`(dataProcessor.resultStatusShortStringToEnum("OK")).thenReturn(ResultStatus.OK)
         `when`(
             dataProcessor
@@ -77,7 +77,7 @@ class RaceJsonTests {
         val comp1 =
             raceData.competitorData.find { it.competitorCategory.competitor.siNumber == 10000 }
         assertEquals("KOLSKÝ Pavel", comp1?.competitorCategory?.competitor?.getFullName())
-        assertEquals(ResultStatus.MISPUNCHED, comp1?.readoutData?.result?.resultStatus)
+        assertEquals(ResultStatus.DISQUALIFIED, comp1?.readoutData?.result?.resultStatus)
 
     }
 
@@ -86,9 +86,10 @@ class RaceJsonTests {
      */
     @Test
     fun testJsonImportWithLetterCodes() {
-        val stream =
-            this::class.java.classLoader.getResourceAsStream("json/valid_race_import_letter_codes.json")
-        val raceData = JsonProcessor.importRaceData(stream, dataProcessor)
+        // TODO: finish after update of alias handling on ROBis side
+//        val stream =
+//            this::class.java.classLoader.getResourceAsStream("json/valid_race_import_letter_codes.json")
+//        val raceData = JsonProcessor.importRaceData(stream, dataProcessor)
 
     }
 
