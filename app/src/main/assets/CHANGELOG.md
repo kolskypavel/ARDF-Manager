@@ -1,3 +1,24 @@
+## [0.3.0] - 2026-09-06
+### Added
+- Added startlist drawing options
+- Added startlist and final results upload for ROBis result service
+- Added possibility of extra space on top of finish ticket print
+- Added bulk moving of competitors from one category to another
+- Added orange icon for result service with error
+- Updated targetSdk version to 36 (Android 16)
+
+### Fixed
+- Fixed incorrect start time overwriting with drawn start times
+- Fixed the category length to meters
+- Fixed translation of category header in results
+- Races sort descending in main menu
+- Added missing beacon to the list of aliases
+- Added missing SEPARATOR and BEACON control types to JSON export
+- Modified startlist export to match ROBis format
+
+### Removed
+- Removed unused week field on punch edits (not used by SI)
+
 ## [0.2.0] - 2026-05-17
 ### Added
 - Added check time to readout detail
