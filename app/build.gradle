@@ -13,20 +13,22 @@ configurations {
 
 android {
     namespace = "kolskypavel.ardfmanager"
-    compileSdk 36
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "kolskypavel.ardfmanager"
         minSdk = 26
         targetSdk = 36
         versionCode = 8
-        versionName = "0.2.0"
+        versionName = "0.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
         debug {
+            debuggable = true
+
             /* Test API key should be provided here in the form
             buildConfigField "String", 'ROBIS_TEST_IMPORT_API_KEY', '"XXXXXXXXX"'
             buildConfigField "String", 'ROBIS_TEST_EXPORT_API_KEY', '"XXXXXXXXX"'
@@ -36,6 +38,7 @@ android {
 
         release {
             minifyEnabled = true
+            debuggable = false
 
             // Enables resource shrinking
             shrinkResources = true
